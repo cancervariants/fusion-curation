@@ -4,8 +4,19 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+flask = "*"
+gene-normalizer = "*"
+boto3 = "*"
 
 [dev-packages]
+pytest = "*"
+pre-commit = "*"
+flake8 = "*"
+flake8-docstrings = "*"
+coverage = "*"
+pytest-cov = "*"
+fusion-curation = {editable = true, path = "."}
+coveralls = "*"
 
 [requires]
 python_version = "3.9"
