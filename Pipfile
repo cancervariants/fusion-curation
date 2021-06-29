@@ -7,6 +7,8 @@ name = "pypi"
 flask = "*"
 gene-normalizer = "*"
 boto3 = "*"
+psycopg2 = "==2.8.4"
+flask-sqlalchemy = "==2.4.1"
 
 [dev-packages]
 pytest = "*"
