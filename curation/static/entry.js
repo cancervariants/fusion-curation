@@ -1,9 +1,3 @@
-/* TODO 
-    * submission function 
-    * refactor
-    * record successive divs in tree for recursive hiding
-*/
-
 function handleClear(event) {
   document.querySelectorAll("select").forEach(element => {
     element.selectedIndex = 0

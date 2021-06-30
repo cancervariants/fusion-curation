@@ -9,6 +9,21 @@ from gene.query import QueryHandler
 gene_query_handler = QueryHandler()
 
 
+def get_gene_id(symbol: str) -> str:
+    """Get ID given gene symbol.
+
+    :param str symbol: user-entered gene symbol
+    :returns: concept ID as a string
+    :raises LookupError: if no match is found
+    """
+    normed = gene_query_handler.search_sources(symbol, incl='hgnc', keyed=True)
+    hgnc = normed['source_matches']['HGNC']
+    if hgnc['match_type'] > 0:
+        return hgnc['records'][0].concept_id
+    else:
+        raise LookupError(f"Could not find matching ID for symbol {symbol}")
+
+
 def create_app(test_config=None):
     """Create app."""
     app = Flask(__name__, instance_relative_config=None)
@@ -32,7 +47,6 @@ def create_app(test_config=None):
 
     @app.route('/submit', methods=['POST'])
     def submit_fusion():
-        # server-side validate?
         submission = request.json
         junctions = submission.get('junctions')
         if junctions:
@@ -41,17 +55,12 @@ def create_app(test_config=None):
                 if end_str in junctions:
                     symbol = junctions[end_str].get('gene_symbol')
                     if symbol:
-                        normed = gene_query_handler.search_sources(symbol,
-                                                                   incl='hgnc',
-                                                                   keyed=True)
-                        hgnc = normed['source_matches']['HGNC']
-                        if hgnc['match_type'] > 0:
-                            gene_id = hgnc['records'][0].concept_id
-                            del junctions[end_str]['gene_symbol']
-                            junctions[end_str]['gene'] = {
-                                'id': gene_id,
-                                'symbol': symbol
-                            }
+                        concept_id = get_gene_id(symbol)
+                        del junctions[end_str]['gene_symbol']
+                        junctions[end_str]['gene'] = {
+                            'id': concept_id,
+                            'symbol': symbol
+                        }
         return submission
 
     return app
