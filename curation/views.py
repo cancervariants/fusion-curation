@@ -4,8 +4,8 @@ from flask import render_template, request
 from .gene_services import get_gene_id
 
 
-@app.route('/entry.html')
-def main_page():
+@app.route('/entry.html', methods=['GET'])
+def entry_page():
     """Entry point for application."""
     return render_template('entry.html', page_title="main page")
 
