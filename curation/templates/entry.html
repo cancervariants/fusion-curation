@@ -7,6 +7,10 @@
 {% block body %}
 <h2>Gene Fusion Curation</h2>
 
+<p>
+  <button id="clear-button">clear</button>
+</p>
+
 <div id="div-chimeric" style="display:contents">
   <p><label for="chimeric">Does the fusion create a chimeric transcript?</label>
     <select name="chimeric" id="select-chimeric" autocomplete="off">
@@ -127,8 +131,9 @@
       <input type="text" name="sv" id="input-sv">
     </p>
   </div>
+</div>
 
-  <div id="div-also-rearrange">
+  <div id="div-also-rearrange" style="display: none;">
     <p><label for="also-rearrange">Does fusion also rearrange near another regulatory element?</label>
       <select name="also-rearrange" id="select-also-rearrange" autocomplete="off">
         <option></option>
@@ -137,7 +142,6 @@
       </select>
     </p>
   </div>
-</div>
 
 <div id="div-record-reg" style="display: none;">
   <p>
@@ -150,6 +154,16 @@
   <p>
     <button id="submit-button">submit</button>
   </p>
+</div>
+
+<div id="div-response-json" style="display: none;">
+  <p>JSON:</p>
+  <textarea id="response-json-box" rows="6" cols="50" readonly></textarea>
+</div>
+
+<div id="div-response-hgvs" style="display: none;">
+  <p>HGVS:</p>
+  <textarea id="response-hgvs-box" cols="50" readonly></textarea>
 </div>
 
 <div id="div-not-fusion" style="display: none;">

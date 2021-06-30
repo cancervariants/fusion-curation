@@ -4,6 +4,15 @@
     * record successive divs in tree for recursive hiding
 */
 
+function handleClear(event) {
+  document.querySelectorAll("select").forEach(element => {
+    element.selectedIndex = 0
+  });
+  document.querySelectorAll("input").forEach(element => {
+    element.value = ""
+  });
+}
+
 function handleYesNoEvent(yes_name, no_name) {
   return function (event) {
     let selection = event.target.value;
@@ -72,13 +81,13 @@ function handleCausativeEvent(event) {
   let selection = event.target.value;
   if (selection == "yes") {
     document.getElementById("event-type-group").style.display = "contents";
-    // what goes here?  
+    document.getElementById("div-also-rearrange").style.display = "contents";
   } else if (selection == "no") {
-    // what goes here?
-    document.getElementById("event-type-group").style.display = "contents";
+    document.getElementById("event-type-group").style.display = "none";
+    document.getElementById("div-also-rearrange").style.display = "contents";
   } else {
     document.getElementById("event-type-group").style.display = "none";
-    // what goes here?
+    document.getElementById("div-also-rearrange").style.display = "none";
   }
 }
 
@@ -93,6 +102,23 @@ function handleAlsoRearrange(event) {
   } else {
     document.getElementById("div-record-reg").style.display = "none";
     document.getElementById("div-submit-button").style.display = "none";
+  }
+}
+
+function createNomenclature(fusion) {
+  if (fusion.junctions) {
+    const end_5 = fusion["junctions"]["5_prime_end"];
+    const end_3 = fusion["junctions"]["3_prime_end"];
+    if (end_5 && end_3) {
+      if (end_5.genomic_coordinate && end_5.genomic_coordinate.position && end_3.genomic_coordinate && end_3.genomic_coordinate.position) {
+        // TODO
+        // "long form" (end coordinates?)
+      };
+      // short form
+      let end_5_str = `${end_5.transcript}(${end_5.gene.symbol}):exon${end_5.exon_number}`;
+      let end_3_str = `${end_3.transcript}(${end_3.gene.symbol}):exon${end_3.exon_number}`;
+      return `${end_5_str}::${end_3_str}`;
+    }
   }
 }
 
@@ -115,9 +141,7 @@ function handleSubmit(event) {
     let junct_5_prime_end = {
       "transcript": document.getElementById("input-5-prime-tr").value,
       "exon_number": document.getElementById("input-5-prime-ex").value,
-      "gene": {
-        "symbol": document.getElementById("input-5-prime-gene").value
-      },
+      "gene_symbol": document.getElementById("input-5-prime-gene").value,
       "genomic_coordinate": {
         "chr": document.getElementById("input-5-prime-chr").value,
         "pos": document.getElementById("input-5-prime-pos").value,
@@ -126,9 +150,7 @@ function handleSubmit(event) {
     let junct_3_prime_end = {
       "transcript": document.getElementById("input-3-prime-tr").value,
       "exon_number": document.getElementById("input-3-prime-ex").value,
-      "gene": {
-        "symbol": document.getElementById("input-3-prime-gene").value
-      },
+      "gene_symbol": document.getElementById("input-3-prime-gene").value,
       "genomic_coordinate": {
         "chr": document.getElementById("input-3-prime-chr").value,
         "pos": document.getElementById("input-3-prime-pos").value,
@@ -149,7 +171,7 @@ function handleSubmit(event) {
     // record regulatory element type/associated genes
 
   } else {
-    // do stuff
+    // record regulatory element type/associated genes
   }
 
   // POST JSON at submission endpoint
@@ -157,16 +179,21 @@ function handleSubmit(event) {
   request.open("POST", "/submit");
   request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   request.send(JSON.stringify(output));
-  request.onload = function () {
-    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-      window.location.reload()
+
+  request.onreadystatechange = () => {
+    if (request.readyState === 4) {
+      const response_text = request.responseText;
+      document.getElementById('div-response-json').style.display = "contents";
+      document.getElementById('response-json-box').value = response_text;
+
+      document.getElementById('div-response-hgvs').style.display = "contents";
+      document.getElementById('response-hgvs-box').value = createNomenclature(JSON.parse(response_text));
     }
-    // do something? handle error here etc
-  };
-  console.log('here');
+  }
 }
 
 /* add event listeners */
+
 document.getElementById("select-chimeric").onchange = (event) => handleYesNoEvent("protein-coding", "rearrange")(event);
 document.getElementById("select-rearrange").onchange = handleRearrange;
 document.getElementById(
@@ -178,3 +205,4 @@ document.getElementById(
 document.getElementById("select-causative").onchange = handleCausativeEvent;
 document.getElementById("select-also-rearrange").onchange = handleAlsoRearrange;
 document.getElementById("submit-button").onclick = handleSubmit;
+document.getElementById("clear-button").onclick = handleClear;
