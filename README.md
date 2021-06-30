@@ -11,6 +11,7 @@ for direction on installing pipenv in your compute environment.
 Once installed, from the project root dir, just run:
 
 ```commandline
+pipenv shell
 pipenv sync
 ```
 
@@ -33,10 +34,19 @@ Before first commit run:
 pre-commit install
 ```
 
-### Running unit tests
+### Starting the development server
 
-Running unit tests is as easy as pytest.
+Environment variables should already be set in any shell that executes `pipenv shell`, but if not:
 
 ```commandline
-pipenv run pytest
+export FLASK_ENV=development
+export FLASK_APP=curation
 ```
+
+Start the server:
+
+```commandline
+flask run
+```
+
+Then proceed to http://127.0.0.1:5000/entry.html in a browser window.
