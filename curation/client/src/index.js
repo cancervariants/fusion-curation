@@ -310,7 +310,9 @@ function FormParent() {
     // * gene sub-object (get id)
     // * genomic_coordinate sub-object (chr, position)
     if (Object.keys(junction5Prime).length > 0) {
-      jsonOutput['5_prime_end'] = junction5Prime;
+      jsonOutput.junctions = {
+        '5_prime_end': junction5Prime,
+      };
     }
     if (Object.keys(junction3Prime).length > 0) {
       jsonOutput['3_prime_end'] = junction3Prime;
