@@ -108,14 +108,14 @@ const FormParent = () => {
       if (end5 && end3) {
         if (end5.genomic_coordinate && end5.genomic_coordinate_position
           && end3.genomic_coordinate && end3.genomic_coordinate_position) {
-          return null; // TODO "long form" coordinates
+          return ''; // TODO "long form" coordinates
         }
         const end5String = `${end5.transcript}(${end5.gene.symbol}):exon${end5.exon_number}`;
         const end3String = `${end3.transcript}(${end3.gene.symbol}):exon${end3.exon_number}`;
         return `${end5String}::${end3String}`;
       }
     }
-    return null;
+    return '';
   };
 
   const handleSubmit = () => {

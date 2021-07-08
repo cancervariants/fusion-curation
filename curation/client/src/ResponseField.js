@@ -10,29 +10,33 @@ const ResponseField = ({ jsonValue, readableValue }) => {
   const [readableFieldLabel, setReadableFieldLabel] = useState('HGVS-like');
 
   async function handleObjectFieldClick(click) {
-    navigator.clipboard.writeText(jsonValue);
-    setObjectFieldLabel('copied!');
-    click.target.select();
-    await sleep(70);
-    // eslint-disable-next-line no-param-reassign
-    click.target.selectionStart = 0;
-    // eslint-disable-next-line no-param-reassign
-    click.target.selectionEnd = 0;
-    await sleep(2000);
-    setObjectFieldLabel('JSON');
+    if (jsonValue && jsonValue !== '') {
+      navigator.clipboard.writeText(jsonValue);
+      setObjectFieldLabel('copied!');
+      click.target.select();
+      await sleep(70);
+      // eslint-disable-next-line no-param-reassign
+      click.target.selectionStart = 0;
+      // eslint-disable-next-line no-param-reassign
+      click.target.selectionEnd = 0;
+      await sleep(2000);
+      setObjectFieldLabel('JSON');
+    }
   }
 
   async function handleReadableFieldClick(click) {
-    navigator.clipboard.writeText(readableValue);
-    setReadableFieldLabel('copied!');
-    click.target.select();
-    await sleep(70);
-    // eslint-disable-next-line no-param-reassign
-    click.target.selectionStart = 0;
-    // eslint-disable-next-line no-param-reassign
-    click.target.selectionEnd = 0;
-    await sleep(2000);
-    setReadableFieldLabel('HGVS-like');
+    if (readableValue && readableValue !== '') {
+      navigator.clipboard.writeText(readableValue);
+      setReadableFieldLabel('copied!');
+      click.target.select();
+      await sleep(70);
+      // eslint-disable-next-line no-param-reassign
+      click.target.selectionStart = 0;
+      // eslint-disable-next-line no-param-reassign
+      click.target.selectionEnd = 0;
+      await sleep(2000);
+      setReadableFieldLabel('HGVS-like');
+    }
   }
 
   return (
