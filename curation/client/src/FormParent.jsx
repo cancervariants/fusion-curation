@@ -137,7 +137,7 @@ const FormParent = () => {
     }
     if (values.exon_end !== '') {
       if (index === 0) {
-        out.exon_start = "1";
+        out.exon_start = 1;
         out.exon_start_genomic = {
           chr: '<computed>', // TODO
           pos: '<computed>', // TODO
@@ -187,7 +187,7 @@ const FormParent = () => {
 
   const handleSubmit = () => {
     const jsonOutput = {};
-    
+
     if (proteinCodingValue === 'Yes') {
       if (rfPreserved === 'Yes') {
         jsonOutput.r_frame_preserved = true;
@@ -199,7 +199,7 @@ const FormParent = () => {
           if (retainedDomainsGenes !== '') {
             domain.gene = {
               symbol: retainedDomainsGenes,
-              id: getGeneID(retainedDomainsGenes)
+              id: getGeneID(retainedDomainsGenes),
             };
           }
           jsonOutput.retained_domains = [domain];
