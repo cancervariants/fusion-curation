@@ -31,8 +31,6 @@ const FormParent = () => {
   const [rfPreserved, setRfPreserved] = useState('');
   const [retainedDomains, setRetainedDomains] = useState(''); // TODO switch to array
   const [retainedDomainsGenes, setRetainedDomainGenes] = useState(''); // TODO switch to array
-  const [junction5Prime, setJunction5Prime] = useState({}); // TODO remove
-  const [junction3Prime, setJunction3Prime] = useState({}); // TODO remove
   const [components, setComponents] = useState([]);
   const [causEvent, setCausEvent] = useState('');
   const [responseJSON, setResponseJSON] = useState('');
@@ -132,50 +130,105 @@ const FormParent = () => {
     return '';
   };
 
+  const getGeneID = (symbol) => {
+    // TODO: XHR to flask server, retrieve from dynamodb
+    return 'hgnc:ZZZZ';
+  };
+
+  const transcriptRegionToJSON = (component, index) => {
+    const out = {};
+    const values = component.componentValues;
+    if ('transcript' in values) out.transcript = values.transcript;
+    if ('gene_symbol' in values) {
+      out.gene = {
+        symbol: values.gene_symbol,
+        id: getGeneID(values.gene_symbol),
+      };
+    }
+    if (values.exon_end !== '') {
+      if (index === 0) {
+        out.exon_start = 1;
+        out.exon_start_genomic = {
+          chr: '<computed>', // TODO
+          pos: '<computed>', // TODO
+        };
+      }
+      out.exon_end = values.exon_end;
+      out.exon_end_genomic = {
+        chr: '<computed>', // TODO
+        pos: '<computed>', // TODO
+      };
+    }
+    if (values.exon_start !== '') {
+      if (index === components.length) {
+        out.exon_end = '<computed>';
+        out.exon_end_genomic = {
+          chr: '<computed>', // TODO
+          pos: '<computed>', // TODO
+        };
+      }
+      out.exon_start = values.exon_start;
+      out.exon_start_genomic = {
+        chr: '<computed>', // TODO
+        pos: '<computed>', // TODO
+      };
+    }
+    return out;
+  };
+
+  const genomicRegionToJSON = (component, index) => {
+    const out = {};
+    const values = component.componentValues;
+    if ('chr' in values) out.chr = values.chr;
+    if ('strand' in values) out.strand = values.strand;
+    if ('start_pos' in values) out.start_pos = values.start_pos;
+    if ('end_pos' in values) out.end_pos = values.end_pos;
+
+    return out;
+  };
+
+  const linkerSequenceToJSON = (comp) => (
+    {
+      linker_sequence: comp.componentValues.sequence,
+    }
+  );
+
   const handleSubmit = () => {
     const jsonOutput = {};
+    
     if (proteinCodingValue === 'Yes') {
       if (rfPreserved === 'Yes') {
         jsonOutput.r_frame_preserved = true;
-        if (retainedDomains !== '') {
+        if (retainedDomains !== '') { // TODO refactor to allow multiples
           const domain = {
             domain_name: retainedDomains,
+            domain_id: '<computed?>', // TODO how to compute? prompt directly?
           };
           if (retainedDomainsGenes !== '') {
-            domain.gene = retainedDomainsGenes;
+            domain.gene = {
+              symbol: retainedDomainsGenes,
+              id: getGeneID(retainedDomainsGenes)
+            };
           }
-          jsonOutput.retainedDomains = [domain];
+          jsonOutput.retained_domains = [domain];
         }
       } else if (rfPreserved === 'No') {
         jsonOutput.r_frame_preserved = false;
       }
     }
 
-    // TODO junctions:
-    // * gene sub-object (get id)
-    // * genomic_coordinate sub-object (chr, position)
-    jsonOutput.junctions = {};
-    if (Object.keys(junction5Prime).length > 0) {
-      if ('gene' in junction5Prime) {
-        // get normalized gene ID
-        junction5Prime.gene = {
-          symbol: junction5Prime.gene,
-        };
+    jsonOutput.components = components.map((comp, index) => {
+      if (comp.componentType === 'transcript_region') {
+        return transcriptRegionToJSON(comp, index);
       }
-      jsonOutput.junctions['5_prime_end'] = junction5Prime;
-    }
-    if (Object.keys(junction3Prime).length > 0) {
-      if ('gene' in junction3Prime) {
-        // get normalized gene ID
-        junction3Prime.gene = {
-          symbol: junction3Prime.gene,
-        };
+      if (comp.componentType === 'genomic_region') {
+        return genomicRegionToJSON(comp, index);
       }
-      jsonOutput.junctions['3_prime_end'] = junction3Prime;
-    }
-    if (Object.keys(jsonOutput.junctions).length === 0) {
-      delete jsonOutput.junctions;
-    }
+      if (comp.componentType === 'linker_sequence') {
+        return linkerSequenceToJSON(comp);
+      }
+      return null;
+    });
 
     if (causEvent) {
       jsonOutput.causative_event = {
