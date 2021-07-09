@@ -114,19 +114,9 @@ const FormParent = () => {
    * @return {string} fusion object structured as human-readable string
    */
   const outputToReadable = (outputJSON) => {
-    if (outputJSON.junctions) {
-      const end5 = outputJSON.junctions['5_prime_end'];
-      const end3 = outputJSON.junctions['3_prime_end'];
-      if (end5 && end3) {
-        if (end5.genomic_coordinate && end5.genomic_coordinate_position
-          && end3.genomic_coordinate && end3.genomic_coordinate_position) {
-          return ''; // TODO "long form" coordinates
-        }
-        const end5String = `${end5.transcript}(${end5.gene.symbol}):exon${end5.exon_number}`;
-        const end3String = `${end3.transcript}(${end3.gene.symbol}):exon${end3.exon_number}`;
-        return `${end5String}::${end3String}`;
-      }
-    }
+    // if (components.length > 1) {
+    //   if (components[1])
+    // }
     return '';
   };
 
@@ -147,7 +137,9 @@ const FormParent = () => {
     }
     if (values.exon_end !== '') {
       if (index === 0) {
-        out.exon_start = 1;
+        console.log(component);
+        out.exon_start = "1";
+        console.log(out);
         out.exon_start_genomic = {
           chr: '<computed>', // TODO
           pos: '<computed>', // TODO
@@ -160,18 +152,20 @@ const FormParent = () => {
       };
     }
     if (values.exon_start !== '') {
-      if (index === components.length) {
+      if (index === components.length - 1) {
         out.exon_end = '<computed>';
         out.exon_end_genomic = {
           chr: '<computed>', // TODO
           pos: '<computed>', // TODO
         };
       }
-      out.exon_start = values.exon_start;
-      out.exon_start_genomic = {
-        chr: '<computed>', // TODO
-        pos: '<computed>', // TODO
-      };
+      if (index !== 0) {
+        out.exon_start = values.exon_start;
+        out.exon_start_genomic = {
+          chr: '<computed>', // TODO
+          pos: '<computed>', // TODO
+        };
+      }
     }
     return out;
   };
