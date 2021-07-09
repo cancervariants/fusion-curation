@@ -24,6 +24,7 @@ const FunctionalDomainsForm = ({ setRetainedDomains, setRetainedDomainGenes }) =
           <TextField />
         </form>
       </Box>
+      <p />
     </>
   );
 };

@@ -1,16 +1,26 @@
 import { React, useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { makeStyles } from '@material-ui/core/styles';
 import FormRadio from './FormRadio';
-import JunctionsForm from './JunctionsForm';
 import CausEventForm from './CausEventForm';
 import FunctionalDomainsForm from './FunctionalDomainsForm';
 import SubmitButton from './SubmitButton';
 import ResponseField from './ResponseField';
+import ComponentsForm from './ComponentsForm';
+
+const useStyles = makeStyles({
+  root: {
+    width: '100%',
+    maxWidth: 500,
+  },
+});
 
 const FormParent = () => {
   // visibility handlers
   const [showRfPreserved, setShowRfPreserved] = useState(false);
   const [showFuncDomains, setShowFuncDomains] = useState(false);
-  const [showJunctions, setShowJunctions] = useState(false);
+  const [showComponents, setShowComponents] = useState(false);
   const [showCausEvent, setShowCausEvent] = useState(false);
   const [showCausEventInfo, setShowCausEventInfo] = useState(false);
   const [showSubmit, setShowSubmit] = useState(false);
@@ -21,11 +31,15 @@ const FormParent = () => {
   const [rfPreserved, setRfPreserved] = useState('');
   const [retainedDomains, setRetainedDomains] = useState(''); // TODO switch to array
   const [retainedDomainsGenes, setRetainedDomainGenes] = useState(''); // TODO switch to array
-  const [junction5Prime, setJunction5Prime] = useState({});
-  const [junction3Prime, setJunction3Prime] = useState({});
+  const [junction5Prime, setJunction5Prime] = useState({}); // TODO remove
+  const [junction3Prime, setJunction3Prime] = useState({}); // TODO remove
+  const [components, setComponents] = useState([]);
   const [causEvent, setCausEvent] = useState('');
   const [responseJSON, setResponseJSON] = useState('');
   const [responseHuman, setResponseReadable] = useState('');
+
+  // styles
+  const classes = useStyles();
 
   /**
    * Handle result of "protein coding" decision. Make child elements visible or invisible.
@@ -59,11 +73,11 @@ const FormParent = () => {
       setRfPreserved(newValue);
       if (newValue === 'Yes') {
         setShowFuncDomains(true);
-        setShowJunctions(true);
+        setShowComponents(true);
         setShowCausEvent(true);
       } else if (newValue === 'No') {
         setShowFuncDomains(false);
-        setShowJunctions(true);
+        setShowComponents(true);
         setShowCausEvent(true);
       }
     }
@@ -176,7 +190,7 @@ const FormParent = () => {
   };
 
   return (
-    <>
+    <div className={classes.root}>
       <FormRadio
         name="protein-coding"
         prompt="Is at least one partner protein-coding?"
@@ -197,7 +211,6 @@ const FormParent = () => {
               stateFunction: handleSetRfPreserved,
             }}
           />
-
         )
         : null}
       {showFuncDomains
@@ -208,14 +221,11 @@ const FormParent = () => {
           />
         )
         : null}
-      {showJunctions
+      {showComponents
         ? (
-          <JunctionsForm
-            junction5Prime={junction5Prime}
-            setJunction5Prime={setJunction5Prime}
-            junction3Prime={junction3Prime}
-            setJunction3Prime={setJunction3Prime}
-          />
+          <DndProvider backend={HTML5Backend}>
+            <ComponentsForm components={components} setComponents={setComponents} />
+          </DndProvider>
         )
         : null}
       {showCausEvent
@@ -236,7 +246,7 @@ const FormParent = () => {
       {showResponse
         ? <ResponseField jsonValue={responseJSON} readableValue={responseHuman} />
         : null}
-    </>
+    </div>
   );
 };
 
