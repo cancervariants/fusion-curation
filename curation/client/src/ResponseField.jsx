@@ -53,6 +53,7 @@ const ResponseField = ({ jsonValue, readableValue }) => {
           value={jsonValue}
           onClick={(click) => handleObjectFieldClick(click)}
           style={{ width: 700 }}
+          rowsMax={14}
         />
       </Box>
       <Box p={1}>

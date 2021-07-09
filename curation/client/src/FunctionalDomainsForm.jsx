@@ -15,7 +15,7 @@ const FunctionalDomainsForm = ({ setRetainedDomains, setRetainedDomainGenes }) =
       <Box p={1}>
         <FormLabel component="legend">Record predicted meaningful protein functional domains preserved:</FormLabel>
         <form noValidate autoComplete="off" onChange={domainHandleChange}>
-          <TextField />
+          <TextField multiline />
         </form>
       </Box>
       <Box p={1}>

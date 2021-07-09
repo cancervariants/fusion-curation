@@ -3,6 +3,7 @@ import {
   Box, Paper, FormControl, Select, MenuItem,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import Delete from '@material-ui/icons/Delete';
 import TranscriptRegionCard from './TranscriptRegionCard';
 import GenomicRegionCard from './GenomicRegionCard';
 import LinkerSequenceCard from './LinkerSequenceCard';
@@ -19,10 +20,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SpecificComponentCard = ({ componentType, componentValues, handleCardChange }) => {
-  // don't handle state here -- send field to change and changed value up,
-  // then have parent component curry w/ card ID
-  // and send to change state in FormParent
-  // should also refact to use a render() subcommand instead of if/thens for each card type
+  // TODO (?) use a render() subcommand instead of if/thens for each card type
 
   const classes = useStyles();
 
@@ -42,6 +40,7 @@ const SpecificComponentCard = ({ componentType, componentValues, handleCardChang
               <MenuItem value="linker_sequence">Linker Sequence</MenuItem>
             </Select>
           </FormControl>
+          <Delete />
           {componentType === 'transcript_region'
             ? (
               <TranscriptRegionCard
