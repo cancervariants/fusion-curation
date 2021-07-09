@@ -137,9 +137,7 @@ const FormParent = () => {
     }
     if (values.exon_end !== '') {
       if (index === 0) {
-        console.log(component);
         out.exon_start = "1";
-        console.log(out);
         out.exon_start_genomic = {
           chr: '<computed>', // TODO
           pos: '<computed>', // TODO
