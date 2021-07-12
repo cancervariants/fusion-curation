@@ -19,7 +19,7 @@ const useStyles = makeStyles({
 const FormParent = () => {
   // visibility handlers
   const [showRfPreserved, setShowRfPreserved] = useState(false);
-  const [showFuncDomains, setShowFuncDomains] = useState(false);
+  const [showRetainedDomains, setShowRetainedDomains] = useState(false);
   const [showComponents, setShowComponents] = useState(false);
   const [showCausEvent, setShowCausEvent] = useState(false);
   const [showCausEventInfo, setShowCausEventInfo] = useState(false);
@@ -31,10 +31,38 @@ const FormParent = () => {
   const [rfPreserved, setRfPreserved] = useState('');
   const [retainedDomains, setRetainedDomains] = useState(''); // TODO switch to array
   const [retainedDomainsGenes, setRetainedDomainGenes] = useState(''); // TODO switch to array
-  const [components, setComponents] = useState([]); // {id, componentType, componentValues: {}}
+  const [components, setComponents] = useState([]); // {id, componentType, componentValues: {}}. TODO need default value?
   const [causEvent, setCausEvent] = useState('');
   const [responseJSON, setResponseJSON] = useState('');
   const [responseHuman, setResponseReadable] = useState('');
+
+
+  /**
+   * 
+   */
+  const hideChildren = (field) => {
+    const dispatch = {
+      rfPreserved: 0,
+      retainedDomains: 1,
+      components: 2,
+      causEvent: 3,
+      causEventInfo: 4,
+      submit: 4,
+      response: 6,
+    };
+
+    const precedence = [
+      setShowRfPreserved,
+      setShowRetainedDomains,
+      setShowComponents,
+      setShowCausEvent,
+      setShowCausEventInfo,
+      setShowSubmit,
+      setShowResponse,
+    ];
+
+    precedence.slice(dispatch[field]).forEach(f => f(false));
+  };
 
   // styles
   const classes = useStyles();
@@ -42,19 +70,18 @@ const FormParent = () => {
   /**
    * Handle result of "protein coding" decision. Make child elements visible or invisible.
    * @param {string} oldValue value of previous selection
-   * @param {*} newValue newly selected value
+   * @param {string} newValue newly selected value
    * @returns nothing, but updates state of child elements accordingly
    */
   const handleSetProteinCoding = (oldValue, newValue) => {
     if (oldValue !== newValue) {
       setProteinCodingValue(newValue);
       if (newValue === 'Yes') {
-        setShowFuncDomains(false);
+        hideChildren('components');
         setShowRfPreserved(true);
       } else if (newValue === 'No' || newValue === 'Unknown') {
-        setShowRfPreserved(false);
-        setShowFuncDomains(false);
-        setShowFuncDomains(true);
+        hideChildren('rfPreserved');
+        setShowComponents(true);
         setShowCausEvent(true);
       }
     }
@@ -63,18 +90,19 @@ const FormParent = () => {
   /**
    * Handle result of "read frame preserved" decision. Make child elements visible or invisible.
    * @param {string} oldValue value of previous selection
-   * @param {*} newValue newly selected value
+   * @param {string} newValue newly selected value
    * @returns nothing, but updates state of child elements accordingly
    */
   const handleSetRfPreserved = (oldValue, newValue) => {
     if (oldValue !== newValue) {
       setRfPreserved(newValue);
       if (newValue === 'Yes') {
-        setShowFuncDomains(true);
+        hideChildren('components');
+        setShowRetainedDomains(true);
         setShowComponents(true);
         setShowCausEvent(true);
       } else if (newValue === 'No') {
-        setShowFuncDomains(false);
+        hideChildren('retainedDomains');
         setShowComponents(true);
         setShowCausEvent(true);
       }
@@ -84,7 +112,7 @@ const FormParent = () => {
   /**
    * Handle result of "causative event known" decision. Make child elements visible or invisible.
    * @param {string} oldValue value of previous selection
-   * @param {*} newValue newly selected value
+   * @param {string} newValue newly selected value
    * @returns nothing, but updates state of child elements accordingly
    */
   const handleSetCausEvent = (oldValue, newValue) => {
@@ -94,7 +122,7 @@ const FormParent = () => {
         setShowCausEventInfo(true);
         setShowSubmit(true);
       } else if (newValue === 'No') {
-        setShowCausEventInfo(false);
+        hideChildren('causEventInfo');
         setShowSubmit(true);
       } else {
         setShowCausEventInfo(false);
@@ -267,7 +295,7 @@ const FormParent = () => {
           />
         )
         : null}
-      {showFuncDomains
+      {showRetainedDomains
         ? (
           <FunctionalDomainsForm
             setRetainedDomains={setRetainedDomains}
