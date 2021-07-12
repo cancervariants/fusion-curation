@@ -31,7 +31,7 @@ const FormParent = () => {
   const [rfPreserved, setRfPreserved] = useState('');
   const [retainedDomains, setRetainedDomains] = useState(''); // TODO switch to array
   const [retainedDomainsGenes, setRetainedDomainGenes] = useState(''); // TODO switch to array
-  const [components, setComponents] = useState([]);
+  const [components, setComponents] = useState([]); // {id, componentType, componentValues: {}}
   const [causEvent, setCausEvent] = useState('');
   const [responseJSON, setResponseJSON] = useState('');
   const [responseHuman, setResponseReadable] = useState('');
@@ -116,12 +116,12 @@ const FormParent = () => {
    * @return {string} fusion object structured as human-readable string
    */
   const outputToReadable = (outputJSON) => {
-    const components = outputJSON.components;
-    if (components.length > 2) {
-      const beginning = components[0];
+    const jsonComponents = outputJSON.components;
+    if (jsonComponents.length > 2) {
+      const beginning = jsonComponents[0];
       const beginningString = `${beginning.transcript}(${beginning.gene.symbol}):exon${beginning.exon_end}`;
 
-      const end = components[components.length - 1];
+      const end = jsonComponents[jsonComponents.length - 1];
       const endString = `${end.transcript}(${end.gene.symbol}):exon${end.exon_start}`;
 
       return `${beginningString}::${endString}`;
@@ -131,7 +131,7 @@ const FormParent = () => {
 
   const getGeneID = (symbol) => {
     // TODO: XHR to flask server, retrieve from dynamodb
-    return 'hgnc:ZZZZ';
+    return `hgnc:<compute for ${symbol}`;
   };
 
   const transcriptRegionToJSON = (component, index) => {
@@ -177,7 +177,7 @@ const FormParent = () => {
     return out;
   };
 
-  const genomicRegionToJSON = (component, index) => {
+  const genomicRegionToJSON = (component) => {
     const out = {};
     const values = component.componentValues;
     if ('chr' in values) out.chr = values.chr;
@@ -223,7 +223,7 @@ const FormParent = () => {
         return transcriptRegionToJSON(comp, index);
       }
       if (comp.componentType === 'genomic_region') {
-        return genomicRegionToJSON(comp, index);
+        return genomicRegionToJSON(comp);
       }
       if (comp.componentType === 'linker_sequence') {
         return linkerSequenceToJSON(comp);

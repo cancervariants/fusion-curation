@@ -20,9 +20,35 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SpecificComponentCard = ({ componentType, componentValues, handleCardChange }) => {
-  // TODO (?) use a render() subcommand instead of if/thens for each card type
-
   const classes = useStyles();
+
+  const renderCard = () => {
+    if (componentType === 'transcript_region') {
+      return (
+        <TranscriptRegionCard
+          componentValues={componentValues}
+          handleCardChange={handleCardChange}
+        />
+      );
+    }
+    if (componentType === 'genomic_region') {
+      return (
+        <GenomicRegionCard
+          componentValues={componentValues}
+          handleCardChange={handleCardChange}
+        />
+      );
+    }
+    if (componentType === 'linker_sequence') {
+      return (
+        <LinkerSequenceCard
+          componentValues={componentValues}
+          handleCardChange={handleCardChange}
+        />
+      );
+    }
+    return null;
+  };
 
   return (
     <Box p={1}>
@@ -41,30 +67,7 @@ const SpecificComponentCard = ({ componentType, componentValues, handleCardChang
             </Select>
           </FormControl>
           <Delete />
-          {componentType === 'transcript_region'
-            ? (
-              <TranscriptRegionCard
-                componentValues={componentValues}
-                handleCardChange={handleCardChange}
-              />
-            )
-            : null}
-          {componentType === 'genomic_region'
-            ? (
-              <GenomicRegionCard
-                componentValues={componentValues}
-                handleCardChange={handleCardChange}
-              />
-            )
-            : null}
-          {componentType === 'linker_sequence'
-            ? (
-              <LinkerSequenceCard
-                componentValues={componentValues}
-                handleCardChange={handleCardChange}
-              />
-            )
-            : null}
+          {renderCard()}
         </Box>
       </Paper>
     </Box>
