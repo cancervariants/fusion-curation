@@ -5,7 +5,7 @@ import ComponentsCard from './ComponentsCard';
 import AddComponentButton from './AddComponentButton';
 
 const style = {
-  width: 800, // TODO much more
+  // width: 800, // TODO much more
 };
 
 const ComponentsForm = ({ components, setComponents }) => {
@@ -27,6 +27,13 @@ const ComponentsForm = ({ components, setComponents }) => {
     setComponents(componentsCopy);
   };
 
+  const deleteCard = (cardID) => {
+    const index = components.map((component) => component.id).indexOf(cardID);
+    const copy = [...components];
+    copy.splice(index, 1);
+    setComponents(copy);
+  };
+
   const renderCard = (card, index) => (
     <ComponentsCard
       key={card.id}
@@ -36,12 +43,13 @@ const ComponentsForm = ({ components, setComponents }) => {
       componentType={card.componentType}
       componentValues={card.componentValues}
       handleCardChange={(field, newValue) => handleComponentChange(card.id, field, newValue)}
+      deleteCard={() => deleteCard(card.id)}
     />
   );
 
   const handleAddClick = (componentType) => {
     const newCard = {
-      id: components.length,
+      id: components.length === 0 ? 1 : Math.max(...components.map((c) => c.id)) + 1,
       componentType,
       componentValues: {},
     };

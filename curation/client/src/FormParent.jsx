@@ -12,7 +12,6 @@ import ComponentsForm from './ComponentsForm';
 const useStyles = makeStyles({
   root: {
     width: '100%',
-    maxWidth: 500,
   },
 });
 
@@ -31,14 +30,16 @@ const FormParent = () => {
   const [rfPreserved, setRfPreserved] = useState('');
   const [retainedDomains, setRetainedDomains] = useState(''); // TODO switch to array
   const [retainedDomainsGenes, setRetainedDomainGenes] = useState(''); // TODO switch to array
-  const [components, setComponents] = useState([]); // {id, componentType, componentValues: {}}. TODO need default value?
+  // TODO need default value?
+  const [components, setComponents] = useState([]); // {id, componentType, componentValues: {}}.
   const [causEvent, setCausEvent] = useState('');
   const [responseJSON, setResponseJSON] = useState('');
   const [responseHuman, setResponseReadable] = useState('');
 
-
   /**
-   * 
+   * Recursively hide children
+   * @param {string} field name of field (should be the same as the state variable name)
+   * @returns null but hides field and children
    */
   const hideChildren = (field) => {
     const dispatch = {
@@ -61,7 +62,7 @@ const FormParent = () => {
       setShowResponse,
     ];
 
-    precedence.slice(dispatch[field]).forEach(f => f(false));
+    precedence.slice(dispatch[field]).forEach((f) => f(false));
   };
 
   // styles
@@ -157,10 +158,10 @@ const FormParent = () => {
     return '';
   };
 
-  const getGeneID = (symbol) => {
+  const getGeneID = (symbol) => (
     // TODO: XHR to flask server, retrieve from dynamodb
-    return `hgnc:<compute for ${symbol}`;
-  };
+    `hgnc:<compute for ${symbol}`
+  );
 
   const transcriptRegionToJSON = (component, index) => {
     const out = {};

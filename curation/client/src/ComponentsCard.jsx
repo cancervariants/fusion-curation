@@ -12,7 +12,7 @@ const style = {
 };
 
 const ComponentsCard = ({
-  id, index, moveCard, componentType, componentValues, handleCardChange,
+  id, index, moveCard, componentType, componentValues, handleCardChange, deleteCard,
 }) => {
   const ref = useRef(null);
 
@@ -75,14 +75,13 @@ const ComponentsCard = ({
 
   drag(drop(ref));
 
-  // const handleCardChange = (field, newValue) => handleComponentChange(id, field, newValue);
-
   return (
     <div ref={ref} data-handler-id={handlerId} style={{ ...style, opacity }}>
       <SpecificComponentCard
         componentType={componentType}
         componentValues={componentValues}
         handleCardChange={handleCardChange}
+        deleteCard={deleteCard}
       />
     </div>
   );

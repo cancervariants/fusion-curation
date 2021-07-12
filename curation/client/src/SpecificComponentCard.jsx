@@ -1,9 +1,9 @@
 import { React } from 'react';
 import {
-  Box, Paper, FormControl, Select, MenuItem,
+  Box, Paper, FormControl, Select, MenuItem, IconButton,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Delete from '@material-ui/icons/Delete';
+import CloseIcon from '@material-ui/icons/Close';
 import TranscriptRegionCard from './TranscriptRegionCard';
 import GenomicRegionCard from './GenomicRegionCard';
 import LinkerSequenceCard from './LinkerSequenceCard';
@@ -19,7 +19,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SpecificComponentCard = ({ componentType, componentValues, handleCardChange }) => {
+const SpecificComponentCard = ({
+  componentType, componentValues, handleCardChange, deleteCard,
+}) => {
   const classes = useStyles();
 
   const renderCard = () => {
@@ -66,7 +68,9 @@ const SpecificComponentCard = ({ componentType, componentValues, handleCardChang
               <MenuItem value="linker_sequence">Linker Sequence</MenuItem>
             </Select>
           </FormControl>
-          <Delete />
+          <IconButton area-label="delete" onClick={deleteCard}>
+            <CloseIcon />
+          </IconButton>
           {renderCard()}
         </Box>
       </Paper>
