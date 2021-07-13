@@ -1,0 +1,53 @@
+{
+  "r_frame_preserved": true,
+  "retained_domains": [
+    {
+      "domain_name": "tyrosine kinase catalytic domain",
+      "domain_id": "<computed?>",
+      "gene": {
+        "symbol": "NTRK1",
+        "id": "hgnc:ZZZZ"
+      }
+    }
+  ],
+  "components": [
+    {
+      "transcript": "NM_152263.3",
+      "gene": {
+        "symbol": "TPM3",
+        "id": "hgnc:ZZZZ"
+      },
+      "exon_start_genomic": {
+        "chr": "<computed>",
+        "pos": "<computed>"
+      },
+      "exon_end": "8",
+      "exon_end_genomic": {
+        "chr": "<computed>",
+        "pos": "<computed>"
+      }
+    },
+    {
+      "linker_sequence": "ATTTGCCA"
+    },
+    {
+      "transcript": "NM_002529.3",
+      "gene": {
+        "symbol": "NTRK1",
+        "id": "hgnc:ZZZZ"
+      },
+      "exon_end_genomic": {
+        "chr": "<computed>",
+        "pos": "<computed>"
+      },
+      "exon_start": "10",
+      "exon_start_genomic": {
+        "chr": "<computed>",
+        "pos": "<computed>"
+      }
+    }
+  ],
+  "causative_event": {
+    "event_type": "No"
+  }
+}

@@ -78,7 +78,7 @@ const SpecificComponentCard = ({
               <MenuItem value="gene">Gene</MenuItem>
             </Select>
           </FormControl>
-          <IconButton area-label="delete" onClick={deleteCard}>
+          <IconButton aria-label="delete" onClick={deleteCard}>
             <CloseIcon />
           </IconButton>
           {renderCard()}

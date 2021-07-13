@@ -4,7 +4,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { makeStyles } from '@material-ui/core/styles';
 import FormRadio from './FormRadio';
 import CausEventForm from './CausEventForm';
-import FunctionalDomainsForm from './FunctionalDomainsForm';
+import DomainsForm from './DomainsForm';
 import SubmitButton from './SubmitButton';
 import ResponseField from './ResponseField';
 import ComponentsForm from './ComponentsForm';
@@ -18,7 +18,7 @@ const useStyles = makeStyles({
 const FormParent = () => {
   // visibility handlers
   const [showRfPreserved, setShowRfPreserved] = useState(false);
-  const [showRetainedDomains, setShowRetainedDomains] = useState(false);
+  const [showDomains, setShowDomains] = useState(false);
   const [showComponents, setShowComponents] = useState(false);
   const [showCausEvent, setShowCausEvent] = useState(false);
   const [showCausEventInfo, setShowCausEventInfo] = useState(false);
@@ -28,10 +28,9 @@ const FormParent = () => {
   // form value handlers
   const [proteinCodingValue, setProteinCodingValue] = useState('');
   const [rfPreserved, setRfPreserved] = useState('');
-  const [retainedDomains, setRetainedDomains] = useState(''); // TODO switch to array
-  const [retainedDomainsGenes, setRetainedDomainGenes] = useState(''); // TODO switch to array
-  // TODO need default value?
-  const [components, setComponents] = useState([]); // {id, componentType, componentValues: {}}.
+  const [domains, setDomains] = useState([]);
+  // TODO need default value to make controlled/uncontrolled error go away?
+  const [components, setComponents] = useState([]); // {id, componentType, componentValues: {}}
   const [causEvent, setCausEvent] = useState('');
   const [responseJSON, setResponseJSON] = useState('{}');
   const [responseHuman, setResponseReadable] = useState('');
@@ -44,7 +43,7 @@ const FormParent = () => {
   const hideChildren = (field) => {
     const dispatch = {
       rfPreserved: 0,
-      retainedDomains: 1,
+      domains: 1,
       components: 2,
       causEvent: 3,
       causEventInfo: 4,
@@ -54,7 +53,7 @@ const FormParent = () => {
 
     const precedence = [
       setShowRfPreserved,
-      setShowRetainedDomains,
+      setShowDomains,
       setShowComponents,
       setShowCausEvent,
       setShowCausEventInfo,
@@ -99,7 +98,7 @@ const FormParent = () => {
       setRfPreserved(newValue);
       if (newValue === 'Yes') {
         hideChildren('components');
-        setShowRetainedDomains(true);
+        setShowDomains(true);
         setShowComponents(true);
         setShowCausEvent(true);
       } else if (newValue === 'No') {
@@ -194,9 +193,8 @@ const FormParent = () => {
     if ('gene_symbol' in values) {
       out.gene = {
         symbol: values.gene_symbol,
+        id: '<computed>',
       };
-      // const conceptID = getGeneID(values.gene_symbol, 'transcript_region');
-      // out.gene.concept_id = conceptID;
     }
     if (values.exon_end !== '') {
       if (index === 0) {
@@ -263,18 +261,22 @@ const FormParent = () => {
     if (proteinCodingValue === 'Yes') {
       if (rfPreserved === 'Yes') {
         jsonOutput.r_frame_preserved = true;
-        if (retainedDomains !== '') { // TODO refactor to allow multiples
-          const domain = {
-            domain_name: retainedDomains,
-            domain_id: '<computed?>', // TODO how to compute? prompt directly?
-          };
-          if (retainedDomainsGenes !== '') {
-            domain.gene = {
-              symbol: retainedDomainsGenes,
-              id: getGeneID(retainedDomainsGenes),
+        if (domains.length > 0) {
+          jsonOutput.domains = domains.map((domain) => {
+            const domainObject = {
+              status: domain.status,
+              name: domain.name,
+              id: '<computed>',
+              coordinates: '{<computed>}',
             };
-          }
-          jsonOutput.retained_domains = [domain];
+            if (domain.gene) {
+              domainObject.gene = {
+                symbol: domain.gene,
+                id: '<computed>',
+              };
+            }
+            return domainObject;
+          });
         }
       } else if (rfPreserved === 'No') {
         jsonOutput.r_frame_preserved = false;
@@ -329,13 +331,8 @@ const FormParent = () => {
           />
         )
         : null}
-      {showRetainedDomains
-        ? (
-          <FunctionalDomainsForm
-            setRetainedDomains={setRetainedDomains}
-            setRetainedDomainGenes={setRetainedDomainGenes}
-          />
-        )
+      {showDomains
+        ? <DomainsForm domains={domains} setDomains={setDomains} />
         : null}
       {showComponents
         ? (

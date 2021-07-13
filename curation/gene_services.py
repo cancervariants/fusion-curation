@@ -7,6 +7,7 @@ gene_query_handler = QueryHandler()
 
 def get_gene_id(symbol: str) -> str:
     """Get ID given gene symbol.
+    TODO: handle multiple records/IDs for the same input string
 
     :param str symbol: user-entered gene symbol
     :returns: concept ID as a string
