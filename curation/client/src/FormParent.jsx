@@ -33,7 +33,7 @@ const FormParent = () => {
   // TODO need default value?
   const [components, setComponents] = useState([]); // {id, componentType, componentValues: {}}.
   const [causEvent, setCausEvent] = useState('');
-  const [responseJSON, setResponseJSON] = useState('');
+  const [responseJSON, setResponseJSON] = useState('{}');
   const [responseHuman, setResponseReadable] = useState('');
 
   /**
@@ -158,20 +158,45 @@ const FormParent = () => {
     return '';
   };
 
-  const getGeneID = (symbol) => (
-    // TODO: XHR to flask server, retrieve from dynamodb
-    `hgnc:<compute for ${symbol}`
-  );
+  /**
+   * Update state for JSON and human-readable response fields
+   * @param {Object} jsonOutput structured output data
+   */
+  const updateResponses = (jsonOutput) => {
+    setResponseJSON(JSON.stringify(jsonOutput, null, 2));
+    const humanReadable = outputToReadable(jsonOutput);
+    if (humanReadable) setResponseReadable(humanReadable);
+    setShowResponse(true);
+  };
+
+  /**
+   * Get ID for gene name
+   * TODO: not working b/c returns asynchronously, after state has already
+   * been updated
+   * @param {string} symbol gene symbol to retrieve ID for
+   * @return {Promise} HGNC concept ID, or empty string if lookup fails
+   */
+  const getGeneID = (symbol) => {
+    const geneID = fetch(`/gene/${symbol}`).then((response) => response.json()).then((geneResponse) => {
+      if (geneResponse.warnings) {
+        return null;
+      }
+      const conceptID = geneResponse.concept_id;
+      return conceptID;
+    });
+    return geneID;
+  };
 
   const transcriptRegionToJSON = (component, index) => {
-    const out = {};
+    const out = { type: 'transcript_region' };
     const values = component.componentValues;
     if ('transcript' in values) out.transcript = values.transcript;
     if ('gene_symbol' in values) {
       out.gene = {
         symbol: values.gene_symbol,
-        id: getGeneID(values.gene_symbol),
       };
+      // const conceptID = getGeneID(values.gene_symbol, 'transcript_region');
+      // out.gene.concept_id = conceptID;
     }
     if (values.exon_end !== '') {
       if (index === 0) {
@@ -207,7 +232,7 @@ const FormParent = () => {
   };
 
   const genomicRegionToJSON = (component) => {
-    const out = {};
+    const out = { type: 'genomic_region' };
     const values = component.componentValues;
     if ('chr' in values) out.chr = values.chr;
     if ('strand' in values) out.strand = values.strand;
@@ -219,7 +244,16 @@ const FormParent = () => {
 
   const linkerSequenceToJSON = (comp) => (
     {
-      linker_sequence: comp.componentValues.sequence,
+      type: 'linker_sequence',
+      sequence: comp.componentValues.sequence,
+    }
+  );
+
+  const geneToJSON = (comp) => (
+    {
+      type: 'gene',
+      symbol: comp.gene,
+      id: '<computed>', // TODO compute w/ getGeneID
     }
   );
 
@@ -257,6 +291,9 @@ const FormParent = () => {
       if (comp.componentType === 'linker_sequence') {
         return linkerSequenceToJSON(comp);
       }
+      if (comp.componentType === 'gene') {
+        return geneToJSON(comp);
+      }
       return null;
     });
 
@@ -265,11 +302,7 @@ const FormParent = () => {
         event_type: causEvent,
       };
     }
-
-    setResponseJSON(JSON.stringify(jsonOutput, null, 2));
-    const humanReadable = outputToReadable(jsonOutput);
-    if (humanReadable) setResponseReadable(humanReadable);
-    setShowResponse(true);
+    updateResponses(jsonOutput);
   };
 
   return (

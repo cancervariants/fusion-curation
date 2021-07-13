@@ -7,6 +7,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import TranscriptRegionCard from './TranscriptRegionCard';
 import GenomicRegionCard from './GenomicRegionCard';
 import LinkerSequenceCard from './LinkerSequenceCard';
+import GeneCard from './GeneCard';
 
 // todo move up one and send as props?
 const useStyles = makeStyles((theme) => ({
@@ -49,6 +50,14 @@ const SpecificComponentCard = ({
         />
       );
     }
+    if (componentType === 'gene') {
+      return (
+        <GeneCard
+          componentValues={componentValues}
+          handleCardChange={handleCardChange}
+        />
+      );
+    }
     return null;
   };
 
@@ -66,6 +75,7 @@ const SpecificComponentCard = ({
               <MenuItem value="transcript_region">Transcript Region</MenuItem>
               <MenuItem value="genomic_region">Genomic Region</MenuItem>
               <MenuItem value="linker_sequence">Linker Sequence</MenuItem>
+              <MenuItem value="gene">Gene</MenuItem>
             </Select>
           </FormControl>
           <IconButton area-label="delete" onClick={deleteCard}>

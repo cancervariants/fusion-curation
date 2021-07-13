@@ -23,7 +23,11 @@ const ComponentsForm = ({ components, setComponents }) => {
     const componentsCopy = components.slice();
     const cardIndex = componentsCopy.findIndex((c) => c.id === cardID);
     // TODO handle # results != 0
-    componentsCopy[cardIndex].componentValues[field] = newValue;
+    if (field === 'componentType') {
+      componentsCopy[cardIndex].componentType = newValue;
+    } else {
+      componentsCopy[cardIndex].componentValues[field] = newValue;
+    }
     setComponents(componentsCopy);
   };
 
