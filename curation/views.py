@@ -2,6 +2,10 @@
 from curation import app
 from flask import render_template
 from curation.gene_services import get_gene_id
+import logging
+
+logger = logging.getLogger('fusion_backend')
+logger.setLevel(logging.DEBUG)
 
 
 @app.route('/', methods=['GET'])
@@ -21,6 +25,8 @@ def normalize_gene(symbol):
         concept_id = get_gene_id(symbol)
         response['concept_id'] = concept_id
     except LookupError:
-        # TODO log
+        logger.warning(f'Lookup of gene symbol {symbol} failed.')
         response['warnings'] = 'gene normalization unsuccessful'
+    except Exception as e:
+        logger.warning(f'Lookup of gene symbol {symbol} failed with exception {e}.')
     return response
