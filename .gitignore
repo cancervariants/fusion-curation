@@ -178,3 +178,4 @@ yarn-debug.log*
 yarn-error.log*
 frontend/public/
 frontend/node_modules
+node_modules/

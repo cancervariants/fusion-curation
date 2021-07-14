@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "fusion-curation",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -18,9 +18,9 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "cd frontend && react-scripts start",
+    "build": "cd frontend && react-scripts build",
+    "test": "cd frontend && react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
