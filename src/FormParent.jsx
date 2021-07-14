@@ -36,6 +36,8 @@ const FormParent = () => {
   const [responseJSON, setResponseJSON] = useState('{}');
   const [responseHuman, setResponseReadable] = useState('');
 
+  const classes = useStyles();
+
   /**
    * Recursively hide children
    * @param {string} field name of field (should be the same as the state variable name)
@@ -44,10 +46,10 @@ const FormParent = () => {
   const hideChildren = (field) => {
     const dispatch = {
       rfPreserved: 0,
-      domains: 1,
+      retainedDomains: 1,
       components: 2,
-      causEvent: 3,
-      causEventInfo: 4,
+      causativeEventKnown: 3,
+      causativeEvent: 4,
       submit: 4,
       response: 6,
     };
@@ -64,9 +66,6 @@ const FormParent = () => {
 
     precedence.slice(dispatch[field]).forEach((f) => f(false));
   };
-
-  // styles
-  const classes = useStyles();
 
   /**
    * Handle result of "protein coding" decision. Make child elements visible or invisible.
@@ -126,10 +125,10 @@ const FormParent = () => {
         setShowCausEventInfo(true);
         setShowSubmit(true);
       } else if (newValue === 'No') {
-        hideChildren('causEventInfo');
+        hideChildren('causativeEvent');
         setShowSubmit(true);
       } else {
-        hideChildren('causEventInfo');
+        hideChildren('causativeEvent');
       }
     }
   };
@@ -189,6 +188,13 @@ const FormParent = () => {
     return geneID;
   };
 
+  /**
+   * Create transcript_region object given user input
+   * @param {Object} component object corresponding to given component, as stored in state and
+   *  filled out by user
+   * @param {*} index location in state array - used to infer some coordinate defaults
+   * @returns complete transcript_region object
+   */
   const transcriptRegionToJSON = (component, index) => {
     const out = { type: 'transcript_region' };
     const values = component.componentValues;
@@ -232,6 +238,12 @@ const FormParent = () => {
     return out;
   };
 
+  /**
+   * Create genomic_region object given user input
+   * @param {Object} component object corresponding to given component, as stored in state and
+   *  filled out by user
+   * @returns complete genomic_region object
+   */
   const genomicRegionToJSON = (component) => {
     const out = { type: 'genomic_region' };
     const values = component.componentValues;
@@ -243,6 +255,12 @@ const FormParent = () => {
     return out;
   };
 
+  /**
+   * Create linker_sequence object given user input
+   * @param {Object} component object corresponding to given component, as stored in state and
+   *  filled out by user
+   * @returns complete linker_sequence object
+   */
   const linkerSequenceToJSON = (comp) => (
     {
       type: 'linker_sequence',
@@ -250,6 +268,12 @@ const FormParent = () => {
     }
   );
 
+  /**
+   * Create gene object given user input
+   * @param {Object} component object corresponding to given component, as stored in state and
+   *  filled out by user
+   * @returns complete gene object
+   */
   const geneToJSON = (comp) => (
     {
       type: 'gene',
@@ -258,6 +282,9 @@ const FormParent = () => {
     }
   );
 
+  /**
+   * Call output generation functions upon request by the user
+   */
   const handleSubmit = () => {
     const jsonOutput = {};
 
