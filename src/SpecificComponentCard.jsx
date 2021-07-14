@@ -1,6 +1,6 @@
 import { React } from 'react';
 import {
-  Box, Paper, FormControl, Select, MenuItem, IconButton,
+  Box, Paper, FormControl, Select, MenuItem, IconButton, Tooltip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
@@ -78,9 +78,11 @@ const SpecificComponentCard = ({
               <MenuItem value="gene">Gene</MenuItem>
             </Select>
           </FormControl>
-          <IconButton aria-label="delete" onClick={deleteCard}>
-            <CloseIcon />
-          </IconButton>
+          <Tooltip title="Delete">
+            <IconButton aria-label="delete" onClick={deleteCard}>
+              <CloseIcon />
+            </IconButton>
+          </Tooltip>
           {renderCard()}
         </Box>
       </Paper>

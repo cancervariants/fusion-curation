@@ -1,6 +1,6 @@
 import { React } from 'react';
 import {
-  Box, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, TextField,
+  Box, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, TextField, Tooltip,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from '@material-ui/core/styles';
@@ -42,9 +42,11 @@ const Domain = ({ domainValues, handleChange, handleDelete }) => {
           value={domainValues.gene}
           onChange={(event) => handleChange('gene', event.target.value)}
         />
-        <IconButton aria-label="delete" onClick={handleDelete}>
-          <CloseIcon />
-        </IconButton>
+        <Tooltip title="Delete">
+          <IconButton aria-label="delete" onClick={handleDelete}>
+            <CloseIcon />
+          </IconButton>
+        </Tooltip>
       </Box>
     </Paper>
   );
