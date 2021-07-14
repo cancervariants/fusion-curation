@@ -8,7 +8,7 @@ repos:
       args: ['--maxkb=1500']
     - id: detect-private-key
 -   repo: https://github.com/pre-commit/mirrors-eslint
-    rev: ''
+    rev: 'v7.30.0'
     hooks:
     -   id: eslint
         files: \.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
