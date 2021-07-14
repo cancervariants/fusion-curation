@@ -3,7 +3,7 @@ import {
   Box, FormLabel, FormControl, FormControlLabel, RadioGroup, Radio,
 } from '@material-ui/core';
 
-const CausEventForm = () => (
+const CausEventForm = ({ state, handler }) => (
   <>
     <Box p={1}>
       <form noValidate autoComplete="off">
@@ -11,7 +11,12 @@ const CausEventForm = () => (
           <FormLabel component="legend">
             Record event type:
           </FormLabel>
-          <RadioGroup aria-label="event-type" name="event-type">
+          <RadioGroup
+            aria-label="event-type"
+            name="event-type"
+            value={state}
+            onChange={(event) => handler(event.target.value)}
+          >
             <FormControlLabel value="rearrangement" control={<Radio />} label="Rearrangement" />
             <FormControlLabel value="read-through" control={<Radio />} label="Read-through" />
             <FormControlLabel value="trans-splicing" control={<Radio />} label="Trans-splicing" />

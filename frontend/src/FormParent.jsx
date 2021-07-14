@@ -31,7 +31,8 @@ const FormParent = () => {
   const [domains, setDomains] = useState([]);
   // TODO need default value to make controlled/uncontrolled error go away?
   const [components, setComponents] = useState([]); // {id, componentType, componentValues: {}}
-  const [causEvent, setCausEvent] = useState('');
+  const [causativeEventKnown, setCausativeEventKnown] = useState('');
+  const [causativeEvent, setCausativeEvent] = useState('');
   const [responseJSON, setResponseJSON] = useState('{}');
   const [responseHuman, setResponseReadable] = useState('');
 
@@ -105,6 +106,9 @@ const FormParent = () => {
         hideChildren('retainedDomains');
         setShowComponents(true);
         setShowCausEvent(true);
+      } else {
+        hideChildren('retainedDomains');
+        hideChildren('components');
       }
     }
   };
@@ -117,7 +121,7 @@ const FormParent = () => {
    */
   const handleSetCausEvent = (oldValue, newValue) => {
     if (oldValue !== newValue) {
-      setCausEvent(newValue);
+      setCausativeEventKnown(newValue);
       if (newValue === 'Yes') {
         setShowCausEventInfo(true);
         setShowSubmit(true);
@@ -125,8 +129,7 @@ const FormParent = () => {
         hideChildren('causEventInfo');
         setShowSubmit(true);
       } else {
-        setShowCausEventInfo(false);
-        setShowSubmit(false);
+        hideChildren('causEventInfo');
       }
     }
   };
@@ -299,9 +302,9 @@ const FormParent = () => {
       return null;
     });
 
-    if (causEvent) {
+    if (causativeEventKnown) {
       jsonOutput.causative_event = {
-        event_type: causEvent,
+        event_type: causativeEvent,
       };
     }
     updateResponses(jsonOutput);
@@ -348,13 +351,20 @@ const FormParent = () => {
             prompt="Is causative event known?"
             state={{
               options: ['Yes', 'No'],
-              state: causEvent,
+              state: causativeEventKnown,
               stateFunction: handleSetCausEvent, // TODO
             }}
           />
         )
         : null}
-      {showCausEventInfo ? <CausEventForm /> : null}
+      {showCausEventInfo
+        ? (
+          <CausEventForm
+            state={causativeEvent}
+            handler={setCausativeEvent}
+          />
+        )
+        : null}
       {showSubmit ? <SubmitButton handler={handleSubmit} /> : null}
       {showResponse
         ? <ResponseField jsonValue={responseJSON} readableValue={responseHuman} />
