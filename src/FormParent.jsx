@@ -172,8 +172,7 @@ const FormParent = () => {
 
   /**
    * Get ID for gene name
-   * TODO: not working b/c returns asynchronously, after state has already
-   * been updated
+   * TODO: not working b/c returns asynchronously, after state has already been updated
    * @param {string} symbol gene symbol to retrieve ID for
    * @return {Promise} HGNC concept ID, or empty string if lookup fails
    */
