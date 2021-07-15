@@ -20,6 +20,14 @@ pipenv sync
 flask run
 ```
 
+If you encounter error messages about Flask environment variables, you may need to do the following:
+
+```commandline
+export FLASK_ENV=development
+export FLASK_APP=curation
+flask run
+```
+
 The backend requires local DynamoDB service with tables initialized by the [Gene Normalization service](https://github.com/cancervariants/gene-normalization), listening on port 8000. See the Gene Normalizer documentation for initialization information. 
 
 In a separate terminal, install frontend dependencies and start the React development server:
