@@ -35,7 +35,7 @@ const ResponseField = ({
    * Create transcript_region object given user input
    * @param {Object} component object corresponding to given component, as stored in state and
    *  filled out by user
-   * @param {*} index location in state array - used to infer some coordinate defaults
+   * @param {number} index location in state array - used to infer some coordinate defaults
    * @returns complete transcript_region object
    */
   const transcriptRegionToJSON = (component, index) => {
@@ -126,6 +126,11 @@ const ResponseField = ({
     }
   );
 
+  /**
+   * Generate response objects.
+   * Should trigger upon changes in any user-supplied value (ie, not any AJAX-generated/computed
+   *  fields)
+   */
   useEffect(() => {
     // set JSON
     const jsonOutput = {};
@@ -193,6 +198,7 @@ const ResponseField = ({
     new Promise((resolve) => setTimeout(resolve, ms))
   );
 
+  // Copy the JSON field to clipboard and notify user
   async function handleObjectFieldClick() {
     if (responseJSON && responseJSON !== '') {
       navigator.clipboard.writeText(responseJSON);
@@ -202,6 +208,7 @@ const ResponseField = ({
     }
   }
 
+  // Copy readableField to clipboard and notify user
   async function handleReadableFieldClick() {
     if (responseHuman && responseHuman !== '') {
       navigator.clipboard.writeText(responseHuman);

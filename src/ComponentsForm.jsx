@@ -4,9 +4,7 @@ import update from 'immutability-helper';
 import ComponentsCard from './ComponentsCard';
 import AddComponentButton from './AddComponentButton';
 
-const style = {
-  // width: 800, // TODO much more
-};
+const style = {};
 
 const ComponentsForm = ({ components, setComponents }) => {
   const moveCard = useCallback((dragIndex, hoverIndex) => {

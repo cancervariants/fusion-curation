@@ -4,10 +4,6 @@ import { ItemTypes } from './ItemTypes';
 import SpecificComponentCard from './SpecificComponentCard';
 
 const style = {
-  // border: '1px dashed gray',
-  // padding: '0.5rem 1rem',
-  // marginBottom: '.5rem',
-  // backgroundColor: 'white',
   cursor: 'move',
 };
 

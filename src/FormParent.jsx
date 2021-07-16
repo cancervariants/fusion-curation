@@ -32,7 +32,7 @@ const FormParent = () => {
   const [rfPreserved, setRfPreserved] = useState('');
   const [domains, setDomains] = useState([]);
   // TODO need default value to make controlled/uncontrolled error go away?
-  const [components, setComponents] = useState([]); // {id, componentType, componentValues: {}}
+  const [components, setComponents] = useState([]);
   const [causativeEventKnown, setCausativeEventKnown] = useState('');
   const [causativeEvent, setCausativeEvent] = useState('');
   const [responseJSON, setResponseJSON] = useState('{}');
@@ -42,10 +42,8 @@ const FormParent = () => {
   const [geneIndex, setGeneIndex] = useState({});
 
   /**
-   * Get ID for gene name
-   * TODO: not working b/c returns asynchronously, after state has already been updated
+   * Get ID for gene name. Updates geneIndex upon retrieval.
    * @param {string} symbol gene symbol to retrieve ID for
-   * @return {Promise} HGNC concept ID, or empty string if lookup fails
    */
   const getGeneID = (symbol) => {
     // eslint-disable-next-line consistent-return
@@ -60,10 +58,13 @@ const FormParent = () => {
     });
   };
 
-  // perform ajax calls + update ID/coordinate indices
+  /**
+   * Call asynchronous functions upon changes to state variables.
+   */
   useEffect(() => {
     const geneIndexCopy = geneIndex;
     components.forEach((component) => {
+      // get gene IDs
       if ('gene_symbol' in component.componentValues) {
         const geneSymbol = component.componentValues.gene_symbol;
         if (!(geneSymbol in geneIndexCopy)) {
@@ -80,7 +81,6 @@ const FormParent = () => {
   /**
    * Recursively hide children
    * @param {string} field name of field (should be the same as the state variable name)
-   * @returns null but hides field and children
    */
   const hideChildren = (field) => {
     const dispatch = {
