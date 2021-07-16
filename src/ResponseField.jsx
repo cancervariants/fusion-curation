@@ -21,9 +21,13 @@ const ResponseField = ({
     const jsonComponents = outputJSON.components;
     if (jsonComponents.length > 2) {
       const beginning = jsonComponents[0];
-      const beginningString = `${beginning.transcript}(${beginning.gene.symbol}):exon${beginning.exon_end}`;
-
       const end = jsonComponents[jsonComponents.length - 1];
+      if (
+        ![beginning, end].map((c) => (
+          !c.transcript || !c.gene || !c.gene.symbol || !c.exon_end
+        )).every()
+      ) return '';
+      const beginningString = `${beginning.transcript}(${beginning.gene.symbol}):exon${beginning.exon_end}`;
       const endString = `${end.transcript}(${end.gene.symbol}):exon${end.exon_start}`;
 
       return `${beginningString}::${endString}`;
@@ -39,7 +43,7 @@ const ResponseField = ({
    * @returns complete transcript_region object
    */
   const transcriptRegionToJSON = (component, index) => {
-    const out = { type: 'transcript_region' };
+    const out = {};
     const values = component.componentValues;
     if ('transcript' in values) out.transcript = values.transcript;
     if ('gene_symbol' in values) {
@@ -89,7 +93,7 @@ const ResponseField = ({
    * @returns complete genomic_region object
    */
   const genomicRegionToJSON = (component) => {
-    const out = { type: 'genomic_region' };
+    const out = {};
     const values = component.componentValues;
     if ('chr' in values) out.chr = values.chr;
     if ('strand' in values) out.strand = values.strand;
@@ -107,7 +111,6 @@ const ResponseField = ({
    */
   const linkerSequenceToJSON = (comp) => (
     {
-      type: 'linker_sequence',
       sequence: comp.componentValues.sequence,
     }
   );
@@ -120,9 +123,8 @@ const ResponseField = ({
    */
   const geneToJSON = (comp) => (
     {
-      type: 'gene',
-      symbol: comp.gene,
-      id: '<computed>', // TODO compute w/ getGeneID
+      symbol: comp.componentValues.gene_symbol,
+      id: geneIndex[comp.componentValues.gene_symbol],
     }
   );
 
@@ -149,7 +151,7 @@ const ResponseField = ({
             if (domain.gene) {
               domainObject.gene = {
                 symbol: domain.gene,
-                id: '<computed>',
+                id: geneIndex[domain.gene],
               };
             }
             return domainObject;
@@ -171,6 +173,7 @@ const ResponseField = ({
         return linkerSequenceToJSON(comp);
       }
       if (comp.componentType === 'gene') {
+        console.log(geneToJSON(comp));
         return geneToJSON(comp);
       }
       return null;

@@ -58,9 +58,7 @@ const FormParent = () => {
     });
   };
 
-  /**
-   * Call asynchronous functions upon changes to state variables.
-   */
+  // Call asynchronous functions upon changes to state variables.
   useEffect(() => {
     const geneIndexCopy = geneIndex;
     components.forEach((component) => {
@@ -77,6 +75,19 @@ const FormParent = () => {
     });
     setGeneIndex(geneIndexCopy);
   }, [components]);
+
+  useEffect(() => {
+    const geneIndexCopy = geneIndex;
+    domains.forEach((domain) => {
+      if (domain.gene && !(domain.gene in geneIndexCopy)) {
+        const geneID = getGeneID(domain.gene);
+        if (geneID != null) {
+          geneIndexCopy[domain.gene] = geneID;
+        }
+      }
+    });
+    setGeneIndex(geneIndexCopy);
+  }, [domains]);
 
   /**
    * Recursively hide children
