@@ -54,29 +54,29 @@ const ResponseField = ({
       if (index === 0) {
         out.exon_start = parseInt(values.exon_start, 10);
         out.exon_start_genomic = {
-          chr: exonIndex[values.transcript].chr, // TODO
-          pos: exonIndex[values.transcript].start, // TODO
+          chr: exonIndex[values.transcript].chr,
+          pos: exonIndex[values.transcript].start,
         };
       }
       out.exon_end = values.exon_end;
       out.exon_end_genomic = {
-        chr: '<computed>', // TODO
-        pos: '<computed>', // TODO
+        chr: exonIndex[values.transcript].chr,
+        pos: exonIndex[values.transcript].end,
       };
     }
     if (values.exon_start !== '') {
       if (index === components.length - 1) {
         out.exon_end = parseInt(values.exon_end, 10);
         out.exon_end_genomic = {
-          chr: exonIndex[values.transcript].chr, // TODO
-          pos: exonIndex[values.transcript].end, // TODO
+          chr: exonIndex[values.transcript].chr,
+          pos: exonIndex[values.transcript].end,
         };
       }
       if (index !== 0) {
         out.exon_start = values.exon_start;
         out.exon_start_genomic = {
-          chr: '<computed>', // TODO
-          pos: '<computed>', // TODO
+          chr: exonIndex[values.transcript].chr,
+          pos: exonIndex[values.transcript].start,
         };
       }
     }
