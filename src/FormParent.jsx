@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import FormRadio from './FormRadio';
 import CausEventForm from './CausEventForm';
@@ -185,15 +186,17 @@ const FormParent = () => {
 
   return (
     <div className={classes.root}>
-      <FormRadio
-        name="protein-coding"
-        prompt="Is at least one partner protein-coding?"
-        state={{
-          options: ['Yes', 'No', 'Unknown'],
-          state: proteinCodingValue,
-          stateFunction: handleSetProteinCoding,
-        }}
-      />
+      <Box pt={2}>
+        <FormRadio
+          name="protein-coding"
+          prompt="Is at least one partner protein-coding?"
+          state={{
+            options: ['Yes', 'No', 'Unknown'],
+            state: proteinCodingValue,
+            stateFunction: handleSetProteinCoding,
+          }}
+        />
+      </Box>
       {showRfPreserved
         ? (
           <FormRadio
