@@ -1,7 +1,7 @@
 import { React, useCallback } from 'react';
 import { Box, FormLabel } from '@material-ui/core';
 import update from 'immutability-helper';
-import ComponentsCard from './ComponentsCard';
+import Component from './Component';
 import AddComponentButton from './AddComponentButton';
 
 const style = {};
@@ -37,7 +37,7 @@ const ComponentsForm = ({ components, setComponents }) => {
   };
 
   const renderCard = (card, index) => (
-    <ComponentsCard
+    <Component
       key={card.id}
       index={index}
       id={card.id}

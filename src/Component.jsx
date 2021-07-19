@@ -1,13 +1,13 @@
 import { React, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { ItemTypes } from './ItemTypes';
-import SpecificComponentCard from './SpecificComponentCard';
+import SpecificComponent from './SpecificComponent';
 
 const style = {
   cursor: 'move',
 };
 
-const ComponentsCard = ({
+const Component = ({
   id, index, moveCard, componentType, componentValues, handleCardChange, deleteCard,
 }) => {
   const ref = useRef(null);
@@ -73,7 +73,7 @@ const ComponentsCard = ({
 
   return (
     <div ref={ref} data-handler-id={handlerId} style={{ ...style, opacity }}>
-      <SpecificComponentCard
+      <SpecificComponent
         componentType={componentType}
         componentValues={componentValues}
         handleCardChange={handleCardChange}
@@ -83,4 +83,4 @@ const ComponentsCard = ({
   );
 };
 
-export default ComponentsCard;
+export default Component;

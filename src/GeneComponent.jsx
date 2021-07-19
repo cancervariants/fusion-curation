@@ -3,11 +3,11 @@ import {
   TextField,
 } from '@material-ui/core';
 
-const GeneCard = ({ componentValues, handleCardChange }) => (
+const GeneComponent = ({ componentValues, handleCardChange }) => (
   <>
     <br />
     <TextField id="standard-basic" label="Gene" value={componentValues.gene_symbol} onChange={(event) => handleCardChange('gene_symbol', event.target.value)} />
   </>
 );
 
-export default GeneCard;
+export default GeneComponent;

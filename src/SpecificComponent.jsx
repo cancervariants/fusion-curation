@@ -4,10 +4,10 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
-import TranscriptRegionCard from './TranscriptRegionCard';
-import GenomicRegionCard from './GenomicRegionCard';
-import LinkerSequenceCard from './LinkerSequenceCard';
-import GeneCard from './GeneCard';
+import TranscriptRegionComponent from './TranscriptRegionComponent';
+import GenomicRegionComponent from './GenomicRegionComponent';
+import LinkerSequenceComponent from './LinkerSequenceComponent';
+import GeneComponent from './GeneComponent';
 
 // todo move up one and send as props?
 const useStyles = makeStyles((theme) => ({
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SpecificComponentCard = ({
+const SpecificComponent = ({
   componentType, componentValues, handleCardChange, deleteCard,
 }) => {
   const classes = useStyles();
@@ -28,7 +28,7 @@ const SpecificComponentCard = ({
   const renderCard = () => {
     if (componentType === 'transcript_region') {
       return (
-        <TranscriptRegionCard
+        <TranscriptRegionComponent
           componentValues={componentValues}
           handleCardChange={handleCardChange}
         />
@@ -36,7 +36,7 @@ const SpecificComponentCard = ({
     }
     if (componentType === 'genomic_region') {
       return (
-        <GenomicRegionCard
+        <GenomicRegionComponent
           componentValues={componentValues}
           handleCardChange={handleCardChange}
         />
@@ -44,7 +44,7 @@ const SpecificComponentCard = ({
     }
     if (componentType === 'linker_sequence') {
       return (
-        <LinkerSequenceCard
+        <LinkerSequenceComponent
           componentValues={componentValues}
           handleCardChange={handleCardChange}
         />
@@ -52,7 +52,7 @@ const SpecificComponentCard = ({
     }
     if (componentType === 'gene') {
       return (
-        <GeneCard
+        <GeneComponent
           componentValues={componentValues}
           handleCardChange={handleCardChange}
         />
@@ -90,4 +90,4 @@ const SpecificComponentCard = ({
   );
 };
 
-export default SpecificComponentCard;
+export default SpecificComponent;

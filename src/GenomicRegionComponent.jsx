@@ -3,7 +3,8 @@ import {
   TextField,
 } from '@material-ui/core';
 
-const GenomicRegionCard = ({ componentValues, handleCardChange }) => (
+// todo do numeric field checks here
+const GenomicRegionComponent = ({ componentValues, handleCardChange }) => (
   <>
     <br />
     <TextField id="standard-basic" label="Chromosome" value={componentValues.chr} onChange={(event) => handleCardChange('chr', event.target.value)} />
@@ -14,4 +15,4 @@ const GenomicRegionCard = ({ componentValues, handleCardChange }) => (
   </>
 );
 
-export default GenomicRegionCard;
+export default GenomicRegionComponent;
