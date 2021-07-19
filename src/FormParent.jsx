@@ -62,13 +62,13 @@ const FormParent = () => {
   };
 
   const getExon = (txAc, startExon, endExon, gene) => {
-    // eslint-disable-next-line consistent-return
     let url = null;
     if (!gene) {
       url = `/coordinates/${txAc}/${startExon}/${endExon}`;
     } else {
       url = `/coordinates/${txAc}/${startExon}/${endExon}/${gene}`;
     }
+    // eslint-disable-next-line consistent-return
     fetch(url).then((response) => response.json()).then((exonResponse) => {
       if (exonResponse.warnings) {
         return null;
@@ -87,7 +87,6 @@ const FormParent = () => {
         exonEnd,
       };
       setExonIndex(exonIndexCopy);
-      return true;
     });
   };
 
