@@ -75,10 +75,20 @@ const FormParent = () => {
         return null;
       }
       const { chr, start, end } = exonResponse;
+      const geneSymbol = exonResponse.gene;
+      if (!gene) {
+        const geneID = getGeneID(geneSymbol);
+        const geneIndexCopy = geneIndex;
+        if (geneID != null) {
+          geneIndexCopy[geneSymbol] = geneID;
+        }
+      }
+
       const exonStart = exonResponse.start_exon;
       const exonEnd = exonResponse.end_exon;
       const exonIndexCopy = exonIndex;
       exonIndexCopy[txAc] = {
+        geneSymbol,
         chr,
         start,
         end,

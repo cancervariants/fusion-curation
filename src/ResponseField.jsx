@@ -50,6 +50,15 @@ const ResponseField = ({
       };
     }
 
+    if (!out.gene && 'geneSymbol' in exonIndex[values.transcript]) {
+      const symbol = exonIndex[values.transcript].geneSymbol;
+      const geneID = geneIndex[symbol];
+      out.gene = {
+        symbol,
+        id: geneID,
+      };
+    }
+
     if (values.exon_end !== '') {
       if (index === 0) {
         out.exon_start = exonIndex[values.transcript].exonStart;
