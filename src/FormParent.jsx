@@ -73,16 +73,15 @@ const FormParent = () => {
       if (exonResponse.warnings) {
         return null;
       }
-      const exonStartCoord = exonResponse.start;
-      const exonEndCoord = exonResponse.end;
-      const { chr } = exonResponse;
+      console.log(exonResponse);
+      const { chr, start, end } = exonResponse;
       const exonStart = exonResponse.start_exon;
       const exonEnd = exonResponse.end_exon;
       const exonIndexCopy = exonIndex;
       exonIndexCopy[txAc] = {
         chr,
-        start: exonStartCoord,
-        end: exonEndCoord,
+        start,
+        end,
         exonStart,
         exonEnd,
       };

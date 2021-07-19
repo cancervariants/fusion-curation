@@ -52,13 +52,13 @@ const ResponseField = ({
 
     if (values.exon_end !== '') {
       if (index === 0) {
-        out.exon_start = parseInt(values.exon_start, 10);
+        out.exon_start = exonIndex[values.transcript].exonStart;
         out.exon_start_genomic = {
           chr: exonIndex[values.transcript].chr,
           pos: exonIndex[values.transcript].start,
         };
       }
-      out.exon_end = values.exon_end;
+      out.exon_end = exonIndex[values.transcript].exonEnd;
       out.exon_end_genomic = {
         chr: exonIndex[values.transcript].chr,
         pos: exonIndex[values.transcript].end,
@@ -66,14 +66,14 @@ const ResponseField = ({
     }
     if (values.exon_start !== '') {
       if (index === components.length - 1) {
-        out.exon_end = parseInt(values.exon_end, 10);
+        out.exon_end = exonIndex[values.transcript].exonEnd;
         out.exon_end_genomic = {
           chr: exonIndex[values.transcript].chr,
           pos: exonIndex[values.transcript].end,
         };
       }
       if (index !== 0) {
-        out.exon_start = values.exon_start;
+        out.exon_start = exonIndex[values.transcript].exonStart;
         out.exon_start_genomic = {
           chr: exonIndex[values.transcript].chr,
           pos: exonIndex[values.transcript].start,

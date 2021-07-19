@@ -60,7 +60,7 @@ class UTA:
             database=self.url.database,
             user=self.url.username,
             password=self.url.password,
-            application_name='variation',
+            application_name='gene-fusions',
         )
 
     def get_genomic_coords(self, tx_ac, start_exon, end_exon, start_exon_offset=0,
@@ -150,17 +150,21 @@ class UTA:
             else:
                 return exon
 
-        if start_exon:
+        if start_exon is not None:
             start_exon = _exon_to_int(start_exon)
-            if not start_exon:
+            if start_exon is None:
                 return None
+            elif start_exon == 0:
+                start_exon = 1
         else:
             start_exon = 1
 
-        if end_exon:
+        if end_exon is not None:
             end_exon = _exon_to_int(end_exon)
-            if not end_exon:
+            if end_exon is None:
                 return None
+            elif end_exon == 0:
+                end_exon = len(tx_exons)
         else:
             end_exon = len(tx_exons)
         return tx_exons, start_exon, end_exon
