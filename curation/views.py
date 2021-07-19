@@ -36,16 +36,23 @@ def normalize_gene(symbol):
 @app.route('/coordinates/<tx_ac>/<start_exon>/<end_exon>/<gene>')
 def get_exon(tx_ac, start_exon, end_exon, gene=None):
     """Fetch a transcript's exon information."""
+    if gene == 'None':
+        gene = None
     response = {
         "tx_ac": tx_ac,
         "gene": gene,
         "start_exon": None,
-        "end_exon": None
+        "end_exon": None,
+        "chr": None,
+        "start": None,
+        "end": None
     }
     genomic_coords = uta.get_genomic_coords(tx_ac, start_exon, end_exon, gene=gene)
-    response['chr'] = genomic_coords["chr"]
-    response['start'] = genomic_coords["start"]
-    response['end'] = genomic_coords["end"]
-    response['start_exon'] = genomic_coords["start_exon"]
-    response['end_exon'] = genomic_coords["end_exon"]
+    if genomic_coords:
+        response['gene'] = genomic_coords.get("gene", None)
+        response['chr'] = genomic_coords.get("chr", None)
+        response['start'] = genomic_coords.get("start", None)
+        response['end'] = genomic_coords.get("end", None)
+        response['start_exon'] = genomic_coords.get("start_exon", None)
+        response['end_exon'] = genomic_coords.get("end_exon", None)
     return response

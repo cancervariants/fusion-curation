@@ -99,13 +99,14 @@ class UTA:
             return None
 
         # Genomic accessions must be the same
-        if alt_ac_start[0] != alt_ac_end[0]:
+        if (alt_ac_start[0] != alt_ac_end[0]) or (alt_ac_start[1] != alt_ac_end[1]):
             return None
 
         return {
-            "chr": alt_ac_start[0],
-            "start": alt_ac_start[2],
-            "end": alt_ac_end[1],
+            "gene": alt_ac_start[0],
+            "chr": alt_ac_start[1],
+            "start": alt_ac_start[3],
+            "end": alt_ac_end[2],
             "start_exon": start_exon,
             "end_exon": end_exon
         }
@@ -188,7 +189,7 @@ class UTA:
         :param int tx_exon_start: Transcript's exon start coordinate
         :param int tx_exon_end: Transcript's exon end coordinate
         :param str gene: Gene symbol
-        :return: genomic accession for chromosome,
+        :return: hgnc symbol, genomic accession for chromosome,
             start exon's end coordinate, end exon's start coordinate
         """
         if gene:
@@ -216,7 +217,7 @@ class UTA:
         if not results:
             return None
         result = results[0]
-        return result[2], result[5], result[6]
+        return result[0], result[2], result[5], result[6]
 
 
 class ParseResult(urlparse.ParseResult):

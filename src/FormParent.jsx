@@ -64,7 +64,8 @@ const FormParent = () => {
   const getExon = (txAc, startExon, endExon, gene) => {
     let url = null;
     if (!gene) {
-      url = `/coordinates/${txAc}/${startExon}/${endExon}`;
+      // TODO: fix this so that gene is optional
+      url = `/coordinates/${txAc}/${startExon}/${endExon}/None`;
     } else {
       url = `/coordinates/${txAc}/${startExon}/${endExon}/${gene}`;
     }
@@ -73,7 +74,6 @@ const FormParent = () => {
       if (exonResponse.warnings) {
         return null;
       }
-      console.log(exonResponse);
       const { chr, start, end } = exonResponse;
       const exonStart = exonResponse.start_exon;
       const exonEnd = exonResponse.end_exon;
@@ -105,14 +105,13 @@ const FormParent = () => {
           }
         }
       }
-
-      if (values.transcript && values.gene_symbol) {
+      if (values.transcript) {
         let exon = null;
         if (values.exon_start && !values.exon_end) {
           exon = getExon(values.transcript, values.exon_start, 0, values.gene_symbol);
         } else if (!values.exon_start && values.exon_end) {
           exon = getExon(values.transcript, 0, values.exon_end, values.gene_symbol);
-        } else {
+        } else if (values.exon_start && values.exon_end) {
           exon = getExon(values.transcript, values.exon_start, values.exon_end, values.gene_symbol);
         }
         if (exon != null) {
