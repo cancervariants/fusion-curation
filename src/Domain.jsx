@@ -1,25 +1,30 @@
 import { React } from 'react';
 import {
-  Box, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, TextField, Tooltip,
+  FormControl, IconButton, MenuItem, Select, TableCell, TableRow,
+  TextField, Tooltip,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
-    margin: theme.spacing(1),
+    'margin-top': theme.spacing(1),
+    'margin-bottom': theme.spacing(1),
+    'margin-right': theme.spacing(1),
+    'margin-left': 4,
     minWidth: 120,
   },
 }));
 
-const Domain = ({ domainValues, handleChange, handleDelete }) => {
+const Domain = ({
+  key, domainValues, handleChange, handleDelete, cellClass,
+}) => {
   const classes = useStyles();
 
   return (
-    <Paper elevation={2}>
-      <Box p={1}>
+    <TableRow key={key}>
+      <TableCell className={cellClass}>
         <FormControl className={classes.formControl}>
-          <InputLabel>Status</InputLabel>
           <Select
             labelId="status-select"
             id="status-select"
@@ -30,25 +35,30 @@ const Domain = ({ domainValues, handleChange, handleDelete }) => {
             <MenuItem value="preserved">Preserved</MenuItem>
           </Select>
         </FormControl>
+      </TableCell>
+      <TableCell className={cellClass}>
         <TextField
           id="standard-basic"
-          label="Domain name"
+          multiline
           value={domainValues.name}
           onChange={(event) => handleChange('name', event.target.value)}
         />
+      </TableCell>
+      <TableCell className={cellClass}>
         <TextField
           id="standard-basic"
-          label="Gene"
           value={domainValues.gene}
           onChange={(event) => handleChange('gene', event.target.value)}
         />
+      </TableCell>
+      <TableCell className={cellClass}>
         <Tooltip title="Delete">
           <IconButton aria-label="delete" onClick={handleDelete}>
             <CloseIcon />
           </IconButton>
         </Tooltip>
-      </Box>
-    </Paper>
+      </TableCell>
+    </TableRow>
   );
 };
 
