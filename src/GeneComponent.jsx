@@ -5,7 +5,6 @@ import {
 
 const GeneComponent = ({ componentValues, handleCardChange }) => (
   <>
-    <br />
     <TextField id="standard-basic" label="Gene" value={componentValues.gene_symbol} onChange={(event) => handleCardChange('gene_symbol', event.target.value)} />
   </>
 );

@@ -178,7 +178,6 @@ const ResponseField = ({
         return linkerSequenceToJSON(comp);
       }
       if (comp.componentType === 'gene') {
-        console.log(geneToJSON(comp));
         return geneToJSON(comp);
       }
       return null;

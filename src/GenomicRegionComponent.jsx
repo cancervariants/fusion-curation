@@ -6,7 +6,6 @@ import {
 // todo do numeric field checks here
 const GenomicRegionComponent = ({ componentValues, handleCardChange }) => (
   <>
-    <br />
     <TextField id="standard-basic" label="Chromosome" value={componentValues.chr} onChange={(event) => handleCardChange('chr', event.target.value)} />
     <TextField id="standard-basic" label="Strand" value={componentValues.strand} onChange={(event) => handleCardChange('strand', event.target.value)} />
     <br />

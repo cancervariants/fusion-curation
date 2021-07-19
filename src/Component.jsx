@@ -1,85 +1,110 @@
-import { React, useRef } from 'react';
-import { useDrag, useDrop } from 'react-dnd';
-import { ItemTypes } from './ItemTypes';
-import SpecificComponent from './SpecificComponent';
+import { React, useState } from 'react';
+import {
+  Box, Paper, FormControl, Select, MenuItem, IconButton, Tooltip, Grid,
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { DragIndicator } from '@material-ui/icons';
+import CloseIcon from '@material-ui/icons/Close';
+import TranscriptRegionComponent from './TranscriptRegionComponent';
+import GenomicRegionComponent from './GenomicRegionComponent';
+import LinkerSequenceComponent from './LinkerSequenceComponent';
+import GeneComponent from './GeneComponent';
 
-const style = {
-  cursor: 'move',
-};
+// todo move up one and send as props?
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
 
 const Component = ({
-  id, index, moveCard, componentType, componentValues, handleCardChange, deleteCard,
+  componentType, componentValues, handleCardChange, deleteCard,
 }) => {
-  const ref = useRef(null);
+  const classes = useStyles();
 
-  const [{ handlerId }, drop] = useDrop({
-    accept: ItemTypes.CARD,
-    collect(monitor) {
-      return {
-        handlerId: monitor.getHandlerId(),
-      };
-    },
-    hover(item, monitor) {
-      if (!ref.current) {
-        return;
-      }
-      const dragIndex = item.index;
-      const hoverIndex = index;
-      // Don't replace items with themselves
-      if (dragIndex === hoverIndex) {
-        return;
-      }
-      // Determine rectangle on screen
-      const hoverBoundingRect = ref.current?.getBoundingClientRect();
-      // Get vertical middle
-      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      // Determine mouse position
-      const clientOffset = monitor.getClientOffset();
-      // Get pixels to the top
-      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-      // Dragging downwards
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return;
-      }
-      // Dragging upwards
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return;
-      }
-      // Time to actually perform the action
-      moveCard(dragIndex, hoverIndex);
-      // Note: we're mutating the monitor item here!
-      // Generally it's better to avoid mutations,
-      // but it's good here for the sake of performance
-      // to avoid expensive index searches.
-      // eslint-disable-next-line no-param-reassign
-      item.index = hoverIndex;
-    },
-  });
+  const [showDragIcon, setShowDragIcon] = useState(false);
 
-  const [{ isDragging }, drag] = useDrag({
-    type: ItemTypes.CARD,
-    item: () => ({ id, index }),
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
+  const renderCard = () => {
+    if (componentType === 'transcript_region') {
+      return (
+        <TranscriptRegionComponent
+          componentValues={componentValues}
+          handleCardChange={handleCardChange}
+        />
+      );
+    }
+    if (componentType === 'genomic_region') {
+      return (
+        <GenomicRegionComponent
+          componentValues={componentValues}
+          handleCardChange={handleCardChange}
+        />
+      );
+    }
+    if (componentType === 'linker_sequence') {
+      return (
+        <LinkerSequenceComponent
+          componentValues={componentValues}
+          handleCardChange={handleCardChange}
+        />
+      );
+    }
+    if (componentType === 'gene') {
+      return (
+        <GeneComponent
+          componentValues={componentValues}
+          handleCardChange={handleCardChange}
+        />
+      );
+    }
+    return null;
+  };
 
-  const opacity = isDragging ? 0 : 1;
-
-  drag(drop(ref));
+  const toggleDragIcon = () => setShowDragIcon(!showDragIcon);
 
   return (
-    <div ref={ref} data-handler-id={handlerId} style={{ ...style, opacity }}>
-      <SpecificComponent
-        componentType={componentType}
-        componentValues={componentValues}
-        handleCardChange={handleCardChange}
-        deleteCard={deleteCard}
-      />
-    </div>
+    <Box p={1} onMouseEnter={toggleDragIcon} onMouseLeave={toggleDragIcon}>
+      <Paper elevation={2}>
+        <Box p={1}>
+          <Grid container direction="row" alignItems="center">
+            <Grid item xs={0.5}>
+              {showDragIcon ? <DragIndicator /> : <DragIndicator color="disabled" />}
+            </Grid>
+            <Grid item xs={3} container direction="column">
+              <Grid item>
+                <FormControl className={classes.formControl}>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={componentType}
+                    onChange={(event) => handleCardChange('componentType', event.target.value)}
+                  >
+                    <MenuItem value="transcript_region">Transcript Region</MenuItem>
+                    <MenuItem value="genomic_region">Genomic Region</MenuItem>
+                    <MenuItem value="linker_sequence">Linker Sequence</MenuItem>
+                    <MenuItem value="gene">Gene</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item>
+                <Tooltip title="Delete">
+                  <IconButton aria-label="delete" onClick={deleteCard}>
+                    <CloseIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </Grid>
+            <Grid item xs>
+              {renderCard()}
+            </Grid>
+          </Grid>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 

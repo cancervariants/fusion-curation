@@ -26,7 +26,6 @@ const TranscriptRegionComponent = ({ componentValues, handleCardChange }) => {
 
   return (
     <>
-      <br />
       <TextField
         id="standard-basic"
         label="Transcript"

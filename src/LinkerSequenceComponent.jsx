@@ -5,7 +5,6 @@ import {
 
 const LinkerSequenceComponent = ({ componentValues, handleCardChange }) => (
   <>
-    <br />
     <TextField id="standard-basic" label="Sequence" value={componentValues.sequence} onChange={(event) => handleCardChange('sequence', event.target.value)} />
   </>
 );
