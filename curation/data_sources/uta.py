@@ -63,23 +63,30 @@ class UTA:
             application_name='variation',
         )
 
-    def get_genomic_coord(self, tx_ac, exon, gene=None,
-                          is_start=False) -> Tuple[str, int, int]:
+    def get_genomic_coords(self, tx_ac, start_exon, end_exon, start_exon_offset=0,
+                           end_exon_offset=0, gene=None) -> Tuple[str, int, int]:
         """Get genomic chromosome and start/end exon coordinates.
 
         :param str tx_ac: Transcript accession
-        :param int exon: Exon number
+        :param int start_exon: Starting exon number
+        :param int end_exon: Ending exon number
+        :param int start_exon_offset: Starting exon offset
+        :param int end_exon_offset: Ending exon offset
         :param str gene: Gene symbol
-        :param bool is_start: `True` if exon is the starting exon.
-             `False` if exon is the ending exon.
         :return: genomic accession for chromosome,
             start exon's end coordinate, end exon's start coordinate
         """
-        tx_exon_start_end = self._get_tx_exon_start_end(tx_ac, exon, is_start=is_start)
+        tx_exon_start_end = self._get_tx_exon_start_end(tx_ac, start_exon, end_exon)
         if not tx_exon_start_end:
             return None
 
-        tx_exon_start, tx_exon_end = tx_exon_start_end
+        tx_exons, start_exon, end_exon = tx_exon_start_end
+
+        tx_exon_coords = self.get_tx_exon_coords(tx_exons, start_exon, end_exon)
+        if not tx_exon_coords:
+            return None
+
+        tx_exon_start, tx_exon_end = tx_exon_coords
 
         alt_ac_start = self._get_alt_ac_start_end(tx_ac, int(tx_exon_start[0]),
                                                   int(tx_exon_start[1]), gene=gene)
@@ -95,7 +102,13 @@ class UTA:
         if alt_ac_start[0] != alt_ac_end[0]:
             return None
 
-        return alt_ac_start[0], alt_ac_start[2], alt_ac_end[1]
+        return {
+            "chr": alt_ac_start[0],
+            "start": alt_ac_start[2],
+            "end": alt_ac_end[1],
+            "start_exon": start_exon,
+            "end_exon": end_exon
+        }
 
     def get_tx_exons(self, tx_ac) -> List[str]:
         """Get list of transcript exons start/end coordinates.
@@ -116,36 +129,48 @@ class UTA:
             return None
         return cds_se_i[0][0].split(';')
 
-    def _get_tx_exon_start_end(self, tx_ac, exon, is_start=True) -> Tuple[int, int]:
+    def _get_tx_exon_start_end(self, tx_ac, start_exon, end_exon) -> Tuple[int, int]:
         """Get exon start/end coordinates given accession and gene.
 
         :param str ac: Transcript accession
-        :param int exon: Exon number
-        :param bool is_start: `True` if exon is the starting exon.
-             `False` if exon is the ending exon.
+        :param int start_exon: Starting exon number
+        :param int end_exon: Ending exon number
         :return: Transcript's start/end exon coordinates
         """
         tx_exons = self.get_tx_exons(tx_ac)
         if not tx_exons:
             return None
 
-        if isinstance(exon, str):
+        def _exon_to_int(exon):
             try:
-                exon = int(exon)
+                if isinstance(exon, str):
+                    exon = int(exon)
             except ValueError:
                 return None
+            else:
+                return exon
 
-        tx_exons_n = len(tx_exons)
-        if is_start:
-            exon_start = exon
-            exon_end = tx_exons_n
+        if start_exon:
+            start_exon = _exon_to_int(start_exon)
+            if not start_exon:
+                return None
         else:
-            exon_start = 1
-            exon_end = exon
+            start_exon = 1
 
+        if end_exon:
+            end_exon = _exon_to_int(end_exon)
+            if not end_exon:
+                return None
+        else:
+            end_exon = len(tx_exons)
+        return tx_exons, start_exon, end_exon
+
+    @staticmethod
+    def get_tx_exon_coords(tx_exons, start_exon, end_exon):
+        """Get transcript exon coordinates."""
         try:
-            tx_exon_start = tx_exons[exon_start - 1].split(',')
-            tx_exon_end = tx_exons[exon_end - 1].split(',')
+            tx_exon_start = tx_exons[start_exon - 1].split(',')
+            tx_exon_end = tx_exons[end_exon - 1].split(',')
         except IndexError:
             return None
 
@@ -211,3 +236,6 @@ class ParseResult(urlparse.ParseResult):
         """Create schema property."""
         path_elems = self.path.split("/")
         return path_elems[2] if len(path_elems) > 2 else None
+
+
+uta = UTA(db_pwd="admin")

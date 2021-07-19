@@ -40,6 +40,7 @@ const FormParent = () => {
 
   // ajax values
   const [geneIndex, setGeneIndex] = useState({});
+  const [exonIndex, setExonIndex] = useState({});
 
   /**
    * Get ID for gene name
@@ -60,12 +61,45 @@ const FormParent = () => {
     });
   };
 
+  const getExon = (txAc, startExon, endExon, gene) => {
+    // eslint-disable-next-line consistent-return
+    let url = null;
+    if (!gene) {
+      url = `/coordinates/${txAc}/${startExon}/${endExon}`;
+    } else {
+      url = `/coordinates/${txAc}/${startExon}/${endExon}/${gene}`;
+    }
+    fetch(url).then((response) => response.json()).then((exonResponse) => {
+      if (exonResponse.warnings) {
+        return null;
+      }
+      const exonStartCoord = exonResponse.start;
+      const exonEndCoord = exonResponse.end;
+      const { chr } = exonResponse;
+      const exonStart = exonResponse.start_exon;
+      const exonEnd = exonResponse.end_exon;
+      const exonIndexCopy = exonIndex;
+      exonIndexCopy[txAc] = {
+        chr,
+        start: exonStartCoord,
+        end: exonEndCoord,
+        exonStart,
+        exonEnd,
+      };
+      setExonIndex(exonIndexCopy);
+      return true;
+    });
+  };
+
   // perform ajax calls + update ID/coordinate indices
   useEffect(() => {
     const geneIndexCopy = geneIndex;
+    const exonIndexCopy = exonIndex;
     components.forEach((component) => {
-      if ('gene_symbol' in component.componentValues) {
-        const geneSymbol = component.componentValues.gene_symbol;
+      const values = component.componentValues;
+
+      if ('gene_symbol' in values) {
+        const geneSymbol = values.gene_symbol;
         if (!(geneSymbol in geneIndexCopy)) {
           const geneID = getGeneID(geneSymbol);
           if (geneID != null) {
@@ -73,8 +107,24 @@ const FormParent = () => {
           }
         }
       }
+
+      if (values.transcript && values.gene_symbol) {
+        let exon = null;
+        if (values.exon_start && !values.exon_end) {
+          exon = getExon(values.transcript, values.exon_start, 0, values.gene_symbol);
+        } else if (!values.exon_start && values.exon_end) {
+          exon = getExon(values.transcript, 0, values.exon_end, values.gene_symbol);
+        } else {
+          exon = getExon(values.transcript, values.exon_start, values.exon_end, values.gene_symbol);
+        }
+        if (exon != null) {
+          exonIndexCopy[values.transcript] = exon;
+        }
+      }
     });
+
     setGeneIndex(geneIndexCopy);
+    setExonIndex(exonIndexCopy);
   }, [components]);
 
   /**
@@ -242,6 +292,7 @@ const FormParent = () => {
             causativeEventKnown={causativeEventKnown}
             causativeEvent={causativeEvent}
             geneIndex={geneIndex}
+            exonIndex={exonIndex}
           />
         )
         : null}

@@ -3,7 +3,7 @@ import { Box, TextField } from '@material-ui/core';
 
 const ResponseField = ({
   responseJSON, setResponseJSON, responseHuman, setResponseHuman, components, proteinCoding,
-  rfPreserved, domains, causativeEventKnown, causativeEvent, geneIndex,
+  rfPreserved, domains, causativeEventKnown, causativeEvent, geneIndex, exonIndex,
 }) => {
   /**
    * Transform computable fusion object into human-readable string
@@ -49,12 +49,13 @@ const ResponseField = ({
         id: geneIndex[symbol],
       };
     }
+
     if (values.exon_end !== '') {
       if (index === 0) {
-        out.exon_start = 1;
+        out.exon_start = parseInt(values.exon_start, 10);
         out.exon_start_genomic = {
-          chr: '<computed>', // TODO
-          pos: '<computed>', // TODO
+          chr: exonIndex[values.transcript].chr, // TODO
+          pos: exonIndex[values.transcript].start, // TODO
         };
       }
       out.exon_end = values.exon_end;
@@ -65,10 +66,10 @@ const ResponseField = ({
     }
     if (values.exon_start !== '') {
       if (index === components.length - 1) {
-        out.exon_end = '<computed>';
+        out.exon_end = parseInt(values.exon_end, 10);
         out.exon_end_genomic = {
-          chr: '<computed>', // TODO
-          pos: '<computed>', // TODO
+          chr: exonIndex[values.transcript].chr, // TODO
+          pos: exonIndex[values.transcript].end, // TODO
         };
       }
       if (index !== 0) {

@@ -11,6 +11,25 @@ git clone https://github.com/cancervariants/fusion-curation
 cd fusion-curation
 ```
 
+Gene Fusion Curation uses [uta](https://github.com/biocommons/uta).
+
+_The following commands will likely need modification appropriate for the installation environment._
+1. Install [PostgreSQL](https://www.postgresql.org/)
+2. Create user and database.
+
+```commandline
+createuser -U postgres uta_admin
+createuser -U postgres anonymous
+createdb -U postgres -O uta_admin uta
+```
+
+3. To install locally, from the _curation/data_ directory:
+```
+UTA_VERSION = uta_20210129.pgd.gz
+curl -O http://dl.biocommons.org/uta/$UTA_VERSION
+gzip -cdq ${UTA_VERSION} | grep -v "^REFRESH MATERIALIZED VIEW" | psql -h localhost -U uta_admin --echo-errors --single-transaction -v ON_ERROR_STOP=1 -d uta -p 5433
+```
+
 To start the backend development server, initialize the Python virtual environment and then run Flask. Once
 [Pipenv is installed](https://pipenv-fork.readthedocs.io/en/latest/#install-pipenv-today), run the following in the project root:
 

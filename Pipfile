@@ -10,6 +10,7 @@ boto3 = "*"
 psycopg2 = "==2.8.4"
 flask-sqlalchemy = "==2.4.1"
 python-dotenv = "*"
+"biocommons.seqrepo" = "*"
 
 [dev-packages]
 pytest = "*"
@@ -20,6 +21,7 @@ coverage = "*"
 pytest-cov = "*"
 fusion-curation = {editable = true, path = "."}
 coveralls = "*"
+jupyterlab = "*"
 
 [requires]
 python_version = "3.9"
