@@ -1,17 +1,13 @@
 import { React, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { ItemTypes } from './ItemTypes';
-import SpecificComponentCard from './SpecificComponentCard';
+import Component from './Component';
 
 const style = {
-  // border: '1px dashed gray',
-  // padding: '0.5rem 1rem',
-  // marginBottom: '.5rem',
-  // backgroundColor: 'white',
   cursor: 'move',
 };
 
-const ComponentsCard = ({
+const DraggableComponentWrapper = ({
   id, index, moveCard, componentType, componentValues, handleCardChange, deleteCard,
 }) => {
   const ref = useRef(null);
@@ -77,7 +73,7 @@ const ComponentsCard = ({
 
   return (
     <div ref={ref} data-handler-id={handlerId} style={{ ...style, opacity }}>
-      <SpecificComponentCard
+      <Component
         componentType={componentType}
         componentValues={componentValues}
         handleCardChange={handleCardChange}
@@ -87,4 +83,4 @@ const ComponentsCard = ({
   );
 };
 
-export default ComponentsCard;
+export default DraggableComponentWrapper;

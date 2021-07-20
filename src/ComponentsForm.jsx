@@ -1,14 +1,21 @@
 import { React, useCallback } from 'react';
-import { Box, FormLabel } from '@material-ui/core';
+import {
+  Box, Grid, FormLabel, Paper,
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import update from 'immutability-helper';
-import ComponentsCard from './ComponentsCard';
+import DraggableComponentWrapper from './DraggableComponentWrapper';
 import AddComponentButton from './AddComponentButton';
 
-const style = {
-  // width: 800, // TODO much more
-};
+const useStyles = makeStyles({
+  dragBackground: {
+    background: 'blue',
+  },
+});
 
 const ComponentsForm = ({ components, setComponents }) => {
+  const classes = useStyles;
+
   const moveCard = useCallback((dragIndex, hoverIndex) => {
     const dragCard = components[dragIndex];
     setComponents(update(components, {
@@ -26,6 +33,8 @@ const ComponentsForm = ({ components, setComponents }) => {
     if (field === 'componentType') {
       componentsCopy[cardIndex].componentType = newValue;
     } else {
+      console.log(field);
+      console.log(newValue);
       componentsCopy[cardIndex].componentValues[field] = newValue;
     }
     setComponents(componentsCopy);
@@ -39,7 +48,7 @@ const ComponentsForm = ({ components, setComponents }) => {
   };
 
   const renderCard = (card, index) => (
-    <ComponentsCard
+    <DraggableComponentWrapper
       key={card.id}
       index={index}
       id={card.id}
@@ -62,17 +71,26 @@ const ComponentsForm = ({ components, setComponents }) => {
   };
 
   return (
-    <Box p={1}>
-      <FormLabel component="legend">
-        Enter chimeric transcript components:
-      </FormLabel>
-      {components.length === 0
-        ? <p />
-        : null}
-      <div style={style}>{components.map((card, i) => renderCard(card, i))}</div>
-      <AddComponentButton clickHandler={handleAddClick} />
-      <p />
-    </Box>
+    <>
+      <Box p={1}>
+        <FormLabel component="legend">
+          Enter chimeric transcript components:
+        </FormLabel>
+      </Box>
+      <Box p={1}>
+        <Paper className={classes.dragBackground}>
+          {components.length === 0
+            ? <p />
+            : null}
+          <div>{components.map((card, i) => renderCard(card, i))}</div>
+        </Paper>
+      </Box>
+      <Box p={1} pb={2}>
+        <Grid container justify="center">
+          <AddComponentButton clickHandler={handleAddClick} />
+        </Grid>
+      </Box>
+    </>
   );
 };
 

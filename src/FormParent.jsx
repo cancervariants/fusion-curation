@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import FormRadio from './FormRadio';
 import CausEventForm from './CausEventForm';
@@ -32,7 +33,7 @@ const FormParent = () => {
   const [rfPreserved, setRfPreserved] = useState('');
   const [domains, setDomains] = useState([]);
   // TODO need default value to make controlled/uncontrolled error go away?
-  const [components, setComponents] = useState([]); // {id, componentType, componentValues: {}}
+  const [components, setComponents] = useState([]);
   const [causativeEventKnown, setCausativeEventKnown] = useState('');
   const [causativeEvent, setCausativeEvent] = useState('');
   const [responseJSON, setResponseJSON] = useState('{}');
@@ -43,10 +44,8 @@ const FormParent = () => {
   const [exonIndex, setExonIndex] = useState({});
 
   /**
-   * Get ID for gene name
-   * TODO: not working b/c returns asynchronously, after state has already been updated
+   * Get ID for gene name. Updates geneIndex upon retrieval.
    * @param {string} symbol gene symbol to retrieve ID for
-   * @return {Promise} HGNC concept ID, or empty string if lookup fails
    */
   const getGeneID = (symbol) => {
     // eslint-disable-next-line consistent-return
@@ -150,10 +149,22 @@ const FormParent = () => {
     setExonIndex(exonIndexCopy);
   }, [components]);
 
+  useEffect(() => {
+    const geneIndexCopy = geneIndex;
+    domains.forEach((domain) => {
+      if (domain.gene && !(domain.gene in geneIndexCopy)) {
+        const geneID = getGeneID(domain.gene);
+        if (geneID != null) {
+          geneIndexCopy[domain.gene] = geneID;
+        }
+      }
+    });
+    setGeneIndex(geneIndexCopy);
+  }, [domains]);
+
   /**
    * Recursively hide children
    * @param {string} field name of field (should be the same as the state variable name)
-   * @returns null but hides field and children
    */
   const hideChildren = (field) => {
     const dispatch = {
@@ -247,15 +258,17 @@ const FormParent = () => {
 
   return (
     <div className={classes.root}>
-      <FormRadio
-        name="protein-coding"
-        prompt="Is at least one partner protein-coding?"
-        state={{
-          options: ['Yes', 'No', 'Unknown'],
-          state: proteinCodingValue,
-          stateFunction: handleSetProteinCoding,
-        }}
-      />
+      <Box pt={2}>
+        <FormRadio
+          name="protein-coding"
+          prompt="Is at least one partner protein-coding?"
+          state={{
+            options: ['Yes', 'No', 'Unknown'],
+            state: proteinCodingValue,
+            stateFunction: handleSetProteinCoding,
+          }}
+        />
+      </Box>
       {showRfPreserved
         ? (
           <FormRadio
