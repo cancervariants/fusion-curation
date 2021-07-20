@@ -78,7 +78,7 @@ class UTA:
         if gene:
             gene = gene.upper()
 
-        if start_exon and end_exon:
+        if start_exon != "0" and end_exon != "0":
             if start_exon > end_exon:
                 return None
             elif end_exon < start_exon:
