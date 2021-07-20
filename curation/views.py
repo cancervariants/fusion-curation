@@ -49,6 +49,7 @@ def get_exon(tx_ac, start_exon, end_exon, start_exon_offset=0,
     """
     if gene == 'None':
         gene = None
+
     response = {
         "tx_ac": tx_ac,
         "gene": gene,
@@ -58,6 +59,25 @@ def get_exon(tx_ac, start_exon, end_exon, start_exon_offset=0,
         "start": None,
         "end": None
     }
+
+    def _str_to_int(value):
+        if isinstance(value, str):
+            try:
+                value = int(value)
+            except ValueError:
+                return None
+            else:
+                return value
+
+    start_exon = _str_to_int(start_exon)
+    end_exon = _str_to_int(end_exon)
+    start_exon_offset = _str_to_int(start_exon_offset)
+    end_exon_offset = _str_to_int(end_exon_offset)
+
+    for var in [start_exon, end_exon, start_exon_offset, end_exon_offset]:
+        if var is None:
+            return response
+
     genomic_coords = uta.get_genomic_coords(
         tx_ac, start_exon, end_exon, start_exon_offset=start_exon_offset,
         end_exon_offset=end_exon_offset, gene=gene

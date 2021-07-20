@@ -78,7 +78,7 @@ class UTA:
         if gene:
             gene = gene.upper()
 
-        if start_exon != "0" and end_exon != "0":
+        if start_exon and end_exon:
             if start_exon > end_exon:
                 return None
             elif end_exon < start_exon:
@@ -111,16 +111,6 @@ class UTA:
             (alt_ac_start[1] != alt_ac_end[1]) or \
                 (alt_ac_start[4] != alt_ac_end[4]):
             return None
-
-        if start_exon_offset != 0:
-            start_exon_offset = self._str_to_int(start_exon_offset)
-            if start_exon_offset is None:
-                return None
-
-        if end_exon_offset != 0:
-            end_exon_offset = self._str_to_int(end_exon_offset)
-            if end_exon_offset is None:
-                return None
 
         start = alt_ac_start[3]
         end = alt_ac_end[2]
@@ -177,38 +167,13 @@ class UTA:
         if not tx_exons:
             return None
 
-        if start_exon is not None:
-            start_exon = self._str_to_int(start_exon)
-            if start_exon is None:
-                return None
-            elif start_exon == 0:
-                start_exon = 1
-        else:
+        if start_exon == 0:
             start_exon = 1
 
-        if end_exon is not None:
-            end_exon = self._str_to_int(end_exon)
-            if end_exon is None:
-                return None
-            elif end_exon == 0:
-                end_exon = len(tx_exons)
-        else:
+        if end_exon == 0:
             end_exon = len(tx_exons)
+
         return tx_exons, start_exon, end_exon
-
-    @staticmethod
-    def _str_to_int(value):
-        """Convert string to int.
-
-        :param str value: Value to be converted
-        :return: int representation for string
-        """
-        try:
-            value = int(value)
-        except ValueError:
-            return None
-        else:
-            return value
 
     @staticmethod
     def get_tx_exon_coords(tx_exons, start_exon, end_exon) -> Tuple[int, int]:

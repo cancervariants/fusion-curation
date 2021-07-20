@@ -54,9 +54,6 @@ def test_uta_source(test_uta, tpm3_exon1_exon8, ntrk1_exon10_exon17):
     resp = test_uta.get_genomic_coords('NM_152263.3', 0, 8)
     assert resp == tpm3_exon1_exon8
 
-    resp = test_uta.get_genomic_coords('NM_152263.3', "0", "8")
-    assert resp == tpm3_exon1_exon8
-
     resp = test_uta.get_genomic_coords('NM_152263.3', 0, 8, gene="TPM3")
     assert resp == tpm3_exon1_exon8
 
@@ -82,9 +79,6 @@ def test_uta_source(test_uta, tpm3_exon1_exon8, ntrk1_exon10_exon17):
     expected = copy.deepcopy(ntrk1_exon10_exon17)
     expected["exon_start_offset"] = 3
     expected["start"] = 156874629
-    assert resp == expected
-
-    resp = test_uta.get_genomic_coords('NM_002529.3', 10, 0, start_exon_offset="3")
     assert resp == expected
 
 
