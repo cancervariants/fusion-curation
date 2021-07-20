@@ -220,7 +220,7 @@ class UTA:
             AND {tx_exon_end} BETWEEN T.tx_start_i AND T.tx_end_i
             AND T.alt_aln_method = 'splign'
             AND T.alt_ac LIKE 'NC_00%'
-            ORDER BY T.alt_ac DESC
+            ORDER BY T.alt_ac DESC;
             """
         )
         self.cursor.execute(query)

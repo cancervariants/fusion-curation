@@ -58,8 +58,7 @@ const ResponseField = ({
         id: geneIndex[symbol],
       };
     }
-
-    if (!out.gene && typeof exonIndex[values.transcript].geneSymbol !== 'undefined') {
+    if (!out.gene && (typeof exonIndex[values.transcript].geneSymbol !== 'undefined')) {
       const symbol = exonIndex[values.transcript].geneSymbol;
       const geneID = geneIndex[symbol];
       out.gene = {
