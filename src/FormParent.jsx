@@ -80,6 +80,9 @@ const FormParent = () => {
     }
     // eslint-disable-next-line consistent-return
     fetch(url).then((response) => response.json()).then((exonResponse) => {
+      if (exonResponse === null) {
+        return null;
+      }
       if (exonResponse.warnings) {
         return null;
       }
@@ -95,16 +98,18 @@ const FormParent = () => {
 
       const exonStart = exonResponse.start_exon;
       const exonEnd = exonResponse.end_exon;
-      const exonIndexCopy = exonIndex;
-      exonIndexCopy[txAc] = {
-        geneSymbol,
-        chr,
-        start,
-        end,
-        exonStart,
-        exonEnd,
-      };
-      setExonIndex(exonIndexCopy);
+      if (chr != null) {
+        const exonIndexCopy = exonIndex;
+        exonIndexCopy[txAc] = {
+          geneSymbol,
+          chr,
+          start,
+          end,
+          exonStart,
+          exonEnd,
+        };
+        setExonIndex(exonIndexCopy);
+      }
     });
   };
 

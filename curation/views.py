@@ -89,4 +89,6 @@ def get_exon(tx_ac, start_exon, end_exon, start_exon_offset=0,
         response['end'] = genomic_coords.get("end", None)
         response['start_exon'] = genomic_coords.get("start_exon", None)
         response['end_exon'] = genomic_coords.get("end_exon", None)
-    return response
+        return response
+    else:
+        return None
