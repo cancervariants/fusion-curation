@@ -33,8 +33,6 @@ const ComponentsForm = ({ components, setComponents }) => {
     if (field === 'componentType') {
       componentsCopy[cardIndex].componentType = newValue;
     } else {
-      console.log(field);
-      console.log(newValue);
       componentsCopy[cardIndex].componentValues[field] = newValue;
     }
     setComponents(componentsCopy);
