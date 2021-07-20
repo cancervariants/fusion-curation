@@ -1,4 +1,5 @@
 """Provide Views for curation application."""
+from typing import Dict
 from curation import app
 from flask import render_template
 from curation.gene_services import get_gene_id
@@ -33,9 +34,19 @@ def normalize_gene(symbol):
     return response
 
 
-@app.route('/coordinates/<tx_ac>/<start_exon>/<end_exon>/<gene>')
-def get_exon(tx_ac, start_exon, end_exon, gene=None):
-    """Fetch a transcript's exon information."""
+@app.route('/coordinates/<tx_ac>/<start_exon>/<end_exon>/<start_exon_offset>/<end_exon_offset>/<gene>')  # noqa: E501
+def get_exon(tx_ac, start_exon, end_exon, start_exon_offset=0,
+             end_exon_offset=0, gene=None) -> Dict:
+    """Fetch a transcript's exon information.
+
+    :param str tx_ac: Transcript accession
+    :param int start_exon: Start exon number
+    :param int end_exon: End exon number
+    :param int start_exon_offset: Start exon offset
+    :param int end_exon_offset: End exon offset
+    :param str gene: Gene symbol
+    :return: Transcript and exon data
+    """
     if gene == 'None':
         gene = None
     response = {
@@ -47,7 +58,10 @@ def get_exon(tx_ac, start_exon, end_exon, gene=None):
         "start": None,
         "end": None
     }
-    genomic_coords = uta.get_genomic_coords(tx_ac, start_exon, end_exon, gene=gene)
+    genomic_coords = uta.get_genomic_coords(
+        tx_ac, start_exon, end_exon, start_exon_offset=start_exon_offset,
+        end_exon_offset=end_exon_offset, gene=gene
+    )
     if genomic_coords:
         response['gene'] = genomic_coords.get("gene", None)
         response['chr'] = genomic_coords.get("chr", None)

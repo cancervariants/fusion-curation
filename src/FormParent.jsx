@@ -61,13 +61,23 @@ const FormParent = () => {
     });
   };
 
-  const getExon = (txAc, startExon, endExon, gene) => {
+  /**
+   * Get exon's data
+   * @param {*} txAc transcript accession
+   * @param {*} startExon starting exon number
+   * @param {*} endExon ending exon number
+   * @param {*} startExonOffset starting exon's offset
+   * @param {*} endExonOffset ending exon's offset
+   * @param {*} gene gene symbol
+   * @return Exon data
+   */
+  const getExon = (txAc, startExon, endExon, startExonOffset, endExonOffset, gene) => {
     let url = null;
     if (!gene) {
       // TODO: fix this so that gene is optional
-      url = `/coordinates/${txAc}/${startExon}/${endExon}/None`;
+      url = `/coordinates/${txAc}/${startExon}/${endExon}/${startExonOffset}/${endExonOffset}/None`;
     } else {
-      url = `/coordinates/${txAc}/${startExon}/${endExon}/${gene}`;
+      url = `/coordinates/${txAc}/${startExon}/${endExon}/${startExonOffset}/${endExonOffset}/${gene}`;
     }
     // eslint-disable-next-line consistent-return
     fetch(url).then((response) => response.json()).then((exonResponse) => {
@@ -115,14 +125,20 @@ const FormParent = () => {
           }
         }
       }
+
       if (values.transcript) {
         let exon = null;
+        const exonStartOffset = values.exon_start_offset ? values.exon_start_offset : 0;
+        const exonEndOffset = values.exon_end_offset ? values.exon_end_offset : 0;
         if (values.exon_start && !values.exon_end) {
-          exon = getExon(values.transcript, values.exon_start, 0, values.gene_symbol);
+          exon = getExon(values.transcript, values.exon_start, 0,
+            exonStartOffset, exonEndOffset, values.gene_symbol);
         } else if (!values.exon_start && values.exon_end) {
-          exon = getExon(values.transcript, 0, values.exon_end, values.gene_symbol);
+          exon = getExon(values.transcript, 0, values.exon_end,
+            exonStartOffset, exonEndOffset, values.gene_symbol);
         } else if (values.exon_start && values.exon_end) {
-          exon = getExon(values.transcript, values.exon_start, values.exon_end, values.gene_symbol);
+          exon = getExon(values.transcript, values.exon_start, values.exon_end,
+            exonStartOffset, exonEndOffset, values.gene_symbol);
         }
         if (exon != null) {
           exonIndexCopy[values.transcript] = exon;

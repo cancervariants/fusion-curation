@@ -64,7 +64,7 @@ class UTA:
         )
 
     def get_genomic_coords(self, tx_ac, start_exon, end_exon, start_exon_offset=0,
-                           end_exon_offset=0, gene=None) -> Tuple[str, int, int]:
+                           end_exon_offset=0, gene=None) -> Dict:
         """Get genomic chromosome and start/end exon coordinates.
 
         :param str tx_ac: Transcript accession
@@ -73,8 +73,7 @@ class UTA:
         :param int start_exon_offset: Starting exon offset
         :param int end_exon_offset: Ending exon offset
         :param str gene: Gene symbol
-        :return: genomic accession for chromosome,
-            start exon's end coordinate, end exon's start coordinate
+        :return: Dictionary containing transcript and exon data
         """
         tx_exon_start_end = self._get_tx_exon_start_end(tx_ac, start_exon, end_exon)
         if not tx_exon_start_end:
@@ -103,6 +102,16 @@ class UTA:
             (alt_ac_start[1] != alt_ac_end[1]) or \
                 (alt_ac_start[4] != alt_ac_end[4]):
             return None
+
+        if start_exon_offset != 0:
+            start_exon_offset = self._str_to_int(start_exon_offset)
+            if start_exon_offset is None:
+                return None
+
+        if end_exon_offset != 0:
+            end_exon_offset = self._str_to_int(end_exon_offset)
+            if end_exon_offset is None:
+                return None
 
         start = alt_ac_start[3]
         end = alt_ac_end[2]
@@ -156,17 +165,8 @@ class UTA:
         if not tx_exons:
             return None
 
-        def _exon_to_int(exon):
-            try:
-                if isinstance(exon, str):
-                    exon = int(exon)
-            except ValueError:
-                return None
-            else:
-                return exon
-
         if start_exon is not None:
-            start_exon = _exon_to_int(start_exon)
+            start_exon = self._str_to_int(start_exon)
             if start_exon is None:
                 return None
             elif start_exon == 0:
@@ -175,7 +175,7 @@ class UTA:
             start_exon = 1
 
         if end_exon is not None:
-            end_exon = _exon_to_int(end_exon)
+            end_exon = self._str_to_int(end_exon)
             if end_exon is None:
                 return None
             elif end_exon == 0:
@@ -185,8 +185,28 @@ class UTA:
         return tx_exons, start_exon, end_exon
 
     @staticmethod
-    def get_tx_exon_coords(tx_exons, start_exon, end_exon):
-        """Get transcript exon coordinates."""
+    def _str_to_int(value):
+        """Convert string to int.
+
+        :param str value: Value to be converted
+        :return: int representation for string
+        """
+        try:
+            value = int(value)
+        except ValueError:
+            return None
+        else:
+            return value
+
+    @staticmethod
+    def get_tx_exon_coords(tx_exons, start_exon, end_exon) -> Tuple[int, int]:
+        """Get transcript exon coordinates.
+
+        :param list tx_exon: List of transcript exons
+        :param int start_exon: Start exon number
+        :param int end_exon: End exon number
+        :return: Transcript start exon coord, Transcript end exon coord
+        """
         try:
             tx_exon_start = tx_exons[start_exon - 1].split(',')
             tx_exon_end = tx_exons[end_exon - 1].split(',')
@@ -196,7 +216,7 @@ class UTA:
         return tx_exon_start, tx_exon_end
 
     def _get_alt_ac_start_end(self, tx_ac, tx_exon_start,
-                              tx_exon_end, gene=None) -> Tuple[str, int, int]:
+                              tx_exon_end, gene=None) -> Tuple[str, int, int, int]:
         """Get genomic coordinates for exon start/end.
 
         :param str tx_ac: Transcript accession
@@ -204,7 +224,7 @@ class UTA:
         :param int tx_exon_end: Transcript's exon end coordinate
         :param str gene: Gene symbol
         :return: hgnc symbol, genomic accession for chromosome,
-            start exon's end coordinate, end exon's start coordinate
+            start exon's end coordinate, end exon's start coordinate, strand
         """
         if gene:
             gene_query = f"AND T.hgnc = '{gene}'"
@@ -257,4 +277,4 @@ class ParseResult(urlparse.ParseResult):
         return path_elems[2] if len(path_elems) > 2 else None
 
 
-uta = UTA(db_pwd="admin")
+uta = UTA()
