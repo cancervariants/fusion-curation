@@ -75,6 +75,15 @@ class UTA:
         :param str gene: Gene symbol
         :return: Dictionary containing transcript and exon data
         """
+        if gene:
+            gene = gene.upper()
+
+        if start_exon and end_exon:
+            if start_exon > end_exon:
+                return None
+            elif end_exon < start_exon:
+                return None
+
         tx_exon_start_end = self._get_tx_exon_start_end(tx_ac, start_exon, end_exon)
         if not tx_exon_start_end:
             return None
@@ -117,11 +126,14 @@ class UTA:
         end = alt_ac_end[2]
         strand = alt_ac_start[4]
         if strand == -1:
-            start_exon_offset *= -1
-            end_exon_offset *= -1
+            start_offset = start_exon_offset * -1
+            end_offset = end_exon_offset * -1
+        else:
+            start_offset = start_exon_offset
+            end_offset = end_exon_offset
 
-        start += start_exon_offset
-        end += end_exon_offset
+        start += start_offset
+        end += end_offset
 
         return {
             "gene": alt_ac_start[0],
