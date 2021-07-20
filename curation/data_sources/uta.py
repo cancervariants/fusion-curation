@@ -99,16 +99,30 @@ class UTA:
             return None
 
         # Genomic accessions must be the same
-        if (alt_ac_start[0] != alt_ac_end[0]) or (alt_ac_start[1] != alt_ac_end[1]):
+        if (alt_ac_start[0] != alt_ac_end[0]) or \
+            (alt_ac_start[1] != alt_ac_end[1]) or \
+                (alt_ac_start[4] != alt_ac_end[4]):
             return None
+
+        start = alt_ac_start[3]
+        end = alt_ac_end[2]
+        strand = alt_ac_start[4]
+        if strand == -1:
+            start_exon_offset *= -1
+            end_exon_offset *= -1
+
+        start += start_exon_offset
+        end += end_exon_offset
 
         return {
             "gene": alt_ac_start[0],
             "chr": alt_ac_start[1],
-            "start": alt_ac_start[3],
-            "end": alt_ac_end[2],
+            "start": start,
+            "end": end,
             "start_exon": start_exon,
-            "end_exon": end_exon
+            "end_exon": end_exon,
+            "exon_end_offset": end_exon_offset,
+            "exon_start_offset": start_exon_offset
         }
 
     def get_tx_exons(self, tx_ac) -> List[str]:
@@ -200,7 +214,7 @@ class UTA:
         query = (
             f"""
             SELECT T.hgnc, T.tx_ac, T.alt_ac, T.tx_start_i,
-                T.tx_end_i, T.alt_start_i, T.alt_end_i, C.cds_se_i
+                T.tx_end_i, T.alt_start_i, T.alt_end_i, C.cds_se_i, T.alt_strand
             FROM uta_20210129._cds_exons_fp_v as C
             JOIN uta_20210129.tx_exon_aln_v as T ON T.tx_ac = C.tx_ac
             WHERE T.tx_ac = '{tx_ac}'
@@ -217,7 +231,7 @@ class UTA:
         if not results:
             return None
         result = results[0]
-        return result[0], result[2], result[5], result[6]
+        return result[0], result[2], result[5], result[6], result[8]
 
 
 class ParseResult(urlparse.ParseResult):
