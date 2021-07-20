@@ -211,10 +211,12 @@ const ResponseField = ({
     new Promise((resolve) => setTimeout(resolve, ms))
   );
 
+  const printJSON = (jsonObject) => JSON.stringify(jsonObject, null, 2);
+
   // Copy the JSON field to clipboard and notify user
   async function handleObjectFieldClick() {
     if (responseJSON && responseJSON !== '') {
-      navigator.clipboard.writeText(responseJSON);
+      navigator.clipboard.writeText(printJSON(responseJSON));
       setObjectFieldLabel('copied!');
       await sleep(2000);
       setObjectFieldLabel('JSON');
@@ -242,7 +244,7 @@ const ResponseField = ({
           InputProps={{
             readOnly: true,
           }}
-          value={JSON.stringify(responseJSON, null, 2)}
+          value={printJSON(responseJSON)}
           onClick={() => handleObjectFieldClick()}
           style={{ width: 700 }}
           rowsMax={14}
