@@ -74,7 +74,7 @@ const Component = ({
             <Grid item xs={0.5}>
               {showDragIcon ? <DragIndicator /> : <DragIndicator color="disabled" />}
             </Grid>
-            <Grid item xs={3} container direction="column">
+            <Grid item xs={3} container direction="column" justifyConcent="space-around" alignItems="center">
               <Grid item>
                 <FormControl className={classes.formControl}>
                   <Select

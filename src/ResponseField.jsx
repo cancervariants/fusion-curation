@@ -71,6 +71,9 @@ const ResponseField = ({
         chr: '<computed>', // TODO
         pos: '<computed>', // TODO
       };
+      if (values.exon_end_offset && values.exon_end_offset !== '') {
+        out.exon_end_offset = values.exon_end_offset;
+      }
     }
     if (values.exon_start !== '') {
       if (index === components.length - 1) {
@@ -86,6 +89,9 @@ const ResponseField = ({
           chr: '<computed>', // TODO
           pos: '<computed>', // TODO
         };
+      }
+      if (values.exon_start_offset && values.exon_start_offset !== '') {
+        out.exon_start_offset = values.exon_start_offset;
       }
     }
     return out;
