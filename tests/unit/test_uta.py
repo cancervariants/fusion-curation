@@ -51,6 +51,7 @@ def ntrk1_exon10_exon17():
 
 def test_uta_source(test_uta, tpm3_exon1_exon8, ntrk1_exon10_exon17):
     """Test that uta data source works correctly."""
+    # TPM3
     resp = test_uta.get_genomic_coords('NM_152263.3', 0, 8)
     assert resp == tpm3_exon1_exon8
 
@@ -60,12 +61,35 @@ def test_uta_source(test_uta, tpm3_exon1_exon8, ntrk1_exon10_exon17):
     resp = test_uta.get_genomic_coords('NM_152263.3', 0, 8, gene="tpm3")
     assert resp == tpm3_exon1_exon8
 
-    resp = test_uta.get_genomic_coords('NM_152263.3', 0, 8, end_exon_offset=-5)
+    resp = test_uta.get_genomic_coords('NM_152263.3', 0, 0, gene="tpm3")
     expected = copy.deepcopy(tpm3_exon1_exon8)
+    expected["end_exon"] = 10
+    expected["end"] = 154161812
+    assert resp == expected
+
+    resp = test_uta.get_genomic_coords('NM_152263.3', 0, 8, end_exon_offset=-5)
+    expected["end_exon"] = 8
     expected["exon_end_offset"] = -5
     expected["end"] = 154170404
     assert resp == expected
 
+    resp = test_uta.get_genomic_coords('NM_152263.3', 0, 8, end_exon_offset=5)
+    expected["exon_end_offset"] = 5
+    expected["end"] = 154170394
+    assert resp == expected
+
+    resp = test_uta.get_genomic_coords('NM_152263.3', 3, 8, start_exon_offset=3, end_exon_offset=5)
+    expected["start_exon"] = 3
+    expected["exon_start_offset"] = 3
+    expected["start"] = 154176245
+    assert resp == expected
+
+    resp = test_uta.get_genomic_coords('NM_152263.3', 3, 8, start_exon_offset=-3, end_exon_offset=5)
+    expected["exon_start_offset"] = -3
+    expected["start"] = 154176251
+    assert resp == expected
+
+    # NTRK1
     resp = test_uta.get_genomic_coords('NM_002529.3', 10, 0)
     assert resp == ntrk1_exon10_exon17
 
@@ -80,6 +104,10 @@ def test_uta_source(test_uta, tpm3_exon1_exon8, ntrk1_exon10_exon17):
     expected["exon_start_offset"] = 3
     expected["start"] = 156874629
     assert resp == expected
+
+    resp = test_uta.get_genomic_coords('NM_002529.3', 10, 0, start_exon_offset=-3)
+    expected["exon_start_offset"] = -3
+    expected["start"] = 156874623
 
 
 def test_no_matches(test_uta):
@@ -98,4 +126,12 @@ def test_no_matches(test_uta):
 
     # Transcript DNE
     resp = test_uta.get_genomic_coords('NM_12345.6', 7, 0)
+    assert resp is None
+
+    # Index error for invalid exon
+    resp = test_uta.get_genomic_coords('NM_12345.6', -1, 0)
+    assert resp is None
+
+    # Gene that does not match transcript
+    resp = test_uta.get_genomic_coords('NM_152263.3', 8, 1, gene='NTKR1')
     assert resp is None
