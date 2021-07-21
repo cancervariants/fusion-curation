@@ -5,6 +5,10 @@ import psycopg2
 import psycopg2.extras
 from typing import Dict, List, Optional, Tuple
 from os import environ
+import logging
+
+logger = logging.getLogger('fusion_backend')
+logger.setLevel(logging.DEBUG)
 
 
 class UTA:
@@ -80,8 +84,12 @@ class UTA:
 
         if start_exon and end_exon:
             if start_exon > end_exon:
+                logger.warning(f"start exon, {start_exon},"
+                               f"is greater than end exon, {end_exon}")
                 return None
             elif end_exon < start_exon:
+                logger.warning(f"end exon, {end_exon}, "
+                               f"is less than start exon, {start_exon}")
                 return None
 
         tx_exon_start_end = self._get_tx_exon_start_end(tx_ac, start_exon, end_exon)
@@ -106,10 +114,18 @@ class UTA:
         if not alt_ac_end:
             return None
 
-        # Genomic accessions must be the same
-        if (alt_ac_start[0] != alt_ac_end[0]) or \
-            (alt_ac_start[1] != alt_ac_end[1]) or \
-                (alt_ac_start[4] != alt_ac_end[4]):
+        is_valid = True
+        if alt_ac_start[0] != alt_ac_end[0]:
+            logger.warning(f"{alt_ac_start[0]} != {alt_ac_end[0]}")
+            is_valid = False
+        if alt_ac_start[1] != alt_ac_end[1]:
+            logger.warning(f"{alt_ac_start[1]} != {alt_ac_end[1]}")
+            is_valid = False
+        if alt_ac_start[4] != alt_ac_end[4]:
+            logger.warning(f"{alt_ac_start[4]} != {alt_ac_end[4]}")
+            is_valid = False
+
+        if not is_valid:
             return None
 
         start = alt_ac_start[3]
@@ -121,7 +137,6 @@ class UTA:
         else:
             start_offset = start_exon_offset
             end_offset = end_exon_offset
-
         start += start_offset
         end += end_offset
 
@@ -150,10 +165,16 @@ class UTA:
             """
         )
         self.cursor.execute(query)
-        cds_se_i = self.cursor.fetchall()
-        if not cds_se_i:
+        try:
+            cds_se_i = self.cursor.fetchall()
+        except psycopg2.ProgrammingError as e:
+            logger.warning(f"{e} for {query}")
             return None
-        return cds_se_i[0][0].split(';')
+        else:
+            if not cds_se_i:
+                logger.warning(f"Unable to get exons for {tx_ac}")
+                return None
+            return cds_se_i[0][0].split(';')
 
     def _get_tx_exon_start_end(self, tx_ac, start_exon, end_exon) -> Tuple[int, int]:
         """Get exon start/end coordinates given accession and gene.
@@ -187,7 +208,8 @@ class UTA:
         try:
             tx_exon_start = tx_exons[start_exon - 1].split(',')
             tx_exon_end = tx_exons[end_exon - 1].split(',')
-        except IndexError:
+        except IndexError as e:
+            logger.warning(e)
             return None
 
         return tx_exon_start, tx_exon_end
@@ -224,11 +246,19 @@ class UTA:
             """
         )
         self.cursor.execute(query)
-        results = self.cursor.fetchall()
-        if not results:
+        try:
+            results = self.cursor.fetchall()
+        except psycopg2.ProgrammingError as e:
+            logger.warning(f"{e} for {query}")
             return None
-        result = results[0]
-        return result[0], result[2], result[5], result[6], result[8]
+        else:
+            if not results:
+                logger.warning(f"Unable to get genomimc data for {tx_ac}"
+                               f" on start exon {tx_exon_start} and "
+                               f"end exon {tx_exon_end}")
+                return None
+            result = results[0]
+            return result[0], result[2], result[5], result[6], result[8]
 
 
 class ParseResult(urlparse.ParseResult):

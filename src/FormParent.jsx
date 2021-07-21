@@ -78,8 +78,13 @@ const FormParent = () => {
     } else {
       url = `/coordinates/${txAc}/${startExon}/${endExon}/${startExonOffset}/${endExonOffset}/${gene}`;
     }
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     // eslint-disable-next-line consistent-return
-    fetch(url).then((response) => response.json()).then((exonResponse) => {
+    }).then((response) => response.json()).then((exonResponse) => {
       if (exonResponse === null) {
         return null;
       }
