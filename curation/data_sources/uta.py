@@ -82,51 +82,21 @@ class UTA:
         if gene:
             gene = gene.upper()
 
-        if start_exon and end_exon:
-            if start_exon > end_exon:
-                logger.warning(f"start exon, {start_exon},"
-                               f"is greater than end exon, {end_exon}")
-                return None
-            elif end_exon < start_exon:
-                logger.warning(f"end exon, {end_exon}, "
-                               f"is less than start exon, {start_exon}")
-                return None
-
         tx_exon_start_end = self._get_tx_exon_start_end(tx_ac, start_exon, end_exon)
         if not tx_exon_start_end:
             return None
-
         tx_exons, start_exon, end_exon = tx_exon_start_end
 
         tx_exon_coords = self.get_tx_exon_coords(tx_exons, start_exon, end_exon)
         if not tx_exon_coords:
             return None
-
         tx_exon_start, tx_exon_end = tx_exon_coords
 
-        alt_ac_start = self._get_alt_ac_start_end(tx_ac, int(tx_exon_start[0]),
-                                                  int(tx_exon_start[1]), gene=gene)
-        if not alt_ac_start:
+        alt_ac_start_end = self._get_alt_ac_start_and_end(tx_ac, tx_exon_start,
+                                                          tx_exon_end, gene=gene)
+        if not alt_ac_start_end:
             return None
-
-        alt_ac_end = self._get_alt_ac_start_end(tx_ac, int(tx_exon_end[0]),
-                                                int(tx_exon_end[1]), gene=gene)
-        if not alt_ac_end:
-            return None
-
-        is_valid = True
-        if alt_ac_start[0] != alt_ac_end[0]:
-            logger.warning(f"{alt_ac_start[0]} != {alt_ac_end[0]}")
-            is_valid = False
-        if alt_ac_start[1] != alt_ac_end[1]:
-            logger.warning(f"{alt_ac_start[1]} != {alt_ac_end[1]}")
-            is_valid = False
-        if alt_ac_start[4] != alt_ac_end[4]:
-            logger.warning(f"{alt_ac_start[4]} != {alt_ac_end[4]}")
-            is_valid = False
-
-        if not is_valid:
-            return None
+        alt_ac_start, alt_ac_end = alt_ac_start_end
 
         start = alt_ac_start[3]
         end = alt_ac_end[2]
@@ -184,6 +154,16 @@ class UTA:
         :param int end_exon: Ending exon number
         :return: Transcript's start/end exon coordinates
         """
+        if start_exon and end_exon:
+            if start_exon > end_exon:
+                logger.warning(f"start exon, {start_exon},"
+                               f"is greater than end exon, {end_exon}")
+                return None
+            elif end_exon < start_exon:
+                logger.warning(f"end exon, {end_exon}, "
+                               f"is less than start exon, {start_exon}")
+                return None
+
         tx_exons = self.get_tx_exons(tx_ac)
         if not tx_exons:
             return None
@@ -214,9 +194,41 @@ class UTA:
 
         return tx_exon_start, tx_exon_end
 
-    def _get_alt_ac_start_end(self, tx_ac, tx_exon_start,
-                              tx_exon_end, gene=None) -> Tuple[str, int, int, int]:
-        """Get genomic coordinates for exon start/end.
+    def _get_alt_ac_start_and_end(self, tx_ac, tx_exon_start,
+                                  tx_exon_end, gene=None) -> Tuple[Tuple, Tuple]:
+        """Get genomic coordinates for related transcript exon start and end.
+
+        :param str tx_ac: Transcript accession
+        :param int tx_exon_start: Transcript's exon start coordinate
+        :param int tx_exon_end: Transcript's exon end coordinate
+        :param str gene: Gene symbol
+        :return: Alt ac start and end data
+        """
+        alt_ac_start = self._get_alt_ac_start_or_end(tx_ac, int(tx_exon_start[0]),
+                                                     int(tx_exon_start[1]), gene=gene)
+        if not alt_ac_start:
+            return None
+
+        alt_ac_end = self._get_alt_ac_start_or_end(tx_ac, int(tx_exon_end[0]),
+                                                   int(tx_exon_end[1]), gene=gene)
+        if not alt_ac_end:
+            return None
+
+        # validate
+        if alt_ac_start[0] != alt_ac_end[0]:
+            logger.warning(f"{alt_ac_start[0]} != {alt_ac_end[0]}")
+            return None
+        if alt_ac_start[1] != alt_ac_end[1]:
+            logger.warning(f"{alt_ac_start[1]} != {alt_ac_end[1]}")
+            return None
+        if alt_ac_start[4] != alt_ac_end[4]:
+            logger.warning(f"{alt_ac_start[4]} != {alt_ac_end[4]}")
+            return None
+        return alt_ac_start, alt_ac_end
+
+    def _get_alt_ac_start_or_end(self, tx_ac, tx_exon_start,
+                                 tx_exon_end, gene) -> Tuple[str, int, int, int]:
+        """Get genomic data for related transcript exon start or end.
 
         :param str tx_ac: Transcript accession
         :param int tx_exon_start: Transcript's exon start coordinate
