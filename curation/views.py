@@ -34,9 +34,10 @@ def normalize_gene(symbol):
     return response
 
 
+@app.route('/coordinates/<tx_ac>/<start_exon>/<end_exon>/<start_exon_offset>/<end_exon_offset>', defaults={'gene': None})  # noqa: E501
 @app.route('/coordinates/<tx_ac>/<start_exon>/<end_exon>/<start_exon_offset>/<end_exon_offset>/<gene>')  # noqa: E501
-def get_exon(tx_ac, start_exon, end_exon, start_exon_offset=0,
-             end_exon_offset=0, gene=None) -> Dict:
+def get_exon(tx_ac, start_exon, end_exon, start_exon_offset,
+             end_exon_offset, gene) -> Dict:
     """Fetch a transcript's exon information.
 
     :param str tx_ac: Transcript accession
@@ -47,9 +48,6 @@ def get_exon(tx_ac, start_exon, end_exon, start_exon_offset=0,
     :param str gene: Gene symbol
     :return: Transcript and exon data
     """
-    if gene == 'None':
-        gene = None
-
     response = {
         "tx_ac": tx_ac,
         "gene": gene,

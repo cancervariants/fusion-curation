@@ -73,8 +73,7 @@ const FormParent = () => {
   const getExon = (txAc, startExon, endExon, startExonOffset, endExonOffset, gene) => {
     let url = null;
     if (!gene) {
-      // TODO: fix this so that gene is optional
-      url = `/coordinates/${txAc}/${startExon}/${endExon}/${startExonOffset}/${endExonOffset}/None`;
+      url = `/coordinates/${txAc}/${startExon}/${endExon}/${startExonOffset}/${endExonOffset}`;
     } else {
       url = `/coordinates/${txAc}/${startExon}/${endExon}/${startExonOffset}/${endExonOffset}/${gene}`;
     }
