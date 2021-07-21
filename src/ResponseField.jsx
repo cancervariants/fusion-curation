@@ -82,7 +82,7 @@ const ResponseField = ({
         pos: exonIndex[values.transcript].end,
       };
       if (values.exon_end_offset && values.exon_end_offset !== '') {
-        out.exon_end_offset = values.exon_end_offset;
+        out.exon_end_offset = parseInt(values.exon_end_offset, 10);
       }
     }
     if (values.exon_start !== '') {
@@ -101,7 +101,7 @@ const ResponseField = ({
         };
       }
       if (values.exon_start_offset && values.exon_start_offset !== '') {
-        out.exon_start_offset = values.exon_start_offset;
+        out.exon_start_offset = parseInt(values.exon_start_offset, 10);
       }
     }
     return out;
