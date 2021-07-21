@@ -244,8 +244,7 @@ class UTA:
 
         query = (
             f"""
-            SELECT T.hgnc, T.tx_ac, T.alt_ac, T.tx_start_i,
-                T.tx_end_i, T.alt_start_i, T.alt_end_i, C.cds_se_i, T.alt_strand
+            SELECT T.hgnc, T.alt_ac, T.alt_start_i, T.alt_end_i, T.alt_strand
             FROM uta_20210129._cds_exons_fp_v as C
             JOIN uta_20210129.tx_exon_aln_v as T ON T.tx_ac = C.tx_ac
             WHERE T.tx_ac = '{tx_ac}'
@@ -270,7 +269,7 @@ class UTA:
                                f"end exon {tx_exon_end}")
                 return None
             result = results[0]
-            return result[0], result[2], result[5], result[6], result[8]
+            return result[0], result[1], result[2], result[3], result[4]
 
 
 class ParseResult(urlparse.ParseResult):
