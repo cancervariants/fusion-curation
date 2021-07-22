@@ -61,6 +61,11 @@ const Component = ({
         />
       );
     }
+    if (componentType === 'unknown') {
+      return (
+        <></>
+      );
+    }
     return null;
   };
 
@@ -71,7 +76,7 @@ const Component = ({
       <Paper elevation={2}>
         <Box p={1}>
           <Grid container direction="row" alignItems="center">
-            <Grid item xs={0.5}>
+            <Grid item>
               {showDragIcon ? <DragIndicator /> : <DragIndicator color="disabled" />}
             </Grid>
             <Grid item xs={3} container direction="column" justifyContent="space-around" alignItems="center">
@@ -87,10 +92,11 @@ const Component = ({
                     <MenuItem value="genomic_region">Genomic Region</MenuItem>
                     <MenuItem value="linker_sequence">Linker Sequence</MenuItem>
                     <MenuItem value="gene">Gene</MenuItem>
+                    <MenuItem value="unknown">Unknown</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item>
+              <Grid item xs={10}>
                 <Tooltip title="Delete">
                   <IconButton aria-label="delete" onClick={deleteCard}>
                     <CloseIcon />

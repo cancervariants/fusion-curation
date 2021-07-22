@@ -140,6 +140,18 @@ const ResponseField = ({
   );
 
   /**
+   * Create unkown component object given user input
+   * @param {Object} component object corresponding to given component, as stored in state and
+   *  filled out by user
+   * @returns complete gene object
+   */
+  const unknownToJSON = () => (
+    {
+      component_type: 'unknown_gene',
+    }
+  );
+
+  /**
    * Generate response objects.
    * Should trigger upon changes in any user-supplied value (ie, not any AJAX-generated/computed
    *  fields)
@@ -185,6 +197,9 @@ const ResponseField = ({
       }
       if (comp.componentType === 'gene') {
         return geneToJSON(comp);
+      }
+      if (comp.componentType === 'unknown') {
+        return unknownToJSON();
       }
       return null;
     });
