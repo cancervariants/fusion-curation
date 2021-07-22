@@ -62,12 +62,12 @@ const FormParent = () => {
 
   /**
    * Get exon's data
-   * @param {*} txAc transcript accession
-   * @param {*} startExon starting exon number
-   * @param {*} endExon ending exon number
-   * @param {*} startExonOffset starting exon's offset
-   * @param {*} endExonOffset ending exon's offset
-   * @param {*} gene gene symbol
+   * @param {string} txAc transcript accession
+   * @param {string|number} startExon starting exon number
+   * @param {string|number} endExon ending exon number
+   * @param {string|number} startExonOffset starting exon's offset
+   * @param {string|number} endExonOffset ending exon's offset
+   * @param {string} [gene] gene symbol
    * @return Exon data
    */
   const getExon = (txAc, startExon, endExon, startExonOffset, endExonOffset, gene) => {
