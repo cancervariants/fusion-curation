@@ -5,7 +5,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { DragIndicator } from '@material-ui/icons';
 import CloseIcon from '@material-ui/icons/Close';
-import TranscriptRegionComponent from './TranscriptRegionComponent';
+import TranscriptSegmentComponent from './TranscriptSegmentComponent';
 import GenomicRegionComponent from './GenomicRegionComponent';
 import LinkerSequenceComponent from './LinkerSequenceComponent';
 import GeneComponent from './GeneComponent';
@@ -28,9 +28,9 @@ const Component = ({
   const [showDragIcon, setShowDragIcon] = useState(false);
 
   const renderCard = () => {
-    if (componentType === 'transcript_region') {
+    if (componentType === 'transcript_segment') {
       return (
-        <TranscriptRegionComponent
+        <TranscriptSegmentComponent
           componentValues={componentValues}
           handleCardChange={handleCardChange}
         />
@@ -87,7 +87,7 @@ const Component = ({
                     value={componentType}
                     onChange={(event) => handleCardChange('componentType', event.target.value)}
                   >
-                    <MenuItem value="transcript_region">Transcript Region</MenuItem>
+                    <MenuItem value="transcript_segment">Transcript Segment</MenuItem>
                     <MenuItem value="genomic_region">Genomic Region</MenuItem>
                     <MenuItem value="linker_sequence">Linker Sequence</MenuItem>
                     <MenuItem value="gene">Gene</MenuItem>

@@ -19,7 +19,7 @@ const ResponseField = ({
    * @return {string} fusion object structured as human-readable string
    */
   const outputToReadable = (outputJSON) => {
-    const jsonComponents = outputJSON.components;
+    const jsonComponents = outputJSON.transcript_components;
     if (jsonComponents.length > 2) {
       const beginning = jsonComponents[0];
       const end = jsonComponents[jsonComponents.length - 1];
@@ -41,19 +41,20 @@ const ResponseField = ({
   };
 
   /**
-   * Create transcript_region object given user input
+   * Create transcript_segment object given user input
    * @param {Object} component object corresponding to given component, as stored in state and
    *  filled out by user
    * @param {number} index location in state array - used to infer some coordinate defaults
-   * @returns complete transcript_region object
+   * @returns complete transcript_segment object
    */
-  const transcriptRegionToJSON = (component, index) => {
-    const out = {};
+  const transcriptSegmentToJSON = (component, index) => {
+    const out = { component_type: 'transcript_segment' };
     const values = component.componentValues;
     if ('transcript' in values) out.transcript = values.transcript;
     if ('gene_symbol' in values) {
       const symbol = values.gene_symbol;
       out.gene = {
+        type: 'GeneDescriptor',
         symbol,
         id: geneIndex[symbol],
       };
@@ -168,7 +169,7 @@ const ResponseField = ({
       if (rfPreserved === 'Yes') {
         jsonOutput.r_frame_preserved = true;
         if (domains.length > 0) {
-          jsonOutput.domains = domains.map((domain) => {
+          jsonOutput.protein_domains = domains.map((domain) => {
             const domainObject = {
               status: domain.status,
               name: domain.name,
@@ -189,9 +190,9 @@ const ResponseField = ({
       }
     }
 
-    jsonOutput.components = components.map((comp, index) => {
-      if (comp.componentType === 'transcript_region') {
-        return transcriptRegionToJSON(comp, index);
+    jsonOutput.transcript_components = components.map((comp, index) => {
+      if (comp.componentType === 'transcript_segment') {
+        return transcriptSegmentToJSON(comp, index);
       }
       if (comp.componentType === 'genomic_region') {
         return genomicRegionToJSON(comp);

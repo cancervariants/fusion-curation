@@ -2,7 +2,7 @@ import { React } from 'react';
 import { TextField } from '@material-ui/core';
 import NumericTextField from './NumericTextField';
 
-const UnknownComponent = ({ componentValues, handleCardChange }) => (
+const UnknownGeneComponent = ({ componentValues, handleCardChange }) => (
   <>
     <TextField
       id="standard-basic"
@@ -25,4 +25,4 @@ const UnknownComponent = ({ componentValues, handleCardChange }) => (
   </>
 );
 
-export default UnknownComponent;
+export default UnknownGeneComponent;

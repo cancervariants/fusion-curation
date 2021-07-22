@@ -2,7 +2,7 @@ import { React } from 'react';
 import { TextField } from '@material-ui/core';
 import NumericTextField from './NumericTextField';
 
-const TranscriptRegionComponent = ({ componentValues, handleCardChange }) => (
+const TranscriptSegmentComponent = ({ componentValues, handleCardChange }) => (
   <>
     <TextField
       id="standard-basic"
@@ -53,4 +53,4 @@ const TranscriptRegionComponent = ({ componentValues, handleCardChange }) => (
   </>
 );
 
-export default TranscriptRegionComponent;
+export default TranscriptSegmentComponent;
