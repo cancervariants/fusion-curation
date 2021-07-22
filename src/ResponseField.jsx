@@ -140,16 +140,20 @@ const ResponseField = ({
   );
 
   /**
-   * Create unkown component object given user input
+   * Create unknown_gene component object given user input
    * @param {Object} component object corresponding to given component, as stored in state and
    *  filled out by user
-   * @returns complete gene object
+   * @returns complete unknown_gene object
    */
-  const unknownToJSON = () => (
-    {
+  const unknownToJSON = (component) => {
+    const output = {
       component_type: 'unknown_gene',
-    }
-  );
+    };
+    if (component.chr) output.chr = component.chr;
+    if (component.start) output.start = component.start;
+    if (component.end) output.end = component.end;
+    return output;
+  };
 
   /**
    * Generate response objects.
@@ -198,8 +202,8 @@ const ResponseField = ({
       if (comp.componentType === 'gene') {
         return geneToJSON(comp);
       }
-      if (comp.componentType === 'unknown') {
-        return unknownToJSON();
+      if (comp.componentType === 'unknown_gene') {
+        return unknownToJSON(comp);
       }
       return null;
     });

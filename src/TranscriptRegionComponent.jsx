@@ -2,7 +2,6 @@ import { React } from 'react';
 import { TextField } from '@material-ui/core';
 import NumericTextField from './NumericTextField';
 
-// TODO refactor each component into a render() call to cut down on repeated code
 const TranscriptRegionComponent = ({ componentValues, handleCardChange }) => (
   <>
     <TextField
@@ -45,7 +44,12 @@ const TranscriptRegionComponent = ({ componentValues, handleCardChange }) => (
       )
       : null}
     <br />
-    <TextField id="standard-basic" label="Gene" value={componentValues.gene_symbol} onChange={(event) => handleCardChange('gene_symbol', event.target.value)} />
+    <TextField
+      id="standard-basic"
+      label="Gene"
+      value={componentValues.gene_symbol}
+      onChange={(event) => handleCardChange('gene_symbol', event.target.value)}
+    />
   </>
 );
 

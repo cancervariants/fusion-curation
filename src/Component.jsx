@@ -10,7 +10,6 @@ import GenomicRegionComponent from './GenomicRegionComponent';
 import LinkerSequenceComponent from './LinkerSequenceComponent';
 import GeneComponent from './GeneComponent';
 
-// todo move up one and send as props?
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -61,7 +60,7 @@ const Component = ({
         />
       );
     }
-    if (componentType === 'unknown') {
+    if (componentType === 'unknown_gene') {
       return (
         <></>
       );
@@ -92,7 +91,7 @@ const Component = ({
                     <MenuItem value="genomic_region">Genomic Region</MenuItem>
                     <MenuItem value="linker_sequence">Linker Sequence</MenuItem>
                     <MenuItem value="gene">Gene</MenuItem>
-                    <MenuItem value="unknown">Unknown</MenuItem>
+                    <MenuItem value="unknown_gene">Unknown</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
