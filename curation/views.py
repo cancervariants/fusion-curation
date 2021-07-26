@@ -38,7 +38,7 @@ def normalize_gene(symbol: str) -> Dict:
     return response
 
 
-@app.route('/functional-domain/<name>')
+@app.route('/domain/<name>')
 def get_functional_domain(name: str) -> Dict:
     """Fetch interpro ID given functional domain name.
     :param str name: name of functional domain
