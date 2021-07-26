@@ -3,7 +3,7 @@ import { Box, TextField } from '@material-ui/core';
 
 const ResponseField = ({
   responseJSON, setResponseJSON, responseHuman, setResponseHuman, components, proteinCoding,
-  rfPreserved, domains, causativeEventKnown, causativeEvent, geneIndex,
+  rfPreserved, domains, causativeEventKnown, causativeEvent, regulatoryElements, geneIndex,
 }) => {
   /**
    * Transform computable fusion object into human-readable string
@@ -165,6 +165,7 @@ const ResponseField = ({
     // set JSON
     const jsonOutput = {};
 
+    // functional domains
     if (proteinCoding === 'Yes') {
       if (rfPreserved === 'Yes') {
         jsonOutput.r_frame_preserved = true;
@@ -190,6 +191,7 @@ const ResponseField = ({
       }
     }
 
+    // transcript components
     jsonOutput.transcript_components = components.map((comp, index) => {
       if (comp.componentType === 'transcript_segment') {
         return transcriptSegmentToJSON(comp, index);
@@ -209,10 +211,27 @@ const ResponseField = ({
       return null;
     });
 
+    // causative event
     if (causativeEventKnown === 'Yes') {
       jsonOutput.causative_event = {
         event_type: causativeEvent,
       };
+    }
+
+    // regulatory elements
+    if (regulatoryElements && regulatoryElements.length > 0) {
+      jsonOutput.regulatory_elements = regulatoryElements.map((element) => {
+        const elementFormatted = {};
+        if (element.type) elementFormatted.type = element.type;
+        if (element.gene) {
+          const symbol = element.gene;
+          elementFormatted.gene = {
+            value_id: geneIndex[symbol],
+            label: symbol,
+          };
+        }
+        return elementFormatted;
+      });
     }
 
     // set humanReadable
@@ -221,6 +240,7 @@ const ResponseField = ({
     if (humanReadable) setResponseHuman(humanReadable);
   }, [
     components, proteinCoding, rfPreserved, domains, causativeEventKnown, causativeEvent,
+    regulatoryElements,
   ]);
 
   // manage user select/send to clipboard interactions

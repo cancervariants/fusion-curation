@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import FormRadio from './FormRadio';
 import CausEventForm from './CausEventForm';
@@ -9,6 +9,7 @@ import DomainsForm from './DomainsForm';
 import SubmitButton from './SubmitButton';
 import ResponseField from './ResponseField';
 import ComponentsForm from './ComponentsForm';
+import RegulatoryElementsForm from './RegulatoryElementsForm';
 
 const useStyles = makeStyles({
   root: {
@@ -20,6 +21,10 @@ const FormParent = () => {
   const classes = useStyles();
 
   // visibility handlers
+  const [showProteinCoding, setShowProteinCoding] = useState(false);
+  const [showNearRegulatory, setShowNearRegulatory] = useState(false);
+  const [showRegulatoryElements, setShowRegulatoryElements] = useState(false);
+  const [showInvalidFusion, setShowInvalidFusion] = useState(false);
   const [showRfPreserved, setShowRfPreserved] = useState(false);
   const [showDomains, setShowDomains] = useState(false);
   const [showComponents, setShowComponents] = useState(false);
@@ -29,7 +34,10 @@ const FormParent = () => {
   const [showResponse, setShowResponse] = useState(false);
 
   // form value handlers
-  const [proteinCodingValue, setProteinCodingValue] = useState('');
+  const [chimericTranscript, setChimericTranscript] = useState('');
+  const [nearRegulatory, setNearRegulatory] = useState('');
+  const [regulatoryElements, setRegulatoryElements] = useState([]);
+  const [proteinCoding, setProteinCoding] = useState('');
   const [rfPreserved, setRfPreserved] = useState('');
   const [domains, setDomains] = useState([]);
   // TODO need default value to make controlled/uncontrolled error go away?
@@ -78,44 +86,73 @@ const FormParent = () => {
   }, [components]);
 
   useEffect(() => {
-    const geneIndexCopy = geneIndex;
     domains.forEach((domain) => {
-      if (domain.gene && !(domain.gene in geneIndexCopy)) {
-        const geneID = getGeneID(domain.gene);
-        if (geneID != null) {
-          geneIndexCopy[domain.gene] = geneID;
-        }
-      }
+      if (domain.gene && !(domain.gene in geneIndex)) getGeneID(domain.gene);
     });
-    setGeneIndex(geneIndexCopy);
   }, [domains]);
+
+  useEffect(() => {
+    regulatoryElements.forEach((element) => {
+      if (element.gene && !(element.gene in geneIndex)) getGeneID(element.gene);
+    });
+  }, [regulatoryElements]);
 
   /**
    * Recursively hide children
-   * @param {string} field name of field (should be the same as the state variable name)
+   * @param {string} field name of field (should be the same as the state variable name) to hide
    */
   const hideChildren = (field) => {
     const dispatch = {
-      rfPreserved: 0,
-      retainedDomains: 1,
-      components: 2,
-      causativeEventKnown: 3,
-      causativeEvent: 4,
-      submit: 4,
-      response: 6,
+      chimericTranscript: 0,
+      proteinCoding: 0,
+      rfPreserved: 1,
+      retainedDomains: 2,
+      components: 3,
+      causativeEventKnown: 4,
+      causativeEvent: 5,
+      nearRegulatory: 6,
+      regulatoryElements: 7,
+      invalidFusion: 8,
+      submit: 9,
+      response: 9,
     };
 
     const precedence = [
+      setShowProteinCoding,
       setShowRfPreserved,
       setShowDomains,
       setShowComponents,
       setShowCausEvent,
       setShowCausEventInfo,
+      setShowNearRegulatory,
+      setShowRegulatoryElements,
+      setShowInvalidFusion,
       setShowSubmit,
       setShowResponse,
     ];
 
     precedence.slice(dispatch[field]).forEach((f) => f(false));
+  };
+
+  /**
+   * Handle result of "chimeric transcript" deicision. Make child elements visible or invisible.
+   * @param {string} oldValue value of previous selection
+   * @param {string} newValue newly selected value
+   * @returns null, but updates state of child visibility elements accordingly
+   */
+  const handleSetChimericTranscript = (oldValue, newValue) => {
+    if (oldValue !== newValue) {
+      setChimericTranscript(newValue);
+      if (newValue === 'Yes') {
+        hideChildren('near-reg-element');
+        setShowProteinCoding(true);
+      } else if (newValue === 'No') {
+        hideChildren('protein-coding');
+        setShowNearRegulatory(true);
+      } else {
+        hideChildren('chimeric');
+      }
+    }
   };
 
   /**
@@ -126,7 +163,7 @@ const FormParent = () => {
    */
   const handleSetProteinCoding = (oldValue, newValue) => {
     if (oldValue !== newValue) {
-      setProteinCodingValue(newValue);
+      setProteinCoding(newValue);
       if (newValue === 'Yes') {
         hideChildren('components');
         setShowRfPreserved(true);
@@ -173,13 +210,40 @@ const FormParent = () => {
     if (oldValue !== newValue) {
       setCausativeEventKnown(newValue);
       if (newValue === 'Yes') {
+        hideChildren('nearRegulatory');
         setShowCausEventInfo(true);
-        setShowSubmit(true);
+        setShowNearRegulatory(true);
       } else if (newValue === 'No') {
         hideChildren('causativeEvent');
-        setShowSubmit(true);
+        setShowNearRegulatory(true);
       } else {
         hideChildren('causativeEvent');
+      }
+    }
+  };
+
+  /**
+   * Handle result of "near regulatory element" decision. Make child elements visible or invisible.
+   * @param {string} oldValue value of previous selection
+   * @param {string} newValue newly selected value
+   * @returns null, but updates state of child elements accordingly
+   */
+  const handleSetNearRegulatory = (oldValue, newValue) => {
+    if (oldValue !== newValue) {
+      setNearRegulatory(newValue);
+      if (newValue === 'Yes') {
+        hideChildren('invalidFusion');
+        setShowRegulatoryElements(true);
+        setShowSubmit(true);
+      } else if (newValue === 'No') {
+        hideChildren('regulatoryElements');
+        if (showComponents) {
+          setShowSubmit(true);
+        } else {
+          setShowInvalidFusion(true);
+        }
+      } else {
+        hideChildren('regulatoryElements');
       }
     }
   };
@@ -188,15 +252,28 @@ const FormParent = () => {
     <div className={classes.root}>
       <Box pt={2}>
         <FormRadio
-          name="protein-coding"
-          prompt="Is at least one partner protein-coding?"
+          name="chimeric-transcript"
+          prompt="Does the fusion create a chimeric transcript?"
           state={{
-            options: ['Yes', 'No', 'Unknown'],
-            state: proteinCodingValue,
-            stateFunction: handleSetProteinCoding,
+            options: ['Yes', 'No'],
+            state: chimericTranscript,
+            stateFunction: handleSetChimericTranscript,
           }}
         />
       </Box>
+      {showProteinCoding
+        ? (
+          <FormRadio
+            name="protein-coding"
+            prompt="Is at least one partner protein-coding?"
+            state={{
+              options: ['Yes', 'No', 'Unknown'],
+              state: proteinCoding,
+              stateFunction: handleSetProteinCoding,
+            }}
+          />
+        )
+        : null}
       {showRfPreserved
         ? (
           <FormRadio
@@ -241,6 +318,36 @@ const FormParent = () => {
           />
         )
         : null}
+      {showNearRegulatory
+        ? (
+          <FormRadio
+            name="regulatory-element-decision"
+            prompt="Does fusion rearrange near regulatory element?"
+            state={{
+              options: ['Yes', 'No'],
+              state: nearRegulatory,
+              stateFunction: handleSetNearRegulatory,
+            }}
+          />
+        )
+        : null}
+      {showRegulatoryElements
+        ? (
+          <RegulatoryElementsForm
+            items={regulatoryElements}
+            setItems={setRegulatoryElements}
+          />
+        )
+        : null}
+      {showInvalidFusion
+        ? (
+          <Box p={1}>
+            <Typography>
+              Not a valid fusion
+            </Typography>
+          </Box>
+        )
+        : null}
       {showSubmit ? <SubmitButton handler={() => setShowResponse(true)} /> : null}
       {showResponse
         ? (
@@ -250,11 +357,12 @@ const FormParent = () => {
             responseHuman={responseHuman}
             setResponseHuman={setResponseHuman}
             components={components}
-            proteinCoding={proteinCodingValue}
+            proteinCoding={proteinCoding}
             rfPreserved={rfPreserved}
             domains={domains}
             causativeEventKnown={causativeEventKnown}
             causativeEvent={causativeEvent}
+            regulatoryElements={regulatoryElements}
             geneIndex={geneIndex}
           />
         )
