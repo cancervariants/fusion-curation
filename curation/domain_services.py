@@ -5,6 +5,7 @@ from curation import PROJECT_ROOT
 import logging
 import csv
 from ftplib import FTP
+from typing import List
 
 
 logger = logging.getLogger('fusion_backend')
@@ -43,19 +44,46 @@ class DomainServiceHandler():
         with open(interpro_file) as tsvfile:
             reader = csv.reader(tsvfile, delimiter='\t')
             reader.__next__()  # skip header
-            self.domains = {row[2].lower(): row[0] for row in reader}
+            self.domains = {row[2].lower(): {'case': row[2], 'id': row[0]} for row in reader}
+
+    def get_domain_id(self, name: str) -> str:
+        """Given functional domain name, return Interpro ID.
+        :param str name: name to fetch ID for (case insensitive)
+        :return: domain ID, formatted as CURIE
+        :raises: LookupError if domain ID cannot be retrieved
+        """
+        domain_id = self.domains.get(name.lower())
+        if not domain_id:
+            raise LookupError(f'Functional domain ID lookup failed for {name}')
+        else:
+            return f'interpro:{domain_id["id"]}'
+
+    def get_possible_matches(self, query: str, n: int = 10) -> List[str]:
+        """Given input query, return possible domain matches (for autocomplete)
+        :param str query: user-entered string (case insensitive)
+        :param int n: max # of items to return
+        :return: List of valid domain names (up to n names)
+        """
+        return [v['case'] for k, v in self.domains.items()
+                if k.startswith(query.lower())][:n]
 
 
 domain_handler = DomainServiceHandler()
 
 
-def get_domain_id(name) -> str:
+def get_domain_id(name: str) -> str:
     """Given functional domain name, return Interpro ID.
     :param str name: name to fetch ID for (case insensitive)
-    :return:
+    :return: domain ID, formatted as CURIE
+    :raises: LookupError if domain ID cannot be retrieved
     """
-    domain_id = domain_handler.domains.get(name.lower())
-    if not domain_id:
-        raise LookupError(f'Functional domain ID lookup failed for {name}')
-    else:
-        return f'interpro:{domain_id}'
+    return domain_handler.get_domain_id(name)
+
+
+def get_possible_matches(query: str) -> List:
+    """Given input query, return possible domain matches (for autocomplete)
+    :param str query: user-entered string (case insensitive)
+    :param int n: max # of items to return
+    :return: List of valid domain names (up to n names)
+    """
+    return domain_handler.get_possible_matches(query)

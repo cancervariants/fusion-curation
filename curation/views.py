@@ -2,7 +2,7 @@
 from curation import app
 from flask import render_template
 from curation.gene_services import get_gene_id
-from curation.domain_services import get_domain_id
+from curation.domain_services import get_domain_id, get_possible_matches
 import logging
 from typing import Dict
 
@@ -58,3 +58,17 @@ def get_functional_domain(name: str) -> Dict:
     except Exception as e:
         logger.warning(f'Lookup of domain {name} failed with exception {e}.')
     return response
+
+
+@app.route('/domain_matches/<query>')
+def get_matching_domain_names(query: str) -> Dict:
+    """Get valid functional domain names that start with the provided query. For autocomplete
+        purposes.
+    :param str query: user-entered query
+    :return: Dict (to be served as JSON) containing provided query and matches for possible valid
+        functional domain names
+    """
+    return {
+        'query': query,
+        'matches': get_possible_matches(query)
+    }
