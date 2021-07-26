@@ -4,6 +4,7 @@ import { Box, TextField } from '@material-ui/core';
 const ResponseField = ({
   responseJSON, setResponseJSON, responseHuman, setResponseHuman, components, proteinCoding,
   rfPreserved, domains, causativeEventKnown, causativeEvent, regulatoryElements, geneIndex,
+  domainIndex,
 }) => {
   /**
    * Transform computable fusion object into human-readable string
@@ -174,9 +175,10 @@ const ResponseField = ({
             const domainObject = {
               status: domain.status,
               name: domain.name,
-              id: '<computed>',
-              coordinates: '{<computed>}',
             };
+            if (domain.name) {
+              domainObject.id = domainIndex[domain.name];
+            }
             if (domain.gene) {
               domainObject.gene = {
                 symbol: domain.gene,

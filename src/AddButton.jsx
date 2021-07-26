@@ -10,7 +10,7 @@ const AddButton = ({ label, clickHandler }) => (
     startIcon={<AddIcon />}
   >
     Add
-    {label}
+    {` ${label}`}
   </Button>
 );
 
