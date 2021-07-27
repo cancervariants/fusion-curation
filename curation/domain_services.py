@@ -83,7 +83,6 @@ def get_domain_id(name: str) -> str:
 def get_possible_matches(query: str) -> List:
     """Given input query, return possible domain matches (for autocomplete)
     :param str query: user-entered string (case insensitive)
-    :param int n: max # of items to return
     :return: List of valid domain names (up to n names)
     """
     return domain_handler.get_possible_matches(query)
