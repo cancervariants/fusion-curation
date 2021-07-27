@@ -28,7 +28,7 @@ def download_interpro():
     logger.info('InterPro entry list download complete.')
 
 
-class DomainServiceHandler():
+class DomainService():
     """Handler class providing requisite services for functional domain lookup."""
 
     def __init__(self):
@@ -68,7 +68,7 @@ class DomainServiceHandler():
                 if k.startswith(query.lower())][:n]
 
 
-domain_handler = DomainServiceHandler()
+domain_handler = DomainService()
 
 
 def get_domain_id(name: str) -> str:
