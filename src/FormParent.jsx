@@ -49,6 +49,7 @@ const FormParent = () => {
 
   // ajax values
   const [geneIndex, setGeneIndex] = useState({});
+  const [exonIndex, setExonIndex] = useState({});
 
   /**
    * Get ID for gene name. Updates geneIndex upon retrieval.
@@ -67,13 +68,72 @@ const FormParent = () => {
     });
   };
 
-  // Call asynchronous functions upon changes to state variables.
+  /**
+   * Get exon's data
+   * @param {string} txAc transcript accession
+   * @param {string|number} startExon starting exon number
+   * @param {string|number} endExon ending exon number
+   * @param {string|number} startExonOffset starting exon's offset
+   * @param {string|number} endExonOffset ending exon's offset
+   * @param {string} [gene] gene symbol
+   * @return Exon data
+   */
+  const getExon = (txAc, startExon, endExon, startExonOffset, endExonOffset, gene) => {
+    let url = null;
+    if (!gene) {
+      url = `/coordinates/${txAc}/${startExon}/${endExon}/${startExonOffset}/${endExonOffset}`;
+    } else {
+      url = `/coordinates/${txAc}/${startExon}/${endExon}/${startExonOffset}/${endExonOffset}/${gene}`;
+    }
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    // eslint-disable-next-line consistent-return
+    }).then((response) => response.json()).then((exonResponse) => {
+      if (exonResponse === null) {
+        return null;
+      }
+      if (exonResponse.warnings) {
+        return null;
+      }
+      const { chr, start, end } = exonResponse;
+      const geneSymbol = exonResponse.gene;
+      if (!gene) {
+        const geneID = getGeneID(geneSymbol);
+        const geneIndexCopy = geneIndex;
+        if (geneID != null) {
+          geneIndexCopy[geneSymbol] = geneID;
+        }
+      }
+
+      const exonStart = exonResponse.start_exon;
+      const exonEnd = exonResponse.end_exon;
+      if (chr != null) {
+        const exonIndexCopy = exonIndex;
+        exonIndexCopy[txAc] = {
+          geneSymbol,
+          chr,
+          start,
+          end,
+          exonStart,
+          exonEnd,
+        };
+        setExonIndex(exonIndexCopy);
+      }
+    });
+  };
+
+  // perform ajax calls + update ID/coordinate indices
   useEffect(() => {
     const geneIndexCopy = geneIndex;
+    const exonIndexCopy = exonIndex;
     components.forEach((component) => {
-      // get gene IDs
-      if ('gene_symbol' in component.componentValues) {
-        const geneSymbol = component.componentValues.gene_symbol;
+      const values = component.componentValues;
+
+      if ('gene_symbol' in values) {
+        const geneSymbol = values.gene_symbol;
         if (!(geneSymbol in geneIndexCopy)) {
           const geneID = getGeneID(geneSymbol);
           if (geneID != null) {
@@ -81,8 +141,29 @@ const FormParent = () => {
           }
         }
       }
+
+      if (values.transcript) {
+        let exon = null;
+        const exonStartOffset = values.exon_start_offset ? values.exon_start_offset : 0;
+        const exonEndOffset = values.exon_end_offset ? values.exon_end_offset : 0;
+        if (values.exon_start && !values.exon_end) {
+          exon = getExon(values.transcript, values.exon_start, 0,
+            exonStartOffset, exonEndOffset, values.gene_symbol);
+        } else if (!values.exon_start && values.exon_end) {
+          exon = getExon(values.transcript, 0, values.exon_end,
+            exonStartOffset, exonEndOffset, values.gene_symbol);
+        } else if (values.exon_start && values.exon_end) {
+          exon = getExon(values.transcript, values.exon_start, values.exon_end,
+            exonStartOffset, exonEndOffset, values.gene_symbol);
+        }
+        if (exon != null) {
+          exonIndexCopy[values.transcript] = exon;
+        }
+      }
     });
+
     setGeneIndex(geneIndexCopy);
+    setExonIndex(exonIndexCopy);
   }, [components]);
 
   useEffect(() => {
@@ -364,6 +445,7 @@ const FormParent = () => {
             causativeEvent={causativeEvent}
             regulatoryElements={regulatoryElements}
             geneIndex={geneIndex}
+            exonIndex={exonIndex}
           />
         )
         : null}
