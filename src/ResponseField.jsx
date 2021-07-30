@@ -3,7 +3,8 @@ import { Box, TextField } from '@material-ui/core';
 
 const ResponseField = ({
   responseJSON, setResponseJSON, responseHuman, setResponseHuman, components, proteinCoding,
-  rfPreserved, domains, causativeEventKnown, causativeEvent, geneIndex, exonIndex,
+  rfPreserved, domains, causativeEventKnown, causativeEvent, geneIndex,
+  exonIndex, regulatoryElements,
 }) => {
   /**
    * Transform computable fusion object into human-readable string
@@ -19,7 +20,7 @@ const ResponseField = ({
    * @return {string} fusion object structured as human-readable string
    */
   const outputToReadable = (outputJSON) => {
-    const jsonComponents = outputJSON.components;
+    const jsonComponents = outputJSON.transcript_components;
     if (jsonComponents.length > 2) {
       const beginning = jsonComponents[0];
       const end = jsonComponents[jsonComponents.length - 1];
@@ -41,19 +42,20 @@ const ResponseField = ({
   };
 
   /**
-   * Create transcript_region object given user input
+   * Create transcript_segment object given user input
    * @param {Object} component object corresponding to given component, as stored in state and
    *  filled out by user
    * @param {number} index location in state array - used to infer some coordinate defaults
-   * @returns complete transcript_region object
+   * @returns complete transcript_segment object
    */
-  const transcriptRegionToJSON = (component, index) => {
-    const out = {};
+  const transcriptSegmentToJSON = (component, index) => {
+    const out = { component_type: 'transcript_segment' };
     const values = component.componentValues;
     if ('transcript' in values) out.transcript = values.transcript;
     if ('gene_symbol' in values) {
       const symbol = values.gene_symbol;
       out.gene = {
+        type: 'GeneDescriptor',
         symbol,
         id: geneIndex[symbol],
       };
@@ -150,6 +152,22 @@ const ResponseField = ({
   );
 
   /**
+   * Create unknown_gene component object given user input
+   * @param {Object} component object corresponding to given component, as stored in state and
+   *  filled out by user
+   * @returns complete unknown_gene object
+   */
+  const unknownToJSON = (component) => {
+    const output = {
+      component_type: 'unknown_gene',
+    };
+    if (component.chr) output.chr = component.chr;
+    if (component.start) output.start = component.start;
+    if (component.end) output.end = component.end;
+    return output;
+  };
+
+  /**
    * Generate response objects.
    * Should trigger upon changes in any user-supplied value (ie, not any AJAX-generated/computed
    *  fields)
@@ -158,11 +176,12 @@ const ResponseField = ({
     // set JSON
     const jsonOutput = {};
 
+    // functional domains
     if (proteinCoding === 'Yes') {
       if (rfPreserved === 'Yes') {
         jsonOutput.r_frame_preserved = true;
         if (domains.length > 0) {
-          jsonOutput.domains = domains.map((domain) => {
+          jsonOutput.protein_domains = domains.map((domain) => {
             const domainObject = {
               status: domain.status,
               name: domain.name,
@@ -183,9 +202,10 @@ const ResponseField = ({
       }
     }
 
-    jsonOutput.components = components.map((comp, index) => {
-      if (comp.componentType === 'transcript_region') {
-        return transcriptRegionToJSON(comp, index);
+    // transcript components
+    jsonOutput.transcript_components = components.map((comp, index) => {
+      if (comp.componentType === 'transcript_segment') {
+        return transcriptSegmentToJSON(comp, index);
       }
       if (comp.componentType === 'genomic_region') {
         return genomicRegionToJSON(comp);
@@ -196,13 +216,33 @@ const ResponseField = ({
       if (comp.componentType === 'gene') {
         return geneToJSON(comp);
       }
+      if (comp.componentType === 'unknown_gene') {
+        return unknownToJSON(comp);
+      }
       return null;
     });
 
+    // causative event
     if (causativeEventKnown === 'Yes') {
       jsonOutput.causative_event = {
         event_type: causativeEvent,
       };
+    }
+
+    // regulatory elements
+    if (regulatoryElements && regulatoryElements.length > 0) {
+      jsonOutput.regulatory_elements = regulatoryElements.map((element) => {
+        const elementFormatted = {};
+        if (element.type) elementFormatted.type = element.type;
+        if (element.gene) {
+          const symbol = element.gene;
+          elementFormatted.gene = {
+            value_id: geneIndex[symbol],
+            label: symbol,
+          };
+        }
+        return elementFormatted;
+      });
     }
 
     // set humanReadable
@@ -211,6 +251,7 @@ const ResponseField = ({
     if (humanReadable) setResponseHuman(humanReadable);
   }, [
     components, proteinCoding, rfPreserved, domains, causativeEventKnown, causativeEvent,
+    regulatoryElements,
   ]);
 
   // manage user select/send to clipboard interactions
@@ -221,10 +262,12 @@ const ResponseField = ({
     new Promise((resolve) => setTimeout(resolve, ms))
   );
 
+  const printJSON = (jsonObject) => JSON.stringify(jsonObject, null, 2);
+
   // Copy the JSON field to clipboard and notify user
   async function handleObjectFieldClick() {
     if (responseJSON && responseJSON !== '') {
-      navigator.clipboard.writeText(responseJSON);
+      navigator.clipboard.writeText(printJSON(responseJSON));
       setObjectFieldLabel('copied!');
       await sleep(2000);
       setObjectFieldLabel('JSON');
@@ -252,7 +295,7 @@ const ResponseField = ({
           InputProps={{
             readOnly: true,
           }}
-          value={JSON.stringify(responseJSON, null, 2)}
+          value={printJSON(responseJSON)}
           onClick={() => handleObjectFieldClick()}
           style={{ width: 700 }}
           rowsMax={14}

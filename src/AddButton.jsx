@@ -2,15 +2,16 @@ import { React } from 'react';
 import { Button } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 
-const AddDomainButton = ({ clickHandler }) => (
+const AddButton = ({ label, clickHandler }) => (
   <Button
     variant="contained"
     color="primary"
     onClick={() => clickHandler()}
     startIcon={<AddIcon />}
   >
-    Add Domain
+    Add
+    {label}
   </Button>
 );
 
-export default AddDomainButton;
+export default AddButton;

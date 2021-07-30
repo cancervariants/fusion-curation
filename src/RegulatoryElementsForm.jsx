@@ -3,8 +3,8 @@ import {
   Box, FormLabel, Paper, Table, TableBody, TableContainer, TableHead, TableRow, TableCell,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Domain from './Domain';
 import AddButton from './AddButton';
+import RegulatoryElement from './RegulatoryElement';
 
 const useStyles = makeStyles({
   tableCell: {
@@ -18,31 +18,31 @@ const useStyles = makeStyles({
   },
 });
 
-const DomainsForm = ({ domains, setDomains }) => {
+const RegulatoryElementsForm = ({ items, setItems }) => {
   const classes = useStyles();
 
   const handleAdd = () => {
-    const newDomain = {};
-    setDomains((prevDomains) => [...prevDomains, newDomain]);
+    const newItem = {};
+    setItems((prevItems) => [...prevItems, newItem]);
   };
 
   const handleDelete = (index) => {
-    const copy = [...domains];
+    const copy = [...items];
     copy.splice(index, 1);
-    setDomains(copy);
+    setItems(copy);
   };
 
   const handleChange = (index, field, newValue) => {
-    const copy = [...domains];
+    const copy = [...items];
     copy[index][field] = newValue;
-    setDomains(copy);
+    setItems(copy);
   };
 
-  const renderDomain = (domain, i) => (
-    <Domain
+  const renderItem = (item, i) => (
+    <RegulatoryElement
       key={i}
       index={i}
-      domainValues={domain}
+      elementValues={item}
       handleChange={(field, newValue) => handleChange(i, field, newValue)}
       handleDelete={() => handleDelete(i)}
       cellClass={classes.tableCell}
@@ -53,31 +53,30 @@ const DomainsForm = ({ domains, setDomains }) => {
     <>
       <Box p={1}>
         <FormLabel components="legend">
-          Record predicted meaningful protein functional domains affected:
+          Record regulatory element type(s) and associated genes:
         </FormLabel>
       </Box>
       <Box p={1}>
         <TableContainer component={Paper}>
-          <Table aria-label="affected functional domains">
+          <Table aria-label="regulatory elements">
             <TableHead>
               <TableRow>
-                <TableCell className={classes.tableCell}>Status</TableCell>
-                <TableCell className={classes.tableCell}>Domain Name</TableCell>
+                <TableCell className={classes.tableCell}>Type</TableCell>
                 <TableCell className={classes.tableCell}>Gene</TableCell>
                 <TableCell className={classes.tableCell}>Delete?</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {domains.map((domain, i) => renderDomain(domain, i))}
+              {items.map((item, i) => renderItem(item, i))}
             </TableBody>
           </Table>
         </TableContainer>
       </Box>
       <Box p={1}>
-        <AddButton label="Domain" clickHandler={handleAdd} />
+        <AddButton label="Regulatory Element" clickHandler={handleAdd} />
       </Box>
     </>
   );
 };
 
-export default DomainsForm;
+export default RegulatoryElementsForm;

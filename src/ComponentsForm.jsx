@@ -84,7 +84,7 @@ const ComponentsForm = ({ components, setComponents }) => {
         </Paper>
       </Box>
       <Box p={1} pb={2}>
-        <Grid container justify="center">
+        <Grid container justifyContent="center">
           <AddComponentButton clickHandler={handleAddClick} />
         </Grid>
       </Box>

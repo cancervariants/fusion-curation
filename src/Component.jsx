@@ -5,12 +5,11 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { DragIndicator } from '@material-ui/icons';
 import CloseIcon from '@material-ui/icons/Close';
-import TranscriptRegionComponent from './TranscriptRegionComponent';
+import TranscriptSegmentComponent from './TranscriptSegmentComponent';
 import GenomicRegionComponent from './GenomicRegionComponent';
 import LinkerSequenceComponent from './LinkerSequenceComponent';
 import GeneComponent from './GeneComponent';
 
-// todo move up one and send as props?
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -29,9 +28,9 @@ const Component = ({
   const [showDragIcon, setShowDragIcon] = useState(false);
 
   const renderCard = () => {
-    if (componentType === 'transcript_region') {
+    if (componentType === 'transcript_segment') {
       return (
-        <TranscriptRegionComponent
+        <TranscriptSegmentComponent
           componentValues={componentValues}
           handleCardChange={handleCardChange}
         />
@@ -61,6 +60,11 @@ const Component = ({
         />
       );
     }
+    if (componentType === 'unknown_gene') {
+      return (
+        <></>
+      );
+    }
     return null;
   };
 
@@ -71,10 +75,10 @@ const Component = ({
       <Paper elevation={2}>
         <Box p={1}>
           <Grid container direction="row" alignItems="center">
-            <Grid item xs={0.5}>
+            <Grid item>
               {showDragIcon ? <DragIndicator /> : <DragIndicator color="disabled" />}
             </Grid>
-            <Grid item xs={3} container direction="column" justifyConcent="space-around" alignItems="center">
+            <Grid item xs={3} container direction="column" justifyContent="space-around" alignItems="center">
               <Grid item>
                 <FormControl className={classes.formControl}>
                   <Select
@@ -83,14 +87,15 @@ const Component = ({
                     value={componentType}
                     onChange={(event) => handleCardChange('componentType', event.target.value)}
                   >
-                    <MenuItem value="transcript_region">Transcript Region</MenuItem>
+                    <MenuItem value="transcript_segment">Transcript Segment</MenuItem>
                     <MenuItem value="genomic_region">Genomic Region</MenuItem>
                     <MenuItem value="linker_sequence">Linker Sequence</MenuItem>
                     <MenuItem value="gene">Gene</MenuItem>
+                    <MenuItem value="unknown_gene">Unknown</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item>
+              <Grid item xs={10}>
                 <Tooltip title="Delete">
                   <IconButton aria-label="delete" onClick={deleteCard}>
                     <CloseIcon />
