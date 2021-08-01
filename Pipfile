@@ -20,6 +20,7 @@ coverage = "*"
 pytest-cov = "*"
 fusion-curation = {editable = true, path = "."}
 coveralls = "*"
+jupyterlab = "*"
 
 [requires]
 python_version = "3.9"

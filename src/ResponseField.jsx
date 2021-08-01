@@ -4,7 +4,7 @@ import { Box, TextField } from '@material-ui/core';
 const ResponseField = ({
   responseJSON, setResponseJSON, responseHuman, setResponseHuman, components, proteinCoding,
   rfPreserved, domains, causativeEventKnown, causativeEvent, regulatoryElements, geneIndex,
-  domainIndex,
+  domainIndex, exonIndex,
 }) => {
   /**
    * Transform computable fusion object into human-readable string
@@ -60,40 +60,50 @@ const ResponseField = ({
         id: geneIndex[symbol],
       };
     }
+
+    if ((!out.gene) && (values.transcript in exonIndex) && (typeof exonIndex[values.transcript].geneSymbol !== 'undefined')) {
+      const symbol = exonIndex[values.transcript].geneSymbol;
+      const geneID = geneIndex[symbol];
+      out.gene = {
+        symbol,
+        id: geneID,
+      };
+    }
+
     if (values.exon_end !== '') {
       if (index === 0) {
-        out.exon_start = 1;
+        out.exon_start = exonIndex[values.transcript].exonStart;
         out.exon_start_genomic = {
-          chr: '<computed>', // TODO
-          pos: '<computed>', // TODO
+          chr: exonIndex[values.transcript].chr,
+          pos: exonIndex[values.transcript].start,
         };
       }
-      out.exon_end = values.exon_end;
+      out.exon_end = exonIndex[values.transcript].exonEnd;
       out.exon_end_genomic = {
-        chr: '<computed>', // TODO
-        pos: '<computed>', // TODO
+        chr: exonIndex[values.transcript].chr,
+        pos: exonIndex[values.transcript].end,
       };
       if (values.exon_end_offset && values.exon_end_offset !== '') {
-        out.exon_end_offset = values.exon_end_offset;
+        out.exon_end_offset = parseInt(values.exon_end_offset, 10);
       }
     }
     if (values.exon_start !== '') {
       if (index === components.length - 1) {
-        out.exon_end = '<computed>';
+        out.exon_end = exonIndex[values.transcript].exonEnd;
         out.exon_end_genomic = {
-          chr: '<computed>', // TODO
-          pos: '<computed>', // TODO
+          chr: exonIndex[values.transcript].chr,
+          pos: exonIndex[values.transcript].end,
         };
       }
       if (index !== 0) {
-        out.exon_start = values.exon_start;
+        out.exon_start = exonIndex[values.transcript].exonStart;
         out.exon_start_genomic = {
-          chr: '<computed>', // TODO
-          pos: '<computed>', // TODO
+          chr: exonIndex[values.transcript].chr,
+          pos: exonIndex[values.transcript].start,
         };
       }
       if (values.exon_start_offset && values.exon_start_offset !== '') {
-        out.exon_start_offset = values.exon_start_offset;
+        out.exon_start_offset = parseInt(values.exon_start_offset, 10);
       }
     }
     return out;
