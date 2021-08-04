@@ -2,8 +2,8 @@
 from typing import Dict
 from curation import app
 from flask import render_template
-from curation.gene_services import get_gene_id
-from curation.domain_services import get_domain_id, get_possible_matches
+from curation.gene_services import gene_service
+from curation.domain_services import domain_service
 from curation.data_sources.uta import uta
 import logging
 
@@ -30,7 +30,7 @@ def normalize_gene(symbol: str) -> Dict:
         'warnings': None
     }
     try:
-        concept_id = get_gene_id(symbol)
+        concept_id = gene_service.get_gene_id(symbol)
         response['concept_id'] = concept_id
     except LookupError:
         logger.warning(f'Lookup of gene symbol {symbol} failed.')
@@ -52,7 +52,7 @@ def get_functional_domain(name: str) -> Dict:
         'warnings': None
     }
     try:
-        domain_id = get_domain_id(name)
+        domain_id = domain_service.get_domain_id(name)
         response['domain_id'] = domain_id
     except LookupError:
         logger.warning(f'Lookup of domain {name} failed.')
@@ -72,7 +72,7 @@ def get_matching_domain_names(query: str) -> Dict:
     """
     return {
         'query': query,
-        'matches': get_possible_matches(query)
+        'matches': domain_service.get_possible_matches(query)
     }
 
 

@@ -12,32 +12,17 @@ logger = logging.getLogger('fusion_backend')
 logger.setLevel(logging.DEBUG)
 
 
-def download_interpro():
-    """Retrieve InterPro entry list TSV from EMBL-EBI servers."""
-    logger.info('Downloading InterPro entry list...')
-    file_path: Path = PROJECT_ROOT / 'data' / f'interpro_{datetime.today().strftime("%Y%m%d")}.tsv'
-    try:
-        with FTP('ftp.ebi.ac.uk') as ftp:
-            ftp.login()
-            ftp.cwd('pub/databases/interpro')
-            with open(file_path, 'wb') as fp:
-                ftp.retrbinary('RETR entry.list', fp.write)
-    except Exception as e:
-        logger.error(f'FTP download failed: {e}')
-        raise Exception(e)
-    logger.info('InterPro entry list download complete.')
-
-
 class DomainService():
     """Handler class providing requisite services for functional domain lookup."""
 
     def __init__(self):
         """Initialize handler class. Download files if necessary, then load and store."""
         # check if files exist
-        interpro_files = (PROJECT_ROOT / 'data').glob('interpro_*.tsv')
-        if not len(list(interpro_files)) < 0:
-            download_interpro()
-            interpro_files = (PROJECT_ROOT / 'data').glob('interpro_*.tsv')
+        interpro_files = list((PROJECT_ROOT / 'data').glob('interpro_*.tsv'))
+        if len(interpro_files) < 1:
+            print('downloading???')
+            self.download_interpro()
+            interpro_files = list((PROJECT_ROOT / 'data').glob('interpro_*.tsv'))
         interpro_file: Path = sorted(interpro_files, reverse=True)[0]
 
         # load file
@@ -45,6 +30,22 @@ class DomainService():
             reader = csv.reader(tsvfile, delimiter='\t')
             reader.__next__()  # skip header
             self.domains = {row[2].lower(): {'case': row[2], 'id': row[0]} for row in reader}
+
+    def download_interpro(self):
+        """Retrieve InterPro entry list TSV from EMBL-EBI servers."""
+        logger.info('Downloading InterPro entry list...')
+        today = datetime.today().strftime("%Y%m%d")
+        fpath: Path = PROJECT_ROOT / 'data' / f'interpro_{today}.tsv'
+        try:
+            with FTP('ftp.ebi.ac.uk') as ftp:
+                ftp.login()
+                ftp.cwd('pub/databases/interpro')
+                with open(fpath, 'wb') as fp:
+                    ftp.retrbinary('RETR entry.list', fp.write)
+        except Exception as e:
+            logger.error(f'FTP download failed: {e}')
+            raise Exception(e)
+        logger.info('InterPro entry list download complete.')
 
     def get_domain_id(self, name: str) -> str:
         """Given functional domain name, return Interpro ID.
@@ -64,25 +65,9 @@ class DomainService():
         :param int n: max # of items to return
         :return: List of valid domain names (up to n names)
         """
+        print('here')
         return [v['case'] for k, v in self.domains.items()
                 if k.startswith(query.lower())][:n]
 
 
-domain_handler = DomainService()
-
-
-def get_domain_id(name: str) -> str:
-    """Given functional domain name, return Interpro ID.
-    :param str name: name to fetch ID for (case insensitive)
-    :return: domain ID, formatted as CURIE
-    :raises: LookupError if domain ID cannot be retrieved
-    """
-    return domain_handler.get_domain_id(name)
-
-
-def get_possible_matches(query: str) -> List:
-    """Given input query, return possible domain matches (for autocomplete)
-    :param str query: user-entered string (case insensitive)
-    :return: List of valid domain names (up to n names)
-    """
-    return domain_handler.get_possible_matches(query)
+domain_service = DomainService()
