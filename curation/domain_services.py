@@ -18,10 +18,12 @@ class DomainService():
     def __init__(self):
         """Initialize handler class. Download files if necessary, then load and store."""
         # check if files exist
-        interpro_files = list((PROJECT_ROOT / 'data').glob('interpro_*.tsv'))
+        self._data_dir = PROJECT_ROOT / 'data'
+        self._data_dir.mkdir(exist_ok=True, parents=True)
+        interpro_files = list(self._data_dir.glob('interpro_*.tsv'))
         if len(interpro_files) < 1:
             self.download_interpro()
-            interpro_files = list((PROJECT_ROOT / 'data').glob('interpro_*.tsv'))
+            interpro_files = list(self._data_dir.glob('interpro_*.tsv'))
         interpro_file: Path = sorted(interpro_files, reverse=True)[0]
 
         # load file
@@ -34,7 +36,7 @@ class DomainService():
         """Retrieve InterPro entry list TSV from EMBL-EBI servers."""
         logger.info('Downloading InterPro entry list...')
         today = datetime.today().strftime("%Y%m%d")
-        fpath: Path = PROJECT_ROOT / 'data' / f'interpro_{today}.tsv'
+        fpath: Path = self._data_dir / f'interpro_{today}.tsv'
         try:
             with FTP('ftp.ebi.ac.uk') as ftp:
                 ftp.login()
