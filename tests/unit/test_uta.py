@@ -55,7 +55,13 @@ def test_uta_source(test_uta, tpm3_exon1_exon8, ntrk1_exon10_exon17):
     resp = test_uta.get_genomic_coords('NM_152263.3', 0, 8)
     assert resp == tpm3_exon1_exon8
 
+    resp = test_uta.get_genomic_coords('NM_152263.3       ', 0, 8)
+    assert resp == tpm3_exon1_exon8
+
     resp = test_uta.get_genomic_coords('NM_152263.3', 0, 8, gene="TPM3")
+    assert resp == tpm3_exon1_exon8
+
+    resp = test_uta.get_genomic_coords(' NM_152263.3 ', 0, 8, gene=" TPM3 ")
     assert resp == tpm3_exon1_exon8
 
     resp = test_uta.get_genomic_coords('NM_152263.3', 0, 8, gene="tpm3")
@@ -134,4 +140,11 @@ def test_no_matches(test_uta):
 
     # Gene that does not match transcript
     resp = test_uta.get_genomic_coords('NM_152263.3', 8, 1, gene='NTKR1')
+    assert resp is None
+
+    # No transcript given
+    resp = test_uta.get_genomic_coords(None, 8, 1, gene='NTKR1')
+    assert resp is None
+
+    resp = test_uta.get_genomic_coords('', 8, 1, gene='NTKR1')
     assert resp is None

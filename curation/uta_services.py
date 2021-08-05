@@ -127,7 +127,10 @@ class UTAService:
         :return: Dictionary containing transcript and exon data
         """
         if gene:
-            gene = gene.upper()
+            gene = gene.upper().strip()
+
+        if tx_ac:
+            tx_ac = tx_ac.strip()
 
         tx_exon_start_end = self._get_tx_exon_start_end(tx_ac, start_exon,
                                                         end_exon)
