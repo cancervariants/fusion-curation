@@ -64,7 +64,6 @@ class DomainService():
         :param int n: max # of items to return
         :return: List of valid domain names (up to n names)
         """
-        print('here')
         return [v['case'] for k, v in self.domains.items()
                 if k.startswith(query.lower())][:n]
 
