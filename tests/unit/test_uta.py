@@ -1,6 +1,6 @@
 """Test UTA data source."""
 import pytest
-from curation.data_sources.uta import UTA
+from curation.uta_services import UTAService
 import copy
 
 
@@ -10,7 +10,7 @@ def test_uta():
     class TestUTA:
 
         def __init__(self):
-            self.test_uta = UTA()
+            self.test_uta = UTAService()
 
         def get_genomic_coords(self, tx_ac, start_exon, end_exon, start_exon_offset=0,
                                end_exon_offset=0, gene=None):

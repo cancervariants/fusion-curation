@@ -13,7 +13,7 @@ logger = logging.getLogger('fusion_backend')
 logger.setLevel(logging.DEBUG)
 
 
-class UTA:
+class UTAService:
     """Class for accessing UTA database."""
 
     def __init__(self, db_url=UTA_DB_URL, db_pwd=None) -> None:
@@ -352,4 +352,4 @@ class ParseResult(urlparse.ParseResult):
         return path_elems[2] if len(path_elems) > 2 else None
 
 
-uta = UTA()
+uta = UTAService()

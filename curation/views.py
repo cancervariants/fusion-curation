@@ -3,7 +3,7 @@ from typing import Dict
 from curation import app
 from flask import render_template
 from curation.gene_services import get_gene_id
-from curation.data_sources.uta import uta
+from curation.uta_services import uta
 import logging
 
 logger = logging.getLogger('fusion_backend')
