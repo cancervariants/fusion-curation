@@ -20,7 +20,6 @@ class DomainService():
         # check if files exist
         interpro_files = list((PROJECT_ROOT / 'data').glob('interpro_*.tsv'))
         if len(interpro_files) < 1:
-            print('downloading???')
             self.download_interpro()
             interpro_files = list((PROJECT_ROOT / 'data').glob('interpro_*.tsv'))
         interpro_file: Path = sorted(interpro_files, reverse=True)[0]
