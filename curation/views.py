@@ -1,9 +1,11 @@
 """Provide Views for curation application."""
 from typing import Dict
 from curation import app
-from flask import render_template
+from flask import render_template, request
 from curation.gene_services import get_gene_id
 from curation.data_sources.uta import uta
+from curation.validation import validate_fusion
+from pydantic import ValidationError
 import logging
 
 logger = logging.getLogger('fusion_backend')
@@ -17,7 +19,7 @@ def serve_static():
 
 
 @app.route('/gene/<symbol>')
-def normalize_gene(symbol):
+def normalize_gene(symbol) -> Dict:
     """Fetch normalized concept ID given provided gene symbol."""
     response = {
         'symbol': symbol,
@@ -90,3 +92,21 @@ def get_exon(tx_ac, start_exon, end_exon, start_exon_offset,
         return response
     else:
         return {}
+
+
+@app.route('/validate', methods=['POST'])
+def validate() -> Dict:
+    """Check constructed fusion object against specified model. If invalid, return object as None
+    and include a warning message. Otherwise, return the structured object.
+    """
+    fusion = request.get_json()
+    warnings = []
+    try:
+        validated_fusion = validate_fusion(fusion)
+    except ValidationError:
+        validated_fusion = {}
+        warnings.append('Invalid fusion object')
+    return {
+        "object": validated_fusion,
+        "warnings": warnings
+    }

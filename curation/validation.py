@@ -5,5 +5,5 @@ from typing import Dict
 
 def validate_fusion(fusion_object: Dict) -> Dict:
     """Get Fusion JSON object and perform validation."""
-    model = Fusion
-    return model
+    model = Fusion(**fusion_object)
+    return model.make_json()
