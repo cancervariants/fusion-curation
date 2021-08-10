@@ -2,20 +2,25 @@
 from gene.query import QueryHandler
 
 
-gene_query_handler = QueryHandler()
+class GeneService():
+    """Provide services related to gene symbol and ID resolution."""
+
+    def __init__(self):
+        """Initialize gene service handler."""
+        # set Gene Normalization settings via environment variables -- see Gene Normalization README
+        self.gene_query_handler = QueryHandler()
+
+    def get_gene_id(self, term: str) -> str:
+        """Get normalized ID given gene symbol/label/alias.
+        :param str term: user-entered gene term
+        :returns: concept ID as a string
+        :raises LookupError: if no match is found
+        """
+        response = self.gene_query_handler.normalize(term)
+        if response['match_type'] != 0:
+            return response['gene_descriptor']['value']['id']
+        else:
+            raise LookupError(f"Could not find matching ID for symbol {term}")
 
 
-def get_gene_id(symbol: str) -> str:
-    """Get ID given gene symbol.
-    TODO: handle multiple records/IDs for the same input string
-
-    :param str symbol: user-entered gene symbol
-    :returns: concept ID as a string
-    :raises LookupError: if no match is found
-    """
-    normed = gene_query_handler.search_sources(symbol, incl='hgnc', keyed=True)
-    hgnc = normed['source_matches']['HGNC']
-    if hgnc['match_type'] > 0:
-        return hgnc['records'][0].concept_id
-    else:
-        raise LookupError(f"Could not find matching ID for symbol {symbol}")
+gene_service = GeneService()

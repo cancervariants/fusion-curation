@@ -6,6 +6,8 @@ import psycopg2.extras
 from typing import Dict, List, Optional, Tuple
 from os import environ
 import logging
+from urllib.parse import quote, unquote
+import boto3
 
 logger = logging.getLogger('fusion_backend')
 logger.setLevel(logging.DEBUG)
@@ -20,10 +22,8 @@ class UTA:
         :param str db_url: UTA DB url
         :param str db_pwd: UTA user uta_admin's password
         """
-        self.db_url = self._update_db_url(db_pwd, db_url)
-        self.url = ParseResult(urlparse.urlparse(self.db_url))
-        self.schema = self.url.schema
-        self.args = self._get_conn_args()
+        self.args = self._get_conn_args(('FUSION_EB_PROD' in environ),
+                                        db_pwd, db_url)
         self.conn = psycopg2.connect(**self.args)
         self.conn.autocommit = True
         self.cursor = \
@@ -56,22 +56,66 @@ class UTA:
                     db_pwd = environ['UTA_PASSWORD']
             return f"{db_url[0]}:{db_pwd}@{db_url[1]}"
 
-    def _get_conn_args(self) -> Dict:
+    def _get_conn_args(self, is_prod, db_pwd, db_url) -> Dict:
         """Return connection arguments.
 
+        :param bool is_prod: `True` if production environment.
+            `False` otherwise.
+        :param str db_pwd: uta_admin's user password
+        :param str db_url: PostgreSQL db url
         :return: A dictionary containing db credentials
         """
+        if not is_prod:
+            db_url = self._update_db_url(db_pwd, db_url)
+            db_url = self._url_encode_password(db_url)
+            url = ParseResult(urlparse.urlparse(db_url))
+            self.schema = url.schema
+            return self._get_args(url.hostname, url.port, url.database,
+                                  url.username, unquote(url.password))
+        else:
+            self.schema = environ['UTA_SCHEMA']
+            region = 'us-east-2'
+            client = boto3.client('rds', region_name=region)
+            token = client.generate_db_auth_token(
+                DBHostname=environ['UTA_HOST'], Port=environ['UTA_PORT'],
+                DBUsername=environ['UTA_USER'], Region=region
+            )
+            return self._get_args(environ['UTA_HOST'],
+                                  int(environ['UTA_PORT']),
+                                  environ['UTA_DATABASE'], environ['UTA_USER'],
+                                  token)
+
+    def _url_encode_password(self, db_url) -> str:
+        """Update DB URL to url encode password.
+
+        :param str db_url: URL for PostgreSQL Database
+        :return: DB URL encoded
+        """
+        original_pwd = db_url.split('//')[-1].split('@')[0].split(':')[-1]
+        return db_url.replace(original_pwd, quote(original_pwd))
+
+    def _get_args(self, host, port, database, user, password) -> Dict:
+        """Return db credentials.
+
+        :param str host: DB Host name
+        :param int port: DB port number
+        :param str database: DB name
+        :param str user: DB user name
+        :param str password: DB password for user
+        :return: DB Credentials
+        """
         return dict(
-            host=self.url.hostname,
-            port=self.url.port,
-            database=self.url.database,
-            user=self.url.username,
-            password=self.url.password,
-            application_name='gene-fusions',
+            host=host,
+            port=port,
+            database=database,
+            user=user,
+            password=password,
+            application_name='fusion_backend'
         )
 
-    def get_genomic_coords(self, tx_ac, start_exon, end_exon, start_exon_offset=0,
-                           end_exon_offset=0, gene=None) -> Dict:
+    def get_genomic_coords(self, tx_ac, start_exon, end_exon,
+                           start_exon_offset=0, end_exon_offset=0,
+                           gene=None) -> Optional[Dict]:
         """Get genomic chromosome and start/end exon coordinates.
 
         :param str tx_ac: Transcript accession
@@ -85,18 +129,21 @@ class UTA:
         if gene:
             gene = gene.upper()
 
-        tx_exon_start_end = self._get_tx_exon_start_end(tx_ac, start_exon, end_exon)
+        tx_exon_start_end = self._get_tx_exon_start_end(tx_ac, start_exon,
+                                                        end_exon)
         if not tx_exon_start_end:
             return None
         tx_exons, start_exon, end_exon = tx_exon_start_end
 
-        tx_exon_coords = self.get_tx_exon_coords(tx_exons, start_exon, end_exon)
+        tx_exon_coords = self.get_tx_exon_coords(tx_exons, start_exon,
+                                                 end_exon)
         if not tx_exon_coords:
             return None
         tx_exon_start, tx_exon_end = tx_exon_coords
 
         alt_ac_start_end = self._get_alt_ac_start_and_end(tx_ac, tx_exon_start,
-                                                          tx_exon_end, gene=gene)
+                                                          tx_exon_end,
+                                                          gene=gene)
         if not alt_ac_start_end:
             return None
         alt_ac_start, alt_ac_end = alt_ac_start_end
@@ -124,7 +171,7 @@ class UTA:
             "exon_start_offset": start_exon_offset
         }
 
-    def get_tx_exons(self, tx_ac) -> List[str]:
+    def get_tx_exons(self, tx_ac) -> Optional[List[str]]:
         """Get list of transcript exons start/end coordinates.
 
         :param str tx_ac: Transcript accession
@@ -149,13 +196,14 @@ class UTA:
                 return None
             return cds_se_i[0][0].split(';')
 
-    def _get_tx_exon_start_end(self, tx_ac, start_exon, end_exon) -> Tuple[int, int]:
+    def _get_tx_exon_start_end(self, tx_ac, start_exon, end_exon)\
+            -> Optional[Tuple[List[str], int, int]]:
         """Get exon start/end coordinates given accession and gene.
 
-        :param str ac: Transcript accession
+        :param str tx_ac: Transcript accession
         :param int start_exon: Starting exon number
         :param int end_exon: Ending exon number
-        :return: Transcript's start/end exon coordinates
+        :return: Transcript's exons and start/end exon coordinates
         """
         if start_exon and end_exon:
             if start_exon > end_exon:
@@ -180,13 +228,14 @@ class UTA:
         return tx_exons, start_exon, end_exon
 
     @staticmethod
-    def get_tx_exon_coords(tx_exons, start_exon, end_exon) -> Tuple[int, int]:
+    def get_tx_exon_coords(tx_exons, start_exon, end_exon)\
+            -> Optional[Tuple[List, List]]:
         """Get transcript exon coordinates.
 
-        :param list tx_exon: List of transcript exons
+        :param list tx_exons: List of transcript exons
         :param int start_exon: Start exon number
         :param int end_exon: End exon number
-        :return: Transcript start exon coord, Transcript end exon coord
+        :return: Transcript start exon coords, Transcript end exon coords
         """
         try:
             tx_exon_start = tx_exons[start_exon - 1].split(',')
@@ -198,22 +247,26 @@ class UTA:
         return tx_exon_start, tx_exon_end
 
     def _get_alt_ac_start_and_end(self, tx_ac, tx_exon_start,
-                                  tx_exon_end, gene=None) -> Tuple[Tuple, Tuple]:
+                                  tx_exon_end, gene=None)\
+            -> Optional[Tuple[Tuple, Tuple]]:
         """Get genomic coordinates for related transcript exon start and end.
 
         :param str tx_ac: Transcript accession
-        :param int tx_exon_start: Transcript's exon start coordinate
-        :param int tx_exon_end: Transcript's exon end coordinate
+        :param list tx_exon_start: Transcript's exon start coordinates
+        :param list tx_exon_end: Transcript's exon end coordinates
         :param str gene: Gene symbol
         :return: Alt ac start and end data
         """
-        alt_ac_start = self._get_alt_ac_start_or_end(tx_ac, int(tx_exon_start[0]),
-                                                     int(tx_exon_start[1]), gene=gene)
+        alt_ac_start = self._get_alt_ac_start_or_end(tx_ac,
+                                                     int(tx_exon_start[0]),
+                                                     int(tx_exon_start[1]),
+                                                     gene=gene)
         if not alt_ac_start:
             return None
 
         alt_ac_end = self._get_alt_ac_start_or_end(tx_ac, int(tx_exon_end[0]),
-                                                   int(tx_exon_end[1]), gene=gene)
+                                                   int(tx_exon_end[1]),
+                                                   gene=gene)
         if not alt_ac_end:
             return None
 
@@ -230,7 +283,8 @@ class UTA:
         return alt_ac_start, alt_ac_end
 
     def _get_alt_ac_start_or_end(self, tx_ac, tx_exon_start,
-                                 tx_exon_end, gene) -> Tuple[str, int, int, int]:
+                                 tx_exon_end, gene)\
+            -> Optional[Tuple[str, str, int, int, int]]:
         """Get genomic data for related transcript exon start or end.
 
         :param str tx_ac: Transcript accession
