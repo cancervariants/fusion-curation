@@ -37,7 +37,7 @@ def normalize_gene(symbol: str) -> Dict:
         logger.warning(msg)
         response['warnings'].append(msg)
     except Exception as e:
-        msg = f'Lookup of gene symbol {symbol} failed with exception {e}.'
+        msg = f'Lookup of gene symbol `{symbol}` failed with exception {e}.'
         logger.warning(msg)
         response['warnings'].append(msg)
     return response
@@ -62,7 +62,7 @@ def get_functional_domain(name: str) -> Dict:
         logger.warning(msg)
         response['warnings'].append(msg)
     except Exception as e:
-        msg = f'Lookup of domain {name} failed with exception {e}.'
+        msg = f'Lookup of domain `{name}` failed with exception {e}.'
         logger.warning(msg)
         response['warnings'].append(msg)
     return response

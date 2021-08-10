@@ -6,11 +6,31 @@ from typing import Set
 
 def test_get_domain_id():
     """Test that domain name searches resolve to correct Interpro ID."""
+    # check domain term
     query = 'Tyrosine-protein kinase, catalytic domain'
     assert domain_service.get_domain_id(query) == 'interpro:IPR020635'
     assert domain_service.get_domain_id(query.lower()) == 'interpro:IPR020635'
 
+    # check active site term
+    query = 'Phosphoglycerate/bisphosphoglycerate mutase, active site'
+    assert domain_service.get_domain_id(query) == 'interpro:IPR001345'
+    assert domain_service.get_domain_id(query.lower()) == 'interpro:IPR001345'
+
+    # check binding site term
+    query = 'Aromatic-ring-hydroxylating dioxygenase, 2Fe-2S-binding site'
+    assert domain_service.get_domain_id(query) == 'interpro:IPR015881'
+    assert domain_service.get_domain_id(query.lower()) == 'interpro:IPR015881'
+
+    # check conserved site term
+    query = 'NADH:ubiquinone oxidoreductase, 49kDa subunit, conserved site'
+    assert domain_service.get_domain_id(query) == 'interpro:IPR014029'
+    assert domain_service.get_domain_id(query.lower()) == 'interpro:IPR014029'
+
     query = 'Tyrosine protein kinase, catalytic domain'
+    with pytest.raises(LookupError):
+        domain_service.get_domain_id(query)
+
+    query = 'Cytokine IL-3/IL-5/GM-CSF receptor common beta chain'
     with pytest.raises(LookupError):
         domain_service.get_domain_id(query)
 
@@ -26,13 +46,10 @@ def test_get_possible_matches():
         'Tyrosine-protein kinase, receptor class III, conserved site',
         'Tyrosine-protein kinase, receptor class II, conserved site',
         'Tyrosine-protein kinase, receptor Tie-2, Ig-like domain 1, N-terminal',
-        'Tyrosine-protein kinase, receptor ROR',
-        'Tyrosine-protein kinase, Ret receptor'
     })
 
     check_matches_correct('antenna complex, alpha subunit', {
         'Antenna complex, alpha subunit conserved site',
-        'Antenna complex, alpha subunit'
     })
 
     check_matches_correct('antenna complex, alpha subunit c', {

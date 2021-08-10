@@ -20,7 +20,7 @@ class DomainService():
         # check if files exist
         self._data_dir = PROJECT_ROOT / 'data'
         self._data_dir.mkdir(exist_ok=True, parents=True)
-        interpro_files = list(self._data_dir.glob('interpro_*.tsv'))
+        interpro_files: Path = list(self._data_dir.glob('interpro_*.tsv'))
         if len(interpro_files) < 1:
             self.download_interpro()
             interpro_files = list(self._data_dir.glob('interpro_*.tsv'))
@@ -30,7 +30,9 @@ class DomainService():
         with open(interpro_file) as tsvfile:
             reader = csv.reader(tsvfile, delimiter='\t')
             reader.__next__()  # skip header
-            self.domains = {row[2].lower(): {'case': row[2], 'id': row[0]} for row in reader}
+            valid_entry_types = {'Active_site', 'Binding_site', 'Conserved_site', 'Domain'}
+            self.domains = {row[2].lower(): {'case': row[2], 'id': row[0]}
+                            for row in reader if row[1] in valid_entry_types}
 
     def download_interpro(self):
         """Retrieve InterPro entry list TSV from EMBL-EBI servers."""
