@@ -175,6 +175,9 @@ const FormParent = () => {
         } else if (values.exon_start && values.exon_end) {
           exon = getExon(values.transcript, values.exon_start, values.exon_end,
             exonStartOffset, exonEndOffset, values.gene_symbol);
+        } else {
+          exon = getExon(values.transcript, 0, 0,
+            exonStartOffset, exonEndOffset, values.gene_symbol);
         }
         if (exon != null) {
           exonIndexCopy[values.transcript] = exon;

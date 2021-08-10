@@ -2,9 +2,9 @@
 from typing import Dict
 from curation import app
 from flask import render_template
+from curation.uta_services import uta
 from curation.gene_services import gene_service
 from curation.domain_services import domain_service
-from curation.data_sources.uta import uta
 import logging
 
 
