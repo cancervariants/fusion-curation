@@ -49,7 +49,10 @@ const FormParent = () => {
 
   // ajax values
   const [geneIndex, setGeneIndex] = useState({});
+  const [domainIndex, setDomainIndex] = useState({});
   const [exonIndex, setExonIndex] = useState({});
+
+  // Call asynchronous functions upon changes to state variables.
 
   /**
    * Get ID for gene name. Updates geneIndex upon retrieval.
@@ -69,6 +72,23 @@ const FormParent = () => {
   };
 
   /**
+   * Get ID for functional domain. Updates domainIndex upon retrieval.
+   * @param {string} name functional domain name to retrieve ID for
+   */
+  const getDomainID = (name) => {
+    // eslint-disable-next-line consistent-return
+    fetch(`/domain/${name}`).then((response) => response.json()).then((domainResponse) => {
+      if (domainResponse.warnings) {
+        return null;
+      }
+      const domainID = domainResponse.domain_id;
+      const domainIndexCopy = domainIndex;
+      domainIndexCopy[name] = domainID;
+      setDomainIndex(domainIndexCopy);
+    });
+  };
+
+  /*
    * Get exon's data
    * @param {string} txAc transcript accession
    * @param {string|number} startExon starting exon number
@@ -169,6 +189,7 @@ const FormParent = () => {
   useEffect(() => {
     domains.forEach((domain) => {
       if (domain.gene && !(domain.gene in geneIndex)) getGeneID(domain.gene);
+      if (domain.name && !(domain.name in domainIndex)) getDomainID(domain.name);
     });
   }, [domains]);
 
@@ -445,6 +466,7 @@ const FormParent = () => {
             causativeEvent={causativeEvent}
             regulatoryElements={regulatoryElements}
             geneIndex={geneIndex}
+            domainIndex={domainIndex}
             exonIndex={exonIndex}
           />
         )
