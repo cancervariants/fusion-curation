@@ -70,7 +70,7 @@ const ResponseField = ({
       };
     }
 
-    if (values.exon_end !== '') {
+    if (values.exon_end && values.exon_end !== '') {
       if (index === 0) {
         out.exon_start = exonIndex[values.transcript].exonStart;
         out.exon_start_genomic = {
@@ -87,7 +87,7 @@ const ResponseField = ({
         out.exon_end_offset = parseInt(values.exon_end_offset, 10);
       }
     }
-    if (values.exon_start !== '') {
+    if (values.exon_start && values.exon_start !== '') {
       if (index === components.length - 1) {
         out.exon_end = exonIndex[values.transcript].exonEnd;
         out.exon_end_genomic = {
