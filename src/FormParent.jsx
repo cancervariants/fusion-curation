@@ -61,7 +61,7 @@ const FormParent = () => {
   const getGeneID = (symbol) => {
     // eslint-disable-next-line consistent-return
     fetch(`/gene/${symbol}`).then((response) => response.json()).then((geneResponse) => {
-      if (geneResponse.warnings) {
+      if (geneResponse.warnings && geneResponse.warnings.length !== 0) {
         return null;
       }
       const conceptID = geneResponse.concept_id;
@@ -78,7 +78,7 @@ const FormParent = () => {
   const getDomainID = (name) => {
     // eslint-disable-next-line consistent-return
     fetch(`/domain/${name}`).then((response) => response.json()).then((domainResponse) => {
-      if (domainResponse.warnings) {
+      if (domainResponse.warnings && domainResponse.warnings.length !== 0) {
         return null;
       }
       const domainID = domainResponse.domain_id;
@@ -88,7 +88,7 @@ const FormParent = () => {
     });
   };
 
-  /*
+  /**
    * Get exon's data
    * @param {string} txAc transcript accession
    * @param {string|number} startExon starting exon number
@@ -115,7 +115,7 @@ const FormParent = () => {
       if (exonResponse === null) {
         return null;
       }
-      if (exonResponse.warnings) {
+      if (exonResponse.warnings && exonResponse.warnings.length !== 0) {
         return null;
       }
       const { chr, start, end } = exonResponse;
