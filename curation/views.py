@@ -1,10 +1,10 @@
 """Provide Views for curation application."""
-from curation.validation_services import validate_fusion
 from typing import Dict
 from curation import app
 from flask import render_template, request
 from curation.gene_services import gene_service
 from curation.domain_services import domain_service
+from curation.validation_services import validate_fusion
 from curation.data_sources.uta import uta
 import logging
 
