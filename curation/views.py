@@ -1,7 +1,8 @@
 """Provide Views for curation application."""
+from curation.validation_services import validate_fusion
 from typing import Dict
 from curation import app
-from flask import render_template
+from flask import render_template, request
 from curation.gene_services import gene_service
 from curation.domain_services import domain_service
 from curation.data_sources.uta import uta
@@ -147,3 +148,10 @@ def get_exon(tx_ac, start_exon, end_exon, start_exon_offset,
         return response
     else:
         return {}
+
+
+@app.route('/validate', methods=['POST'])
+def validate_object() -> Dict:
+    """Validate constructed Fusion object. Return warnings if invalid."""
+    r = request.json
+    return validate_fusion(r)
