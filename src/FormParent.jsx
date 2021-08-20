@@ -7,7 +7,7 @@ import FormRadio from './FormRadio';
 import CausEventForm from './CausEventForm';
 import DomainsForm from './DomainsForm';
 import SubmitButton from './SubmitButton';
-import ResponseField from './ResponseField';
+import ResultField from './ResultField';
 import ComponentsForm from './ComponentsForm';
 import RegulatoryElementsForm from './RegulatoryElementsForm';
 
@@ -44,15 +44,18 @@ const FormParent = () => {
   const [components, setComponents] = useState([]);
   const [causativeEventKnown, setCausativeEventKnown] = useState('');
   const [causativeEvent, setCausativeEvent] = useState('');
-  const [responseJSON, setResponseJSON] = useState('{}');
-  const [responseHuman, setResponseHuman] = useState('');
+
+  // results handling
+  const [proposedFusion, setProposedFusion] = useState({});
+  const [submitCount, setSubmitCount] = useState(Number.MIN_SAFE_INTEGER);
+  const [fusionJSON, setFusionJSON] = useState({});
 
   // ajax values
   const [geneIndex, setGeneIndex] = useState({});
   const [domainIndex, setDomainIndex] = useState({});
   const [exonIndex, setExonIndex] = useState({});
 
-  // Call asynchronous functions upon changes to state variables.
+  // ajax functions
 
   /**
    * Get ID for gene name. Updates geneIndex upon retrieval.
@@ -145,7 +148,28 @@ const FormParent = () => {
     });
   };
 
-  // perform ajax calls + update ID/coordinate indices
+  /**
+   *
+   * @param {Object} fusion proposed fusion object constructed from user input
+   */
+  const validateFusion = (fusion) => {
+    fetch('/validate', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(fusion),
+    }).then((response) => response.json()).then((validationResponse) => {
+      if (validationResponse.warnings.length > 0) {
+        setFusionJSON(validationResponse.warnings);
+      } else {
+        setFusionJSON(validationResponse.fusion);
+      }
+    });
+  };
+
+  // hooks for performing ajax lookups + update ID/coordinate indices
   useEffect(() => {
     const geneIndexCopy = geneIndex;
     const exonIndexCopy = exonIndex;
@@ -198,6 +222,229 @@ const FormParent = () => {
       if (element.gene && !(element.gene in geneIndex)) getGeneID(element.gene);
     });
   }, [regulatoryElements]);
+
+  // fusion validation hook
+
+  useEffect(() => {
+    validateFusion(proposedFusion);
+  }, [submitCount]);
+
+  /**
+   * Construct valid gene descriptor from given params
+   * @param {str} label of gene
+   * @param {str} normalizedID fetched from Gene Normalization service for label
+   * @returns validly-structured GeneDescriptor object
+   */
+  const buildGeneDescriptor = (label, normalizedID) => ({
+    type: 'GeneDescriptor',
+    id: `fusion_curation.gene:${label}`,
+    label,
+    value_id: normalizedID,
+  });
+
+  /**
+   * Create transcript_segment object given user input
+   * @param {Object} component object corresponding to given component, as stored in state and
+   *  filled out by user
+   * @param {number} index location in state array - used to infer some coordinate defaults
+   * @returns complete transcript_segment object
+   */
+  const transcriptSegmentComponentToJSON = (component, index) => {
+    const result = { component_type: 'transcript_segment' };
+    const values = component.componentValues;
+    if (values.transcript) result.transcript = values.transcript;
+    if (values.gene_symbol) {
+      const symbol = values.gene_symbol;
+      result.gene = buildGeneDescriptor(symbol, geneIndex[symbol]);
+      // TODO is this boolean condition correct?
+    } else if (values.transcript in exonIndex && (typeof exonIndex[values.transcript].geneSymbol !== 'undefined')) {
+      // get gene from UTA if possible
+      const symbol = exonIndex[values.transcript].geneSymbol;
+      const geneID = geneIndex[symbol];
+      result.gene = buildGeneDescriptor(symbol, geneID);
+    }
+
+    if (values.exon_end) {
+      if (values.transcript in exonIndex) {
+        const exon = exonIndex[values.transcript];
+        if ((index === 0) && !('exon_start' in values)) {
+          result.exon_start = exon.exonStart;
+          result.exon_start_genomic = {
+            chr: exon.chr,
+            pos: exon.start,
+          };
+        }
+        result.exon_end = exon.exonEnd;
+        result.exon_end_genomic = {
+          chr: exon.chr,
+          pos: exon.end,
+        };
+      }
+
+      if (values.exon_end_offset) {
+        result.exon_end_offset = parseInt(values.exon_end_offset, 10);
+      }
+    }
+
+    if (values.exon_start) {
+      if (values.transcript in exonIndex) {
+        const exon = exonIndex[values.transcript];
+        if ((index === components.length - 1) && !('exon_end' in values)) {
+          result.exon_end = exon.exonEnd;
+          result.exon_end_genomic = {
+            chr: exon.chr,
+            pos: exon.end,
+          };
+        }
+        if (index !== 0) {
+          result.exon_start = exon.exonStart;
+          result.exon_start_genomic = {
+            chr: exon.chr,
+            pos: exon.start,
+          };
+        }
+      }
+
+      if (values.exon_start_offset && values.exon_start_offset !== '') {
+        result.exon_start_offset = parseInt(values.exon_start_offset, 10);
+      }
+    }
+
+    return result;
+  };
+
+  /**
+   * Create genomic_region component object given user input
+   * @param {Object} component object corresponding to given component, as stored in state and
+   *  filled out by user
+   * @returns complete genomic_region object
+   */
+  const genomicRegionComponentToJSON = (component) => {
+    const out = {};
+    const values = component.componentValues;
+    if ('chr' in values) out.chr = values.chr;
+    if ('strand' in values) out.strand = values.strand;
+    if ('start_pos' in values) out.start_pos = values.start_pos;
+    if ('end_pos' in values) out.end_pos = values.end_pos;
+
+    return out;
+  };
+
+  /**
+   * Create linker_sequence component object given user input
+   * @param {Object} component object corresponding to given component, as stored in state and
+   *  filled out by user
+   * @returns complete linker_sequence object
+   */
+  const linkerSequenceComponentToJSON = (comp) => (
+    {
+      component_type: 'linker_sequence',
+      linker_sequence: comp.componentValues.sequence,
+    }
+  );
+
+  /**
+   * Create gene component object given user input
+   * @param {Object} component object corresponding to given component, as stored in state and
+   *  filled out by user
+   * @returns complete gene object
+   */
+  const geneComponentToJSON = (comp) => (
+    {
+      symbol: comp.componentValues.gene_symbol,
+      id: geneIndex[comp.componentValues.gene_symbol],
+    }
+  );
+
+  /**
+   * Create unknown_gene component object given user input. Will likely need to take more
+   * user input/provide more data.
+   * @returns complete unknown_gene object
+   */
+  const unknownComponentToJSON = () => {
+    const output = {
+      component_type: 'unknown_gene',
+    };
+    return output;
+  };
+
+  useEffect(() => {
+    const output = {};
+
+    // functional domains
+    if (proteinCoding === 'Yes') {
+      if (rfPreserved === 'Yes') {
+        output.r_frame_preserved = true;
+        if (domains.length > 0) {
+          output.protein_domains = domains.map((domain) => {
+            const domainObject = {
+              status: domain.status,
+              name: domain.name,
+            };
+            if (domain.name) {
+              domainObject.id = domainIndex[domain.name];
+            }
+            if (domain.gene) {
+              domainObject.gene = buildGeneDescriptor(domain.gene, geneIndex[domain.gene]);
+            }
+            return domainObject;
+          });
+        }
+      } else if (rfPreserved === 'No') {
+        output.r_frame_preserved = false;
+      }
+    }
+
+    // transcript components
+    output.transcript_components = components.map((comp, index) => {
+      if (comp.componentType === 'transcript_segment') {
+        return transcriptSegmentComponentToJSON(comp, index);
+      }
+      if (comp.componentType === 'genomic_region') {
+        return genomicRegionComponentToJSON(comp);
+      }
+      if (comp.componentType === 'linker_sequence') {
+        return linkerSequenceComponentToJSON(comp);
+      }
+      if (comp.componentType === 'gene') {
+        return geneComponentToJSON(comp);
+      }
+      if (comp.componentType === 'unknown_gene') {
+        return unknownComponentToJSON();
+      }
+      return null;
+    });
+
+    // causative event
+    if (causativeEventKnown === 'Yes') {
+      output.causative_event = {
+        event_type: causativeEvent,
+      };
+    }
+
+    // regulatory elements
+    if (regulatoryElements && regulatoryElements.length > 0) {
+      output.regulatory_elements = regulatoryElements.map((element) => {
+        const elementFormatted = {};
+        if (element.type) elementFormatted.type = element.type;
+        if (element.gene) {
+          const symbol = element.gene;
+          elementFormatted.gene = {
+            value_id: geneIndex[symbol],
+            label: symbol,
+          };
+        }
+        return elementFormatted;
+      });
+    } else {
+      output.regulatory_elements = [];
+    }
+
+    setProposedFusion(output);
+  }, [
+    regulatoryElements, rfPreserved, domains, components, causativeEvent, geneIndex, domainIndex,
+    exonIndex,
+  ]);
 
   /**
    * Recursively hide children
@@ -350,6 +597,19 @@ const FormParent = () => {
     }
   };
 
+  /**
+   * Hackish way to tie async validation request to the submit onClick listener
+   * TODO: Probably a better way to accomplish this
+   */
+  const handleSubmit = () => {
+    setShowResponse(true);
+    if (submitCount < Number.MAX_SAFE_INTEGER) {
+      setSubmitCount(submitCount + 1);
+    } else {
+      setSubmitCount(Number.MIN_SAFE_INTEGER);
+    }
+  };
+
   return (
     <div className={classes.root}>
       <Box pt={2}>
@@ -450,24 +710,11 @@ const FormParent = () => {
           </Box>
         )
         : null}
-      {showSubmit ? <SubmitButton handler={() => setShowResponse(true)} /> : null}
+      {showSubmit ? <SubmitButton handler={handleSubmit} /> : null}
       {showResponse
         ? (
-          <ResponseField
-            responseJSON={responseJSON}
-            setResponseJSON={setResponseJSON}
-            responseHuman={responseHuman}
-            setResponseHuman={setResponseHuman}
-            components={components}
-            proteinCoding={proteinCoding}
-            rfPreserved={rfPreserved}
-            domains={domains}
-            causativeEventKnown={causativeEventKnown}
-            causativeEvent={causativeEvent}
-            regulatoryElements={regulatoryElements}
-            geneIndex={geneIndex}
-            domainIndex={domainIndex}
-            exonIndex={exonIndex}
+          <ResultField
+            fusionJSON={fusionJSON}
           />
         )
         : null}
