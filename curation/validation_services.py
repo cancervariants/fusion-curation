@@ -1,5 +1,5 @@
 """Perform validation of user-provided Fusion objects."""
-from fusion.model import Fusion
+from fusor.model import Fusion
 from typing import Dict
 from pydantic import ValidationError
 
@@ -23,6 +23,7 @@ def validate_fusion(fusion: Dict) -> Dict:
     }
     try:
         response['fusion'] = Fusion(**fusion).dict()
+        response['warnings'] = []
     except ValidationError as e:
         response['warnings'].append(e.errors())
         response['fusion'] = {}
