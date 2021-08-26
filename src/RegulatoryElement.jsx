@@ -31,8 +31,8 @@ const RegulatoryElement = ({
             value={elementValues.status}
             onChange={(event) => handleChange('status', event.target.value)}
           >
-            <MenuItem value="lost">Lost</MenuItem>
-            <MenuItem value="preserved">Preserved</MenuItem>
+            <MenuItem value="promoter">Promoter</MenuItem>
+            <MenuItem value="enhancer">Enhancer</MenuItem>
           </Select>
         </FormControl>
       </TableCell>
