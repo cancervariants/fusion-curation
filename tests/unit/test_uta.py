@@ -1,6 +1,6 @@
 """Test UTA data source."""
 import pytest
-from curation.data_sources.uta import UTA
+from curation.uta_services import UTAService
 import copy
 
 
@@ -10,7 +10,7 @@ def test_uta():
     class TestUTA:
 
         def __init__(self):
-            self.test_uta = UTA()
+            self.test_uta = UTAService()
 
         def get_genomic_coords(self, tx_ac, start_exon, end_exon, start_exon_offset=0,
                                end_exon_offset=0, gene=None):
@@ -55,7 +55,13 @@ def test_uta_source(test_uta, tpm3_exon1_exon8, ntrk1_exon10_exon17):
     resp = test_uta.get_genomic_coords('NM_152263.3', 0, 8)
     assert resp == tpm3_exon1_exon8
 
+    resp = test_uta.get_genomic_coords('NM_152263.3       ', 0, 8)
+    assert resp == tpm3_exon1_exon8
+
     resp = test_uta.get_genomic_coords('NM_152263.3', 0, 8, gene="TPM3")
+    assert resp == tpm3_exon1_exon8
+
+    resp = test_uta.get_genomic_coords(' NM_152263.3 ', 0, 8, gene=" TPM3 ")
     assert resp == tpm3_exon1_exon8
 
     resp = test_uta.get_genomic_coords('NM_152263.3', 0, 8, gene="tpm3")
@@ -134,4 +140,11 @@ def test_no_matches(test_uta):
 
     # Gene that does not match transcript
     resp = test_uta.get_genomic_coords('NM_152263.3', 8, 1, gene='NTKR1')
+    assert resp is None
+
+    # No transcript given
+    resp = test_uta.get_genomic_coords(None, 8, 1, gene='NTKR1')
+    assert resp is None
+
+    resp = test_uta.get_genomic_coords('', 8, 1, gene='NTKR1')
     assert resp is None

@@ -2,10 +2,10 @@
 from typing import Dict
 from curation import app
 from flask import render_template, request
+from curation.uta_services import uta
 from curation.gene_services import gene_service
-from curation.domain_services import domain_service
 from curation.validation_services import validate_fusion
-from curation.data_sources.uta import uta
+from curation.domain_services import domain_service
 import logging
 
 
@@ -154,5 +154,6 @@ def get_exon(tx_ac, start_exon, end_exon, start_exon_offset,
 def validate_object() -> Dict:
     """Validate constructed Fusion object. Return warnings if invalid."""
     r = request.json
+    print(r)
     validated = validate_fusion(r)
     return validated

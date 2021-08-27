@@ -1,10 +1,16 @@
-import { React, useState, useEffect } from 'react';
+/* eslint-disable react/jsx-no-bind */
+/* eslint-disable quotes */
+/* eslint-disable dot-notation */
+import {
+  React, useState, useEffect, useMemo,
+} from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Box, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+
 import FormRadio from './FormRadio';
-import CausEventForm from './CausEventForm';
+import CausativeEventForm from './CausEventForm';
 import DomainsForm from './DomainsForm';
 import SubmitButton from './SubmitButton';
 import ResultField from './ResultField';
@@ -20,42 +26,51 @@ const useStyles = makeStyles({
 const FormParent = () => {
   const classes = useStyles();
 
-  // visibility handlers
-  const [showProteinCoding, setShowProteinCoding] = useState(false);
-  const [showNearRegulatory, setShowNearRegulatory] = useState(false);
-  const [showRegulatoryElements, setShowRegulatoryElements] = useState(false);
-  const [showInvalidFusion, setShowInvalidFusion] = useState(false);
-  const [showRfPreserved, setShowRfPreserved] = useState(false);
-  const [showDomains, setShowDomains] = useState(false);
-  const [showComponents, setShowComponents] = useState(false);
-  const [showCausEvent, setShowCausEvent] = useState(false);
-  const [showCausEventInfo, setShowCausEventInfo] = useState(false);
-  const [showSubmit, setShowSubmit] = useState(false);
-  const [showResponse, setShowResponse] = useState(false);
-
-  // form value handlers
-  const [chimericTranscript, setChimericTranscript] = useState('');
-  const [nearRegulatory, setNearRegulatory] = useState('');
-  const [regulatoryElements, setRegulatoryElements] = useState([]);
-  const [proteinCoding, setProteinCoding] = useState('');
-  const [rfPreserved, setRfPreserved] = useState('');
+  const [selections, setSelections] = useState({});
+  const handleEntry = (field, value) => {
+    setSelections({ ...selections, ...{ [field]: value } });
+  };
   const [domains, setDomains] = useState([]);
-  // TODO need default value to make controlled/uncontrolled error go away?
   const [components, setComponents] = useState([]);
-  const [causativeEventKnown, setCausativeEventKnown] = useState('');
-  const [causativeEvent, setCausativeEvent] = useState('');
+  const [regulatoryElements, setRegulatoryElements] = useState([]);
 
   // results handling
+  // proposedFusion: client-created Fusion object
+  // fusionJSON -- validated Fusion object received from server
   const [proposedFusion, setProposedFusion] = useState({});
   const [submitCount, setSubmitCount] = useState(Number.MIN_SAFE_INTEGER);
   const [fusionJSON, setFusionJSON] = useState({});
 
-  // ajax values
+  // ID/coordinate indices -- built from AJAX calls
   const [geneIndex, setGeneIndex] = useState({});
   const [domainIndex, setDomainIndex] = useState({});
   const [exonIndex, setExonIndex] = useState({});
 
-  // ajax functions
+  // visible will update when state updates
+  const visible = useMemo(() => ({
+    chimericTranscript: true,
+    proteinCoding: selections['chimericTranscript'] === 'Yes',
+    notValid: selections['nearRegulatory'] === 'No' && selections['chimericTranscript'] === 'No',
+    rfPreserved: selections['proteinCoding'] === 'Yes' && selections['chimericTranscript'] === 'Yes',
+    domains: selections['chimericTranscript'] === 'Yes' && selections['proteinCoding'] === 'Yes' && selections['rfPreserved'] === 'Yes',
+    components: (selections['chimericTranscript'] === 'Yes' && selections['proteinCoding'] === 'No') || selections['rfPreserved'] !== undefined,
+    causativeEventForm: selections['causativeEventKnown'] === 'Yes',
+    nearRegulatory: (selections['causativeEventKnown'] !== undefined) || selections['chimericTranscript'] === 'No',
+    regulatoryElements: selections['nearRegulatory'] === 'Yes',
+    submit: selections['nearRegulatory'] !== undefined && selections['chimericTranscript'] === 'Yes' && selections['causativeEventKnown'] !== undefined,
+    resultField: selections['submitted'] === true,
+  }), [selections]);
+
+  // when visible updates, anything not visible is also removed from state
+  useEffect(() => {
+    // eslint-disable-next-line array-callback-return
+    Object.entries(visible).map(([key, value]) => {
+      if (!value) {
+        delete selections[key];
+      }
+    });
+    setSelections(selections);
+  }, [visible]);
 
   /**
    * Get ID for gene name. Updates geneIndex upon retrieval.
@@ -67,9 +82,8 @@ const FormParent = () => {
       if (geneResponse.warnings && geneResponse.warnings.length !== 0) {
         return null;
       }
-      const conceptID = geneResponse.concept_id;
       const geneIndexCopy = geneIndex;
-      geneIndexCopy[symbol] = conceptID;
+      geneIndexCopy[symbol] = geneResponse.concept_id;
       setGeneIndex(geneIndexCopy);
     });
   };
@@ -80,15 +94,18 @@ const FormParent = () => {
    */
   const getDomainID = (name) => {
     // eslint-disable-next-line consistent-return
-    fetch(`/domain/${name}`).then((response) => response.json()).then((domainResponse) => {
-      if (domainResponse.warnings && domainResponse.warnings.length !== 0) {
-        return null;
-      }
-      const domainID = domainResponse.domain_id;
-      const domainIndexCopy = domainIndex;
-      domainIndexCopy[name] = domainID;
-      setDomainIndex(domainIndexCopy);
-    });
+    fetch(`/domain/${name}`)
+      .then((response) => response.json())
+      // eslint-disable-next-line
+      .then((domainResponse) => {
+        if (domainResponse.warnings && domainResponse.warnings.length !== 0) {
+          return null;
+        }
+        const domainID = domainResponse.domain_id;
+        const domainIndexCopy = domainIndex;
+        domainIndexCopy[name] = domainID;
+        setDomainIndex(domainIndexCopy);
+      });
   };
 
   /**
@@ -153,20 +170,24 @@ const FormParent = () => {
    * @param {Object} fusion proposed fusion object constructed from user input
    */
   const validateFusion = (fusion) => {
-    fetch('/validate', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(fusion),
-    }).then((response) => response.json()).then((validationResponse) => {
-      if (validationResponse.warnings.length > 0) {
-        setFusionJSON(validationResponse.warnings);
-      } else {
-        setFusionJSON(validationResponse.fusion);
-      }
-    });
+    if (Object.keys(fusion).length !== 0) {
+      fetch('/validate', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(fusion),
+      }).then((response) => response.json()).then((validationResponse) => {
+        if (validationResponse.warnings.length > 0) {
+          setFusionJSON({
+            warnings: validationResponse.warnings,
+          });
+        } else {
+          setFusionJSON(validationResponse.fusion);
+        }
+      });
+    }
   };
 
   // hooks for performing ajax lookups + update ID/coordinate indices
@@ -199,6 +220,9 @@ const FormParent = () => {
         } else if (values.exon_start && values.exon_end) {
           exon = getExon(values.transcript, values.exon_start, values.exon_end,
             exonStartOffset, exonEndOffset, values.gene_symbol);
+        } else {
+          exon = getExon(values.transcript, 0, 0,
+            exonStartOffset, exonEndOffset, values.gene_symbol);
         }
         if (exon != null) {
           exonIndexCopy[values.transcript] = exon;
@@ -224,7 +248,6 @@ const FormParent = () => {
   }, [regulatoryElements]);
 
   // fusion validation hook
-
   useEffect(() => {
     validateFusion(proposedFusion);
   }, [submitCount]);
@@ -237,13 +260,14 @@ const FormParent = () => {
    */
   const buildGeneDescriptor = (label, normalizedID) => ({
     type: 'GeneDescriptor',
-    id: `fusion_curation.gene:${label}`,
+    id: `gene:${label}`,
     label,
     value_id: normalizedID,
   });
 
   /**
    * Create transcript_segment object given user input
+   * TODO update for new data model specs
    * @param {Object} component object corresponding to given component, as stored in state and
    *  filled out by user
    * @param {number} index location in state array - used to infer some coordinate defaults
@@ -315,6 +339,7 @@ const FormParent = () => {
 
   /**
    * Create genomic_region component object given user input
+   * TODO may require new server endpoints/restructuring
    * @param {Object} component object corresponding to given component, as stored in state and
    *  filled out by user
    * @returns complete genomic_region object
@@ -339,7 +364,15 @@ const FormParent = () => {
   const linkerSequenceComponentToJSON = (comp) => (
     {
       component_type: 'linker_sequence',
-      linker_sequence: comp.componentValues.sequence,
+      linker_sequence: {
+        id: `sequence:${comp.componentValues.sequence}`,
+        type: 'SequenceDescriptor',
+        value: {
+          sequence: comp.componentValues.sequence,
+          type: 'SequenceState',
+        },
+        residue_type: 'SO:0000348',
+      },
     }
   );
 
@@ -351,8 +384,11 @@ const FormParent = () => {
    */
   const geneComponentToJSON = (comp) => (
     {
-      symbol: comp.componentValues.gene_symbol,
-      id: geneIndex[comp.componentValues.gene_symbol],
+      component_type: 'gene',
+      gene: buildGeneDescriptor(
+        comp.componentValues.gene_symbol,
+        geneIndex[comp.componentValues.gene_symbol],
+      ),
     }
   );
 
@@ -368,12 +404,13 @@ const FormParent = () => {
     return output;
   };
 
+  //
   useEffect(() => {
     const output = {};
 
     // functional domains
-    if (proteinCoding === 'Yes') {
-      if (rfPreserved === 'Yes') {
+    if (selections['proteinCoding'] === 'Yes') {
+      if (selections['rfPreserved'] === 'Yes') {
         output.r_frame_preserved = true;
         if (domains.length > 0) {
           output.protein_domains = domains.map((domain) => {
@@ -390,7 +427,7 @@ const FormParent = () => {
             return domainObject;
           });
         }
-      } else if (rfPreserved === 'No') {
+      } else if (selections['rfPreserved'] === 'No') {
         output.r_frame_preserved = false;
       }
     }
@@ -416,9 +453,9 @@ const FormParent = () => {
     });
 
     // causative event
-    if (causativeEventKnown === 'Yes') {
+    if (selections['causativeEventKnown'] === 'Yes') {
       output.causative_event = {
-        event_type: causativeEvent,
+        event_type: selections['causativeEvent'],
       };
     }
 
@@ -428,11 +465,8 @@ const FormParent = () => {
         const elementFormatted = {};
         if (element.type) elementFormatted.type = element.type;
         if (element.gene) {
-          const symbol = element.gene;
-          elementFormatted.gene = {
-            value_id: geneIndex[symbol],
-            label: symbol,
-          };
+          const label = element.gene;
+          elementFormatted.gene = buildGeneDescriptor(label, geneIndex[label]);
         }
         return elementFormatted;
       });
@@ -441,168 +475,14 @@ const FormParent = () => {
     }
 
     setProposedFusion(output);
-  }, [
-    regulatoryElements, rfPreserved, domains, components, causativeEvent, geneIndex, domainIndex,
-    exonIndex,
-  ]);
-
-  /**
-   * Recursively hide children
-   * @param {string} field name of field (should be the same as the state variable name) to hide
-   */
-  const hideChildren = (field) => {
-    const dispatch = {
-      chimericTranscript: 0,
-      proteinCoding: 0,
-      rfPreserved: 1,
-      retainedDomains: 2,
-      components: 3,
-      causativeEventKnown: 4,
-      causativeEvent: 5,
-      nearRegulatory: 6,
-      regulatoryElements: 7,
-      invalidFusion: 8,
-      submit: 9,
-      response: 9,
-    };
-
-    const precedence = [
-      setShowProteinCoding,
-      setShowRfPreserved,
-      setShowDomains,
-      setShowComponents,
-      setShowCausEvent,
-      setShowCausEventInfo,
-      setShowNearRegulatory,
-      setShowRegulatoryElements,
-      setShowInvalidFusion,
-      setShowSubmit,
-      setShowResponse,
-    ];
-
-    precedence.slice(dispatch[field]).forEach((f) => f(false));
-  };
-
-  /**
-   * Handle result of "chimeric transcript" deicision. Make child elements visible or invisible.
-   * @param {string} oldValue value of previous selection
-   * @param {string} newValue newly selected value
-   * @returns null, but updates state of child visibility elements accordingly
-   */
-  const handleSetChimericTranscript = (oldValue, newValue) => {
-    if (oldValue !== newValue) {
-      setChimericTranscript(newValue);
-      if (newValue === 'Yes') {
-        hideChildren('near-reg-element');
-        setShowProteinCoding(true);
-      } else if (newValue === 'No') {
-        hideChildren('protein-coding');
-        setShowNearRegulatory(true);
-      } else {
-        hideChildren('chimeric');
-      }
-    }
-  };
-
-  /**
-   * Handle result of "protein coding" decision. Make child elements visible or invisible.
-   * @param {string} oldValue value of previous selection
-   * @param {string} newValue newly selected value
-   * @returns nothing, but updates state of child elements accordingly
-   */
-  const handleSetProteinCoding = (oldValue, newValue) => {
-    if (oldValue !== newValue) {
-      setProteinCoding(newValue);
-      if (newValue === 'Yes') {
-        hideChildren('components');
-        setShowRfPreserved(true);
-      } else if (newValue === 'No' || newValue === 'Unknown') {
-        hideChildren('rfPreserved');
-        setShowComponents(true);
-        setShowCausEvent(true);
-      }
-    }
-  };
-
-  /**
-   * Handle result of "read frame preserved" decision. Make child elements visible or invisible.
-   * @param {string} oldValue value of previous selection
-   * @param {string} newValue newly selected value
-   * @returns nothing, but updates state of child elements accordingly
-   */
-  const handleSetRfPreserved = (oldValue, newValue) => {
-    if (oldValue !== newValue) {
-      setRfPreserved(newValue);
-      if (newValue === 'Yes') {
-        hideChildren('components');
-        setShowDomains(true);
-        setShowComponents(true);
-        setShowCausEvent(true);
-      } else if (newValue === 'No') {
-        hideChildren('retainedDomains');
-        setShowComponents(true);
-        setShowCausEvent(true);
-      } else {
-        hideChildren('retainedDomains');
-        hideChildren('components');
-      }
-    }
-  };
-
-  /**
-   * Handle result of "causative event known" decision. Make child elements visible or invisible.
-   * @param {string} oldValue value of previous selection
-   * @param {string} newValue newly selected value
-   * @returns nothing, but updates state of child elements accordingly
-   */
-  const handleSetCausEvent = (oldValue, newValue) => {
-    if (oldValue !== newValue) {
-      setCausativeEventKnown(newValue);
-      if (newValue === 'Yes') {
-        hideChildren('nearRegulatory');
-        setShowCausEventInfo(true);
-        setShowNearRegulatory(true);
-      } else if (newValue === 'No') {
-        hideChildren('causativeEvent');
-        setShowNearRegulatory(true);
-      } else {
-        hideChildren('causativeEvent');
-      }
-    }
-  };
-
-  /**
-   * Handle result of "near regulatory element" decision. Make child elements visible or invisible.
-   * @param {string} oldValue value of previous selection
-   * @param {string} newValue newly selected value
-   * @returns null, but updates state of child elements accordingly
-   */
-  const handleSetNearRegulatory = (oldValue, newValue) => {
-    if (oldValue !== newValue) {
-      setNearRegulatory(newValue);
-      if (newValue === 'Yes') {
-        hideChildren('invalidFusion');
-        setShowRegulatoryElements(true);
-        setShowSubmit(true);
-      } else if (newValue === 'No') {
-        hideChildren('regulatoryElements');
-        if (showComponents) {
-          setShowSubmit(true);
-        } else {
-          setShowInvalidFusion(true);
-        }
-      } else {
-        hideChildren('regulatoryElements');
-      }
-    }
-  };
+  }, [selections, domains, components, regulatoryElements]);
 
   /**
    * Hackish way to tie async validation request to the submit onClick listener
    * TODO: Probably a better way to accomplish this
    */
   const handleSubmit = () => {
-    setShowResponse(true);
+    handleEntry('submitted', true);
     if (submitCount < Number.MAX_SAFE_INTEGER) {
       setSubmitCount(submitCount + 1);
     } else {
@@ -612,88 +492,87 @@ const FormParent = () => {
 
   return (
     <div className={classes.root}>
-      <Box pt={2}>
-        <FormRadio
-          name="chimeric-transcript"
-          prompt="Does the fusion create a chimeric transcript?"
-          state={{
-            options: ['Yes', 'No'],
-            state: chimericTranscript,
-            stateFunction: handleSetChimericTranscript,
-          }}
-        />
-      </Box>
-      {showProteinCoding
+      <FormRadio
+        name="chimericTranscript"
+        prompt="Does the fusion create a chimeric transcript?"
+        state={{
+          options: ['Yes', 'No'],
+          state: selections['chimericTranscript'],
+          stateFunction: (oldValue, newValue) => handleEntry('chimericTranscript', newValue),
+        }}
+      />
+
+      {visible['proteinCoding']
         ? (
           <FormRadio
-            name="protein-coding"
+            name="proteinCoding"
             prompt="Is at least one partner protein-coding?"
             state={{
               options: ['Yes', 'No', 'Unknown'],
-              state: proteinCoding,
-              stateFunction: handleSetProteinCoding,
+              state: selections['proteinCoding'],
+              stateFunction: (oldValue, newValue) => handleEntry('proteinCoding', newValue),
             }}
           />
         )
         : null}
-      {showRfPreserved
+      {visible['rfPreserved']
         ? (
           <FormRadio
-            name="rf-preserved"
+            name="rfPreserved"
             prompt="Is the reading frame predicted to be preserved?"
             state={{
               options: ['Yes', 'No'],
-              state: rfPreserved,
-              stateFunction: handleSetRfPreserved,
+              state: selections['rfPreserved'],
+              stateFunction: (oldValue, newValue) => { handleEntry('rfPreserved', newValue); },
             }}
           />
         )
         : null}
-      {showDomains
+      {visible['domains']
         ? <DomainsForm domains={domains} setDomains={setDomains} />
         : null}
-      {showComponents
+      {visible['components']
         ? (
           <DndProvider backend={HTML5Backend}>
             <ComponentsForm components={components} setComponents={setComponents} />
           </DndProvider>
         )
         : null}
-      {showCausEvent
+      {visible['components']
         ? (
           <FormRadio
-            name="causative-event"
+            name="causativeEventKnown"
             prompt="Is causative event known?"
             state={{
               options: ['Yes', 'No'],
-              state: causativeEventKnown,
-              stateFunction: handleSetCausEvent,
+              state: selections['causativeEventKnown'],
+              stateFunction: (oldValue, newValue) => { handleEntry('causativeEventKnown', newValue); },
             }}
           />
         )
         : null}
-      {showCausEventInfo
+      {visible['causativeEventForm']
         ? (
-          <CausEventForm
-            state={causativeEvent}
-            handler={setCausativeEvent}
+          <CausativeEventForm
+            state={selections['causativeEvent']}
+            handler={handleEntry.bind({}, 'causativeEvent')}
           />
         )
         : null}
-      {showNearRegulatory
+      {visible['nearRegulatory']
         ? (
           <FormRadio
-            name="regulatory-element-decision"
+            name="nearRegulatory"
             prompt="Does fusion rearrange near regulatory element?"
             state={{
               options: ['Yes', 'No'],
-              state: nearRegulatory,
-              stateFunction: handleSetNearRegulatory,
+              state: selections['nearRegulatory'],
+              stateFunction: (oldValue, newValue) => { handleEntry('nearRegulatory', newValue); },
             }}
           />
         )
         : null}
-      {showRegulatoryElements
+      {visible['regulatoryElements']
         ? (
           <RegulatoryElementsForm
             items={regulatoryElements}
@@ -701,7 +580,7 @@ const FormParent = () => {
           />
         )
         : null}
-      {showInvalidFusion
+      {visible['notValid']
         ? (
           <Box p={1}>
             <Typography>
@@ -710,8 +589,8 @@ const FormParent = () => {
           </Box>
         )
         : null}
-      {showSubmit ? <SubmitButton handler={handleSubmit} /> : null}
-      {showResponse
+      {visible['submit'] ? <SubmitButton handler={handleSubmit} /> : null}
+      {visible['resultField']
         ? (
           <ResultField
             fusionJSON={fusionJSON}

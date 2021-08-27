@@ -8,7 +8,7 @@ flask = "*"
 gene-normalizer = ">=0.1.11"
 boto3 = "*"
 psycopg2 = "*"
-fusor = "*"
+fusor = ">=0.0.5"
 
 [dev-packages]
 python-dotenv = "*"

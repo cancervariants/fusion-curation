@@ -13,7 +13,7 @@ logger = logging.getLogger('fusion_backend')
 logger.setLevel(logging.DEBUG)
 
 
-class UTA:
+class UTAService:
     """Class for accessing UTA database."""
 
     def __init__(self, db_url=UTA_DB_URL, db_pwd=None) -> None:
@@ -127,7 +127,10 @@ class UTA:
         :return: Dictionary containing transcript and exon data
         """
         if gene:
-            gene = gene.upper()
+            gene = gene.upper().strip()
+
+        if tx_ac:
+            tx_ac = tx_ac.strip()
 
         tx_exon_start_end = self._get_tx_exon_start_end(tx_ac, start_exon,
                                                         end_exon)
@@ -352,4 +355,4 @@ class ParseResult(urlparse.ParseResult):
         return path_elems[2] if len(path_elems) > 2 else None
 
 
-uta = UTA()
+uta = UTAService()
