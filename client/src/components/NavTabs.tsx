@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
+import {Transcript} from './Transcript';
+
+//MUI Stuff
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -25,7 +28,7 @@ function TabPanel(props: TabPanelProps) {
     >
       {value === index && (
         <Box p={3}>
-          <Typography>{children}</Typography>
+          {children}
         </Box>
       )}
     </div>
@@ -64,6 +67,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export default function NavTabs() {
+  
+
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -71,8 +76,13 @@ export default function NavTabs() {
     setValue(newValue);
   };
 
+  const nextTab = (newValue: number) => {
+    setValue(newValue);
+  };
+
   return (
     <div className={classes.root}>
+
       <AppBar position="static">
         <Tabs
           variant="fullWidth"
@@ -80,13 +90,13 @@ export default function NavTabs() {
           onChange={handleChange}
           aria-label="nav tabs example"
         >
-          <LinkTab label="Page One" href="/drafts" {...a11yProps(0)} />
+          <LinkTab label="Page One" href="/drafts" {...a11yProps(0)}  />
           <LinkTab label="Page Two" href="/trash" {...a11yProps(1)} />
           <LinkTab label="Page Three" href="/spam" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index={0}>
-        Page One
+      <TabPanel value={value} index={0} >    
+        <Transcript nextTab={nextTab} index={1}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
         Page Two

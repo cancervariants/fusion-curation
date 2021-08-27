@@ -52,11 +52,12 @@ const FormParent = () => {
     notValid: responses['nearRegulatory'] === 'No' && responses['chimericTranscript'] === 'No',
     rfPreserved: responses['proteinCoding'] === 'Yes' && responses['chimericTranscript'] === 'Yes',
     domains: responses['chimericTranscript'] === 'Yes' && responses['proteinCoding'] === 'Yes' && responses['rfPreserved'] === 'Yes',
-    components: (responses['chimericTranscript'] === 'Yes' && responses['proteinCoding'] === 'No') || responses['rfPreserved'] !== undefined,
-    causativeEventForm: responses['causativeEventKnown'] === 'Yes',
+    components: responses['chimericTranscript'] === 'Yes' && (responses['proteinCoding'] === 'No' || responses['rfPreserved'] !== undefined),
+    causativeEventKnown: responses['chimericTranscript'] === 'Yes' && responses['proteinCoding'] !== undefined,
+    causativeEventForm: responses['causativeEventKnown'] === 'Yes' && responses['chimericTranscript'] === 'Yes',
     nearRegulatory: (responses['causativeEventKnown'] !== undefined) || responses['chimericTranscript'] === 'No',
-    regulatoryElements: responses['nearRegulatory'] === 'Yes',
-    submit: responses['nearRegulatory'] !== undefined && responses['chimericTranscript'] === 'Yes' && responses['causativeEventKnown'] !== undefined,
+    regulatoryElements: responses['nearRegulatory'] === 'Yes' && (responses['proteinCoding'] !== undefined || responses['chimericTranscript'] === 'No'),
+    submit: (responses['nearRegulatory'] !== undefined && responses['chimericTranscript'] === 'Yes') || (responses['chimericTranscript'] === 'No' && responses['nearRegulatory'] === 'Yes'),
     responseFields: responses['submitted'] === true,
   }), [responses]);
 
