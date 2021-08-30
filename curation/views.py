@@ -154,6 +154,5 @@ def get_exon(tx_ac, start_exon, end_exon, start_exon_offset,
 def validate_object() -> Dict:
     """Validate constructed Fusion object. Return warnings if invalid."""
     r = request.json
-    print(r)
     validated = validate_fusion(r)
     return validated
