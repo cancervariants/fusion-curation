@@ -20,9 +20,12 @@ if 'FUSION_EB_PROD' in environ:
 else:
     LOG_FN = 'fusion_backend.log'
 
-logging.basicConfig(filename=LOG_FN,
-                    format='[%(asctime)s] - %(name)s - %(levelname)s : %(message)s')
-logger = logging.getLogger('fusion_backend')
+logging.basicConfig(
+    filename=LOG_FN,
+    format='[%(asctime)s] - %(name)s - %(levelname)s : %(message)s'
+)
+logger = logging.getLogger('curation_backend')
 logger.setLevel(logging.DEBUG)
+
 
 import curation.views  # noqa: F401 E402
