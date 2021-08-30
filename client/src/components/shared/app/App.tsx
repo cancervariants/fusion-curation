@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import NavTabs from './components/NavTabs';
-import { ResponsesContext } from './contexts/ResponsesContext';
+import NavTabs from '../navtabs/NavTabs';
+import { ResponsesContext } from '../../../contexts/ResponsesContext'
 
 // export interface Responses {
 //   'chimericTranscript' : string | undefined;
@@ -13,7 +13,7 @@ import { ResponsesContext } from './contexts/ResponsesContext';
 
 function App() {
 
-  const [responses, setResponses] = useState<any>({});
+  const [responses, setResponses] = useState<unknown>({});
 
   return (
     <div className="App">

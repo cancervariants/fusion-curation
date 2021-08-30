@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { ResponsesContext } from '../contexts/ResponsesContext';
+import { ResponsesContext } from '../../../contexts/ResponsesContext'
 
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -11,7 +11,8 @@ interface Props {
   name: string,
   prompt: string,
 }
-export const Question: React.FC<Props> = ({name, prompt }: Props) => {
+
+export const YesNo: React.FC<Props> = ({name, prompt }: Props) => {
 
   const {responses, setResponses} = useContext(ResponsesContext);
 

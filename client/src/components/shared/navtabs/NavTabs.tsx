@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import {Transcript} from './Transcript';
+import React from 'react';
+import {Transcript} from '../../pages/structure/Transcript';
+import {RegElement} from '../../pages/regelement/RegElement';
+
+import './NavTabs.scss'
 
 //MUI Stuff
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Box from '@material-ui/core/Box';
+import {AppBar, Tabs, Tab, Box, Button} from '@material-ui/core';
 
 
 interface TabPanelProps {
@@ -15,7 +15,9 @@ interface TabPanelProps {
   value: any;
 }
 
+
 function TabPanel(props: TabPanelProps) {
+
   const { children, value, index, ...other } = props;
 
   return (
@@ -72,11 +74,7 @@ export default function NavTabs() {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setValue(newValue);
-  };
-
-  const nextTab = (newValue: number) => {
+  const handleChange = (event: unknown, newValue: number) => {
     setValue(newValue);
   };
 
@@ -90,20 +88,25 @@ export default function NavTabs() {
           onChange={handleChange}
           aria-label="nav tabs example"
         >
-          <LinkTab label="Page One" href="/drafts" {...a11yProps(0)}  />
-          <LinkTab label="Page Two" href="/trash" {...a11yProps(1)} />
-          <LinkTab label="Page Three" href="/spam" {...a11yProps(2)} />
+          <LinkTab label="Chimeric Transcript" href="/drafts" {...a11yProps(0)}  />
+          <LinkTab label="Regulatory Element" href="/trash" {...a11yProps(1)} />
+          <LinkTab label="Domains" href="/spam" {...a11yProps(2)} />
+          <LinkTab label="Cause" href="/spam" {...a11yProps(2)} />
+          <LinkTab label="Summary" href="/spam" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0} >    
-        <Transcript nextTab={nextTab} index={1}/>
+        <Transcript index={1}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Page Two
+        <RegElement index={1}/>
       </TabPanel>
       <TabPanel value={value} index={2}>
         Page Three
       </TabPanel>
+
+      <Button onClick={(event) => {handleChange(event, value - 1)}} variant="contained" color="primary">Previous</Button>
+      <Button onClick={(event) => {handleChange(event, value + 1)}} variant="contained" color="primary">Next</Button>
     </div>
   );
 }
