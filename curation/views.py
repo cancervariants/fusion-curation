@@ -153,6 +153,10 @@ def get_exon(tx_ac, start_exon, end_exon, start_exon_offset,
 @app.route('/validate', methods=['POST'])
 def validate_object() -> Dict:
     """Validate constructed Fusion object. Return warnings if invalid."""
-    r = request.json
+    try:
+        r = request.json
+    except TypeError:
+        logger.warning('Request raised unresolvable TypeError.')
+        return {'fusion': {}, 'warnings': ['Unable to validate submission']}
     validated = validate_fusion(r)
     return validated
