@@ -8,8 +8,8 @@ flask = "*"
 gene-normalizer = ">=0.1.11"
 boto3 = "*"
 psycopg2 = "*"
-fusor = ">=0.0.7"
 "biocommons.seqrepo" = "*"
+fusor = "*"
 
 [dev-packages]
 python-dotenv = "*"
