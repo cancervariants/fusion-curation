@@ -8,7 +8,7 @@ flask = "*"
 gene-normalizer = ">=0.1.11"
 boto3 = "*"
 psycopg2 = "*"
-fusor = ">=0.0.5"
+fusor = ">=0.0.6"
 "biocommons.seqrepo" = "*"
 
 [dev-packages]
@@ -24,4 +24,4 @@ coveralls = "*"
 jupyterlab = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3"
