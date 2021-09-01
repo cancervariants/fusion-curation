@@ -6,6 +6,7 @@ from curation.uta_services import uta
 from curation.gene_services import gene_service
 from curation.validation_services import validate_fusion
 from curation.domain_services import domain_service
+from curation.sequence_services import get_ga4gh_sequence_id
 import logging
 
 
@@ -160,3 +161,36 @@ def validate_object() -> Dict:
         return {'fusion': {}, 'warnings': ['Unable to validate submission']}
     validated = validate_fusion(r)
     return validated
+
+
+@app.route('/sequence/<in_sequence>')
+def get_sequence_id(in_sequence: str) -> Dict:
+    """Get GA4GH sequence ID CURIE for input sequence.
+    :param str in_sequence: user-submitted sequence to retrieve ID for
+    :return: Dict (served as JSON) containing either GA4GH sequence ID or
+        warnings if unable to retrieve ID
+    """
+    try:
+        sequence_id = get_ga4gh_sequence_id(in_sequence)
+    except KeyError:
+        msg = f'Sequence {in_sequence} not recognized.'
+        logger.warning(msg)
+        return {
+            'sequence_id': '',
+            'warnings': [
+                f'Lookup of sequence {in_sequence} failed.'
+            ]
+        }
+    except IndexError:
+        msg = f'Sequence {in_sequence} returned 0 sequence IDs from SeqRepo.'
+        logger.warning(msg)
+        return {
+            'sequence_id': '',
+            'warnings': [
+                f'Lookup of sequence {in_sequence} failed.'
+            ]
+        }
+    return {
+        'sequence_id': sequence_id,
+        'warnings': [],
+    }

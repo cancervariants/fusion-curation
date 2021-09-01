@@ -3,7 +3,6 @@ from biocommons.seqrepo import SeqRepo
 from os import environ
 from pathlib import Path
 import logging
-from typing import Dict
 
 
 logger = logging.getLogger('curation_backend')
@@ -32,31 +31,9 @@ def get_seqrepo() -> SeqRepo:
 sr = get_seqrepo()
 
 
-def get_sequence_id(sequence: str) -> Dict:
+def get_ga4gh_sequence_id(sequence: str) -> str:
     """Get GA4GH sequence ID for a given sequence.
     :param str sequence: user-provided sequence name
     :return: Dict containing `sequence_id` and `warnings` fields
     """
-    try:
-        sequence_id = sr.translate_identifier(sequence, 'ga4gh')[0]
-    except KeyError:
-        msg = f'Sequence {sequence} not recognized.'
-        return {
-            'sequence_id': '',
-            'warnings': [
-                f'Lookup of sequence {sequence} failed.'
-            ]
-        }
-    except IndexError:
-        msg = f'Sequence {sequence} returned 0 sequence IDs from SeqRepo.'
-        logger.warning(msg)
-        return {
-            'sequence_id': '',
-            'warnings': [
-                f'Lookup of sequence {sequence} failed.'
-            ]
-        }
-    return {
-        'sequence_id': sequence_id,
-        'warnings': [],
-    }
+    return sr.translate_identifier(sequence, 'ga4gh')[0]
