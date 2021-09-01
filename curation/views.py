@@ -151,18 +151,6 @@ def get_exon(tx_ac, start_exon, end_exon, start_exon_offset,
         return {}
 
 
-@app.route('/validate', methods=['POST'])
-def validate_object() -> Dict:
-    """Validate constructed Fusion object. Return warnings if invalid."""
-    try:
-        r = request.json
-    except TypeError:
-        logger.warning('Request raised unresolvable TypeError.')
-        return {'fusion': {}, 'warnings': ['Unable to validate submission']}
-    validated = validate_fusion(r)
-    return validated
-
-
 @app.route('/sequence/<in_sequence>')
 def get_sequence_id(in_sequence: str) -> Dict:
     """Get GA4GH sequence ID CURIE for input sequence.
@@ -194,3 +182,15 @@ def get_sequence_id(in_sequence: str) -> Dict:
         'sequence_id': sequence_id,
         'warnings': [],
     }
+
+
+@app.route('/validate', methods=['POST'])
+def validate_object() -> Dict:
+    """Validate constructed Fusion object. Return warnings if invalid."""
+    try:
+        r = request.json
+    except TypeError:
+        logger.warning('Request raised unresolvable TypeError.')
+        return {'fusion': {}, 'warnings': ['Unable to validate submission']}
+    validated = validate_fusion(r)
+    return validated

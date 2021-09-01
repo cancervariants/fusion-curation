@@ -45,6 +45,7 @@ const FormParent = () => {
   const [geneIndex, setGeneIndex] = useState({});
   const [domainIndex, setDomainIndex] = useState({});
   const [exonIndex, setExonIndex] = useState({});
+  const [sequenceIndex, setSequenceIndex] = useState({});
 
   // visible will update when state updates
   const visible = useMemo(() => ({
@@ -166,6 +167,26 @@ const FormParent = () => {
   };
 
   /**
+   * Retrieve sequence ID from user-entered chromosome string [defaults to GRCh38]
+   * @param {str} chr to retrieve ID for
+   * @return nothing, but update index state variable
+   */
+  const getSequenceID = (chr) => {
+    fetch(`/sequence/GRCh38:${chr}`)
+      .then((response) => response.json())
+      // eslint-disable-next-line
+      .then((sequenceResponse) => {
+        if (sequenceResponse.warnings && sequenceResponse.warnings.length !== 0) {
+          return null;
+        }
+        const sequenceID = sequenceResponse.sequence_id;
+        const sequenceIndexCopy = sequenceIndex;
+        sequenceIndexCopy[chr] = sequenceID;
+        setSequenceIndex(sequenceIndexCopy);
+      });
+  };
+
+  /**
    *
    * @param {Object} fusion proposed fusion object constructed from user input
    */
@@ -197,13 +218,20 @@ const FormParent = () => {
     components.forEach((component) => {
       const values = component.componentValues;
 
-      if ('gene_symbol' in values) {
+      if (values.gene_symbol) {
         const geneSymbol = values.gene_symbol;
         if (!(geneSymbol in geneIndexCopy)) {
           const geneID = getGeneID(geneSymbol);
           if (geneID != null) {
             geneIndexCopy[geneSymbol] = geneID;
           }
+        }
+      }
+
+      if (values.chr) {
+        const { chr } = values;
+        if (!(chr in sequenceIndex)) {
+          getSequenceID(chr);
         }
       }
 
@@ -262,7 +290,7 @@ const FormParent = () => {
     type: 'GeneDescriptor',
     id: `gene:${label}`,
     label,
-    value_id: normalizedID,
+    gene_id: normalizedID,
   });
 
   /**
@@ -279,13 +307,13 @@ const FormParent = () => {
     if (values.transcript) result.transcript = values.transcript;
     if (values.gene_symbol) {
       const symbol = values.gene_symbol;
-      result.gene = buildGeneDescriptor(symbol, geneIndex[symbol]);
+      result.gene_descriptor = buildGeneDescriptor(symbol, geneIndex[symbol]);
       // TODO is this boolean condition correct?
     } else if (values.transcript in exonIndex && (typeof exonIndex[values.transcript].geneSymbol !== 'undefined')) {
       // get gene from UTA if possible
       const symbol = exonIndex[values.transcript].geneSymbol;
       const geneID = geneIndex[symbol];
-      result.gene = buildGeneDescriptor(symbol, geneID);
+      result.gene_descriptor = buildGeneDescriptor(symbol, geneID);
     }
 
     if (values.exon_end) {
@@ -345,14 +373,32 @@ const FormParent = () => {
    * @returns complete genomic_region object
    */
   const genomicRegionComponentToJSON = (component) => {
-    const out = {};
     const values = component.componentValues;
-    if ('chr' in values) out.chr = values.chr;
-    if ('strand' in values) out.strand = values.strand;
-    if ('start_pos' in values) out.start_pos = values.start_pos;
-    if ('end_pos' in values) out.end_pos = values.end_pos;
-
-    return out;
+    const regionID = `chr${values.chr}:${values.start_pos}-${values.end_pos}(${values.strand})`;
+    return {
+      component_type: 'genomic_region',
+      region: {
+        id: regionID,
+        type: 'LocationDescriptor',
+        location: {
+          type: 'SequenceLocation',
+          sequence_id: sequenceIndex[values.chr],
+          interval: {
+            type: 'SequenceInterval',
+            start: {
+              type: 'Number',
+              value: parseInt(values.start_pos, 10),
+            },
+            end: {
+              type: 'Number',
+              value: parseInt(values.end_pos, 10),
+            },
+          },
+        },
+        label: regionID,
+      },
+      strand: values.strand,
+    };
   };
 
   /**
@@ -367,10 +413,7 @@ const FormParent = () => {
       linker_sequence: {
         id: `sequence:${comp.componentValues.sequence}`,
         type: 'SequenceDescriptor',
-        value: {
-          sequence: comp.componentValues.sequence,
-          type: 'SequenceState',
-        },
+        sequence: comp.componentValues.sequence,
         residue_type: 'SO:0000348',
       },
     }
@@ -385,7 +428,7 @@ const FormParent = () => {
   const geneComponentToJSON = (comp) => (
     {
       component_type: 'gene',
-      gene: buildGeneDescriptor(
+      gene_descriptor: buildGeneDescriptor(
         comp.componentValues.gene_symbol,
         geneIndex[comp.componentValues.gene_symbol],
       ),
@@ -454,9 +497,7 @@ const FormParent = () => {
 
     // causative event
     if (selections['causativeEventKnown'] === 'Yes') {
-      output.causative_event = {
-        event_type: selections['causativeEvent'],
-      };
+      output.causative_event = selections['causativeEvent'];
     }
 
     // regulatory elements
@@ -466,7 +507,7 @@ const FormParent = () => {
         if (element.type) elementFormatted.type = element.type;
         if (element.gene) {
           const label = element.gene;
-          elementFormatted.gene = buildGeneDescriptor(label, geneIndex[label]);
+          elementFormatted.gene_descriptor = buildGeneDescriptor(label, geneIndex[label]);
         }
         return elementFormatted;
       });
