@@ -29,7 +29,8 @@ def normalize_gene(symbol: str) -> Dict:
     """
     response = {
         'symbol': symbol,
-        'warnings': []
+        'warnings': [],
+        'concept_id': ''
     }
     try:
         concept_id = gene_service.get_gene_id(symbol)
@@ -140,8 +141,13 @@ def get_exon(tx_ac, start_exon, end_exon, start_exon_offset,
         gene=gene,
     )
     if genomic_coords:
-        response['gene'] = genomic_coords.get("gene", None)
-        response['chr'] = genomic_coords.get("chr", None)
+        gene = genomic_coords.get('gene', None)
+        response['gene'] = gene
+        response['gene_id'] = normalize_gene(gene)['concept_id']
+        chr = genomic_coords.get("chr", None)
+        response['chr'] = chr
+        sequence_id = get_sequence_id(f'refseq:{chr}')
+        response['sequence_id'] = sequence_id['sequence_id']
         response['start'] = genomic_coords.get("start", None)
         response['end'] = genomic_coords.get("end", None)
         response['start_exon'] = genomic_coords.get("start_exon", None)
