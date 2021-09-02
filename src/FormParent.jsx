@@ -160,6 +160,7 @@ const FormParent = () => {
           end,
           exonStart,
           exonEnd,
+          sequenceID: exonResponse.sequence_id,
         };
         setExonIndex(exonIndexCopy);
       }
@@ -295,74 +296,56 @@ const FormParent = () => {
 
   /**
    * Create transcript_segment object given user input
-   * TODO update for new data model specs
    * @param {Object} component object corresponding to given component, as stored in state and
    *  filled out by user
    * @param {number} index location in state array - used to infer some coordinate defaults
    * @returns complete transcript_segment object
    */
-  const transcriptSegmentComponentToJSON = (component, index) => {
-    const result = { component_type: 'transcript_segment' };
+  const transcriptSegmentComponentToJSON = (component) => {
+    const transcriptSegment = { component_type: 'transcript_segment' };
     const values = component.componentValues;
-    if (values.transcript) result.transcript = values.transcript;
+
+    transcriptSegment.transcript = `refseq:${values.transcript}`;
+
     if (values.gene_symbol) {
       const symbol = values.gene_symbol;
-      result.gene_descriptor = buildGeneDescriptor(symbol, geneIndex[symbol]);
-      // TODO is this boolean condition correct?
+      transcriptSegment.gene_descriptor = buildGeneDescriptor(symbol, geneIndex[symbol]);
     } else if (values.transcript in exonIndex && (typeof exonIndex[values.transcript].geneSymbol !== 'undefined')) {
-      // get gene from UTA if possible
       const symbol = exonIndex[values.transcript].geneSymbol;
       const geneID = geneIndex[symbol];
-      result.gene_descriptor = buildGeneDescriptor(symbol, geneID);
+      transcriptSegment.gene_descriptor = buildGeneDescriptor(symbol, geneID);
     }
 
-    if (values.exon_end) {
-      if (values.transcript in exonIndex) {
-        const exon = exonIndex[values.transcript];
-        if ((index === 0) && !('exon_start' in values)) {
-          result.exon_start = exon.exonStart;
-          result.exon_start_genomic = {
-            chr: exon.chr,
-            pos: exon.start,
-          };
-        }
-        result.exon_end = exon.exonEnd;
-        result.exon_end_genomic = {
-          chr: exon.chr,
-          pos: exon.end,
-        };
-      }
+    // TODO handle differently based on index value
+    const exon = exonIndex[values.transcript];
+    if (exon) {
+      transcriptSegment.exon_start = exon.exonStart;
+      transcriptSegment.exon_start_offset = exon.exonStartOffset;
+      transcriptSegment.exon_end = exon.exonEnd;
+      transcriptSegment.exon_end_offset = exon.exonEndOffset;
 
-      if (values.exon_end_offset) {
-        result.exon_end_offset = parseInt(values.exon_end_offset, 10);
-      }
+      transcriptSegment.component_genomic_region = {
+        id: `${exon.chr}:${exon.start}-${exon.end}`,
+        type: 'LocationDescriptor',
+        location: {
+          sequence_id: exon.sequenceID,
+          type: 'SequenceLocation',
+          interval: {
+            start: {
+              type: 'Number',
+              value: exon.start,
+            },
+            end: {
+              type: 'Number',
+              value: exon.end,
+            },
+            type: 'SequenceInterval',
+          },
+        },
+      };
     }
 
-    if (values.exon_start) {
-      if (values.transcript in exonIndex) {
-        const exon = exonIndex[values.transcript];
-        if ((index === components.length - 1) && !('exon_end' in values)) {
-          result.exon_end = exon.exonEnd;
-          result.exon_end_genomic = {
-            chr: exon.chr,
-            pos: exon.end,
-          };
-        }
-        if (index !== 0) {
-          result.exon_start = exon.exonStart;
-          result.exon_start_genomic = {
-            chr: exon.chr,
-            pos: exon.start,
-          };
-        }
-      }
-
-      if (values.exon_start_offset && values.exon_start_offset !== '') {
-        result.exon_start_offset = parseInt(values.exon_start_offset, 10);
-      }
-    }
-
-    return result;
+    return transcriptSegment;
   };
 
   /**
@@ -447,7 +430,7 @@ const FormParent = () => {
     return output;
   };
 
-  //
+  // build proposedFusion
   useEffect(() => {
     const output = {};
 
@@ -465,7 +448,10 @@ const FormParent = () => {
               domainObject.id = domainIndex[domain.name];
             }
             if (domain.gene) {
-              domainObject.gene = buildGeneDescriptor(domain.gene, geneIndex[domain.gene]);
+              domainObject.gene_descriptor = buildGeneDescriptor(
+                domain.gene,
+                geneIndex[domain.gene],
+              );
             }
             return domainObject;
           });
@@ -476,9 +462,9 @@ const FormParent = () => {
     }
 
     // transcript components
-    output.transcript_components = components.map((comp, index) => {
+    output.transcript_components = components.map((comp) => {
       if (comp.componentType === 'transcript_segment') {
-        return transcriptSegmentComponentToJSON(comp, index);
+        return transcriptSegmentComponentToJSON(comp);
       }
       if (comp.componentType === 'genomic_region') {
         return genomicRegionComponentToJSON(comp);
