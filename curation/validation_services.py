@@ -22,7 +22,7 @@ def validate_fusion(fusion: Dict) -> Dict:
         'warnings': []
     }
     try:
-        response['fusion'] = Fusion(**fusion).dict()
+        response['fusion'] = Fusion(**fusion).dict(exclude_none=True)
         response['warnings'] = []
     except ValidationError as e:
         response['warnings'].append(e.errors())
