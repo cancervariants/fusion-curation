@@ -19,32 +19,53 @@ const ResultField = ({ fusionJSON }) => {
    * @return {string} fusion object structured as human-readable string
    */
   const outputToReadable = () => {
-    if (fusionJSON.transcript_components) {
-      const jsonComponents = fusionJSON.transcript_components;
-      if (jsonComponents.length > 2) {
-        const beginning = jsonComponents[0];
-        const end = jsonComponents[jsonComponents.length - 1];
-
-        // check for valid fields
-        if (!('transcript' in beginning && 'gene' in beginning && 'symbol' in beginning.gene && 'exon_end' in beginning)) {
-          return '';
-        }
-        if (!('transcript' in end && 'gene' in end && 'symbol' in end.gene && 'exon_start' in end)) {
-          return '';
-        }
-
-        const beginningString = `${beginning.transcript}(${beginning.gene.symbol}):exon${beginning.exon_end}`;
-        const endString = `${end.transcript}(${end.gene.symbol}):exon${end.exon_start}`;
-
-        return `${beginningString}::${endString}`;
-      }
+    if (!fusionJSON.transcript_components) {
+      return '';
     }
-    return '';
+    const last = fusionJSON.transcript_components.length - 1;
+    // eslint-disable-next-line consistent-return
+    const formatted = fusionJSON.transcript_components.map((comp, index) => {
+      const compType = comp.component_type;
+
+      if (compType === 'transcript_segment') {
+        const transcript = (!comp.transcript.includes(':')) ? comp.transcript : comp.transcript.split(':')[1];
+        const gene = comp.gene_descriptor.label;
+        let exon = '';
+        if (index === 0) {
+          exon = comp.exon_start.toString();
+        } else if (index === last) {
+          exon = comp.exon_start.toString();
+        } else {
+          exon = `${toString(comp.exon_end)}-${toString(comp.exon_end)}`;
+        }
+        return `${transcript}(${gene}):exon${exon}`;
+      }
+
+      if (compType === 'linker_sequence') {
+        return comp.linker_sequence.sequence;
+      }
+
+      if (compType === 'unknown_gene') {
+        return 'unknown';
+      }
+
+      if (compType === 'gene') {
+        return comp.gene_descriptor.label;
+      }
+
+      if (compType === 'genomic_region') {
+        return comp.region.label;
+      }
+
+      return '';
+    });
+
+    return formatted.join('::');
   };
 
   useEffect(() => {
     setFusionJSONString(JSON.stringify(fusionJSON, null, 2));
-    setFusionReadable(outputToReadable(fusionJSON));
+    setFusionReadable(outputToReadable());
   }, [fusionJSON]);
 
   // manage user select/send to clipboard interactions
@@ -101,7 +122,7 @@ const ResultField = ({ fusionJSON }) => {
           InputProps={{
             readOnly: true,
           }}
-          value={outputToReadable()}
+          value={fusionReadable}
           onClick={() => handleReadableFieldClick()}
           style={{ width: 700 }}
         />
