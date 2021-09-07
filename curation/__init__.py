@@ -5,8 +5,6 @@ from os import environ
 import logging
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[0]
-
 APP_ROOT = Path(__file__).resolve().parents[0]
 if "UTA_DB_URL" in environ:
     UTA_DB_URL = environ["UTA_DB_URL"]
