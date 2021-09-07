@@ -13,6 +13,11 @@ if "UTA_DB_URL" in environ:
 else:
     UTA_DB_URL = 'postgresql://uta_admin@localhost:5433/uta/uta_20210129'
 
+"""
+static resources from `npm run build` should be in a directory `build/` in the same
+directory as `__init__.py`
+ie use (in project root) `cp -R build curation/build`
+"""
 app = Flask(__name__, static_url_path='', static_folder='build', template_folder='build')
 
 if 'FUSION_EB_PROD' in environ:
