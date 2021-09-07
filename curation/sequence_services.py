@@ -3,6 +3,7 @@ from biocommons.seqrepo import SeqRepo
 from os import environ
 from pathlib import Path
 import logging
+from curation import SEQREPO_DATA_PATH
 
 
 logger = logging.getLogger('curation_backend')
@@ -13,18 +14,11 @@ def get_seqrepo() -> SeqRepo:
     """Instantiate SeqRepo instance.
     :return: SeqRepo instance
     """
-    if 'SEQREPO_PATH' in environ:
-        seqrepo_path = Path(environ['SEQREPO_PATH'])
-        if not seqrepo_path.exists():
-            raise NotADirectoryError(f'Invalid SeqRepo path provided at '
-                                     f'environment variable SEQREPO_PATH: '
-                                     f'{seqrepo_path}')
-    else:
-        seqrepo_path = Path('/usr/local/share/seqrepo/latest')
-        if not seqrepo_path.exists():
-            raise NotADirectoryError(f'Could not locate SeqRepo directory; either '
-                                     f'place at {seqrepo_path} or specify path '
-                                     f'via environment variable SEQREPO_PATH.')
+    seqrepo_path = Path(SEQREPO_DATA_PATH)
+    if not seqrepo_path.exists():
+        raise NotADirectoryError(f'Invalid SeqRepo path provided at '
+                                 f'environment variable SEQREPO_PATH: '
+                                 f'{seqrepo_path}')
     return SeqRepo(seqrepo_path)
 
 
