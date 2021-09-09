@@ -7,7 +7,7 @@ name = "pypi"
 flask = "*"
 gene-normalizer = ">=0.1.11"
 boto3 = "*"
-psycopg2 = "*"
+psycopg2-binary = "*"
 "biocommons.seqrepo" = "*"
 fusor = "*"
 
