@@ -28,7 +28,6 @@ const Domain = ({
   const [domainList, setDomainList] = useState([]);
 
   const getDomainList = async (query) => {
-    query.replace('/', '_');
     const res = await fetch(`/domain_matches/${query}`);
     const data = await res.json();
     setDomainList(data.matches);
