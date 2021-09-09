@@ -39,11 +39,11 @@ if 'UTA_DB_URL' in environ:
 else:
     UTA_DB_URL = 'postgresql://uta_admin@localhost:5433/uta/uta_20210129'
 
-# bring views into scope
-import curation.views  # noqa: F401 E402
-
 # get local seqrepo location
 if 'SEQREPO_DATA_PATH' not in environ:
     SEQREPO_DATA_PATH = f"{APP_ROOT}/data/seqrepo/latest"
 else:
     SEQREPO_DATA_PATH = environ['SEQREPO_DATA_PATH']
+
+# bring views into scope
+import curation.views  # noqa: F401 E402
