@@ -1,7 +1,7 @@
 import React, {useState, useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {Card, CardActionArea, TextField, CardContent, Typography, Button } from '@material-ui/core';
-import { ResponsesContext } from '../../../contexts/ResponsesContext';
+import { ResponsesContext } from '../../../../contexts/ResponsesContext';
 
 interface Props {
   title: string,

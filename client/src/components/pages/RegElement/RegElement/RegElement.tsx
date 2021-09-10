@@ -1,7 +1,7 @@
 import { useContext } from 'react';
-import { ResponsesContext } from '../../../contexts/ResponsesContext';
-import { YesNo } from '../../shared/yesno/YesNo';
-import REForm from './REForm'
+import { ResponsesContext } from '../../../../contexts/ResponsesContext';
+import { YesNo } from '../../../shared/yesno/YesNo';
+import REForm from '../RegElementForm/RegElementForm'
 
 interface Props {
   index: number
@@ -17,12 +17,6 @@ export const RegElement: React.FC<Props> = ( { index }) => {
         name="regulatoryElement" 
         prompt="Does the fusion rearrange near a regulatory element?"
       />
-
-      { responses['regulatoryElement'] === 'Yes' ?
-            <REForm />
-        : null
-      }
-      
 
     </div>
   )

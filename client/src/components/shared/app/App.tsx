@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import NavTabs from '../navtabs/NavTabs';
+import NavTabs from '../NavTabs/NavTabs';
 import { ResponsesContext } from '../../../contexts/ResponsesContext'
+import { GeneContext } from '../../../contexts/GeneContext'
 
 // export interface Responses {
 //   'chimericTranscript' : string | undefined;
@@ -14,12 +15,13 @@ import { ResponsesContext } from '../../../contexts/ResponsesContext'
 function App() {
 
   const [responses, setResponses] = useState<unknown>({});
+  const [genes, setGenes] = useState<unknown>(['BCR', 'ABL1']);
 
   return (
     <div className="App">
-      <ResponsesContext.Provider value={{responses, setResponses}}>
+      <GeneContext.Provider value={{genes, setGenes}}>
         <NavTabs />
-      </ResponsesContext.Provider>    
+      </GeneContext.Provider>    
     </div>
   );
 }
