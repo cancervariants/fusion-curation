@@ -1,5 +1,6 @@
 """Test sequence_id retrieval service"""
 from curation.sequence_services import get_ga4gh_sequence_id
+import pytest
 
 
 def test_sequence_id():
@@ -27,5 +28,5 @@ def test_sequence_id():
     ]
 
     for sequence in bad_sequences:
-        actual = get_ga4gh_sequence_id(sequence)
-        assert actual == ''
+        with pytest.raises(KeyError):
+            actual = get_ga4gh_sequence_id(sequence)
