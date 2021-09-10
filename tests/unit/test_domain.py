@@ -8,10 +8,21 @@ def check_domain_id_response(query: str, domain_id: str, warnings: List[str]):
     :param str query: query to test
     :param str domain_id: expected domain ID
     :param List[str] warnings: expected List of warnings
+    :raises AssertionError: if actual != expected
     """
     (actual_id, actual_warnings) = domain_service.get_domain_id(query)
     assert actual_id == domain_id
     assert set(actual_warnings) == set(warnings)
+
+
+def check_matches_correct(query: str, expected: Set[str]):
+    """Perform correctness checks for get_possible_matches
+    :param str query: query term to test
+    :param Set[str] expected: expected terms to retrieve
+    :raises AssertionError: if actual != expected
+    """
+    matches = set(domain_service.get_possible_matches(query))
+    assert matches == expected
 
 
 def test_get_domain_id():
@@ -52,10 +63,6 @@ def test_get_domain_id():
 
 def test_get_possible_matches():
     """Test autocomplete services for domain name lookup."""
-    def check_matches_correct(query: str, expected: Set[str]):
-        matches = set(domain_service.get_possible_matches(query))
-        assert matches == expected
-
     check_matches_correct('Tyrosine-protein kinase, re', {
         'Tyrosine-protein kinase, receptor class V, conserved site',
         'Tyrosine-protein kinase, receptor class III, conserved site',

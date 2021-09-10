@@ -1,9 +1,9 @@
 """Provide sequence ID generation services."""
 from biocommons.seqrepo import SeqRepo
-from os import environ
 from pathlib import Path
 import logging
 from curation import SEQREPO_DATA_PATH
+from typing import Tuple, List
 
 
 logger = logging.getLogger('curation_backend')
@@ -17,7 +17,7 @@ def get_seqrepo() -> SeqRepo:
     seqrepo_path = Path(SEQREPO_DATA_PATH)
     if not seqrepo_path.exists():
         raise NotADirectoryError(f'Invalid SeqRepo path provided at '
-                                 f'environment variable SEQREPO_PATH: '
+                                 f'environment variable SEQREPO_DATA_PATH: '
                                  f'{seqrepo_path}')
     return SeqRepo(seqrepo_path)
 
@@ -25,9 +25,18 @@ def get_seqrepo() -> SeqRepo:
 sr = get_seqrepo()
 
 
-def get_ga4gh_sequence_id(sequence: str) -> str:
+def get_ga4gh_sequence_id(sequence: str) -> Tuple[str, List[str]]:
     """Get GA4GH sequence ID for a given sequence.
     :param str sequence: user-provided sequence name
-    :return: Dict containing `sequence_id` and `warnings` fields
+    :return: Tuple containing `sequence_id` and `warnings` fields
     """
-    return sr.translate_identifier(sequence, 'ga4gh')[0]
+    try:
+        sequence_id = sr.translate_identifier(sequence, 'ga4gh')[0]
+        warnings = []
+    except (KeyError, IndexError) as e:
+        msg = f'Unable to retrieve GA4GH sequence ID for {sequence}: {e}'
+        logger.warning(msg)
+        sequence_id = ''
+        warnings = [msg]
+    return (sequence_id, warnings)
+
