@@ -42,22 +42,12 @@ def get_functional_domain(name: str) -> Dict:
     :return: Dict (to be served as JSON) containing provided name, ID (as CURIE) if available,
         and relevant warnings
     """
-    response = {
+    (domain_id, warnings) = domain_service.get_domain_id(name)
+    return {
         'name': name,
-        'warnings': []
+        'domain_id': domain_id,
+        'warnings': warnings
     }
-    try:
-        domain_id = domain_service.get_domain_id(name)
-        response['domain_id'] = domain_id
-    except LookupError:
-        msg = f'Lookup of domain {name} failed.'
-        logger.warning(msg)
-        response['warnings'].append(msg)
-    except Exception as e:
-        msg = f'Lookup of domain `{name}` failed with exception {e}.'
-        logger.warning(msg)
-        response['warnings'].append(msg)
-    return response
 
 
 @app.route('/domain_matches/<query>')

@@ -1,15 +1,10 @@
 """Provide lookup services for functional domains."""
 from pathlib import Path
 from datetime import datetime
-from curation import APP_ROOT
-import logging
+from curation import APP_ROOT, logger
 import csv
 from ftplib import FTP
-from typing import List
-
-
-logger = logging.getLogger('fusion_backend')
-logger.setLevel(logging.DEBUG)
+from typing import List, Tuple
 
 
 class DomainService():
@@ -50,17 +45,19 @@ class DomainService():
             raise Exception(e)
         logger.info('InterPro entry list download complete.')
 
-    def get_domain_id(self, name: str) -> str:
+    def get_domain_id(self, name: str) -> Tuple[str, List[str]]:
         """Given functional domain name, return Interpro ID.
         :param str name: name to fetch ID for (case insensitive)
-        :return: domain ID, formatted as CURIE
-        :raises: LookupError if domain ID cannot be retrieved
+        :return: Tuple containing domain ID (as CURIE) if found, empty string otherwise,
+            and a List of warnings (empty if successful)
         """
         domain_id = self.domains.get(name.lower())
         if not domain_id:
-            raise LookupError(f'Functional domain ID lookup failed for {name}')
+            warn = f'Could not retrieve ID for domain {name}'
+            logger.info(warn)
+            return ('', [warn])
         else:
-            return f'interpro:{domain_id["id"]}'
+            return (f'interpro:{domain_id["id"]}', [])
 
     def get_possible_matches(self, query: str, n: int = 10) -> List[str]:
         """Given input query, return possible domain matches (for autocomplete)
