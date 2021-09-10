@@ -1,21 +1,31 @@
+
 .gn {
   background-color: pink;
-  display: inline-block;
   width: 200px;
 }
 .tc {
   background-color: red;
-  display: inline-block;
-  width: 200px;
+  width: 100px;
 }
 .ls {
   background-color: blue;
-  display: inline-block;
-  width: 200px;
+  width: 70px;
 }
 .gr {
   background-color: green;
+  width: 70px;
+}
+
+
+
+.structure {
+  padding: 5px;
   display: inline-block;
-  width: 200px;
+  background-color: gray;
+  display: flex;
+  justify-content: space-around;
+  width: 500px;
+  border: 1px solid black;
+  margin: 10px;
 }
 

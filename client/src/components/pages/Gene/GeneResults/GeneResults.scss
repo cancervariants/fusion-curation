@@ -1,4 +1,11 @@
-.Gene-results {
+.gene-results {
   background-color: lightgray;
   min-height: 400px;
+  display: flex;
+  justify-content: center;
+}
+
+h1, h4, .diagrams {
+  display: flex;
+  justify-content: center;
 }

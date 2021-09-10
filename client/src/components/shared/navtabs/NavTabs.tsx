@@ -1,6 +1,8 @@
+
 import React from 'react';
-import {Transcript} from '../../pages/structure/Transcript';
-import {RegElement} from '../../pages/regelement/RegElement';
+import {Structure} from '../../pages/Structure/Structure/Structure';
+import {Gene} from '../../pages/Gene/Gene/Gene';
+import {RegElement} from '../../pages/RegElement/RegElement/RegElement';
 
 import './NavTabs.scss'
 
@@ -88,25 +90,28 @@ export default function NavTabs() {
           onChange={handleChange}
           aria-label="nav tabs example"
         >
-          <LinkTab label="Chimeric Transcript" href="/drafts" {...a11yProps(0)}  />
-          <LinkTab label="Regulatory Element" href="/trash" {...a11yProps(1)} />
-          <LinkTab label="Domains" href="/spam" {...a11yProps(2)} />
-          <LinkTab label="Cause" href="/spam" {...a11yProps(2)} />
-          <LinkTab label="Summary" href="/spam" {...a11yProps(2)} />
+          <LinkTab label="Gene" href="/drafts" {...a11yProps(0)}  />
+          <LinkTab label="Structure" href="/drafts" {...a11yProps(1)}  />
+          <LinkTab label="Regulatory Element" href="/trash" {...a11yProps(2)} />
+          <LinkTab label="Domains" href="/spam" {...a11yProps(3)} />
+          <LinkTab label="Cause" href="/spam" {...a11yProps(4)} />
+          <LinkTab label="Summary" href="/spam" {...a11yProps(5)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0} >    
-        <Transcript index={1}/>
+        <Gene index={1}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <RegElement index={1}/>
+        <Structure index={1}/>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        Page Three
+        <RegElement index={1}/>
       </TabPanel>
 
-      <Button onClick={(event) => {handleChange(event, value - 1)}} variant="contained" color="primary">Previous</Button>
-      <Button onClick={(event) => {handleChange(event, value + 1)}} variant="contained" color="primary">Next</Button>
+      { value !== 0 ? 
+      <Button onClick={(event) => {handleChange(event, value - 1)}} variant="contained" color="primary">Back</Button>
+      : null} 
+      <Button onClick={(event) => {handleChange(event, value + 1)}} variant="contained" color="primary">Continue</Button>
     </div>
   );
 }

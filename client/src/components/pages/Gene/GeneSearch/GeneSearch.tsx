@@ -3,6 +3,9 @@ import {TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import { GeneContext } from '../../../../contexts/GeneContext';
 
+import './GeneSearch.scss'
+
+import { GeneResults } from '../GeneResults/GeneResults';
 
 //TODO: replace dummy data with server data
 
@@ -28,7 +31,7 @@ export const GeneSearch: React.FC = () => {
   // }
 
   return (
-    <div>
+    <div className="gene-search">
       
       {/* <Autocomplete
           id="domain-lookup"
@@ -55,10 +58,14 @@ export const GeneSearch: React.FC = () => {
         <TextField
           label=""
           variant="outlined"
-        />      
-      {genes.map((gene: string) => (    
-          <p><button onClick={() => removeGene(gene)}>X</button> {gene}</p>
-      ))}
+        />
+
+      <ul className="selected-genes">
+        {genes.map((gene: string) => (    
+            <li><button onClick={() => removeGene(gene)}>X</button> {gene}</li>
+        ))}     
+      </ul>      
+
       
 
 

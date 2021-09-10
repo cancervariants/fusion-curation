@@ -1,16 +1,10 @@
 import React from 'react';
 import {
-  Box, Grid, FormLabel, Paper,
+  Box, FormLabel, 
 } from '@material-ui/core';
 
 
-const CTForm: React.FC = () => {
-
-  const all = {'Transcript Segment': ['Transcript', 'Starting Exon', 'Ending Exon', 'Gene'],
-  'Genomic Region': ['Chromosome', 'Strand', 'Start Position', 'End Position'],
-  'Linker': ['Sequence'],
-  'Gene': ['Gene']
-}
+const RegElementForm: React.FC = () => {
 
   return (
     <>
@@ -24,4 +18,4 @@ const CTForm: React.FC = () => {
   )
 }
 
-export default CTForm;
+export default RegElementForm;

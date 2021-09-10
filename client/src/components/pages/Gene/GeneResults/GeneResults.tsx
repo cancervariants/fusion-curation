@@ -9,17 +9,18 @@ export const GeneResults: React.FC = () => {
 const {genes, setGenes} = useContext(GeneContext);
 
   return (
-    <div className="Gene-results">
+    <div className="gene-results">
       { genes.length > 1 && 
         <div>
           <h1>
             {genes[0]}, {genes[1]}
           </h1>
-          <div>
-            <p>We found some common fusion structures.</p>
-            <p>You can apply one that matches (or to use as a starting point)</p>
-          </div>  
-          <StructureDiagram />  
+          <h4>We found some common fusion structures.</h4>
+          <h4>You can apply one that matches (or to use as a starting point)</h4>
+          <div className="diagrams">
+            <StructureDiagram/>  
+          </div>
+          
         </div>
 
         
