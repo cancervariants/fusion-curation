@@ -27,23 +27,12 @@ def normalize_gene(symbol: str) -> Dict:
     :return: Dict (to be served as JSON) containing gene symbol, ID (as CURIE) if available, and
         any relevant warnings
     """
-    response = {
+    concept_id, warnings = gene_service.get_gene_id(symbol)
+    return {
         'symbol': symbol,
-        'warnings': [],
-        'concept_id': ''
+        'concept_id': concept_id,
+        'warnings': warnings,
     }
-    try:
-        concept_id = gene_service.get_gene_id(symbol)
-        response['concept_id'] = concept_id
-    except LookupError:
-        msg = f'Lookup of gene symbol {symbol} failed.'
-        logger.warning(msg)
-        response['warnings'].append(msg)
-    except Exception as e:
-        msg = f'Lookup of gene symbol `{symbol}` failed with exception {e}.'
-        logger.warning(msg)
-        response['warnings'].append(msg)
-    return response
 
 
 @app.route('/domain/<name>')
