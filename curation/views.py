@@ -153,11 +153,15 @@ def get_sequence_id(input_sequence: str) -> Dict:
 
 @app.route('/validate', methods=['POST'])
 def validate_object() -> Dict:
-    """Validate constructed Fusion object. Return warnings if invalid."""
-    try:
-        r = request.json
-    except TypeError:
-        logger.warning('Request raised unresolvable TypeError.')
+    """Validate constructed Fusion object. Return warnings if invalid.
+    No arguments supplied, but receives a POSTed JSON payload via Flask request context.
+    :return: Dict served as JSON with validated Fusion object if correct, and empty
+        Object + a list of Warnings if not.
+    """
+    r = request.json
+    if r is not None:
+        validated = validate_fusion(r)
+        return validated
+    else:
+        logger.warning('Unable to parse received POST payload to /validate')
         return {'fusion': {}, 'warnings': ['Unable to validate submission']}
-    validated = validate_fusion(r)
-    return validated
