@@ -157,31 +157,31 @@ def get_exon(tx_ac, start_exon, end_exon, start_exon_offset,
         return {}
 
 
-@app.route('/sequence/<in_sequence>')
-def get_sequence_id(in_sequence: str) -> Dict:
+@app.route('/sequence/<input_sequence>')
+def get_sequence_id(input_sequence: str) -> Dict:
     """Get GA4GH sequence ID CURIE for input sequence.
-    :param str in_sequence: user-submitted sequence to retrieve ID for
+    :param str input_sequence: user-submitted sequence to retrieve ID for
     :return: Dict (served as JSON) containing either GA4GH sequence ID or
         warnings if unable to retrieve ID
     """
     try:
-        sequence_id = get_ga4gh_sequence_id(in_sequence)
+        sequence_id = get_ga4gh_sequence_id(input_sequence)
     except KeyError:
-        msg = f'Sequence {in_sequence} not recognized.'
+        msg = f'Sequence {input_sequence} not recognized.'
         logger.warning(msg)
         return {
             'sequence_id': '',
             'warnings': [
-                f'Lookup of sequence {in_sequence} failed.'
+                f'Lookup of sequence {input_sequence} failed.'
             ]
         }
     except IndexError:
-        msg = f'Sequence {in_sequence} returned 0 sequence IDs from SeqRepo.'
+        msg = f'Sequence {input_sequence} returned 0 sequence IDs from SeqRepo.'
         logger.warning(msg)
         return {
             'sequence_id': '',
             'warnings': [
-                f'Lookup of sequence {in_sequence} failed.'
+                f'Lookup of sequence {input_sequence} failed.'
             ]
         }
     return {
