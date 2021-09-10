@@ -21,7 +21,7 @@ logging.basicConfig(
     format='[%(asctime)s] - %(name)s - %(levelname)s : %(message)s'
 )
 logger = logging.getLogger('curation_backend')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 logger.handlers = []
 
 if 'FUSION_EB_PROD' in environ:
