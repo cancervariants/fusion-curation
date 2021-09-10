@@ -58,6 +58,8 @@ seqrepo_date_dir=$(ls -d */)
 sudo mv $seqrepo_date_dir latest
 ```
 
+Alternate SeqRepo locations can be specified with the environment variable `SEQREPO_DATA_PATH`.
+
 The backend requires local DynamoDB service with tables initialized by the [Gene Normalization service](https://github.com/cancervariants/gene-normalization), listening on port 8000. See the Gene Normalizer documentation for initialization information.
 
 In a terminal running the Pipenv Python environment, start Flask:
