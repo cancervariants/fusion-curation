@@ -164,30 +164,19 @@ def get_sequence_id(input_sequence: str) -> Dict:
     :return: Dict (served as JSON) containing either GA4GH sequence ID or
         warnings if unable to retrieve ID
     """
-    try:
-        sequence_id = get_ga4gh_sequence_id(input_sequence)
-    except KeyError:
-        msg = f'Sequence {input_sequence} not recognized.'
-        logger.warning(msg)
-        return {
-            'sequence_id': '',
-            'warnings': [
-                f'Lookup of sequence {input_sequence} failed.'
-            ]
-        }
-    except IndexError:
-        msg = f'Sequence {input_sequence} returned 0 sequence IDs from SeqRepo.'
-        logger.warning(msg)
-        return {
-            'sequence_id': '',
-            'warnings': [
-                f'Lookup of sequence {input_sequence} failed.'
-            ]
-        }
-    return {
-        'sequence_id': sequence_id,
+    response = {
+        'sequence_id': '',
         'warnings': [],
     }
+    try:
+        response['sequence_id'] = get_ga4gh_sequence_id(input_sequence)
+    except (KeyError, IndexError) as e:
+        msg = f'Unable to retrieve ga4gh sequence ID for {input_sequence}: {e}'
+        logger.warning(msg)
+        response['warnings'].append(
+            f'Lookup of sequence {input_sequence} failed.'
+        )
+    return response
 
 
 @app.route('/validate', methods=['POST'])
