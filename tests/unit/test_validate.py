@@ -92,3 +92,42 @@ def test_validate():
     assert fusion['regulatory_elements'][0]['type'] == 'promoter'
     assert fusion['regulatory_elements'][0]['gene_descriptor']['gene_id'] == 'hgnc:1097'  # noqa: E501
     assert fusion['causative_event'] == 'rearrangement'
+
+    # empty fusion should fail
+    response = validate_fusion({})
+    assert response['warnings'] == [[{
+        'loc': ('transcript_components',),
+        'msg': 'field required',
+        'type': 'value_error.missing'
+    }]]
+    assert response['fusion'] == {}
+
+    # should get specific warnings for various fields
+    fusion = {
+        'r_frame_preserved': 98,
+        'transcript_components': [
+            {
+                'component_type': 'gene',
+                'gene_descriptor': {
+                    'id': 'gene:BRAF',
+                    'gene_id': 'hgnc:1097'
+                }
+            }
+        ]
+    }
+    response = validate_fusion(fusion)
+    assert response['warnings'] == [
+        [
+            {
+                'loc': ('r_frame_preserved',),
+                'msg': 'value is not a valid boolean',
+                'type': 'value_error.strictbool'
+            },
+            {
+                'loc': ('transcript_components',),
+                'msg': 'Fusion must contain at least 2 transcript components.',
+                'type': 'value_error'
+            }
+        ]
+    ]
+    assert response['fusion'] == {}
