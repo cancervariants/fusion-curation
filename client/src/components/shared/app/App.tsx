@@ -1,34 +1,31 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState} from 'react';
 import NavTabs from '../NavTabs/NavTabs';
-import { ResponsesContext } from '../../../contexts/ResponsesContext'
 import { GeneContext } from '../../../contexts/GeneContext'
 import { StructureContext } from '../../../contexts/StructureContext'
 import '../../../global/styles/global.scss'
+import { ThemeProvider } from '@material-ui/core';
+import theme from '../../../global/styles/theme';
 
-// export interface Responses {
-//   'chimericTranscript' : string | undefined;
-//   'nearRegulatory': string | undefined;
-//   'rfPreserved': string | undefined;
-//   'proteinCoding': string | undefined;
-//   'causativeEventKnown': string | undefined;
-//   'submitted': string | undefined;
-// }
+import './App.scss';
+
 
 function App() {
 
-  const [responses, setResponses] = useState<unknown>({});
   const [genes, setGenes] = useState<unknown>(['BCR', 'ABL1']);
   const [structure, setStructure] = useState<unknown>([]);
 
   return (
-    <div className="App">
-      <GeneContext.Provider value={{genes, setGenes}}>
-        <StructureContext.Provider value={{structure, setStructure}}>
-          <NavTabs />
-        </StructureContext.Provider>
-        
-      </GeneContext.Provider>    
-    </div>
+    <ThemeProvider theme={theme}>
+      <div className="App">
+        <GeneContext.Provider value={{genes, setGenes}}>
+          <StructureContext.Provider value={{structure, setStructure}}>
+            <NavTabs />
+          </StructureContext.Provider>
+          
+        </GeneContext.Provider>    
+      </div>
+    </ThemeProvider>
+
   );
 }
 

@@ -1,9 +1,40 @@
 .gene-search {
   display:flex;
   align-items: center;
-  justify-content: center;
+  margin: 0 80px;
+  justify-content: space-around;
 }
 
-.selected-genes {
-  list-style: none;
+ul {
+  display: flex;
+  list-style-type: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+
+  li {
+    display: flex;
+    min-width: 100%;
+    background-color: #5DD3D3; 
+    color: white;
+    margin: 10px 0;
+    padding: 5px 9px 5px 3px;
+    border-radius: 5%;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+
+    span {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+    }
+
+  }
 }
+
+
+
+

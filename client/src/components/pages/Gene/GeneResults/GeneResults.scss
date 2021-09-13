@@ -1,15 +1,13 @@
+
+
 .gene-results {
-  background-color: lightgray;
-  min-height: 400px;
-  display: flex;
-  justify-content: center;
+  height: 100%;
+  background-color: #F5F5FA;
+  overflow: scroll !important;
+  overflow-y: scroll;
 }
 
 h1, h4 {
   display: flex;
   justify-content: center;
-}
-
-.diagrams {
-  
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StructureInput } from '../StructureInput/StructureInput';
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import './Structure.scss';
+import {Grid } from '@material-ui/core';
 
 const compOptions = [
   {
@@ -76,9 +77,9 @@ const StructureForm: React.FC = () => {
     <div className="StructureForm">
 
       <h1>Drag and Drop</h1>
-      <DragDropContext onDragEnd={onDragEnd}>
 
-      <Droppable droppableId="compOptions">
+
+      {/* <Droppable droppableId="compOptions">
           {(provided) => (
               <div className="compOptions" {...provided.droppableProps} ref={provided.innerRef}>
                 {compOptions.map(({id, name}, index) => {
@@ -98,11 +99,39 @@ const StructureForm: React.FC = () => {
                 })}
               </div>
             )}
-        </Droppable>
+        </Droppable> */}
+      <Grid container spacing={3}>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Grid item xs={12} sm={6}>
+        <Droppable droppableId="comps">
+            {(provided) => (
+              <div className="comps" {...provided.droppableProps} ref={provided.innerRef}>
+                {comps.map(({id, name, result}, index) => {
+                  return (
+                    <Draggable key={id} draggableId={id} index={index}>
+                      {(provided, snapshot) => (
+                        <div ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+                        >
+                          {name} {result}
+                        </div>
+                      )}
+                    </Draggable>
+                  )
+                })}
+              </div>
+            )}
+          </Droppable>
+        </Grid>
+        </DragDropContext>
+        <DragDropContext onDragEnd={onDragEnd}>
 
+        <Grid item xs={12} sm={6}>
         <Droppable droppableId="comps">
           {(provided) => (
-            <div className="comps" {...provided.droppableProps} ref={provided.innerRef}>
+            <div className="compOptions" {...provided.droppableProps} ref={provided.innerRef}>
               {comps.map(({id, name, result}, index) => {
                 return (
                   <Draggable key={id} draggableId={id} index={index}>
@@ -122,7 +151,17 @@ const StructureForm: React.FC = () => {
           )}
         </Droppable>
 
-      </DragDropContext>
+
+        </Grid>
+        </DragDropContext>
+      </Grid>
+      
+
+      
+
+
+        
+ 
     </div>
 
 

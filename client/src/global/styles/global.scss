@@ -2,4 +2,15 @@
 
 body {
   font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+
+}
+
+html {
+  background: linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%);
+  min-height: 100vh;;
+}
+
+.wrapper {
+  min-height: 100vh;
 }

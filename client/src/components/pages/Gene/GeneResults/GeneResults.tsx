@@ -9,9 +9,9 @@ export const GeneResults: React.FC = () => {
 const {genes, setGenes} = useContext(GeneContext);
 
   return (
-    <div className="gene-results">
+    <>
       { genes.length > 1 && 
-        <div>
+        <div className="gene-results">
           <h1>
             {genes[0]}, {genes[1]}
           </h1>
@@ -22,11 +22,8 @@ const {genes, setGenes} = useContext(GeneContext);
           </div>
           
         </div>
-
-        
-
       }
-    </div>
+    </>
 
 
   )

@@ -8,7 +8,8 @@ import './NavTabs.scss'
 
 //MUI Stuff
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import {AppBar, Tabs, Tab, Box, Button} from '@material-ui/core';
+import {AppBar, Tabs, Tab, Box, Button, Grid, Paper} from '@material-ui/core';
+import { borderBottom } from '@material-ui/system';
 
 
 interface TabPanelProps {
@@ -22,6 +23,8 @@ function TabPanel(props: TabPanelProps) {
 
   const { children, value, index, ...other } = props;
 
+  const classes = useStyles();
+
   return (
     <div
       role="tabpanel"
@@ -29,9 +32,10 @@ function TabPanel(props: TabPanelProps) {
       id={`nav-tabpanel-${index}`}
       aria-labelledby={`nav-tab-${index}`}
       {...other}
+      style={{padding: 0, height: '100%', overflow: 'scroll'}}
     >
       {value === index && (
-        <Box p={3}>
+        <Box overflow="scroll" className={classes.box}>
           {children}
         </Box>
       )}
@@ -64,10 +68,52 @@ function LinkTab(props: LinkTabProps) {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
+  rootcontainer:{
+    display:'flex',
   },
+  root: {
+    backgroundColor: theme.palette.background.paper,
+    width: '60vw',
+    "& .MuiButtonBase-root" : {
+      "& button:hover" :{
+        
+          outline: "none"
+        
+    }}
+  
+  },
+  continue: {
+    backgroundColor: theme.colors.navbutton,
+    marginLeft: 'auto',
+  },
+  previous: {
+    backgroundColor: theme.colors.navbutton,
+  },
+  indicator: {
+    backgroundColor: theme.colors.navbutton,
+  },
+  footer:{
+    borderTop:'1px solid #000',
+    padding: '5px 15px',
+  },
+  tabpanel:{
+    height: '60vh',
+  },
+  box:{
+    minHeight: '100%',
+  },
+  enabledtabs:{
+    backgroundColor: theme.colors.enabledtabs,
+    color: '#878791',
+    borderBottom: '1px solid #878791'
+  },
+  '&:focus': {
+    outline: 'none',
+  },
+  appbar: {
+    boxshadow: 'none',
+    backgroundColor: '#878791'
+  }
 }));
 
 export default function NavTabs() {
@@ -81,14 +127,19 @@ export default function NavTabs() {
   };
 
   return (
+    <Grid container xs={12} justify="center" alignItems="center" className={classes.rootcontainer}>
     <div className={classes.root}>
 
-      <AppBar position="static">
+      <AppBar className={classes.appbar} elevation={0} position="static">
         <Tabs
+        classes={{
+          indicator: classes.indicator
+        }}
           variant="fullWidth"
           value={value}
           onChange={handleChange}
           aria-label="nav tabs example"
+          className={classes.enabledtabs}
         >
           <LinkTab label="Gene" href="/drafts" {...a11yProps(0)}  />
           <LinkTab label="Structure" href="/drafts" {...a11yProps(1)}  />
@@ -98,20 +149,25 @@ export default function NavTabs() {
           <LinkTab label="Summary" href="/spam" {...a11yProps(5)} />
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index={0} >    
-        <Gene index={1}/>
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <Structure index={1}/>
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        <RegElement index={1}/>
-      </TabPanel>
+      <Grid className={classes.tabpanel}>
+        <TabPanel value={value} index={0} >    
+          <Gene index={1}/>
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <Structure index={1}/>
+        </TabPanel>
+        <TabPanel value={value} index={2}>
+          <RegElement index={1}/>
+        </TabPanel>
+      </Grid>
 
-      { value !== 0 ? 
-      <Button onClick={(event) => {handleChange(event, value - 1)}} variant="contained" color="primary">Back</Button>
-      : null} 
-      <Button onClick={(event) => {handleChange(event, value + 1)}} variant="contained" color="primary">Continue</Button>
+      <Grid container xs={12} className={classes.footer} >
+        { value !== 0 ? 
+        <Button className={classes.previous} onClick={(event) => {handleChange(event, value - 1)}} variant="contained" color="primary">Back</Button>
+        : null} 
+        <Button className={classes.continue} onClick={(event) => {handleChange(event, value + 1)}} variant="contained" color="primary">Continue</Button>
+      </Grid>
     </div>
+    </Grid>
   );
 }

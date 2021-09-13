@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
 import {TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
+import Close from './Close';
 import { GeneContext } from '../../../../contexts/GeneContext';
 
 import './GeneSearch.scss'
@@ -17,6 +18,7 @@ export const GeneSearch: React.FC = () => {
   const removeGene = (gene: string) => {
     setGenes([]);
   }
+
 
   // const [geneList, setGeneList] = useState([]);
 
@@ -58,11 +60,17 @@ export const GeneSearch: React.FC = () => {
         <TextField
           label=""
           variant="outlined"
+          inputProps={{
+            style: {
+              padding: 5,
+              width: '300px'
+            }
+         }}
         />
 
       <ul className="selected-genes">
         {genes.map((gene: string) => (    
-            <li><button onClick={() => removeGene(gene)}>X</button> {gene}</li>
+            <li><span onClick={() => removeGene(gene)}><Close /></span> {gene}</li>
         ))}     
       </ul>      
 

@@ -1,32 +1,29 @@
-
 .gn {
-  background-color: pink;
+  background-color: #79FFFF;
   width: 200px;
 }
 .tc {
-  background-color: red;
+  background-color: #FEFF91;
   width: 100px;
 }
 .ls {
-  background-color: blue;
+  background-color: #FF94FF;
   width: 70px;
 }
 .gr {
-  background-color: green;
+  background-color: #CCCCFF;
   width: 70px;
 }
-
 
 
 .structure {
   padding: 5px;
   display: inline-block;
-  background-color: gray;
+  background-color: white;
   display: flex;
   justify-content: space-around;
   width: 500px;
-  border: 1px solid black;
-  margin: 10px;
+  margin: 5px;
   cursor: pointer;
 }
 
