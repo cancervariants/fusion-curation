@@ -85,66 +85,58 @@ def get_matching_domain_names(query: str) -> Dict:
     }
 
 
-@app.route('/coordinates/<tx_ac>/<start_exon>/<end_exon>/<start_exon_offset>/<end_exon_offset>', defaults={'gene': None})  # noqa: E501
-@app.route('/coordinates/<tx_ac>/<start_exon>/<end_exon>/<start_exon_offset>/<end_exon_offset>/<gene>')  # noqa: E501
-def get_exon(tx_ac, start_exon, end_exon, start_exon_offset,
-             end_exon_offset, gene) -> Dict:
-    """Fetch a transcript's exon information.
-
-    :param str tx_ac: Transcript accession
-    :param int start_exon: Start exon number
-    :param int end_exon: End exon number
-    :param int start_exon_offset: Start exon offset
-    :param int end_exon_offset: End exon offset
-    :param str gene: Gene symbol
-    :return: Transcript and exon data
+@app.route('/coordinates', methods=['POST'])
+def get_exon() -> Dict:
+    """Fetch a transcript's exon information. Takes no arguments, but acquires POSTed JSON payload
+    from the Flask request context. The POSTed object should be structured like so:
+        {
+            "tx_ac": "<str>",
+            "gene": "<str, optional>",
+            "start_exon": "<int, optional>",
+            "end_exon": <int, optional>",
+            "start_exon_offset": <int, optional>",
+            "end_exon_offset": <int, optional>"
+        }
+    :return: Dict served as JSON containing transcript's exon information
     """
     response = {
-        "tx_ac": tx_ac,
-        "gene": gene,
-        "start_exon": None,
-        "end_exon": None,
-        "chr": None,
-        "start": None,
-        "end": None,
-        "warnings": []
+        'tx_ac': None,
+        'gene': None,
+        'start_exon': None,
+        'end_exon': None,
+        'chr': None,
+        'start': None,
+        'end': None,
+        'warnings': [],
     }
-
-    def _str_to_int(value):
-        if isinstance(value, str):
-            try:
-                value = int(value)
-            except ValueError:
-                return None
-            else:
-                return value
-
-    # processed values
-    processed = {
-        'start_exon': (start_exon, _str_to_int(start_exon)),
-        'end_exon': (end_exon, _str_to_int(end_exon)),
-        'start_exon_offset': (start_exon_offset, _str_to_int(start_exon_offset)),
-        'end_exon_offset': (end_exon_offset, _str_to_int(end_exon_offset)),
-    }
-
-    invalid = {k: v for k, v in processed.items() if v[1] is None}
-    if invalid:
-        response['warnings'] += [f'invalid input in {k} field: {v[0]}' for k, v in invalid.items()]
+    r = request.json
+    if r is None:
+        warn = 'Unable to parse received POST payload to /coordinates'
+        logger.warning(warn)
+        response['warnings'].append(warn)
         return response
 
-    genomic_coords = uta.get_genomic_coords(
-        tx_ac,
-        processed['start_exon'][1],
-        processed['end_exon'][1],
-        start_exon_offset=processed['start_exon_offset'][1],
-        end_exon_offset=processed['end_exon_offset'][1],
-        gene=gene,
-    )
+    warnings = []
+    for field in ('start_exon', 'end_exon', 'start_exon_offset', 'end_exon_offset'):
+        if not r.get(field):
+            r[field] = 0
+        if not isinstance(r[field], int):
+            warnings += [f'{field} expects int, got {type(r[field])} instead']
+    if warnings:
+        return response
+
+    gene = r.get('gene')
+    if gene is None:
+        gene = ''
+
+    genomic_coords = uta.get_genomic_coords(r['tx_ac'], r['start_exon'], r['end_exon'],
+                                            r['start_exon_offset'], r['end_exon_offset'],
+                                            gene)
     if genomic_coords:
         gene = genomic_coords.get('gene', None)
         response['gene'] = gene
         response['gene_id'] = normalize_gene(gene)['concept_id']
-        chr = genomic_coords.get('chr', None)
+        chr = genomic_coords.get('chr', '')
         response['chr'] = chr
         sequence_id = get_sequence_id(chr)
         response['sequence_id'] = sequence_id['sequence_id']
