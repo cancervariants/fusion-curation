@@ -92,18 +92,18 @@ def get_exon() -> Dict:
         {
             "tx_ac": "<str>",
             "gene": "<str, optional>",
-            "start_exon": "<int, optional>",
-            "end_exon": <int, optional>",
-            "start_exon_offset": <int, optional>",
-            "end_exon_offset": <int, optional>"
+            "exon_start": "<int, optional>",
+            "exon_end": <int, optional>",
+            "exon_start_offset": <int, optional>",
+            "exon_end_offset": <int, optional>"
         }
     :return: Dict served as JSON containing transcript's exon information
     """
     response = {
         'tx_ac': None,
         'gene': None,
-        'start_exon': None,
-        'end_exon': None,
+        'exon_start': None,
+        'exon_end': None,
         'chr': None,
         'start': None,
         'end': None,
@@ -117,7 +117,7 @@ def get_exon() -> Dict:
         return response
 
     warnings = []
-    for field in ('start_exon', 'end_exon', 'start_exon_offset', 'end_exon_offset'):
+    for field in ('exon_start', 'exon_end', 'exon_start_offset', 'exon_end_offset'):
         if not r.get(field):
             r[field] = 0
         if not isinstance(r[field], int):
@@ -129,11 +129,11 @@ def get_exon() -> Dict:
     if gene is None:
         gene = ''
 
-    genomic_coords = uta.get_genomic_coords(r['tx_ac'], r['start_exon'], r['end_exon'],
-                                            r['start_exon_offset'], r['end_exon_offset'],
+    genomic_coords = uta.get_genomic_coords(r['tx_ac'], r['exon_start'], r['exon_end'],
+                                            r['exon_start_offset'], r['exon_end_offset'],
                                             gene)
     if genomic_coords:
-        gene = genomic_coords.get('gene', None)
+        gene = genomic_coords.get('gene', '')
         response['gene'] = gene
         response['gene_id'] = normalize_gene(gene)['concept_id']
         chr = genomic_coords.get('chr', '')
@@ -142,8 +142,8 @@ def get_exon() -> Dict:
         response['sequence_id'] = sequence_id['sequence_id']
         response['start'] = genomic_coords.get("start", None)
         response['end'] = genomic_coords.get('end', None)
-        response['start_exon'] = genomic_coords.get('start_exon', None)
-        response['end_exon'] = genomic_coords.get('end_exon', None)
+        response['exon_start'] = genomic_coords.get('start_exon', None)
+        response['exon_end'] = genomic_coords.get('end_exon', None)
         return response
     else:
         return {}
