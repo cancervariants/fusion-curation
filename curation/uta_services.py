@@ -113,9 +113,9 @@ class UTAService:
             application_name='fusion_backend'
         )
 
-    def get_genomic_coords(self, tx_ac, start_exon, end_exon,
-                           start_exon_offset=0, end_exon_offset=0,
-                           gene=None) -> Optional[Dict]:
+    def get_genomic_coords(self, tx_ac: str, start_exon: int, end_exon: int,
+                           start_exon_offset: int = 0, end_exon_offset: int = 0,
+                           gene: str=None) -> Optional[Dict]:
         """Get genomic chromosome and start/end exon coordinates.
 
         :param str tx_ac: Transcript accession
@@ -124,7 +124,7 @@ class UTAService:
         :param int start_exon_offset: Starting exon offset
         :param int end_exon_offset: Ending exon offset
         :param str gene: Gene symbol
-        :return: Dictionary containing transcript and exon data
+        :return: Dictionary containing transcript and exon data, or None if lookup fails
         """
         if gene:
             gene = gene.upper().strip()
@@ -199,8 +199,8 @@ class UTAService:
                 return None
             return cds_se_i[0][0].split(';')
 
-    def _get_tx_exon_start_end(self, tx_ac, start_exon, end_exon)\
-            -> Optional[Tuple[List[str], int, int]]:
+    def _get_tx_exon_start_end(self, tx_ac, start_exon,
+                               end_exon) -> Optional[Tuple[List[str], int, int]]:
         """Get exon start/end coordinates given accession and gene.
 
         :param str tx_ac: Transcript accession
@@ -231,8 +231,7 @@ class UTAService:
         return tx_exons, start_exon, end_exon
 
     @staticmethod
-    def get_tx_exon_coords(tx_exons, start_exon, end_exon)\
-            -> Optional[Tuple[List, List]]:
+    def get_tx_exon_coords(tx_exons, start_exon, end_exon) -> Optional[Tuple[List, List]]:
         """Get transcript exon coordinates.
 
         :param list tx_exons: List of transcript exons
