@@ -7,6 +7,7 @@ const AddComponentButton = ({ clickHandler }) => (
     <Button onClick={() => clickHandler('genomic_region')}>Add Genomic Region</Button>
     <Button onClick={() => clickHandler('linker_sequence')}>Add Linker</Button>
     <Button onClick={() => clickHandler('gene')}>Add Gene</Button>
+    <Button onClick={() => clickHandler('unknown_gene')}>Add Unknown</Button>
   </ButtonGroup>
 );
 
