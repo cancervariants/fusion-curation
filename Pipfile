@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
+fastapi = "*"
 gene-normalizer = ">=0.1.11"
 boto3 = "*"
 psycopg2-binary = "*"
@@ -12,7 +12,6 @@ psycopg2-binary = "*"
 fusor = "*"
 
 [dev-packages]
-python-dotenv = "*"
 pytest = "*"
 pre-commit = "*"
 flake8 = "*"
