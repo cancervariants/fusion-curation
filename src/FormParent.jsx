@@ -112,36 +112,29 @@ const FormParent = () => {
   /**
    * Get exon's data
    * @param {string} txAc transcript accession
-   * @param {string|number} startExon starting exon number
-   * @param {string|number} endExon ending exon number
-   * @param {string|number} startExonOffset starting exon's offset
-   * @param {string|number} endExonOffset ending exon's offset
+   * @param {number} startExon starting exon number
+   * @param {number} endExon ending exon number
+   * @param {number} startExonOffset starting exon's offset
+   * @param {number} endExonOffset ending exon's offset
    * @param {string} [gene] gene symbol
    * @return Exon data
    */
-  const getExon = (txAc, startExon, endExon, startExonOffset, endExonOffset, gene) => {
-    let url = null;
-    if (!gene) {
-      url = `/coordinates/${txAc}/${startExon}/${endExon}/${startExonOffset}/${endExonOffset}`;
-    } else {
-      url = `/coordinates/${txAc}/${startExon}/${endExon}/${startExonOffset}/${endExonOffset}/${gene}`;
-    }
-    fetch(url, {
-      method: 'GET',
+  const getExon = (exonData) => {
+    fetch('/coordinates', {
+      method: 'POST',
       headers: {
+        Accept: 'application/json',
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify(exonData),
     // eslint-disable-next-line consistent-return
     }).then((response) => response.json()).then((exonResponse) => {
-      if (exonResponse === null) {
-        return null;
-      }
-      if (exonResponse.warnings && exonResponse.warnings.length !== 0) {
+      if (exonResponse === null || (exonResponse.warnings && exonResponse.warnings.length !== 0)) {
         return null;
       }
       const { chr, start, end } = exonResponse;
       const geneSymbol = exonResponse.gene;
-      if (!gene) {
+      if (!geneIndex[geneSymbol]) {
         const geneID = getGeneID(geneSymbol);
         const geneIndexCopy = geneIndex;
         if (geneID != null) {
@@ -149,11 +142,11 @@ const FormParent = () => {
         }
       }
 
-      const exonStart = exonResponse.start_exon;
-      const exonEnd = exonResponse.end_exon;
+      const exonStart = exonResponse.exon_start;
+      const exonEnd = exonResponse.exon_end;
       if (chr != null) {
         const exonIndexCopy = exonIndex;
-        exonIndexCopy[txAc] = {
+        exonIndexCopy[exonData.tx_ac] = {
           geneSymbol,
           chr,
           start,
@@ -237,25 +230,14 @@ const FormParent = () => {
       }
 
       if (values.transcript) {
-        let exon = null;
-        const exonStartOffset = values.exon_start_offset ? values.exon_start_offset : 0;
-        const exonEndOffset = values.exon_end_offset ? values.exon_end_offset : 0;
-        if (values.exon_start && !values.exon_end) {
-          exon = getExon(values.transcript, values.exon_start, 0,
-            exonStartOffset, exonEndOffset, values.gene_symbol);
-        } else if (!values.exon_start && values.exon_end) {
-          exon = getExon(values.transcript, 0, values.exon_end,
-            exonStartOffset, exonEndOffset, values.gene_symbol);
-        } else if (values.exon_start && values.exon_end) {
-          exon = getExon(values.transcript, values.exon_start, values.exon_end,
-            exonStartOffset, exonEndOffset, values.gene_symbol);
-        } else {
-          exon = getExon(values.transcript, 0, 0,
-            exonStartOffset, exonEndOffset, values.gene_symbol);
-        }
-        if (exon != null) {
-          exonIndexCopy[values.transcript] = exon;
-        }
+        const exonData = {
+          tx_ac: values.transcript,
+          exon_start: values.exon_start && values.exon_start !== '' ? parseInt(values.exon_start, 10) : 0,
+          exon_end: values.exon_end && values.exon_end !== '' ? parseInt(values.exon_end, 10) : 0,
+          exon_start_offset: values.exon_start_offset && values.exon_start_offset !== '' ? parseInt(values.exon_start_offset, 10) : 0,
+          exon_end_offset: values.exon_end_offset && values.exon_end_offset !== '' ? parseInt(values.exon_end_offset, 10) : 0,
+        };
+        getExon(exonData);
       }
     });
 
