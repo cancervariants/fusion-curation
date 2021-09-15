@@ -168,10 +168,10 @@ class UTAService:
             "chr": alt_ac_start[1],
             "start": start,
             "end": end,
-            "start_exon": start_exon,
-            "end_exon": end_exon,
+            "exon_start": start_exon,
+            "exon_start_offset": start_exon_offset,
+            "exon_end": end_exon,
             "exon_end_offset": end_exon_offset,
-            "exon_start_offset": start_exon_offset
         }
 
     def get_tx_exons(self, tx_ac) -> Optional[List[str]]:
@@ -355,3 +355,4 @@ class ParseResult(urlparse.ParseResult):
 
 
 uta = UTAService()
+get_genomic_coords = uta.get_genomic_coords
