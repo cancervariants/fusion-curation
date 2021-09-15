@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 fastapi = "*"
-gene-normalizer = ">=0.1.11"
+gene-normalizer = "==0.1.19"
 boto3 = "*"
 psycopg2-binary = "*"
 "biocommons.seqrepo" = "*"
