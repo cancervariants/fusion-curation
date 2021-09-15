@@ -27,7 +27,7 @@ def normalize_gene(symbol: str) -> Dict:
     :return: Dict (to be served as JSON) containing gene symbol, ID (as CURIE) if available, and
         any relevant warnings
     """
-    concept_id, warnings = gene_service.get_gene_id(symbol)
+    concept_id, warnings = gene_service.get_gene_id(symbol.strip())
     return {
         'symbol': symbol,
         'concept_id': concept_id,
@@ -42,7 +42,7 @@ def get_functional_domain(name: str) -> Dict:
     :return: Dict (to be served as JSON) containing provided name, ID (as CURIE) if available,
         and relevant warnings
     """
-    (domain_id, warnings) = domain_service.get_domain_id(name)
+    (domain_id, warnings) = domain_service.get_domain_id(name.strip())
     return {
         'name': name,
         'domain_id': domain_id,
@@ -60,7 +60,7 @@ def get_matching_domain_names(query: str) -> Dict:
     """
     return {
         'query': query,
-        'matches': domain_service.get_possible_matches(query)
+        'matches': domain_service.get_possible_matches(query.strip())
     }
 
 
@@ -100,13 +100,18 @@ def get_exon() -> Dict:
         if not r.get(field):
             r[field] = 0
         if not isinstance(r[field], int):
-            warnings += [f'{field} expects int, got {type(r[field])} instead']
+            msg = f'{field} expects int, got {type(r[field])} instead'
+            logger.warning(msg)
+            warnings.append(msg)
     if warnings:
+        response['warnings'] = warnings
         return response
 
     gene = r.get('gene')
     if gene is None:
         gene = ''
+    else:
+        gene = gene.str()
 
     genomic_coords = uta.get_genomic_coords(r['tx_ac'], r['exon_start'], r['exon_end'],
                                             r['exon_start_offset'], r['exon_end_offset'],
@@ -125,7 +130,8 @@ def get_exon() -> Dict:
         response['exon_end'] = genomic_coords.get('end_exon', None)
         return response
     else:
-        return {}
+        response['warnings'] = ['Coordinate retrieval failed.']
+        return response
 
 
 @app.route('/sequence/<input_sequence>')
@@ -135,7 +141,7 @@ def get_sequence_id(input_sequence: str) -> Dict:
     :return: Dict (served as JSON) containing either GA4GH sequence ID or
         warnings if unable to retrieve ID
     """
-    (sequence_id, warnings) = get_ga4gh_sequence_id(input_sequence)
+    (sequence_id, warnings) = get_ga4gh_sequence_id(input_sequence.strip())
     return {
         'sequence': input_sequence,
         'sequence_id': sequence_id,
