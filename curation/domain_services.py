@@ -11,6 +11,7 @@ class DomainService():
     """Handler class providing requisite services for functional domain lookup."""
 
     def __init__(self):
+
         """Initialize handler class. Download files if necessary, then load and store."""
         # check if files exist
         self._data_dir = APP_ROOT / 'data'
@@ -59,14 +60,6 @@ class DomainService():
         else:
             return (f'interpro:{domain_id["id"]}', [])
 
-    def get_possible_matches(self, query: str, n: int = 10) -> List[str]:
-        """Given input query, return possible domain matches (for autocomplete)
-        :param str query: user-entered string (case insensitive)
-        :param int n: max # of items to return
-        :return: List of valid domain names (up to n names)
-        """
-        return [v['case'] for k, v in self.domains.items()
-                if k.startswith(query.lower())][:n]
-
 
 domain_service = DomainService()
+get_domain_id = domain_service.get_domain_id
