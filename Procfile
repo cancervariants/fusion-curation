@@ -1,1 +1,1 @@
-web: gunicorn curation:app
+web: uvicorn curation.main:app
