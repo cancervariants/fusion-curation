@@ -2,6 +2,7 @@
 from pydantic import BaseModel, StrictStr, StrictInt, validator
 from typing import List, Optional
 from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
+from fusor.model import Fusion
 
 
 class NormalizeGeneResponse(BaseModel):
@@ -21,6 +22,7 @@ class GetDomainIDResponse(BaseModel):
 
 
 class ExonCoordsRequest(BaseModel):
+    """Request model for genomic coordinates retrieval"""
 
     tx_ac: StrictStr
     gene: Optional[StrictStr] = ''
@@ -45,6 +47,7 @@ class ExonCoordsRequest(BaseModel):
 
 
 class ExonCoordsResponse(BaseModel):
+    """Response model for genomic coordinates retrieval"""
 
     tx_ac: Optional[StrictStr]
     gene: Optional[StrictStr]
@@ -54,4 +57,19 @@ class ExonCoordsResponse(BaseModel):
     chr: Optional[StrictStr]
     start: Optional[StrictInt]
     end: Optional[StrictInt]
+    warnings: List
+
+
+class SequenceIDResponse(BaseModel):
+    """Response model for sequence ID retrieval endpoint."""
+
+    sequence: StrictStr
+    sequence_id: StrictStr = ''
+    warnings: List
+
+
+class FusionValidationResponse(BaseModel):
+    """Response model for fusion validation endpoint."""
+
+    fusion: Optional[Fusion]
     warnings: List

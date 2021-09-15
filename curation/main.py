@@ -2,26 +2,21 @@ from fastapi import FastAPI, Query
 from fastapi.staticfiles import StaticFiles
 from typing import Dict
 from curation.schemas import NormalizeGeneResponse, GetDomainIDResponse, ExonCoordsRequest, \
-    ExonCoordsResponse
+    ExonCoordsResponse, SequenceIDResponse, FusionValidationResponse
 from curation.gene_services import get_gene_id
 from curation.domain_services import get_domain_id
 from curation.uta_services import get_genomic_coords
 from curation.sequence_services import get_ga4gh_sequence_id
+from curation.validation_services import validate_fusion
+
 
 app = FastAPI()
 
 
-normalize_gene_summary = 'Normalize gene term.'
-normalize_gene_description = 'Given a gene term, return a normalized concept ID.'
-normalize_gene_response_description = 'A normalized concept ID.'
-
 @app.get('/lookup/gene',
          operation_id='normalizeGene',
-         response_model=NormalizeGeneResponse,
-         summary=normalize_gene_summary,
-         description=normalize_gene_description,
-         response_description=normalize_gene_response_description)
-def normalize_gene(term: str = Query('', description='Gene term to normalize')) -> Dict:
+         response_model=NormalizeGeneResponse)
+def normalize_gene(term: str = Query('')) -> Dict:
     """Normalize gene term provided by user.
     :param str term: gene symbol/alias/name/etc
     :return: JSON response with normalized ID if successful and warnings otherwise
@@ -34,17 +29,10 @@ def normalize_gene(term: str = Query('', description='Gene term to normalize')) 
     }
 
 
-get_domain_summary = 'Get domain ID'
-get_domain_description = 'Given domain name, retrieve InterPro ID'
-get_domain_response_description = 'InterPro domain ID'
-
 @app.get('/lookup/domain',
          operation_id='getDomainID',
-         response_model=GetDomainIDResponse,
-         summary=get_domain_summary,
-         description=get_domain_description,
-         response_description=get_domain_response_description)
-def get_domain_id(domain: str = Query('', description='Domain name')) -> Dict:
+         response_model=GetDomainIDResponse)
+def get_domain_id(domain: str = Query('')) -> Dict:
     """Fetch interpro ID given functional domain name.
     :param str name: name of functional domain
     :return: Dict (to be served as JSON) containing provided name, ID (as CURIE) if available,
@@ -86,8 +74,34 @@ def get_exon_coords(exon_data: ExonCoordsRequest) -> Dict:
         return {'warnings': ['Coordinate retrieval failed.']}
 
 
+@app.get('/lookup/sequence_id',
+         operation_id='getSequenceID',
+         response_model=SequenceIDResponse)
+def get_sequence_id(input_sequence: str) -> Dict:
+    """Get GA4GH sequence ID CURIE for input sequence.
+    :param str input_sequence: user-submitted sequence to retrieve ID for
+    :return: Dict (served as JSON) containing either GA4GH sequence ID or
+        warnings if unable to retrieve ID
+    """
+    (sequence_id, warnings) = get_ga4gh_sequence_id(input_sequence.strip())
+    return {
+        'sequence': input_sequence,
+        'sequence_id': sequence_id,
+        'warnings': warnings
+    }
+
+
+@app.post('/lookup/validate',
+          operation_id='validateFusion',
+          response_model=FusionValidationResponse)
+def validate_object(proposed_fusion: Dict) -> Dict:
+    """Validate constructed Fusion object. Return warnings if invalid.
+    No arguments supplied, but receives a POSTed JSON payload via Flask request context.
+    :return: Dict served as JSON with validated Fusion object if correct, and empty
+        Object + a list of Warnings if not.
+    """
+    return validate_fusion(proposed_fusion)
+
+
 # serve static files
 app.mount('/', StaticFiles(directory='curation/build/'), name='static')
-
-
-
