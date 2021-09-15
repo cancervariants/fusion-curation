@@ -10,6 +10,7 @@ boto3 = "*"
 psycopg2-binary = "*"
 "biocommons.seqrepo" = "*"
 fusor = "*"
+aiofiles = "*"
 
 [dev-packages]
 pytest = "*"
