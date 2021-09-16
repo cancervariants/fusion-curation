@@ -231,10 +231,10 @@ const FormParent = () => {
       if (values.transcript) {
         const exonData = {
           tx_ac: values.transcript,
-          exon_start: values.exon_start && values.exon_start !== '' ? parseInt(values.exon_start, 10) : 0,
-          exon_end: values.exon_end && values.exon_end !== '' ? parseInt(values.exon_end, 10) : 0,
-          exon_start_offset: values.exon_start_offset && values.exon_start_offset !== '' ? parseInt(values.exon_start_offset, 10) : 0,
-          exon_end_offset: values.exon_end_offset && values.exon_end_offset !== '' ? parseInt(values.exon_end_offset, 10) : 0,
+          exon_start: parseInt(values.exon_start, 10) || 0,
+          exon_start_offset: parseInt(values.exon_start_offset, 10) || 0,
+          exon_end: parseInt(values.exon_end, 10) || 0,
+          exon_end_offset: parseInt(values.exon_end_offset, 10) || 0,
         };
         getExon(exonData);
       }
