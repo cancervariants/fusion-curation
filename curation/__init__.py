@@ -44,6 +44,3 @@ if 'SEQREPO_DATA_PATH' not in environ:
     SEQREPO_DATA_PATH = f"{APP_ROOT}/data/seqrepo/latest"
 else:
     SEQREPO_DATA_PATH = environ['SEQREPO_DATA_PATH']
-
-# bring views into scope
-import curation.views  # noqa: F401 E402

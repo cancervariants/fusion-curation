@@ -62,18 +62,10 @@ Alternate SeqRepo locations can be specified with the environment variable `SEQR
 
 The backend requires local DynamoDB service with tables initialized by the [Gene Normalization service](https://github.com/cancervariants/gene-normalization), listening on port 8000. See the Gene Normalizer documentation for initialization information.
 
-In a terminal running the Pipenv Python environment, start Flask:
+In a terminal running the Pipenv Python environment, start a uvicorn process to serve the FastAPI backend:
 
 ```commandline
-flask run
-```
-
-If you encounter error messages about Flask environment variables, you may need to do the following:
-
-```commandline
-export FLASK_ENV=development
-export FLASK_APP=curation
-flask run
+uvicorn curation.main:app --reload
 ```
 
 In a separate terminal, install frontend dependencies and start the React development server:
