@@ -78,15 +78,17 @@ const FormParent = () => {
    * @param {string} symbol gene symbol to retrieve ID for
    */
   const getGeneID = (symbol) => {
-    // eslint-disable-next-line consistent-return
-    fetch(`/gene/${symbol}`).then((response) => response.json()).then((geneResponse) => {
-      if (geneResponse.warnings && geneResponse.warnings.length !== 0) {
-        return null;
-      }
-      const geneIndexCopy = geneIndex;
-      geneIndexCopy[symbol] = geneResponse.concept_id;
-      setGeneIndex(geneIndexCopy);
-    });
+    fetch(`/lookup/gene?term=${symbol}`)
+      .then((response) => response.json())
+      // eslint-disable-next-line
+      .then((geneResponse) => {
+        if (geneResponse.warnings && geneResponse.warnings.length !== 0) {
+          return null;
+        }
+        const geneIndexCopy = geneIndex;
+        geneIndexCopy[symbol] = geneResponse.concept_id;
+        setGeneIndex(geneIndexCopy);
+      });
   };
 
   /**
@@ -95,7 +97,7 @@ const FormParent = () => {
    */
   const getDomainID = (name) => {
     // eslint-disable-next-line consistent-return
-    fetch(`/domain/${name}`)
+    fetch(`/lookup/domain?domain=${name}`)
       .then((response) => response.json())
       // eslint-disable-next-line
       .then((domainResponse) => {
@@ -120,7 +122,7 @@ const FormParent = () => {
    * @return Exon data
    */
   const getExon = (exonData) => {
-    fetch('/coordinates', {
+    fetch('/lookup/coords', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -166,7 +168,7 @@ const FormParent = () => {
    * @return nothing, but update index state variable
    */
   const getSequenceID = (chr) => {
-    fetch(`/sequence/GRCh38:${chr}`)
+    fetch(`/lookup/sequence_id?input_sequence=GRCh38:${chr}`)
       .then((response) => response.json())
       // eslint-disable-next-line
       .then((sequenceResponse) => {
@@ -186,7 +188,7 @@ const FormParent = () => {
    */
   const validateFusion = (fusion) => {
     if (Object.keys(fusion).length !== 0) {
-      fetch('/validate', {
+      fetch('/lookup/validate', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
