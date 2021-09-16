@@ -257,11 +257,6 @@ const FormParent = () => {
     });
   }, [regulatoryElements]);
 
-  // fusion validation hook
-  // useEffect(() => {
-  //   validateFusion(proposedFusion);
-  // }, [submitCount]);
-
   /**
    * Construct valid gene descriptor from given params
    * @param {str} label of gene
