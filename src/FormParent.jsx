@@ -82,9 +82,7 @@ const FormParent = () => {
       if (geneResponse.warnings && geneResponse.warnings.length !== 0) {
         return null;
       }
-      const geneIndexCopy = geneIndex;
-      geneIndexCopy[symbol] = geneResponse.concept_id;
-      setGeneIndex(geneIndexCopy);
+      setGeneIndex((prevGeneIndex) => ({ ...prevGeneIndex, [symbol]: geneResponse.concept_id }));
     });
   };
 
@@ -101,10 +99,7 @@ const FormParent = () => {
         if (domainResponse.warnings && domainResponse.warnings.length !== 0) {
           return null;
         }
-        const domainID = domainResponse.domain_id;
-        const domainIndexCopy = domainIndex;
-        domainIndexCopy[name] = domainID;
-        setDomainIndex(domainIndexCopy);
+        setDomainIndex((prev) => ({ ...prev, [name]: domainResponse.domainID }));
       });
   };
 
@@ -133,28 +128,25 @@ const FormParent = () => {
       }
       const { chr, start, end } = exonResponse;
       const geneSymbol = exonResponse.gene;
-      if (!geneIndex[geneSymbol]) {
-        const geneID = getGeneID(geneSymbol);
-        const geneIndexCopy = geneIndex;
-        if (geneID != null) {
-          geneIndexCopy[geneSymbol] = geneID;
-        }
+      if (geneSymbol && !geneIndex[geneSymbol]) {
+        setGeneIndex((prevGeneIndex) => ({ ...prevGeneIndex, [geneSymbol]: exonResponse.gene_id }));
       }
 
       const exonStart = exonResponse.exon_start;
       const exonEnd = exonResponse.exon_end;
       if (chr != null) {
-        const exonIndexCopy = exonIndex;
-        exonIndexCopy[exonData.tx_ac] = {
-          geneSymbol,
-          chr,
-          start,
-          end,
-          exonStart,
-          exonEnd,
-          sequenceID: exonResponse.sequence_id,
-        };
-        setExonIndex(exonIndexCopy);
+        setExonIndex((prevExonIndex) => ({
+          ...prevExonIndex,
+          [exonData.tx_ac]: {
+            geneSymbol,
+            chr,
+            start,
+            end,
+            exonStart,
+            exonEnd,
+            sequenceID: exonResponse.sequence_id,
+          },
+        }));
       }
     });
   };
@@ -172,10 +164,7 @@ const FormParent = () => {
         if (sequenceResponse.warnings && sequenceResponse.warnings.length !== 0) {
           return null;
         }
-        const sequenceID = sequenceResponse.sequence_id;
-        const sequenceIndexCopy = sequenceIndex;
-        sequenceIndexCopy[chr] = sequenceID;
-        setSequenceIndex(sequenceIndexCopy);
+        setSequenceIndex((prev) => ({ ...prev, [chr]: sequenceResponse.sequence_id }));
       });
   };
 
