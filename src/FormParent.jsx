@@ -38,7 +38,6 @@ const FormParent = () => {
   // proposedFusion: client-created Fusion object
   // fusionJSON -- validated Fusion object received from server
   const [proposedFusion, setProposedFusion] = useState({});
-  const [submitCount, setSubmitCount] = useState(Number.MIN_SAFE_INTEGER);
   const [fusionJSON, setFusionJSON] = useState({});
 
   // ID/coordinate indices -- built from AJAX calls
@@ -259,9 +258,9 @@ const FormParent = () => {
   }, [regulatoryElements]);
 
   // fusion validation hook
-  useEffect(() => {
-    validateFusion(proposedFusion);
-  }, [submitCount]);
+  // useEffect(() => {
+  //   validateFusion(proposedFusion);
+  // }, [submitCount]);
 
   /**
    * Construct valid gene descriptor from given params
@@ -492,11 +491,7 @@ const FormParent = () => {
    */
   const handleSubmit = () => {
     handleEntry('submitted', true);
-    if (submitCount < Number.MAX_SAFE_INTEGER) {
-      setSubmitCount(submitCount + 1);
-    } else {
-      setSubmitCount(Number.MIN_SAFE_INTEGER);
-    }
+    validateFusion(proposedFusion);
   };
 
   return (
