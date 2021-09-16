@@ -10,6 +10,7 @@ boto3 = "*"
 psycopg2-binary = "*"
 "biocommons.seqrepo" = "*"
 fusor = "*"
+sqlparse = ">=0.4.2"
 
 [dev-packages]
 python-dotenv = "*"
