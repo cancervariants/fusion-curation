@@ -13,7 +13,14 @@ class NormalizeGeneResponse(BaseModel):
     warnings: List
 
 
-class GetDomainIDResponse(BaseModel):
+class MatchingGeneResponse(BaseModel):
+    """Response model for possible gene matches endpoint."""
+
+    query: StrictStr
+    matches: List[StrictStr] = []
+
+
+class DomainIDResponse(BaseModel):
     """Response model for domain ID retrieval endpoint."""
 
     domain: StrictStr

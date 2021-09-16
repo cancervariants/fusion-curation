@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Query
 from fastapi.staticfiles import StaticFiles
 from typing import Dict
-from curation.schemas import NormalizeGeneResponse, GetDomainIDResponse, ExonCoordsRequest, \
-    ExonCoordsResponse, SequenceIDResponse, FusionValidationResponse
-from curation.gene_services import get_gene_id
+from curation.schemas import NormalizeGeneResponse, MatchingGeneResponse, DomainIDResponse, \
+    ExonCoordsRequest, ExonCoordsResponse, SequenceIDResponse, FusionValidationResponse
+from curation.gene_services import get_gene_id, get_possible_genes
 from curation.domain_services import get_domain_id
 from curation.uta_services import get_genomic_coords
 from curation.sequence_services import get_ga4gh_sequence_id
@@ -29,9 +29,21 @@ def normalize_gene(term: str = Query('')) -> Dict:
     }
 
 
+@app.get('/lookup/matching_genes',
+         operation_id='getMatchingGenes',
+         response_model=MatchingGeneResponse)
+def get_matching_genes(query: str) -> Dict:
+    """Fetch possible gene term matches given entered string.
+    :param str query: string entered by user
+    :return: Dict containing requested term and a List of gene terms that start with the entered
+        term.
+    """
+    return get_possible_genes(query.strip())
+
+
 @app.get('/lookup/domain',
          operation_id='getDomainID',
-         response_model=GetDomainIDResponse)
+         response_model=DomainIDResponse)
 def get_domain_id(domain: str = Query('')) -> Dict:
     """Fetch interpro ID given functional domain name.
     :param str name: name of functional domain
