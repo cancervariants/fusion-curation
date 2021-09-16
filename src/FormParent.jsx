@@ -13,7 +13,7 @@ import FormRadio from './FormRadio';
 import CausativeEventForm from './CausEventForm';
 import DomainsForm from './DomainsForm';
 import SubmitButton from './SubmitButton';
-import ResponseField from './ResponseField';
+import ResultField from './ResultField';
 import ComponentsForm from './ComponentsForm';
 import RegulatoryElementsForm from './RegulatoryElementsForm';
 
@@ -26,48 +26,50 @@ const useStyles = makeStyles({
 const FormParent = () => {
   const classes = useStyles();
 
-  const [responses, setResponses] = useState({});
-
-  const handleResponse = (field, value) => {
-    setResponses({ ...responses, ...{ [field]: value } });
+  const [selections, setSelections] = useState({});
+  const handleEntry = (field, value) => {
+    setSelections({ ...selections, ...{ [field]: value } });
   };
-
   const [domains, setDomains] = useState([]);
+  const [components, setComponents] = useState([]);
   const [regulatoryElements, setRegulatoryElements] = useState([]);
 
-  // TODO need default value to make controlled/uncontrolled error go away?
-  const [components, setComponents] = useState([]);
-  const [responseJSON, setResponseJSON] = useState('{}');
-  const [responseHuman, setResponseHuman] = useState('');
+  // results handling
+  // proposedFusion: client-created Fusion object
+  // fusionJSON -- validated Fusion object received from server
+  const [proposedFusion, setProposedFusion] = useState({});
+  const [fusionJSON, setFusionJSON] = useState({});
 
-  // ajax values
+  // ID/coordinate indices -- built from AJAX calls
   const [geneIndex, setGeneIndex] = useState({});
   const [domainIndex, setDomainIndex] = useState({});
   const [exonIndex, setExonIndex] = useState({});
+  const [sequenceIndex, setSequenceIndex] = useState({});
 
   // visible will update when state updates
   const visible = useMemo(() => ({
     chimericTranscript: true,
-    proteinCoding: responses['chimericTranscript'] === 'Yes',
-    notValid: responses['nearRegulatory'] === 'No' && responses['chimericTranscript'] === 'No',
-    rfPreserved: responses['proteinCoding'] === 'Yes' && responses['chimericTranscript'] === 'Yes',
-    domains: responses['chimericTranscript'] === 'Yes' && responses['proteinCoding'] === 'Yes' && responses['rfPreserved'] === 'Yes',
-    components: (responses['chimericTranscript'] === 'Yes' && responses['proteinCoding'] === 'No') || responses['rfPreserved'] !== undefined,
-    causativeEventForm: responses['causativeEventKnown'] === 'Yes',
-    nearRegulatory: (responses['causativeEventKnown'] !== undefined) || responses['chimericTranscript'] === 'No',
-    regulatoryElements: responses['nearRegulatory'] === 'Yes',
-    submit: responses['nearRegulatory'] !== undefined && responses['chimericTranscript'] === 'Yes' && responses['causativeEventKnown'] !== undefined,
-    responseFields: responses['submitted'] === true,
-  }), [responses]);
+    proteinCoding: selections['chimericTranscript'] === 'Yes',
+    notValid: selections['nearRegulatory'] === 'No' && selections['chimericTranscript'] === 'No',
+    rfPreserved: selections['proteinCoding'] === 'Yes' && selections['chimericTranscript'] === 'Yes',
+    domains: selections['chimericTranscript'] === 'Yes' && selections['proteinCoding'] === 'Yes' && selections['rfPreserved'] === 'Yes',
+    components: (selections['chimericTranscript'] === 'Yes' && selections['proteinCoding'] === 'No') || selections['rfPreserved'] !== undefined,
+    causativeEventForm: selections['causativeEventKnown'] === 'Yes',
+    nearRegulatory: (selections['causativeEventKnown'] !== undefined) || selections['chimericTranscript'] === 'No',
+    regulatoryElements: selections['nearRegulatory'] === 'Yes',
+    submit: selections['nearRegulatory'] !== undefined && selections['chimericTranscript'] === 'Yes' && selections['causativeEventKnown'] !== undefined,
+    resultField: selections['submitted'] === true,
+  }), [selections]);
 
   // when visible updates, anything not visible is also removed from state
   useEffect(() => {
+    // eslint-disable-next-line array-callback-return
     Object.entries(visible).map(([key, value]) => {
       if (!value) {
-        delete responses[key];
+        delete selections[key];
       }
     });
-    setResponses(responses);
+    setSelections(selections);
   }, [visible]);
 
   /**
@@ -77,7 +79,7 @@ const FormParent = () => {
   const getGeneID = (symbol) => {
     // eslint-disable-next-line consistent-return
     fetch(`/gene/${symbol}`).then((response) => response.json()).then((geneResponse) => {
-      if (geneResponse.warnings) {
+      if (geneResponse.warnings && geneResponse.warnings.length !== 0) {
         return null;
       }
       const geneIndexCopy = geneIndex;
@@ -94,8 +96,9 @@ const FormParent = () => {
     // eslint-disable-next-line consistent-return
     fetch(`/domain/${name}`)
       .then((response) => response.json())
+      // eslint-disable-next-line
       .then((domainResponse) => {
-        if (domainResponse.warnings) {
+        if (domainResponse.warnings && domainResponse.warnings.length !== 0) {
           return null;
         }
         const domainID = domainResponse.domain_id;
@@ -105,7 +108,7 @@ const FormParent = () => {
       });
   };
 
-  /*
+  /**
    * Get exon's data
    * @param {string} txAc transcript accession
    * @param {string|number} startExon starting exon number
@@ -132,14 +135,13 @@ const FormParent = () => {
       if (exonResponse === null) {
         return null;
       }
-      if (exonResponse.warnings) {
+      if (exonResponse.warnings && exonResponse.warnings.length !== 0) {
         return null;
       }
       const { chr, start, end } = exonResponse;
       const geneSymbol = exonResponse.gene;
       if (!gene) {
         const geneID = getGeneID(geneSymbol);
-        console.log({ geneID });
         const geneIndexCopy = geneIndex;
         if (geneID != null) {
           geneIndexCopy[geneSymbol] = geneID;
@@ -157,26 +159,79 @@ const FormParent = () => {
           end,
           exonStart,
           exonEnd,
+          sequenceID: exonResponse.sequence_id,
         };
         setExonIndex(exonIndexCopy);
       }
     });
   };
 
-  // perform ajax calls + update ID/coordinate indices
+  /**
+   * Retrieve sequence ID from user-entered chromosome string [defaults to GRCh38]
+   * @param {str} chr to retrieve ID for
+   * @return nothing, but update index state variable
+   */
+  const getSequenceID = (chr) => {
+    fetch(`/sequence/GRCh38:${chr}`)
+      .then((response) => response.json())
+      // eslint-disable-next-line
+      .then((sequenceResponse) => {
+        if (sequenceResponse.warnings && sequenceResponse.warnings.length !== 0) {
+          return null;
+        }
+        const sequenceID = sequenceResponse.sequence_id;
+        const sequenceIndexCopy = sequenceIndex;
+        sequenceIndexCopy[chr] = sequenceID;
+        setSequenceIndex(sequenceIndexCopy);
+      });
+  };
+
+  /**
+   *
+   * @param {Object} fusion proposed fusion object constructed from user input
+   */
+  const validateFusion = (fusion) => {
+    if (Object.keys(fusion).length !== 0) {
+      fetch('/validate', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(fusion),
+      }).then((response) => response.json()).then((validationResponse) => {
+        if (validationResponse.warnings.length > 0) {
+          setFusionJSON({
+            warnings: validationResponse.warnings,
+          });
+        } else {
+          setFusionJSON(validationResponse.fusion);
+        }
+      });
+    }
+  };
+
+  // hooks for performing ajax lookups + update ID/coordinate indices
   useEffect(() => {
     const geneIndexCopy = geneIndex;
     const exonIndexCopy = exonIndex;
     components.forEach((component) => {
       const values = component.componentValues;
 
-      if ('gene_symbol' in values) {
+      if (values.gene_symbol) {
         const geneSymbol = values.gene_symbol;
         if (!(geneSymbol in geneIndexCopy)) {
           const geneID = getGeneID(geneSymbol);
           if (geneID != null) {
             geneIndexCopy[geneSymbol] = geneID;
           }
+        }
+      }
+
+      if (values.chr) {
+        const { chr } = values;
+        if (!(chr in sequenceIndex)) {
+          getSequenceID(chr);
         }
       }
 
@@ -220,6 +275,243 @@ const FormParent = () => {
     });
   }, [regulatoryElements]);
 
+  // fusion validation hook
+  // useEffect(() => {
+  //   validateFusion(proposedFusion);
+  // }, [submitCount]);
+
+  /**
+   * Construct valid gene descriptor from given params
+   * @param {str} label of gene
+   * @param {str} normalizedID fetched from Gene Normalization service for label
+   * @returns validly-structured GeneDescriptor object
+   */
+  const buildGeneDescriptor = (label, normalizedID) => ({
+    type: 'GeneDescriptor',
+    id: `gene:${label}`,
+    label,
+    gene_id: normalizedID,
+  });
+
+  /**
+   * Create transcript_segment object given user input
+   * @param {Object} component object corresponding to given component, as stored in state and
+   *  filled out by user
+   * @param {number} index location in state array - used to infer some coordinate defaults
+   * @returns complete transcript_segment object
+   */
+  const transcriptSegmentComponentToJSON = (component) => {
+    const transcriptSegment = { component_type: 'transcript_segment' };
+    const values = component.componentValues;
+
+    transcriptSegment.transcript = `refseq:${values.transcript}`;
+
+    if (values.gene_symbol) {
+      const symbol = values.gene_symbol;
+      transcriptSegment.gene_descriptor = buildGeneDescriptor(symbol, geneIndex[symbol]);
+    } else if (values.transcript in exonIndex && (typeof exonIndex[values.transcript].geneSymbol !== 'undefined')) {
+      const symbol = exonIndex[values.transcript].geneSymbol;
+      const geneID = geneIndex[symbol];
+      transcriptSegment.gene_descriptor = buildGeneDescriptor(symbol, geneID);
+    }
+
+    // TODO handle differently based on index value
+    const exon = exonIndex[values.transcript];
+    if (exon) {
+      transcriptSegment.exon_start = exon.exonStart;
+      transcriptSegment.exon_start_offset = exon.exonStartOffset;
+      transcriptSegment.exon_end = exon.exonEnd;
+      transcriptSegment.exon_end_offset = exon.exonEndOffset;
+
+      transcriptSegment.component_genomic_region = {
+        id: `${exon.chr}:${exon.start}-${exon.end}`,
+        type: 'LocationDescriptor',
+        location: {
+          sequence_id: exon.sequenceID,
+          type: 'SequenceLocation',
+          interval: {
+            start: {
+              type: 'Number',
+              value: exon.start,
+            },
+            end: {
+              type: 'Number',
+              value: exon.end,
+            },
+            type: 'SequenceInterval',
+          },
+        },
+      };
+    }
+
+    return transcriptSegment;
+  };
+
+  /**
+   * Create genomic_region component object given user input
+   * TODO may require new server endpoints/restructuring
+   * @param {Object} component object corresponding to given component, as stored in state and
+   *  filled out by user
+   * @returns complete genomic_region object
+   */
+  const genomicRegionComponentToJSON = (component) => {
+    const values = component.componentValues;
+    const regionID = `chr${values.chr}:${values.start_pos}-${values.end_pos}(${values.strand})`;
+    return {
+      component_type: 'genomic_region',
+      region: {
+        id: regionID,
+        type: 'LocationDescriptor',
+        location: {
+          type: 'SequenceLocation',
+          sequence_id: sequenceIndex[values.chr],
+          interval: {
+            type: 'SequenceInterval',
+            start: {
+              type: 'Number',
+              value: parseInt(values.start_pos, 10),
+            },
+            end: {
+              type: 'Number',
+              value: parseInt(values.end_pos, 10),
+            },
+          },
+        },
+        label: regionID,
+      },
+      strand: values.strand,
+    };
+  };
+
+  /**
+   * Create linker_sequence component object given user input
+   * @param {Object} component object corresponding to given component, as stored in state and
+   *  filled out by user
+   * @returns complete linker_sequence object
+   */
+  const linkerSequenceComponentToJSON = (comp) => (
+    {
+      component_type: 'linker_sequence',
+      linker_sequence: {
+        id: `sequence:${comp.componentValues.sequence}`,
+        type: 'SequenceDescriptor',
+        sequence: comp.componentValues.sequence,
+        residue_type: 'SO:0000348',
+      },
+    }
+  );
+
+  /**
+   * Create gene component object given user input
+   * @param {Object} component object corresponding to given component, as stored in state and
+   *  filled out by user
+   * @returns complete gene object
+   */
+  const geneComponentToJSON = (comp) => (
+    {
+      component_type: 'gene',
+      gene_descriptor: buildGeneDescriptor(
+        comp.componentValues.gene_symbol,
+        geneIndex[comp.componentValues.gene_symbol],
+      ),
+    }
+  );
+
+  /**
+   * Create unknown_gene component object given user input. Will likely need to take more
+   * user input/provide more data.
+   * @returns complete unknown_gene object
+   */
+  const unknownComponentToJSON = () => {
+    const output = {
+      component_type: 'unknown_gene',
+    };
+    return output;
+  };
+
+  // build proposedFusion
+  useEffect(() => {
+    const output = {};
+
+    // functional domains
+    if (selections['proteinCoding'] === 'Yes') {
+      if (selections['rfPreserved'] === 'Yes') {
+        output.r_frame_preserved = true;
+        if (domains.length > 0) {
+          output.protein_domains = domains.map((domain) => {
+            const domainObject = {
+              status: domain.status,
+              name: domain.name,
+            };
+            if (domain.name) {
+              domainObject.id = domainIndex[domain.name];
+            }
+            if (domain.gene) {
+              domainObject.gene_descriptor = buildGeneDescriptor(
+                domain.gene,
+                geneIndex[domain.gene],
+              );
+            }
+            return domainObject;
+          });
+        }
+      } else if (selections['rfPreserved'] === 'No') {
+        output.r_frame_preserved = false;
+      }
+    }
+
+    // transcript components
+    output.transcript_components = components.map((comp) => {
+      if (comp.componentType === 'transcript_segment') {
+        return transcriptSegmentComponentToJSON(comp);
+      }
+      if (comp.componentType === 'genomic_region') {
+        return genomicRegionComponentToJSON(comp);
+      }
+      if (comp.componentType === 'linker_sequence') {
+        return linkerSequenceComponentToJSON(comp);
+      }
+      if (comp.componentType === 'gene') {
+        return geneComponentToJSON(comp);
+      }
+      if (comp.componentType === 'unknown_gene') {
+        return unknownComponentToJSON();
+      }
+      return null;
+    });
+
+    // causative event
+    if (selections['causativeEventKnown'] === 'Yes') {
+      output.causative_event = selections['causativeEvent'];
+    }
+
+    // regulatory elements
+    if (regulatoryElements && regulatoryElements.length > 0) {
+      output.regulatory_elements = regulatoryElements.map((element) => {
+        const elementFormatted = {};
+        if (element.type) elementFormatted.type = element.type;
+        if (element.gene) {
+          const label = element.gene;
+          elementFormatted.gene_descriptor = buildGeneDescriptor(label, geneIndex[label]);
+        }
+        return elementFormatted;
+      });
+    } else {
+      output.regulatory_elements = [];
+    }
+
+    setProposedFusion(output);
+  }, [selections, domains, components, regulatoryElements]);
+
+  /**
+   * Hackish way to tie async validation request to the submit onClick listener
+   * TODO: Probably a better way to accomplish this
+   */
+  const handleSubmit = () => {
+    handleEntry('submitted', true);
+    validateFusion(proposedFusion);
+  };
+
   return (
     <div className={classes.root}>
       <FormRadio
@@ -227,8 +519,8 @@ const FormParent = () => {
         prompt="Does the fusion create a chimeric transcript?"
         state={{
           options: ['Yes', 'No'],
-          state: responses['chimericTranscript'],
-          stateFunction: (oldValue, newValue) => handleResponse('chimericTranscript', newValue),
+          state: selections['chimericTranscript'],
+          stateFunction: (oldValue, newValue) => handleEntry('chimericTranscript', newValue),
         }}
       />
 
@@ -239,8 +531,8 @@ const FormParent = () => {
             prompt="Is at least one partner protein-coding?"
             state={{
               options: ['Yes', 'No', 'Unknown'],
-              state: responses['proteinCoding'],
-              stateFunction: (oldValue, newValue) => handleResponse('proteinCoding', newValue),
+              state: selections['proteinCoding'],
+              stateFunction: (oldValue, newValue) => handleEntry('proteinCoding', newValue),
             }}
           />
         )
@@ -252,8 +544,8 @@ const FormParent = () => {
             prompt="Is the reading frame predicted to be preserved?"
             state={{
               options: ['Yes', 'No'],
-              state: responses['rfPreserved'],
-              stateFunction: (oldValue, newValue) => { handleResponse('rfPreserved', newValue); },
+              state: selections['rfPreserved'],
+              stateFunction: (oldValue, newValue) => { handleEntry('rfPreserved', newValue); },
             }}
           />
         )
@@ -275,8 +567,8 @@ const FormParent = () => {
             prompt="Is causative event known?"
             state={{
               options: ['Yes', 'No'],
-              state: responses['causativeEventKnown'],
-              stateFunction: (oldValue, newValue) => { handleResponse('causativeEventKnown', newValue); },
+              state: selections['causativeEventKnown'],
+              stateFunction: (oldValue, newValue) => { handleEntry('causativeEventKnown', newValue); },
             }}
           />
         )
@@ -284,8 +576,8 @@ const FormParent = () => {
       {visible['causativeEventForm']
         ? (
           <CausativeEventForm
-            state={responses['causativeEvent']}
-            handler={handleResponse.bind({}, 'causativeEvent')}
+            state={selections['causativeEvent']}
+            handler={handleEntry.bind({}, 'causativeEvent')}
           />
         )
         : null}
@@ -296,8 +588,8 @@ const FormParent = () => {
             prompt="Does fusion rearrange near regulatory element?"
             state={{
               options: ['Yes', 'No'],
-              state: responses['nearRegulatory'],
-              stateFunction: (oldValue, newValue) => { handleResponse('nearRegulatory', newValue); },
+              state: selections['nearRegulatory'],
+              stateFunction: (oldValue, newValue) => { handleEntry('nearRegulatory', newValue); },
             }}
           />
         )
@@ -319,24 +611,11 @@ const FormParent = () => {
           </Box>
         )
         : null}
-      {visible['submit'] ? <SubmitButton handler={() => handleResponse('submitted', true)} /> : null}
-      {visible['responseFields']
+      {visible['submit'] ? <SubmitButton handler={handleSubmit} /> : null}
+      {visible['resultField']
         ? (
-          <ResponseField
-            responseJSON={responseJSON}
-            setResponseJSON={setResponseJSON}
-            responseHuman={responseHuman}
-            setResponseHuman={setResponseHuman}
-            components={components}
-            proteinCoding={responses['proteinCoding']}
-            rfPreserved={responses['rfPreserved']}
-            domains={domains}
-            causativeEventKnown={responses['causativeEventKnown']}
-            causativeEvent={responses['causativeEvent']}
-            regulatoryElements={regulatoryElements}
-            geneIndex={geneIndex}
-            domainIndex={domainIndex}
-            exonIndex={exonIndex}
+          <ResultField
+            fusionJSON={fusionJSON}
           />
         )
         : null}
