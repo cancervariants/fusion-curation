@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { ResponsesContext } from '../../../../global/contexts/ResponsesContext';
 import {GeneSearch} from '../../Gene/GeneSearch/GeneSearch';
 import StructureForm from '../StructureForm/StructureForm';
+import Structure2 from '../StructureForm/Structure2';
 import './Structure.scss';
 
 interface Props {
@@ -26,7 +27,7 @@ export const Structure: React.FC<Props> = ( { index }) => {
       </div>
 
 
-      <StructureForm />
+      <Structure2 />
       
       
 

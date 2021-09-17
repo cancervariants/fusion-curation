@@ -28,9 +28,8 @@ function TabPanel(props: TabPanelProps) {
 
   return (
     <div
-
       hidden={value !== index}
-      id={`nav-tabpanel-${index}`}
+      className="sub-tab"
       aria-labelledby={`nav-tab-${index}`}
       {...other}
     >

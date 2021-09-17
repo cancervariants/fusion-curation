@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TransCompInput } from '../TransCompInput/TransCompInput';
 import { StructureContext } from '../../../../global/contexts/StructureContext';
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
-import './StructureForm.scss';
+import './Structure2.scss';
 import {Grid, Card, CardContent, Button, TextField, Box} from '@material-ui/core';
 
 import theme from '../../../../global/styles/theme';
@@ -113,9 +113,8 @@ useEffect(() => {
   return (
     <>
     <div className="structure-form">      
-      <Grid justify="center" alignItems="center" style={{margin: '0px'}} container spacing={10}>
         <DragDropContext onDragEnd={dragToAdd}>
-        <Grid alignItems="center" item zeroMinWidth style={{padding: '0px', backgroundColor: '#ddd'}} >
+        <div className="component-adder">
         <h3>Drag to add new component</h3>
           <Droppable droppableId="options">
             {(provided) => (
@@ -139,8 +138,8 @@ useEffect(() => {
               </div>
             )}
           </Droppable>
-          </Grid>
-        <Grid alignItems="center" item sm zeroMinWidth style={{padding: '0px'}}>
+          </div>
+        <div className="component-arranger">
           <h3>Drag to rearrange sequence</h3>
             <Droppable droppableId="comps">
                 {(provided) => (
@@ -192,10 +191,8 @@ useEffect(() => {
                   </div>
                 )}
               </Droppable>
-          </Grid>      
+          </div>      
         </DragDropContext>
-      </Grid>    
- 
     </div>
     </>
   )
