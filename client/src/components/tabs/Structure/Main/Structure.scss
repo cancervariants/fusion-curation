@@ -1,0 +1,51 @@
+.summary-title {
+  h3 {
+    font-weight: 400;
+  } 
+}
+
+
+.gn2 {
+  background-color: #79FFFF;
+  width: 320px;
+  text-align: center;
+}
+
+.tc2 {
+  background-color: #FEFF91;
+  width: 150px;
+  text-align: center;
+}
+.ls2 {
+  background-color: #FF94FF;
+  width: 60px;
+  text-align: center;
+}
+.gr2 {
+  background-color: #CCCCFF;
+  width: 60px;
+  text-align: center;
+}
+
+
+.structure-summary {
+  padding: 5px;
+  display: inline-block;
+  background-color: white;
+  display: flex;
+  justify-content: space-around;
+  width: 600px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.summary-container {
+  display: flex;
+  justify-content: center;
+  min-width: 100%;
+  padding-bottom: 15px;
+}
+
+.structure-container {
+  min-width: 100%;
+}

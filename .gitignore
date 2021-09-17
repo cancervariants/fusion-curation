@@ -186,3 +186,52 @@ package-lock.json
 client/package-lock.json
 client/package-lock.json
 package-lock.json
+package-lock.json
+clientold copy/package.json
+clientold copy/public/favicon.ico
+clientold copy/public/index.html
+clientold copy/public/logo192.png
+clientold copy/public/logo512.png
+clientold copy/public/manifest.json
+clientold copy/public/robots.txt
+clientold copy/README.md
+clientold copy/src/components/pages/Domains/Main/Close.tsx
+clientold copy/src/components/pages/Domains/Main/Domain.scss
+clientold copy/src/components/pages/Domains/Main/Domain.tsx
+clientold copy/src/components/pages/Gene/Gene/Gene.scss
+clientold copy/src/components/pages/Gene/Gene/Gene.tsx
+clientold copy/src/components/pages/Gene/GeneResults/GeneResults.scss
+clientold copy/src/components/pages/Gene/GeneResults/GeneResults.tsx
+clientold copy/src/components/pages/Gene/GeneSearch/Close.tsx
+clientold copy/src/components/pages/Gene/GeneSearch/GeneSearch.scss
+clientold copy/src/components/pages/Gene/GeneSearch/GeneSearch.tsx
+clientold copy/src/components/pages/Gene/StructureDiagram/StructureDiagram.scss
+clientold copy/src/components/pages/Gene/StructureDiagram/StructureDiagram.tsx
+clientold copy/src/components/pages/RegElement/RegElement/RegElement.scss
+clientold copy/src/components/pages/RegElement/RegElement/RegElement.tsx
+clientold copy/src/components/pages/RegElement/RegElementForm/RegElementForm.scss
+clientold copy/src/components/pages/RegElement/RegElementForm/RegElementForm.tsx
+clientold copy/src/components/pages/Structure/Structure/Structure.scss
+clientold copy/src/components/pages/Structure/Structure/Structure.tsx
+clientold copy/src/components/pages/Structure/StructureForm/StructureForm.scss
+clientold copy/src/components/pages/Structure/StructureForm/StructureForm.tsx
+clientold copy/src/components/pages/Structure/StructureInput/StructureInput.scss
+clientold copy/src/components/pages/Structure/StructureInput/StructureInput.tsx
+clientold copy/src/components/pages/Summary/Main/arrow-go-back-svgrepo-com.svg
+clientold copy/src/components/pages/Summary/Main/Go.tsx
+clientold copy/src/components/pages/Summary/Main/Summary.scss
+clientold copy/src/components/pages/Summary/Main/Summary.tsx
+clientold copy/src/components/shared/App/App.scss
+clientold copy/src/components/shared/App/App.tsx
+clientold copy/src/components/shared/NavTabs/NavTabs.scss
+clientold copy/src/components/shared/NavTabs/NavTabs.tsx
+clientold copy/src/contexts/GeneContext.tsx
+clientold copy/src/contexts/ResponsesContext.tsx
+clientold copy/src/contexts/StructureContext.tsx
+clientold copy/src/global/styles/global.scss
+clientold copy/src/global/styles/theme.ts
+clientold copy/src/index.tsx
+clientold copy/src/react-app-env.d.ts
+clientold copy/tsconfig.json
+clientold copy/yarn.lock
+package-lock.json

@@ -2,11 +2,10 @@
 import React from 'react';
 import {
   createTheme,
-  makeStyles,
-  createStyles,
   Theme as AugmentedTheme,
-  ThemeProvider,
 } from '@material-ui/core/styles';
+
+import {COLORTHEMES} from '../contexts/Theme/Theme.model';
 
 
 declare module '@material-ui/core/styles/createTheme' {
@@ -27,24 +26,18 @@ declare module '@material-ui/core/styles/createTheme' {
   }
 }
 
-// const useStyles = makeStyles((theme: AugmentedTheme) =>
-//   createStyles({
-//     root: {
-//       color: theme.status.color,
-//       '&$checked': {
-//         color: theme.status.color,
-//       },
-//     },
-//     checked: {},
-//   }),
-// );
-
 const theme = createTheme({
   colors: {
     navbutton: '#0BD3D3',
     enabledtabs: '#FFFFFF',
     disabledtabs: '#F5F5FA',
   },
+  palette: {
+    primary:{
+      main: COLORTHEMES.light['--primary'],
+      contrastText: COLORTHEMES.light['--white']
+    } 
+  }
   
 });
 

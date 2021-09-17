@@ -93,7 +93,7 @@ const FormParent = () => {
    */
   const getDomainID = (name) => {
     // eslint-disable-next-line consistent-return
-    fetch(`/domain/${name}`)
+    fetch(encodeURIComponent(`/domain/${name}`))
       .then((response) => response.json())
       .then((domainResponse) => {
         if (domainResponse.warnings) {
