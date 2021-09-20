@@ -1,13 +1,25 @@
-.structure-form {
+.builder {
   display: flex;
   align-items: stretch;
-  justify-content: center;
   background: #F5F5FA;
   flex: 1;
 }
 
-.comps {
+.block-container {
   text-align: center;
+  flex: 1;
+  overflow: scroll;
+}
+
+.block {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  font-weight: 300;
+  padding: 10px;
+  margin: 0 50px 15px 50px;
+	font-size: 18px;
+	border-radius: 5px;
 }
 
 h3 {
@@ -15,49 +27,47 @@ h3 {
   font-weight: 500;
 }
 
-.component-adder{
-  background-color: darkgray;
-  width: 35%;
-}
-
-.component-arranger{
-  flex: 1;
-}
-
 .options {
+  background-color: darkgray;
+  width: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.option-item {
+  display: flex;
   text-align: center;
+  justify-content: center;
+  font-weight: 300;
+  padding: 10px;
+  margin: 0 50px 15px 50px;
+	font-size: 18px;
+	border-radius: 5px;
 
   .gene-component {
-    background:#79FFFF;
     border: 2px solid #bbfafa !important;
     color: #757575;
     font-weight: 500
   }
   
   .transcript-component{
-
-    background:#FEFF91;
     border: 2px solid #fcfcc0 !important;
     color: #757575;
     font-weight: 500
   }
   
   .linker-sequence {
-
-    background:#FF94FF;
     border: 2px solid #fcbaf1 !important;
     color: #757575;
     font-weight: 500
   }
   
   .genomic-region {
-
-    background:#CCCCFF;
     border: 2px solid #e1e1fc !important;
     color: #757575;
     font-weight: 500
   }
-  
 }
 
 .gene-component {
@@ -107,8 +117,4 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.options {
-  font-weight: 300;
 }

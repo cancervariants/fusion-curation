@@ -1,8 +1,5 @@
-import { useContext } from 'react';
-import { ResponsesContext } from '../../../../global/contexts/ResponsesContext';
-import {GeneSearch} from '../../Gene/GeneSearch/GeneSearch';
-import StructureForm from '../StructureForm/StructureForm';
-import Structure2 from '../StructureForm/Structure2';
+import uuid from 'uuid';
+import Builder from '../StructureForm/Builder';
 import './Structure.scss';
 
 interface Props {
@@ -27,7 +24,7 @@ export const Structure: React.FC<Props> = ( { index }) => {
       </div>
 
 
-      <Structure2 />
+      <Builder />
       
       
 

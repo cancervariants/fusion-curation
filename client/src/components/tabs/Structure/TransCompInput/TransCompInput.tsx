@@ -11,7 +11,7 @@ interface Props {
 const useStyles = makeStyles({
 });
 
-export const StructureInput: React.FC<Props> = ({title, inputs}) => {
+export const TransCompInput: React.FC<Props> = ({title, inputs}) => {
   const classes = useStyles();
 
   const [front, setFront] = useState(true);
