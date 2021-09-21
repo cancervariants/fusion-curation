@@ -9,7 +9,7 @@ interface Props {
 export const Gene: React.FC<Props> = ( { index }) => {
 
   return (
-    <div className="gene">
+    <div className="genetab-container">
       <GeneSearch />
       <GeneResults/>
     </div>

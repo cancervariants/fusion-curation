@@ -1,7 +1,7 @@
 import React, {useState, useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {Card, CardActionArea, TextField, CardContent, Typography, Button } from '@material-ui/core';
-import { ResponsesContext } from '../../../../global/contexts/ResponsesContext';
+import { FusionContext } from '../../../../global/contexts/FusionContext';
 
 interface Props {
   title: string,
@@ -17,7 +17,7 @@ export const TransCompInput: React.FC<Props> = ({title, inputs}) => {
   const [front, setFront] = useState(true);
 
   // global state
-  const {responses, setResponses} = useContext(ResponsesContext);
+  const {responses, setResponses} = useContext(FusionContext);
 
   const handleSave = () => {
     setResponses({...responses, ...{[title]: ctComponents}})

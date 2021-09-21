@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import NavTabs from '../NavTabs/NavTabs';
-import { GeneContext } from '../../../global/contexts/GeneContext'
-import { StructureContext } from '../../../global/contexts/StructureContext'
+import { SuggestionContext } from '../../../global/contexts/SuggestionContext'
+import { FusionContext } from '../../../global/contexts/FusionContext'
 import '../../../global/styles/global.scss'
 import { ThemeProvider } from '@material-ui/core';
 import theme from '../../../global/styles/theme';
@@ -11,8 +11,8 @@ import './App.scss';
 
 function App() {
 
-  const [genes, setGenes] = useState<unknown>([]);
-  const [structure, setStructure] = useState<unknown>([]);
+  const [suggestions, setSuggestions] = useState<unknown>([]);
+  const [fusion, setFusion] = useState<unknown>([]);
 
   const { colorTheme } = useColorTheme();
 
@@ -21,17 +21,17 @@ function App() {
   
       <ThemeProvider theme={theme}>
         
-        <GeneContext.Provider value={{genes, setGenes}}>
-          <StructureContext.Provider value={{structure, setStructure}}>
+        <SuggestionContext.Provider value={{suggestions, setSuggestions}}>
+          <FusionContext.Provider value={{fusion, setFusion}}>
             <div className="App" 
               style={{
                ...colorTheme
                } as React.CSSProperties}>
               <NavTabs />
             </div>
-          </StructureContext.Provider>
+          </FusionContext.Provider>
           
-        </GeneContext.Provider>    
+        </SuggestionContext.Provider>    
         
       </ThemeProvider>
     

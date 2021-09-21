@@ -1,15 +1,9 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import './Builder.scss';
-import styled from 'styled-components';
-import {Grid, Card, CardContent, Button, TextField, Box} from '@material-ui/core';
+import {Card, CardContent, Button, TextField, Box} from '@material-ui/core';
 
-import theme from '../../../../global/styles/theme';
-
-interface StyledDivProps {
-  isDragging: boolean;
-}
 
 const OPTIONS = [
   {
@@ -37,17 +31,6 @@ const OPTIONS = [
     classname: "genomic-region"
   }
 ]
-
-
-
-// const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
-//   padding: 10,
-//   margin: `0 50px 15px 50px`,
-// 	fontSize: `18px`,
-// 	borderRadius: `5px`,
-// 	...draggableStyle
-// })
-
 
 const Builder: React.FC = () =>  {
   const [blocks, setBlocks] = useState([]);
@@ -109,7 +92,6 @@ const Builder: React.FC = () =>  {
               <div className="options" 
                 {...provided.droppableProps} 
                 ref={provided.innerRef}
-                // isDraggingOver = {snapshot.isDraggingOver}
               >
                 <div className="options-container">
                 {OPTIONS.map(({id, name, classname }, index) => (
@@ -181,8 +163,8 @@ const Builder: React.FC = () =>  {
                                     <div className="bottom-inputs">
                                     <TextField margin="dense" style={{ height: 38, width: 125 }} label="Start Position"></TextField>                
                                     <TextField margin="dense" style={{ height: 38, width: 125 }} label="End Position"></TextField>      
-                                    </div>
                                     </div> 
+                                    </div>
                                     <div className="buttons">
                                     <Button style={{margin: '8px'}} variant="outlined" color="secondary" >Cancel</Button>
                                     <Button style={{margin: '8px'}} variant="outlined" color="primary" onClick={() => handleSave(index)}>Save</Button>

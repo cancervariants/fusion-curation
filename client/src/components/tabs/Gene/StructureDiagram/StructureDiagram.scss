@@ -1,19 +1,19 @@
-.gn {
+.gene  {
   background-color: #79FFFF;
   color: #79FFFF;
   width: 120px;
 }
-.tc {
+.transcript_segment {
   background-color: #fbfcbb;
   color: #fbfcbb;
   width: 80px;
 }
-.ls {
+.linker_sequence {
   background-color: #FF94FF;
   color: #FF94FF;
   width: 25px;
 }
-.gr {
+.genomic_region {
   background-color: #CCCCFF;
   color: #CCCCFF;
   width: 25px;
@@ -34,22 +34,22 @@
   &:hover {
     border: 5px solid rgba(127, 127, 127, .15);
     
-    .gn {
+    .gene {
       background-color: #bbfafa;
       color: #bbfafa;
       width: 120px;
     }
-    .tc {
+    .transcript_segment {
       background-color: #fcfcc0;
       color: #fcfcc0;
       width: 80px;
     }
-    .ls {
+    .linker_sequence {
       background-color: #ffbaff;
       color: #ffbaff;
       width: 25px;
     }
-    .gr {
+    .genomic_region {
       background-color: #e1e1fc;
       color: #e1e1fc;
       width: 25px;

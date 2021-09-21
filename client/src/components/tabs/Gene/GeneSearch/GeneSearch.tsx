@@ -1,23 +1,20 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { FusionContext } from '../../../../global/contexts/FusionContext';
+
+// MUI
+import { makeStyles } from '@material-ui/core/styles';
 import {TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import Close from './Close';
-import { GeneContext } from '../../../../global/contexts/GeneContext';
 
-import { makeStyles, Theme } from '@material-ui/core/styles';
-
-
+// Styles
 import './GeneSearch.scss'
 
-import { GeneResults } from '../GeneResults/GeneResults';
-
-//TODO: replace dummy data with server data
-
+// SVG
+import Close from './Close';
 
 
 export const GeneSearch: React.FC = () => {
   
-
   const useStyles = makeStyles((theme) => ({
     root: {
       "& .MuiInputLabel-outlined:not(.MuiInputLabel-shrink)": {
@@ -61,16 +58,44 @@ export const GeneSearch: React.FC = () => {
   const classes = useStyles();
 
 
-  const {genes, setGenes} = useContext(GeneContext);
-  const [structures, setStructures] = useState([]);
+  // entered by user in search
+  const [genes, setGenes] = useState([]);
 
+  // API response
+  const [suggestions, setSuggestions] = useState([]);
 
-  const [geneList, setGeneList] = useState([]);
+  // global fusion object (starts off empty)
+  const {fusion, setFusion} = useContext(FusionContext);
+
+  // autocomplete
   const [open, setOpen] = React.useState(false);
   const [disabled, setDisabled] = React.useState(false)
   const [inputValue, setInputValue] = React.useState("");
-  const [reset, setReset] = useState(0)
 
+
+  const getData=()=>{
+    fetch('data.json'
+    ,{
+      headers : { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+       }
+    }
+    )
+      .then(function(response){
+        console.log(response)
+        return response.json();
+      })
+      .then(function(myJson) {
+        console.log(myJson);
+        setSuggestions(myJson)
+      });
+  }
+
+
+
+
+  // AUTOCOMPLETE METHODS
   const handleInputChange = (event, newInputValue) => {
     setInputValue(newInputValue);
     if (newInputValue.length > 0) {
@@ -90,33 +115,30 @@ export const GeneSearch: React.FC = () => {
     setGenes([]);
   }
 
-
   const onSelectGene = (value) => {
-    setGenes({...genes, value});
+    setGenes([...genes, value]);
     resetter();
   }
 
   const resetter = () => {
     setInputValue('');
     setOpen(false);
-
   }
 
   useEffect(() => {
-    let count = reset;
-    setReset(count++);
     setInputValue('');
     setOpen(false);
 
+    // dumb hack for demoing because it kept re-opening when clicking outside
+    // need to clear the list of suggestions after selecting an option (onBlur?)
     genes.length === 2 ? setDisabled(true) : setDisabled(false);
   }, [genes]);
+
 
   return (
     <div className="gene-search">
 
-    {/* <span>Add genes</span> */}
 <Autocomplete
-      id="combo-box-demo"
       freeSolo={false}
       popupIcon={""}
       clearOnBlur={true}
@@ -138,7 +160,7 @@ export const GeneSearch: React.FC = () => {
 
       }}
       onInputChange={handleInputChange}
-      options={top100Films}
+      options={tempGeneList}
       getOptionLabel={option => option}
       style={{ width: 300 }}
       renderInput={params => (
@@ -159,15 +181,11 @@ export const GeneSearch: React.FC = () => {
       }
         </div>
       
-
-
     </div>
   )
 
 }
 
-
-// Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top
-const top100Films = [
+const tempGeneList = [
   'BCR', 'BCL2', 'BCCT', 'BCL2L1', 'BcsC', 'BcsE', 'BcsQ', 'ABCB1', 'ABL1', 'ABCB1', 'ABLIM1', 'ABLIM2', 'ABLIM3', 'ABL2', 'MYC', 'Myoglobin', 'Myosin-8', 'Myosin-9', 'MYLK', 'MYCN', 'MYD88', 'MYBPC3', 'INC', 'IL6', "Insulin A chain", 'Interleukin-2', 'IGHG1', 'IKZF1', 'IL1B', 'IFNG', 'INSR', 'IGF1', 'IGF1R', 'IGHM', 'IGLL5', 'IGH', 'IGHE', 'IGFBP3'  
 ];

@@ -1,5 +1,5 @@
 import './Summary.scss'
-import { ResponsesContext } from '../../../../global/contexts/ResponsesContext';
+import { FusionContext } from '../../../../global/contexts/FusionContext';
 import React, { useContext, useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 export const Summary: React.FC<Props> = ( { index }) => {
   const classes = useStyles();
 
-  const {responses, setResponses} = useContext(ResponsesContext);
+  const {fusion, setFusion} = useContext(FusionContext);
 
   const [data, setData] = useState(json)
 
