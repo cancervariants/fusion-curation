@@ -21,7 +21,7 @@ function App() {
   
       <ThemeProvider theme={theme}>
         
-        <SuggestionContext.Provider value={{suggestions, setSuggestions}}>
+        <SuggestionContext.Provider value={[suggestions, setSuggestions]}>
           <FusionContext.Provider value={{fusion, setFusion}}>
             <div className="App" 
               style={{

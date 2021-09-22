@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
+import { SuggestionContext } from '../../../../global/contexts/SuggestionContext';
 
 // MUI
 import { makeStyles } from '@material-ui/core/styles';
@@ -62,7 +63,7 @@ export const GeneSearch: React.FC = () => {
   const [genes, setGenes] = useState([]);
 
   // API response
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useContext(SuggestionContext);
 
   // global fusion object (starts off empty)
   const {fusion, setFusion} = useContext(FusionContext);
@@ -89,17 +90,21 @@ export const GeneSearch: React.FC = () => {
         return response.json();
       })
       .then(function(myJson) {
-        console.log(myJson);
-        setSuggestions(myJson)
+        // really should have search button, then check for presence of genes in objects
+        if(genes.length == 2){
+          setSuggestions([...suggestions, myJson[0]])
+        }     
+        return;   
       });
   }
 
-  useEffect(()=>{
+  useEffect(() => {
+    if(genes.length == 1){
+      return
+    }
+    setFusion({ ...fusion, ...{ "genes" : genes }})
     getData()
-  },[])
-
-
-
+  }, [genes])
 
   // AUTOCOMPLETE METHODS
   const handleInputChange = (event, newInputValue) => {
