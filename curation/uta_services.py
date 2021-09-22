@@ -195,8 +195,10 @@ async def get_genomic_coords(db: PostgresDatabase, tx_ac: str, start_exon: int, 
         return None
     tx_exon_start, tx_exon_end = tx_exon_coords
 
+    print(tx_ac, tx_exon_start, tx_exon_end, gene)
     alt_ac_start_end = await get_alt_ac_start_and_end(db, tx_ac, tx_exon_start, tx_exon_end,
                                                       gene=gene)
+    print(alt_ac_start_end)
     if not alt_ac_start_end:
         return None
     alt_ac_start, alt_ac_end = alt_ac_start_end
@@ -321,15 +323,10 @@ async def get_alt_ac_start_and_end(db: PostgresDatabase, tx_ac: str, tx_exon_sta
         return None
 
     # validate
-    if alt_ac_start[0] != alt_ac_end[0]:
-        logger.warning(f"{alt_ac_start[0]} != {alt_ac_end[0]}")
-        return None
-    if alt_ac_start[1] != alt_ac_end[1]:
-        logger.warning(f"{alt_ac_start[1]} != {alt_ac_end[1]}")
-        return None
-    if alt_ac_start[4] != alt_ac_end[4]:
-        logger.warning(f"{alt_ac_start[4]} != {alt_ac_end[4]}")
-        return None
+    for i in (0, 1, 4):
+        if alt_ac_start[i] != alt_ac_end[i]:
+            logger.warning(f"Mismatch between start and end coordinates on related transcript: "
+                           f"{alt_ac_start[i]} != {alt_ac_end[i]}")
     return alt_ac_start, alt_ac_end
 
 

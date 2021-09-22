@@ -15,6 +15,7 @@ fusor = "*"
 [dev-packages]
 fusion-curation = {editable = true, path = "."}
 pytest = "*"
+pytest-asyncio = "*"
 coverage = "*"
 pytest-cov = "*"
 pre-commit = "*"
