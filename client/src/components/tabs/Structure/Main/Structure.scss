@@ -3,6 +3,36 @@
   flex-direction: column;
   align-items: stretch;
   height: 100%;
+
+  .structure-summary {
+    .gene {
+      background-color: #79FFFF;
+      width: 320px;
+      text-align: center;
+      color: black;
+    }
+    
+    .transcript_segment {
+      background-color: #FEFF91;
+      width: 150px;
+      text-align: center;
+      color: black;
+    }
+    .linker_sequence {
+      background-color: #FF94FF;
+      width: 60px;
+      text-align: center;
+    }
+    
+    .genomic_region {
+      background-color: #CCCCFF;
+      width: 60px;
+      text-align: center;
+    }
+    
+  }
+
+
 }
 
 // .summary-title {
@@ -12,27 +42,6 @@
 // }
 
 
-// .gn2 {
-//   background-color: #79FFFF;
-//   width: 320px;
-//   text-align: center;
-// }
-
-// .tc2 {
-//   background-color: #FEFF91;
-//   width: 150px;
-//   text-align: center;
-// }
-// .ls2 {
-//   background-color: #FF94FF;
-//   width: 60px;
-//   text-align: center;
-// }
-// .gr2 {
-//   background-color: #CCCCFF;
-//   width: 60px;
-//   text-align: center;
-// }
 
 
 // .structure-summary {

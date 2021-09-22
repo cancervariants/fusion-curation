@@ -3,7 +3,23 @@
   align-items: stretch;
   background: #F5F5FA;
   flex: 1;
-}
+
+  .gene {
+    background:#79FFFF;
+  }
+  
+  .transcript_segment {
+    background-color: #FEFF91;
+  }
+  
+  .linker_sequence {
+    background-color: #FF94FF;
+  }
+  
+  .genomic_region {
+    background-color: #CCCCFF;
+  }
+
 
 .block-container {
   text-align: center;
@@ -45,46 +61,31 @@ h3 {
 	font-size: 18px;
 	border-radius: 5px;
 
-  .gene-component {
+  .gene {
     border: 2px solid #bbfafa !important;
     color: #757575;
     font-weight: 500
   }
   
-  .transcript-component{
+  .transcript_component{
     border: 2px solid #fcfcc0 !important;
     color: #757575;
     font-weight: 500
   }
   
-  .linker-sequence {
+  .linker_sequence {
     border: 2px solid #fcbaf1 !important;
     color: #757575;
     font-weight: 500
   }
   
-  .genomic-region {
+  .genomic_region {
     border: 2px solid #e1e1fc !important;
     color: #757575;
     font-weight: 500
   }
 }
 
-.gene-component {
-  background:#79FFFF;
-}
-
-.transcript-component{
-  background-color: #FEFF91;
-}
-
-.linker-sequence {
-  background-color: #FF94FF;
-}
-
-.genomic-region {
-  background-color: #CCCCFF;
-}
 
 
 
@@ -117,4 +118,6 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+  
 }

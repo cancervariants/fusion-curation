@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { v4 as uuid } from 'uuid';
+import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import './Builder.scss';
 import {Card, CardContent, Button, TextField, Box} from '@material-ui/core';
@@ -10,62 +11,80 @@ const OPTIONS = [
     id: uuid(),
     name: "Gene",
     result: 'card',
-    classname: "gene-component"
+    classname: "gene"
   },
   {
     id: uuid(),
     name: "Transcript Component",
     result: 'card',
-    classname: "transcript-component"
+    classname: "transcript_segment"
   },
   {
     id: uuid(),
     name: "Linker Sequence",
     result: 'card',
-    classname: "linker-sequence"
+    classname: "linker_sequence"
   },
   {
     id: uuid(),
     name: "Genomic Region",
     result: 'card',
-    classname: "genomic-region"
+    classname: "genomic_region"
   }
 ]
 
 const Builder: React.FC = () =>  {
-  const [blocks, setBlocks] = useState([]);
+  const {fusion} = useContext(FusionContext);
+  const [structure, setStructure] = useState([]);
+
+  useEffect(() => {
+    let diagram = [];
+    if("transcript_components" in fusion){
+      fusion["transcript_components"].map(comp => (
+        // should have something like "component_name" that's found on each component regardless of type
+        // basically a headline summary
+        diagram.push({
+          id: uuid(),
+          name: comp["component_type"],
+          result: 'refseq:NM_152263.3_exon1-exon8',
+          classname: comp["component_type"]
+        }) 
+      ))
+      setStructure(diagram);
+    }
+  }, [])
 
   const copy = (result: DropResult) => {
     const {source, destination} = result;
   
     const sourceClone = Array.from(OPTIONS);
-    const destClone = Array.from(blocks);
+    const destClone = Array.from(structure);
     const item = sourceClone[source.index];
     const newItem = Object.assign({}, item);
     newItem.id = uuid();
     destClone.splice(destination.index, 0, newItem)
-    setBlocks(destClone);
+    setStructure(destClone);
   };
 
   const reorder = (result: DropResult) => {
     const {source, destination} = result;
 
-    if (blocks.length > 0){
-      const sourceClone = Array.from(blocks);
+    if (structure.length > 0){
+      const sourceClone = Array.from(structure);
       const [newOrder] = sourceClone.splice(source.index, 1);
       sourceClone.splice(destination.index, 0, newOrder);
-      setBlocks(sourceClone);
+      setStructure(sourceClone);
     }
 
   };
 
   const handleSave = (index) => {
-    const items = Array.from(blocks);
+    const items = Array.from(structure);
     let obj = items[index];
     let newObj = Object.assign({}, obj)
     newObj.result = 'refseq:NM_152263.3_exon1-exon8'
     items.splice(index, 1, newObj)
-    setBlocks(items);
+    setStructure(items);
   }
 
 
@@ -75,7 +94,7 @@ const Builder: React.FC = () =>  {
     // dropped outside the list
     if (!destination) return;
 
-    // setBlocks(copy(result));
+    // setStructure(copy(result));
 
     if(destination.droppableId === source.droppableId) {
       reorder(result);
@@ -136,10 +155,10 @@ const Builder: React.FC = () =>  {
               </div>
             )}
           </Droppable>
-        <Droppable droppableId="blocks">
+        <Droppable droppableId="structure">
                 {(provided) => (
                   <div className="block-container" {...provided.droppableProps} ref={provided.innerRef}>
-                    {blocks.map(({id, result, classname}, index) => {
+                    {structure.map(({id, result, classname}, index) => {
                       return (
                         <Draggable key={id} draggableId={id} index={index}>
                           {(provided, snapshot) => (

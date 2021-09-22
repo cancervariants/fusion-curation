@@ -1,23 +1,4 @@
-.gene  {
-  background-color: #79FFFF;
-  color: #79FFFF;
-  width: 120px;
-}
-.transcript_segment {
-  background-color: #fbfcbb;
-  color: #fbfcbb;
-  width: 80px;
-}
-.linker_sequence {
-  background-color: #FF94FF;
-  color: #FF94FF;
-  width: 25px;
-}
-.genomic_region {
-  background-color: #CCCCFF;
-  color: #CCCCFF;
-  width: 25px;
-}
+
 
 
 .structure {
@@ -30,6 +11,27 @@
   margin: 7px;
   cursor: pointer;
   border: 5px solid white;
+
+  .gene  {
+    background-color: #79FFFF;
+    color: #79FFFF;
+    width: 120px;
+  }
+  .transcript_segment {
+    background-color: #fbfcbb;
+    color: #fbfcbb;
+    width: 80px;
+  }
+  .linker_sequence {
+    background-color: #FF94FF;
+    color: #FF94FF;
+    width: 25px;
+  }
+  .genomic_region {
+    background-color: #CCCCFF;
+    color: #CCCCFF;
+    width: 25px;
+  }
 
   &:hover {
     border: 5px solid rgba(127, 127, 127, .15);
