@@ -73,9 +73,11 @@ export const GeneSearch: React.FC = () => {
   const [inputValue, setInputValue] = React.useState("");
 
 
-  const getData=()=>{
-    fetch('data.json'
+  const getData = () => {
+    fetch('http://localhost:9000/suggestions'
     ,{
+      method: "GET",
+      mode: "cors",
       headers : { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -91,6 +93,10 @@ export const GeneSearch: React.FC = () => {
         setSuggestions(myJson)
       });
   }
+
+  useEffect(()=>{
+    getData()
+  },[])
 
 
 
@@ -187,5 +193,5 @@ export const GeneSearch: React.FC = () => {
 }
 
 const tempGeneList = [
-  'BCR', 'BCL2', 'BCCT', 'BCL2L1', 'BcsC', 'BcsE', 'BcsQ', 'ABCB1', 'ABL1', 'ABCB1', 'ABLIM1', 'ABLIM2', 'ABLIM3', 'ABL2', 'MYC', 'Myoglobin', 'Myosin-8', 'Myosin-9', 'MYLK', 'MYCN', 'MYD88', 'MYBPC3', 'INC', 'IL6', "Insulin A chain", 'Interleukin-2', 'IGHG1', 'IKZF1', 'IL1B', 'IFNG', 'INSR', 'IGF1', 'IGF1R', 'IGHM', 'IGLL5', 'IGH', 'IGHE', 'IGFBP3'  
+  'BCR', 'BRAF', 'ALK', 'BCL2', 'BCCT', 'BCL2L1', 'BcsC', 'BcsE', 'BcsQ', 'ABCB1', 'ABL1', 'ABCB1', 'ABLIM1', 'ABLIM2', 'ABLIM3', 'ABL2', 'MYC', 'Myoglobin', 'Myosin-8', 'Myosin-9', 'MYLK', 'MYCN', 'MYD88', 'MYBPC3', 'INC', 'IL6', "Insulin A chain", 'Interleukin-2', 'IGHG1', 'IKZF1', 'IL1B', 'IFNG', 'INSR', 'IGF1', 'IGF1R', 'IGHM', 'IGLL5', 'IGH', 'IGHE', 'IGFBP3'  
 ];

@@ -30,7 +30,7 @@ export const Summary: React.FC<Props> = ( { index }) => {
   })
 
   return (
-    <div className="summary">
+    <div className="summary-tab-container">
       <div className="row-items">
       <div className="row">
         <div className="left-item">Gene </div>

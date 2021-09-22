@@ -36,7 +36,7 @@ export const Domain: React.FC<Props> = ( { index }) => {
   };
 
   return (
-    <div className="reg-element">
+    <div className="domain-tab-container">
       <div className="left">
         <div className="blurb-container">
           <div className="blurb">

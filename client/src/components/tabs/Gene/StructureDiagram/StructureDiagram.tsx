@@ -21,7 +21,7 @@ export const StructureDiagram: React.FC = () => {
   }
 
   useEffect(() => {
-    // iterate over array of fusion objects from API, then create diagrams
+    // iterate over array of fusion objects from API, then push to diagram arrays
     suggestions.forEach(obj => {
       let diagram = [];
       obj["transcript_components"].map(comp => {

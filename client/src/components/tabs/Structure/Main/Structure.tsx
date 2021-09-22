@@ -9,7 +9,7 @@ interface Props {
 export const Structure: React.FC<Props> = ( { index }) => {
 
   return (
-    <div className="structure-container">
+    <div className="structure-tab-container">
 
       <div className="summary-title">
       <h3>Structure Summary</h3>

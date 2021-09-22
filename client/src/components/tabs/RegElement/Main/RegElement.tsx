@@ -34,7 +34,7 @@ export const RegElement: React.FC<Props> = ( { index }) => {
   };
 
   return (
-    <div className="reg-element">
+    <div className=".reg-element-tab-container">
       <div className="left">
         <div className="blurb-container">
           <div className="blurb">
