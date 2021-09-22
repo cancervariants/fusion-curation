@@ -1,16 +1,22 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Request
 from fastapi.staticfiles import StaticFiles
 from typing import Dict
+from curation import version
 from curation.schemas import NormalizeGeneResponse, MatchingGeneResponse, DomainIDResponse, \
     ExonCoordsRequest, ExonCoordsResponse, SequenceIDResponse, FusionValidationResponse
 from curation.gene_services import get_gene_id, get_possible_genes
 from curation.domain_services import get_domain_id
-from curation.uta_services import get_genomic_coords
+from curation.uta_services import postgres_instance, get_genomic_coords
 from curation.sequence_services import get_ga4gh_sequence_id
 from curation.validation_services import validate_fusion
 
 
-app = FastAPI()
+app = FastAPI(version=str(version))
+
+@app.on_event('startup')
+async def startup():
+    await postgres_instance.create_pool()
+    app.state.db = postgres_instance
 
 
 @app.get('/lookup/gene',
@@ -61,8 +67,10 @@ def get_domain_id(domain: str = Query('')) -> Dict:
 @app.post('/lookup/coords',
           operation_id='getExonCoords',
           response_model=ExonCoordsResponse)
-def get_exon_coords(exon_data: ExonCoordsRequest) -> Dict:
+async def get_exon_coords(request: Request, exon_data: ExonCoordsRequest) -> Dict:
     """Fetch a transcript's exon information.
+    :param Request request: the HTTP request context, supplied by FastAPI. Use to access DB
+        retrieval methods by way of the `state` property.
     :param ExonCoordsRequest exon_data: exon data to retrieve coordinates for. See schemas for
         expected structure.
     :return: Dict served as JSON containing transcript's exon information
@@ -70,9 +78,11 @@ def get_exon_coords(exon_data: ExonCoordsRequest) -> Dict:
     if not exon_data.gene:
         exon_data.gene = ''
 
-    genomic_coords = get_genomic_coords(exon_data.tx_ac, exon_data.exon_start, exon_data.exon_end,
-                                        exon_data.exon_start_offset, exon_data.exon_end_offset,
-                                        exon_data.gene)
+    genomic_coords = await get_genomic_coords(request.app.state.db, exon_data.tx_ac,
+                                              exon_data.exon_start,
+                                              exon_data.exon_end,
+                                              exon_data.exon_start_offset,
+                                              exon_data.exon_end_offset, exon_data.gene)
 
     if genomic_coords:
         gene = genomic_coords.get('gene', '')
@@ -115,5 +125,5 @@ def validate_object(proposed_fusion: Dict) -> Dict:
     return validate_fusion(proposed_fusion)
 
 
-# serve static files
+# serve static homepage
 app.mount('/', StaticFiles(directory='curation/build/'), name='static')
