@@ -11,9 +11,9 @@ APP_ROOT = Path(__file__).resolve().parents[0]
 # establish environment-dependent params
 if 'FUSION_EB_PROD' in environ:
     environ['FUSION_EB_PROD'] = 'true'
-    LOG_FN = '/tmp/fusion_backend.log'
+    LOG_FN = '/tmp/curation_backend.log'
 else:
-    LOG_FN = 'fusion_backend.log'
+    LOG_FN = 'curation_backend.log'
 
 # set up logging
 logging.basicConfig(

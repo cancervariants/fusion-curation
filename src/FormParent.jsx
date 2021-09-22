@@ -38,7 +38,6 @@ const FormParent = () => {
   // proposedFusion: client-created Fusion object
   // fusionJSON -- validated Fusion object received from server
   const [proposedFusion, setProposedFusion] = useState({});
-  const [submitCount, setSubmitCount] = useState(Number.MIN_SAFE_INTEGER);
   const [fusionJSON, setFusionJSON] = useState({});
 
   // ID/coordinate indices -- built from AJAX calls
@@ -85,9 +84,7 @@ const FormParent = () => {
         if (geneResponse.warnings && geneResponse.warnings.length !== 0) {
           return null;
         }
-        const geneIndexCopy = geneIndex;
-        geneIndexCopy[symbol] = geneResponse.concept_id;
-        setGeneIndex(geneIndexCopy);
+        setGeneIndex((prevGeneIndex) => ({ ...prevGeneIndex, [symbol]: geneResponse.concept_id }));
       });
   };
 
@@ -104,10 +101,7 @@ const FormParent = () => {
         if (domainResponse.warnings && domainResponse.warnings.length !== 0) {
           return null;
         }
-        const domainID = domainResponse.domain_id;
-        const domainIndexCopy = domainIndex;
-        domainIndexCopy[name] = domainID;
-        setDomainIndex(domainIndexCopy);
+        setDomainIndex((prev) => ({ ...prev, [name]: domainResponse.domainID }));
       });
   };
 
@@ -136,28 +130,25 @@ const FormParent = () => {
       }
       const { chr, start, end } = exonResponse;
       const geneSymbol = exonResponse.gene;
-      if (!geneIndex[geneSymbol]) {
-        const geneID = getGeneID(geneSymbol);
-        const geneIndexCopy = geneIndex;
-        if (geneID != null) {
-          geneIndexCopy[geneSymbol] = geneID;
-        }
+      if (geneSymbol && !geneIndex[geneSymbol]) {
+        setGeneIndex((prevGeneIndex) => ({ ...prevGeneIndex, [geneSymbol]: exonResponse.gene_id }));
       }
 
       const exonStart = exonResponse.exon_start;
       const exonEnd = exonResponse.exon_end;
       if (chr != null) {
-        const exonIndexCopy = exonIndex;
-        exonIndexCopy[exonData.tx_ac] = {
-          geneSymbol,
-          chr,
-          start,
-          end,
-          exonStart,
-          exonEnd,
-          sequenceID: exonResponse.sequence_id,
-        };
-        setExonIndex(exonIndexCopy);
+        setExonIndex((prevExonIndex) => ({
+          ...prevExonIndex,
+          [exonData.tx_ac]: {
+            geneSymbol,
+            chr,
+            start,
+            end,
+            exonStart,
+            exonEnd,
+            sequenceID: exonResponse.sequence_id,
+          },
+        }));
       }
     });
   };
@@ -175,10 +166,7 @@ const FormParent = () => {
         if (sequenceResponse.warnings && sequenceResponse.warnings.length !== 0) {
           return null;
         }
-        const sequenceID = sequenceResponse.sequence_id;
-        const sequenceIndexCopy = sequenceIndex;
-        sequenceIndexCopy[chr] = sequenceID;
-        setSequenceIndex(sequenceIndexCopy);
+        setSequenceIndex((prev) => ({ ...prev, [chr]: sequenceResponse.sequence_id }));
       });
   };
 
@@ -234,10 +222,10 @@ const FormParent = () => {
       if (values.transcript) {
         const exonData = {
           tx_ac: values.transcript,
-          exon_start: values.exon_start && values.exon_start !== '' ? parseInt(values.exon_start, 10) : 0,
-          exon_end: values.exon_end && values.exon_end !== '' ? parseInt(values.exon_end, 10) : 0,
-          exon_start_offset: values.exon_start_offset && values.exon_start_offset !== '' ? parseInt(values.exon_start_offset, 10) : 0,
-          exon_end_offset: values.exon_end_offset && values.exon_end_offset !== '' ? parseInt(values.exon_end_offset, 10) : 0,
+          exon_start: parseInt(values.exon_start, 10) || 0,
+          exon_start_offset: parseInt(values.exon_start_offset, 10) || 0,
+          exon_end: parseInt(values.exon_end, 10) || 0,
+          exon_end_offset: parseInt(values.exon_end_offset, 10) || 0,
         };
         getExon(exonData);
       }
@@ -259,11 +247,6 @@ const FormParent = () => {
       if (element.gene && !(element.gene in geneIndex)) getGeneID(element.gene);
     });
   }, [regulatoryElements]);
-
-  // fusion validation hook
-  useEffect(() => {
-    validateFusion(proposedFusion);
-  }, [submitCount]);
 
   /**
    * Construct valid gene descriptor from given params
@@ -494,11 +477,7 @@ const FormParent = () => {
    */
   const handleSubmit = () => {
     handleEntry('submitted', true);
-    if (submitCount < Number.MAX_SAFE_INTEGER) {
-      setSubmitCount(submitCount + 1);
-    } else {
-      setSubmitCount(Number.MIN_SAFE_INTEGER);
-    }
+    validateFusion(proposedFusion);
   };
 
   return (

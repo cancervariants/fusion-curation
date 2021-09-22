@@ -6,6 +6,26 @@ const ResultField = ({ fusionJSON }) => {
   const [fusionReadable, setFusionReadable] = useState('');
 
   /**
+   * Transform transcript_segment component into section of human-readable string
+   * @param {Object} comp: component object
+   * @param {Number} index: index of component in component array
+   * @param {Boolean} isLast: if true, element is last component in array
+   */
+  const getTranscriptSegmentReadable = (comp, index, isLast) => {
+    const transcript = (!comp.transcript.includes(':')) ? comp.transcript : comp.transcript.split(':')[1];
+    const gene = comp.gene_descriptor.label;
+    let exon = '';
+    if (index === 0) {
+      exon = comp.exon_start.toString();
+    } else if (isLast) {
+      exon = comp.exon_start.toString();
+    } else {
+      exon = `${toString(comp.exon_end)}-${toString(comp.exon_end)}`;
+    }
+    return `${transcript}(${gene}):exon${exon}`;
+  };
+
+  /**
    * Transform computable fusion object into human-readable string
    * Uses 'hgvs-like' syntax, eg:
    *  NM_152263.2(EPCAM):exon5::NM_002609.3(MSH2):exon2
@@ -27,37 +47,20 @@ const ResultField = ({ fusionJSON }) => {
     const formatted = fusionJSON.transcript_components.map((comp, index) => {
       const compType = comp.component_type;
 
-      if (compType === 'transcript_segment') {
-        const transcript = (!comp.transcript.includes(':')) ? comp.transcript : comp.transcript.split(':')[1];
-        const gene = comp.gene_descriptor.label;
-        let exon = '';
-        if (index === 0) {
-          exon = comp.exon_start.toString();
-        } else if (index === last) {
-          exon = comp.exon_start.toString();
-        } else {
-          exon = `${toString(comp.exon_end)}-${toString(comp.exon_end)}`;
-        }
-        return `${transcript}(${gene}):exon${exon}`;
+      switch (compType) {
+        case 'transcript_segment':
+          return getTranscriptSegmentReadable(comp, index, index === last);
+        case 'linker_sequence':
+          return comp.linker_sequence.sequence;
+        case 'genomic_region':
+          return comp.region.label;
+        case 'gene':
+          return comp.gene_descriptor.label;
+        case 'unknown_gene':
+          return 'unknown';
+        default:
+          return 'unknown';
       }
-
-      if (compType === 'linker_sequence') {
-        return comp.linker_sequence.sequence;
-      }
-
-      if (compType === 'unknown_gene') {
-        return 'unknown';
-      }
-
-      if (compType === 'gene') {
-        return comp.gene_descriptor.label;
-      }
-
-      if (compType === 'genomic_region') {
-        return comp.region.label;
-      }
-
-      return '';
     });
 
     return formatted.join('::');
