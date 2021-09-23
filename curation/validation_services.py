@@ -17,7 +17,6 @@ def validate_fusion(fusion: Dict) -> Dict[str, Any]:
     }
     try:
         response['fusion'] = Fusion(**fusion).dict(exclude_none=True)
-        response['warnings'] = []
     except ValidationError as e:
         response['warnings'].append(e.errors())
         response['fusion'] = None
