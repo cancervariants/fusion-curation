@@ -4,7 +4,6 @@ import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import './Builder.scss';
 import { TransCompInput } from '../TransCompInput/TransCompInput';
-import { Input } from '@material-ui/core';
 
 interface Props {
   handleReorder: () => void;
@@ -77,12 +76,9 @@ const Builder: React.FC<Props> = ({handleReorder}) =>  {
     let diagram = [];
 
     if("transcript_components" in fusion){
-      fusion["transcript_components"].map(comp => {
-        // should have something like "component_name" that's found on each component regardless of type
-        // basically a headline summary, otherwise this would need to be a switch case
-        // also, can each component_type be siblings? instead of nesting genomic region under transcript segment for example?
+      fusion["transcript_components"].map(comp => (
         diagram.push(comp)
-    })
+      ))
       setStructure(diagram);
     }
   }, [])
@@ -103,8 +99,7 @@ const Builder: React.FC<Props> = ({handleReorder}) =>  {
   const reorder = (result: DropResult) => {
 
     // no dragging until done editing. the isDragDisabled prop is preferable for this,
-    // but it seems to impede seamless dragging even when disabled. 
-
+    // but it seems to impede seamless dragging even when false. 
     if(editMode !== ''){
       return 
     }

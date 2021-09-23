@@ -70,6 +70,7 @@
     "regulatory_elements": [
       {
         "type": "promoter",
+        "element_id": "3cv59q02-367f-0649-v64o-xg110265f4f9",
         "gene_descriptor": {
           "id": "gene:BRAF",
           "type": "GeneDescriptor",

@@ -9,6 +9,12 @@ interface Props {
   index: number
 }
 
+
+// const Text = React.memo(() => {
+//   const {fusion} = useContext(FusionContext);
+
+// });
+
 export const Structure: React.FC<Props> = ( { index }) => {
 
   const {fusion} = useContext(FusionContext);
@@ -16,10 +22,10 @@ export const Structure: React.FC<Props> = ( { index }) => {
 
   useEffect(() => {
     handleReorder();
-  })
+    console.log(`${JSON.stringify(fusion)}`)
+  }, [])
 
   const handleReorder = () => {
-    console.log('trying to reorder!!!')
     let diagram = [];
     if("transcript_components" in fusion){
       fusion["transcript_components"].map(comp => (
