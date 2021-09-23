@@ -19,7 +19,7 @@ export const Structure: React.FC<Props> = ( { index }) => {
 
   const {fusion, setFusion} = useContext(FusionContext);
 
-  const structure = fusion["transcript_components"];
+  const structure = fusion["transcript_components"] || [];
 
 
   return (

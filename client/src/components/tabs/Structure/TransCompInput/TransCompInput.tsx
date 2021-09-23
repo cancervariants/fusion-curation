@@ -1,29 +1,36 @@
-import { useState, useEffect, useContext, useRef} from 'react';
-import {Card, CardContent, Button, TextField, Box} from '@material-ui/core';
+import {useRef} from 'react';
+import {Card, CardContent, Button, TextField} from '@material-ui/core';
 
 interface Props {
   compType: string,
   index: number,
   id: string,
   handleSave: (index: number, input: any) => void;
+  handleCancel: (id: string) => void;
 }
 
 
 
 
-export const TransCompInput: React.FC<Props> = ({ compType, handleSave, index, id}) => {
+export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handleSave, index, id}) => {
+  //TODO: incorporate validation to assemble each new object
+
+  //Genomic Region
   const strandInput = useRef('');
   const chromosomeInput = useRef('');
   const startPositionInput = useRef('');
   const endPositionInput = useRef('');
 
+  // Transcript Segment
   const transcriptInput = useRef('');
   const transcriptGeneInput = useRef('');
   const startingExonInput = useRef('');
   const endingExonInput = useRef('');
 
+  // Linker Sequence
   const sequenceInput = useRef('');
 
+  // Gene
   const geneInput = useRef('');
 
 
@@ -54,7 +61,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleSave, index, i
                   </div> 
                   </div>
                   <div className="buttons">
-                  <Button style={{margin: '8px'}} variant="outlined" color="secondary" >Cancel</Button>
+                  <Button style={{margin: '8px'}} variant="outlined" color="secondary" onClick={() => handleCancel(id)}>Cancel</Button>
                   <Button style={{margin: '8px'}} variant="outlined" color="primary" onClick={() => handleSave(index, chromosomeInput)}>Save</Button>
                   </div>
                 </div>                
@@ -77,7 +84,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleSave, index, i
                   </div> 
                   </div>
                   <div className="buttons">
-                  <Button style={{margin: '8px'}} variant="outlined" color="secondary" >Cancel</Button>
+                  <Button style={{margin: '8px'}} variant="outlined" color="secondary" onClick={() => handleCancel(id)}>Cancel</Button>
                   <Button style={{margin: '8px'}} variant="outlined" color="primary" onClick={() => handleSave(index, transcriptInput)}>Save</Button>
                   </div>
                 </div>                
@@ -93,7 +100,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleSave, index, i
                   <TextField margin="dense" style={{ height: 38, width: 125 }} label="Sequence" inputRef={sequenceInput}></TextField>                
                   </div>
                   <div className="buttons">
-                  <Button style={{margin: '8px'}} variant="outlined" color="secondary" >Cancel</Button>
+                  <Button style={{margin: '8px'}} variant="outlined" color="secondary" onClick={() => handleCancel(id)}>Cancel</Button>
                   <Button style={{margin: '8px'}} variant="outlined" color="primary" onClick={() => handleSave(index, sequenceInput)}>Save</Button>
                   </div>
                 </div>                
@@ -109,7 +116,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleSave, index, i
                   <TextField margin="dense" style={{ height: 38, width: 125 }} label="Gene" inputRef={geneInput}></TextField>                
                   </div>
                   <div className="buttons">
-                  <Button style={{margin: '8px'}} variant="outlined" color="secondary" >Cancel</Button>
+                  <Button style={{margin: '8px'}} variant="outlined" color="secondary" onClick={() => handleCancel(id)}>Cancel</Button>
                   <Button style={{margin: '8px'}} variant="outlined" color="primary" onClick={() => handleSave(index, geneInput)}>Save</Button>
                   </div>
                 </div>                

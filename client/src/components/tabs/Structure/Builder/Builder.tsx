@@ -86,10 +86,10 @@ const Builder: React.FC = () =>  {
     const destClone = Array.from(structure);
     const item = sourceClone[source.index];
     const newItem = Object.assign({}, item);
-    newItem.id = uuid();
+    newItem["component_id"] = uuid();
     destClone.splice(destination.index, 0, newItem)
     setStructure(destClone);
-    setEditMode(newItem.component_id);
+    setEditMode(newItem["component_id"]);
   };
 
   const reorder = (result: DropResult) => {
@@ -132,8 +132,14 @@ const Builder: React.FC = () =>  {
 
     // update global fusion object
     setFusion({ ...fusion, ...{ "transcript_components" : items }})
+  }
 
+  const handleCancel = (id) => {
+    let items = Array.from(structure);
+    items = items.filter(item => item['component_id'] !== id);
     
+    setStructure(items);
+    setEditMode('');
   }
 
 
@@ -217,7 +223,7 @@ const Builder: React.FC = () =>  {
                             >
                               {
                                 component_id === editMode ?
-                                <TransCompInput handleSave={handleSave} compType={component_type} index={index} id={component_id}/>
+                                <TransCompInput handleSave={handleSave} handleCancel={handleCancel}  compType={component_type} index={index} id={component_id}/>
                                 : <span>{component_name}</span>
                               }
                               

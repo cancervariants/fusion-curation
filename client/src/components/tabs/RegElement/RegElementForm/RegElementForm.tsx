@@ -3,8 +3,7 @@ import {InputLabel, MenuItem, FormControl, Select, Button} from '@material-ui/co
 import { makeStyles } from '@material-ui/core/styles';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { v4 as uuid } from 'uuid';
-import RegulatoryElement from '../../../../../../src/RegulatoryElement';
-
+import './RegElementForm.scss'
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -60,14 +59,6 @@ const RegElementForm: React.FC = () => {
 
   }
 
-  // const handleClose = () => {
-  //   setOpen(false);
-  // };
-
-  // const handleOpen = () => {
-  //   setOpen(true);
-  // };
-
   return (
     <div className="form-container">
       <div className="formInput">
@@ -78,8 +69,6 @@ const RegElementForm: React.FC = () => {
           id="demo-simple-select"
           value={type}
           onChange={handleTypeChange} 
-          // onClose={handleClose}
-          // onOpen={handleOpen}
         >
           <MenuItem value="Enhancer">Enhancer</MenuItem>
           <MenuItem value="Promoter">Promoter</MenuItem>
@@ -91,14 +80,12 @@ const RegElementForm: React.FC = () => {
         <InputLabel id="demo-simple-select-label">Gene</InputLabel>
         <Select
           labelId="demo-simple-select-label"
-          // onClose={handleClose}
-          // onOpen={handleOpen}
           id="demo-simple-select"
           value={gene}
           onChange={handleGeneChange}
         >
           {/* TODO: link this to a separate API request that gives domain genes back based on genes */}
-          
+
           <MenuItem value="BCR">BCR</MenuItem>
           <MenuItem value="ABL1">ABL1</MenuItem>
         </Select>
