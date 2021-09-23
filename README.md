@@ -1,5 +1,7 @@
 # Gene Fusion Curation
 
+Provide an interactive curation tool for describing and representing gene fusions in a computable manner.
+
 ## Development
 
 ### Installation
@@ -62,10 +64,10 @@ Alternate SeqRepo locations can be specified with the environment variable `SEQR
 
 The backend requires local DynamoDB service with tables initialized by the [Gene Normalization service](https://github.com/cancervariants/gene-normalization), listening on port 8000. See the Gene Normalizer documentation for initialization information.
 
-In a terminal running the Pipenv Python environment, start a uvicorn process to serve the FastAPI backend:
+In a terminal running the Pipenv Python environment, start a Uvicorn process to serve the FastAPI backend:
 
 ```commandline
-uvicorn curation.main:app --reload
+uvicorn curation.main:app --reload --port=5000
 ```
 
 In a separate terminal, install frontend dependencies and start the React development server:
@@ -75,7 +77,9 @@ npm install
 npm run start
 ```
 
-Then proceed to http://127.0.0.1:3000/ in a browser window.
+### Style
+
+Then proceed to http://localhost:3000/ in a browser window.
 
 Python code style is enforced by [flake8](https://github.com/PyCQA/flake8), and frontend style is enforced by [ESLint](https://eslint.org/). Conformance is ensured by [pre-commit](https://pre-commit.com/#usage). Before your first commit, run
 
