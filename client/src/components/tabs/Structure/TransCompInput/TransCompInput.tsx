@@ -1,69 +1,103 @@
-import React, {useState, useContext} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import {Card, CardActionArea, TextField, CardContent, Typography, Button } from '@material-ui/core';
-import { FusionContext } from '../../../../global/contexts/FusionContext';
+import { useState, useEffect, useContext } from 'react';
+import {Card, CardContent, Button, TextField, Box} from '@material-ui/core';
 
 interface Props {
-  title: string,
-  inputs: string[],
+  compType: string,
+  index: number,
+  id: string,
+  handleSave: (index: number) => void;
 }
 
-const useStyles = makeStyles({
-});
+export const TransCompInput: React.FC<Props> = ({ compType, handleSave, index, id}) => {
 
-export const TransCompInput: React.FC<Props> = ({title, inputs}) => {
-  const classes = useStyles();
-
-  const [front, setFront] = useState(true);
-
-  // global state
-  const {responses, setResponses} = useContext(FusionContext);
-
-  const handleSave = () => {
-    setResponses({...responses, ...{[title]: ctComponents}})
-    console.log(responses);
-  }
-
-  // controlled component
-  const [ctComponents, setCtComponents] = useState({});
-  const handleInput = (event: React.ChangeEvent<HTMLInputElement>, input: string) => {
-    setCtComponents({...ctComponents, ...{[input]: event.target.value}})
-  }
-
-  const flip = () => {
-    setFront(!front);
-  }
-
-  return (
-    <>
-    { front 
-      ? (
-        <Card>
-        <CardActionArea onClick={flip}>
-          <CardContent>
-            <Typography>
-              Add {title}
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-      </Card>
-    ) : (
-      <Card >
-        <CardContent>
-          <Typography>
-            {title}
-          </Typography>
-          {
-            inputs.map(input => {
-              return <TextField key={input} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {handleInput(event, input)}} id="outlined-basic" label={input} variant="outlined" />
-            })
-          }
-          <Button variant="outlined" color="secondary" onClick={flip}>Cancel</Button>
-          <Button variant="outlined" color="primary" onClick={handleSave}>Save</Button>
-        </CardContent>
-      </Card>
-    )
+  const renderSwitch = (compType) => {
+    switch(compType) {
+      case 'genomic_region':
+        return(
+          <Card >
+              <CardContent>
+                <div className="card-parent">
+                  <div className="input-parent">
+                  <div className="top-inputs">
+                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Chromosome"></TextField>                
+                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Strand"></TextField>                
+                  </div>
+                  <div className="bottom-inputs">
+                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Start Position"></TextField>                
+                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="End Position"></TextField>      
+                  </div> 
+                  </div>
+                  <div className="buttons">
+                  <Button style={{margin: '8px'}} variant="outlined" color="secondary" >Cancel</Button>
+                  <Button style={{margin: '8px'}} variant="outlined" color="primary" onClick={() => handleSave(index)}>Save</Button>
+                  </div>
+                </div>                
+              </CardContent>
+            </Card> 
+        )
+      case 'transcript_segment':
+        return(
+          <Card >
+              <CardContent>
+                <div className="card-parent">
+                  <div className="input-parent">
+                  <div className="top-inputs">
+                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Transcript"></TextField>                
+                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Gene"></TextField>                
+                  </div>
+                  <div className="bottom-inputs">
+                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Starting Exon"></TextField>                
+                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Ending Exon"></TextField>      
+                  </div> 
+                  </div>
+                  <div className="buttons">
+                  <Button style={{margin: '8px'}} variant="outlined" color="secondary" >Cancel</Button>
+                  <Button style={{margin: '8px'}} variant="outlined" color="primary" onClick={() => handleSave(index)}>Save</Button>
+                  </div>
+                </div>                
+              </CardContent>
+            </Card> 
+        )
+      case 'linker_sequence':
+        return(
+          <Card >
+              <CardContent>
+                <div className="card-parent">
+                  <div className="input-parent">
+                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Sequence"></TextField>                
+                  </div>
+                  <div className="buttons">
+                  <Button style={{margin: '8px'}} variant="outlined" color="secondary" >Cancel</Button>
+                  <Button style={{margin: '8px'}} variant="outlined" color="primary" onClick={() => handleSave(index)}>Save</Button>
+                  </div>
+                </div>                
+              </CardContent>
+            </Card> 
+        )
+      case 'gene':
+        return(
+          <Card >
+              <CardContent>
+                <div className="card-parent">
+                  <div className="input-parent">
+                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Gene"></TextField>                
+                  </div>
+                  <div className="buttons">
+                  <Button style={{margin: '8px'}} variant="outlined" color="secondary" >Cancel</Button>
+                  <Button style={{margin: '8px'}} variant="outlined" color="primary" onClick={() => handleSave(index)}>Save</Button>
+                  </div>
+                </div>                
+              </CardContent>
+            </Card> 
+        )
     }
+  }
+
+  return(
+    <>
+     <div>
+       {renderSwitch(compType)}
+     </div>
     </>
   )
 }

@@ -3,32 +3,32 @@ import { v4 as uuid } from 'uuid';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import './Builder.scss';
-import {Card, CardContent, Button, TextField, Box} from '@material-ui/core';
+import { TransCompInput } from '../TransCompInput/TransCompInput';
 
 
 const OPTIONS = [
   {
     id: uuid(),
     name: "Gene",
-    result: 'card',
+    result: 'empty!',
     classname: "gene"
   },
   {
     id: uuid(),
     name: "Transcript Component",
-    result: 'card',
+    result: 'empty!',
     classname: "transcript_segment"
   },
   {
     id: uuid(),
     name: "Linker Sequence",
-    result: 'card',
+    result: 'empty!',
     classname: "linker_sequence"
   },
   {
     id: uuid(),
     name: "Genomic Region",
-    result: 'card',
+    result: 'empty!',
     classname: "genomic_region"
   }
 ]
@@ -36,6 +36,7 @@ const OPTIONS = [
 const Builder: React.FC = () =>  {
   const {fusion} = useContext(FusionContext);
   const [structure, setStructure] = useState([]);
+  const [editMode, setEditMode] = useState('');
 
   useEffect(() => {
     let diagram = [];
@@ -64,6 +65,7 @@ const Builder: React.FC = () =>  {
     newItem.id = uuid();
     destClone.splice(destination.index, 0, newItem)
     setStructure(destClone);
+    setEditMode(newItem.id);
   };
 
   const reorder = (result: DropResult) => {
@@ -83,8 +85,10 @@ const Builder: React.FC = () =>  {
     let obj = items[index];
     let newObj = Object.assign({}, obj)
     newObj.result = 'refseq:NM_152263.3_exon1-exon8'
-    items.splice(index, 1, newObj)
+    items.splice(index, 1, newObj);
     setStructure(items);
+
+    setEditMode('');
   }
 
 
@@ -93,8 +97,6 @@ const Builder: React.FC = () =>  {
 
     // dropped outside the list
     if (!destination) return;
-
-    // setStructure(copy(result));
 
     if(destination.droppableId === source.droppableId) {
       reorder(result);
@@ -169,32 +171,9 @@ const Builder: React.FC = () =>  {
                             
                             >
                               {
-                                result !== 'card' ?
-                                <span>{result}</span> :
-                                <Card >
-                                <CardContent>
-                                  <div className="card-parent">
-                                    <div className="input-parent">
-                                    <div className="top-inputs">
-                                    <TextField margin="dense" style={{ height: 38, width: 125 }} label="Chromosome"></TextField>                
-                                    <TextField margin="dense" style={{ height: 38, width: 125 }} label="Strand"></TextField>                
-                                    </div>
-                                    <div className="bottom-inputs">
-                                    <TextField margin="dense" style={{ height: 38, width: 125 }} label="Start Position"></TextField>                
-                                    <TextField margin="dense" style={{ height: 38, width: 125 }} label="End Position"></TextField>      
-                                    </div> 
-                                    </div>
-                                    <div className="buttons">
-                                    <Button style={{margin: '8px'}} variant="outlined" color="secondary" >Cancel</Button>
-                                    <Button style={{margin: '8px'}} variant="outlined" color="primary" onClick={() => handleSave(index)}>Save</Button>
-                                    </div>
-
-                                        
-                                  </div>
-     
-                                  
-                                </CardContent>
-                                </Card>
+                                id === editMode ?
+                                <TransCompInput handleSave={handleSave} compType={classname} index={index} id={id}/>
+                                : <span>{result}</span>
                               }
                               
                             </div>

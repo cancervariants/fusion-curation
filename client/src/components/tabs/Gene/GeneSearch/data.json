@@ -19,6 +19,8 @@
       ],
       "transcript_components": [
         {
+          "component_name": "refseq:NM_152263.3",
+          "component_id": "7c4684d2-5830-45f9-8e31-8278ae59bd50",
           "component_type": "transcript_segment",
           "transcript": "refseq:NM_152263.3",
           "exon_start": 1,
@@ -32,6 +34,8 @@
             "label": "TPM3"
           },
           "component_genomic_region": {
+            "component_name": "refseq:NM_152263.3_exon1-exon8",
+            "component_id": "95bd881d-3bb4-46c5-a3f5-d07c6a77e46e",
             "id": "refseq:NM_152263.3_exon1-exon8",
             "type": "LocationDescriptor",
             "location": {
@@ -53,6 +57,8 @@
         },
         {
           "component_type": "gene",
+          "component_name": "ALK",
+          "component_id": "2ad09f78-832e-4158-a13c-cd020365b7f6",
           "gene_descriptor": {
             "id": "gene:ALK",
             "type": "GeneDescriptor",

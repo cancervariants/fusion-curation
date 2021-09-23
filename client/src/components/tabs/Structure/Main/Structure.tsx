@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 
-import Builder from '../StructureForm/Builder';
+import Builder from '../Builder/Builder';
 
 import './Structure.scss';
 
