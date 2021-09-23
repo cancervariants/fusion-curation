@@ -4,53 +4,85 @@ import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import './Builder.scss';
 import { TransCompInput } from '../TransCompInput/TransCompInput';
+import { Input } from '@material-ui/core';
 
+interface Props {
+  handleReorder: () => void;
+}
 
 const OPTIONS = [
   {
-    id: uuid(),
-    name: "Gene",
-    result: 'empty!',
-    classname: "gene"
+    "component_type": "gene",
+    "component_name": "",
+    "component_id": uuid(),
+    "gene_descriptor": {
+      "id": "",
+      "type": "",
+      "gene_id": "",
+      "label": ""
+    }
   },
   {
-    id: uuid(),
-    name: "Transcript Component",
-    result: 'empty!',
-    classname: "transcript_segment"
+    "component_type": "transcript_segment",
+    "component_name": "",
+    "component_id": uuid(),
+    "exon_start": null,
+    "exon_start_offset": null,
+    "exon_end": null,
+    "exon_end_offset": null,
+    "gene_descriptor": {
+      "id": "",
+      "gene_id": "",
+      "type": "",
+      "label": ""
+    }
   },
   {
-    id: uuid(),
-    name: "Linker Sequence",
-    result: 'empty!',
-    classname: "linker_sequence"
+    "component_name": "",
+    "component_type": "linker_sequence",
+    "component_id": uuid(),
+    // need an example linker structure
   },
   {
-    id: uuid(),
-    name: "Genomic Region",
-    result: 'empty!',
-    classname: "genomic_region"
-  }
+    "component_name": "",
+    "component_type": "genomic_region",
+    "component_id": uuid(),
+    "id": "",
+    "type": "",
+    "location": {
+      "sequence_id": "",
+      "type": "",
+      "interval": {
+        "start": {
+          "type": "",
+          "value": null
+        },
+        "end": {
+          "type": "",
+          "value": null
+        },
+        "type": ""
+      }
+    }
+  },
 ]
 
-const Builder: React.FC = () =>  {
-  const {fusion} = useContext(FusionContext);
+const Builder: React.FC<Props> = ({handleReorder}) =>  {
+  const {fusion, setFusion} = useContext(FusionContext);
   const [structure, setStructure] = useState([]);
   const [editMode, setEditMode] = useState('');
 
+
   useEffect(() => {
     let diagram = [];
+
     if("transcript_components" in fusion){
-      fusion["transcript_components"].map(comp => (
+      fusion["transcript_components"].map(comp => {
         // should have something like "component_name" that's found on each component regardless of type
-        // basically a headline summary
-        diagram.push({
-          id: uuid(),
-          name: comp["component_type"],
-          result: 'refseq:NM_152263.3_exon1-exon8',
-          classname: comp["component_type"]
-        }) 
-      ))
+        // basically a headline summary, otherwise this would need to be a switch case
+        // also, can each component_type be siblings? instead of nesting genomic region under transcript segment for example?
+        diagram.push(comp)
+    })
       setStructure(diagram);
     }
   }, [])
@@ -65,30 +97,53 @@ const Builder: React.FC = () =>  {
     newItem.id = uuid();
     destClone.splice(destination.index, 0, newItem)
     setStructure(destClone);
-    setEditMode(newItem.id);
+    setEditMode(newItem.component_id);
   };
 
   const reorder = (result: DropResult) => {
+
+    // no dragging until done editing. the isDragDisabled prop is preferable for this,
+    // but it seems to impede seamless dragging even when disabled. 
+
+    if(editMode !== ''){
+      return 
+    }
+
     const {source, destination} = result;
 
     if (structure.length > 0){
       const sourceClone = Array.from(structure);
       const [newOrder] = sourceClone.splice(source.index, 1);
       sourceClone.splice(destination.index, 0, newOrder);
+    
+      setFusion({ ...fusion, ...{ "transcript_components" : sourceClone }})
       setStructure(sourceClone);
+      handleReorder();
     }
-
   };
 
-  const handleSave = (index) => {
+  const handleSave = (index, input) => {
+
     const items = Array.from(structure);
     let obj = items[index];
     let newObj = Object.assign({}, obj)
-    newObj.result = 'refseq:NM_152263.3_exon1-exon8'
+
+
+    // need to actually handle inputs, validate from server    
+    newObj['component_name'] = input.current.value;
+
     items.splice(index, 1, newObj);
+
+    // clear active state
+    setEditMode('');
+
+    // update local state array
     setStructure(items);
 
-    setEditMode('');
+    // update global fusion object
+    setFusion({ ...fusion, ...{ "transcript_components" : items }})
+
+    
   }
 
 
@@ -115,11 +170,11 @@ const Builder: React.FC = () =>  {
                 ref={provided.innerRef}
               >
                 <div className="options-container">
-                {OPTIONS.map(({id, name, classname }, index) => (
+                {OPTIONS.map(({component_id, component_type }, index) => (
                   
                     <Draggable 
-                      key={id} 
-                      draggableId={id} 
+                      key={component_id} 
+                      draggableId={component_id} 
                       
                       index={index}
                       >
@@ -129,7 +184,7 @@ const Builder: React.FC = () =>  {
                           <div 
                            
                             ref={provided.innerRef}
-                            className={`option-item ${classname}`} 
+                            className={`option-item ${component_type }`} 
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
                             style={{
@@ -140,11 +195,11 @@ const Builder: React.FC = () =>  {
                             }}
                             
                           >
-                            {name}
+                            {component_type }
                           </div>
                           {snapshot.isDragging && (
-                              <div style={{ transform: 'none !important' }} className={`option-item clone ${classname}`}>
-                              {name}
+                              <div style={{ transform: 'none !important' }} className={`option-item clone ${component_type }`}>
+                              {component_type }
                               </div>
                             )}
                         </React.Fragment>
@@ -160,20 +215,20 @@ const Builder: React.FC = () =>  {
         <Droppable droppableId="structure">
                 {(provided) => (
                   <div className="block-container" {...provided.droppableProps} ref={provided.innerRef}>
-                    {structure.map(({id, result, classname}, index) => {
+                    {structure.map(({component_id, component_name, component_type}, index) => {
                       return (
-                        <Draggable key={id} draggableId={id} index={index}>
+                        <Draggable key={component_id} draggableId={component_id} index={index}>
                           {(provided, snapshot) => (
                             <div ref={provided.innerRef}
-                              className={`block ${classname}`}
+                              className={`block ${component_type}`}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
                             
                             >
                               {
-                                id === editMode ?
-                                <TransCompInput handleSave={handleSave} compType={classname} index={index} id={id}/>
-                                : <span>{result}</span>
+                                component_id === editMode ?
+                                <TransCompInput handleSave={handleSave} compType={component_type} index={index} id={component_id}/>
+                                : <span>{component_name}</span>
                               }
                               
                             </div>

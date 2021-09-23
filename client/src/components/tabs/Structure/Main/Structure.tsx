@@ -15,14 +15,21 @@ export const Structure: React.FC<Props> = ( { index }) => {
   const [structure, setStructure] = useState([]);
 
   useEffect(() => {
+    handleReorder();
+  })
+
+  const handleReorder = () => {
+    console.log('trying to reorder!!!')
     let diagram = [];
     if("transcript_components" in fusion){
       fusion["transcript_components"].map(comp => (
-        diagram.push(comp["component_type"]) 
+        diagram.push(comp) 
       ))
       setStructure(diagram);
     }
-  })
+  }
+
+
 
   return (
     <div className="structure-tab-container">
@@ -35,8 +42,8 @@ export const Structure: React.FC<Props> = ( { index }) => {
       <div className="structure-summary">
 
         {
-          structure.map(compType => (
-            <span className={compType}>{`${compType}`} </span>
+          structure.map(comp => (
+            <span className={comp["component_type"]}>{`${comp["component_name"]}`} </span>
           ))
         }
 
@@ -44,7 +51,7 @@ export const Structure: React.FC<Props> = ( { index }) => {
       </div>
 
 
-      <Builder />
+      <Builder handleReorder={handleReorder}/>
       
       
 
