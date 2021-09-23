@@ -70,7 +70,7 @@ class PostgresDatabase():
     async def execute_query(self, query: str):
         if not self._connection_pool:
             await self.create_pool()
-        with self._connection_pool.acquire() as connection:
+        async with self._connection_pool.acquire() as connection:
             async with connection.transaction():
                 result = await connection.fetch(query)
                 return result
