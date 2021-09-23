@@ -5,10 +5,6 @@ import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautif
 import './Builder.scss';
 import { TransCompInput } from '../TransCompInput/TransCompInput';
 
-interface Props {
-  handleReorder: () => void;
-}
-
 const OPTIONS = [
   {
     "component_type": "gene",
@@ -66,7 +62,7 @@ const OPTIONS = [
   },
 ]
 
-const Builder: React.FC<Props> = ({handleReorder}) =>  {
+const Builder: React.FC = () =>  {
   const {fusion, setFusion} = useContext(FusionContext);
   const [structure, setStructure] = useState([]);
   const [editMode, setEditMode] = useState('');
@@ -113,7 +109,6 @@ const Builder: React.FC<Props> = ({handleReorder}) =>  {
     
       setFusion({ ...fusion, ...{ "transcript_components" : sourceClone }})
       setStructure(sourceClone);
-      handleReorder();
     }
   };
 

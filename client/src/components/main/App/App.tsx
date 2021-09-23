@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import NavTabs from '../NavTabs/NavTabs';
 import { SuggestionContext } from '../../../global/contexts/SuggestionContext'
 import { FusionContext } from '../../../global/contexts/FusionContext'
@@ -16,7 +16,6 @@ function App() {
 
   const { colorTheme } = useColorTheme();
 
-  
   return (
   
       <ThemeProvider theme={theme}>

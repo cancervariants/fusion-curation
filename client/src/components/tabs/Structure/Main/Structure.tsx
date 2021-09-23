@@ -17,24 +17,9 @@ interface Props {
 
 export const Structure: React.FC<Props> = ( { index }) => {
 
-  const {fusion} = useContext(FusionContext);
-  const [structure, setStructure] = useState([]);
+  const {fusion, setFusion} = useContext(FusionContext);
 
-  useEffect(() => {
-    handleReorder();
-    console.log(`${JSON.stringify(fusion)}`)
-  }, [])
-
-  const handleReorder = () => {
-    let diagram = [];
-    if("transcript_components" in fusion){
-      fusion["transcript_components"].map(comp => (
-        diagram.push(comp) 
-      ))
-      setStructure(diagram);
-    }
-  }
-
+  const structure = fusion["transcript_components"];
 
 
   return (
@@ -57,7 +42,7 @@ export const Structure: React.FC<Props> = ( { index }) => {
       </div>
 
 
-      <Builder handleReorder={handleReorder}/>
+      <Builder/>
       
       
 
