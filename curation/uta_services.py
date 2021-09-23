@@ -56,6 +56,7 @@ class PostgresDatabase():
                 self._connection_pool = await asyncpg.create_pool(
                     min_size=1,
                     max_size=10,
+                    max_inactive_connection_lifetime=3,
                     command_timeout=60,
                     host=self.args['host'],
                     port=self.args['port'],
@@ -69,15 +70,10 @@ class PostgresDatabase():
     async def execute_query(self, query: str):
         if not self._connection_pool:
             await self.create_pool()
-        else:
-            self.conn = await self._connection_pool.acquire()
-            try:
-                result = await self.conn.fetch(query)
+        with self._connection_pool.acquire() as connection:
+            async with connection.transaction():
+                result = await connection.fetch(query)
                 return result
-            except Exception as e:  # TODO more specific?
-                logger.warning(f'Encountered exception executing query {query}: {e}')
-            finally:
-                await self._connection_pool.release(self.conn)
 
     def _get_conn_args(self, is_prod: bool, db_url: str, db_pwd: str = '') -> Dict:
         """Return connection arguments.
@@ -195,10 +191,8 @@ async def get_genomic_coords(db: PostgresDatabase, tx_ac: str, start_exon: int, 
         return None
     tx_exon_start, tx_exon_end = tx_exon_coords
 
-    print(tx_ac, tx_exon_start, tx_exon_end, gene)
     alt_ac_start_end = await get_alt_ac_start_and_end(db, tx_ac, tx_exon_start, tx_exon_end,
                                                       gene=gene)
-    print(alt_ac_start_end)
     if not alt_ac_start_end:
         return None
     alt_ac_start, alt_ac_end = alt_ac_start_end
