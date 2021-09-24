@@ -73,10 +73,8 @@ async def get_exon_coords(request: Request, exon_data: ExonCoordsRequest) -> Dic
                                               exon_data.exon_end_offset, exon_data.gene)
 
     if genomic_coords:
-        gene = genomic_coords.get('gene', '')
-        chr = genomic_coords.get('chr', '')
-        genomic_coords['gene_id'] = normalize_gene(gene)['concept_id']
-        genomic_coords['sequence_id'] = get_ga4gh_sequence_id(chr)[0]
+        genomic_coords['gene_id'] = get_gene_id(genomic_coords['gene'])[0]
+        genomic_coords['sequence_id'] = get_ga4gh_sequence_id(genomic_coords['chr'])[0]
         genomic_coords['tx_ac'] = exon_data.tx_ac
         genomic_coords['warnings'] = []
         return genomic_coords

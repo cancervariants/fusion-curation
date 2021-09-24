@@ -45,9 +45,7 @@ class PostgresDatabase():
         :param str db_pwd: DB password if necessary
         """
         self.args = self._get_conn_args(('FUSION_EB_PROD' in environ), db_url, db_pwd)
-        self._cursor = None
         self._connection_pool = None
-        self.conn = None
 
     async def create_pool(self):
         """Connect to DB and create connection pool."""
@@ -209,9 +207,13 @@ async def get_genomic_coords(db: PostgresDatabase, tx_ac: str, start_exon: int, 
     start += start_offset
     end += end_offset
 
+    gene = alt_ac_start[0]
+    chr = alt_ac_start[1]
+    if gene is None or chr is None:
+        return None
     return {
-        "gene": alt_ac_start[0],
-        "chr": alt_ac_start[1],
+        "gene": gene,
+        "chr": chr,
         "start": start,
         "end": end,
         "exon_start": start_exon,

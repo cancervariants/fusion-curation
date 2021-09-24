@@ -128,24 +128,25 @@ const FormParent = () => {
       if (exonResponse === null || (exonResponse.warnings && exonResponse.warnings.length !== 0)) {
         return null;
       }
-      const { chr, start, end } = exonResponse;
-      const geneSymbol = exonResponse.gene;
-      if (geneSymbol && !geneIndex[geneSymbol]) {
-        setGeneIndex((prevGeneIndex) => ({ ...prevGeneIndex, [geneSymbol]: exonResponse.gene_id }));
+      const {
+        chr, start, end, gene,
+      } = exonResponse;
+      if (gene && !geneIndex[gene]) {
+        setGeneIndex((prevGeneIndex) => ({ ...prevGeneIndex, [gene]: exonResponse.gene_id }));
       }
 
-      const exonStart = exonResponse.exon_start;
-      const exonEnd = exonResponse.exon_end;
       if (chr != null) {
         setExonIndex((prevExonIndex) => ({
           ...prevExonIndex,
           [exonData.tx_ac]: {
-            geneSymbol,
             chr,
             start,
             end,
-            exonStart,
-            exonEnd,
+            exonStart: exonResponse.exon_start,
+            exonStartOffset: exonResponse.exon_start_offset,
+            exonEnd: exonResponse.exon_end,
+            exonEndOffset: exonResponse.exon_end_offset,
+            geneSymbol: gene,
             sequenceID: exonResponse.sequence_id,
           },
         }));

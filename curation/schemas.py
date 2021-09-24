@@ -1,5 +1,5 @@
 """Provide schemas for FastAPI responses."""
-from pydantic import BaseModel, StrictStr, StrictInt, validator
+from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
 from typing import List, Optional
 from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
 from fusor.model import Fusion
@@ -12,6 +12,11 @@ class NormalizeGeneResponse(BaseModel):
     concept_id: Optional[CURIE]
     warnings: List
 
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
+
 
 class DomainIDResponse(BaseModel):
     """Response model for domain ID retrieval endpoint."""
@@ -19,6 +24,11 @@ class DomainIDResponse(BaseModel):
     domain: StrictStr
     domain_id: Optional[CURIE]
     warnings: List
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
 
 
 class ExonCoordsRequest(BaseModel):
@@ -51,13 +61,21 @@ class ExonCoordsResponse(BaseModel):
 
     tx_ac: Optional[StrictStr]
     gene: Optional[StrictStr]
+    gene_id: Optional[StrictStr]
     exon_start: Optional[StrictInt]
+    exon_start_offset: Optional[StrictInt]
     exon_end: Optional[StrictInt]
+    exon_end_offset: Optional[StrictInt]
     sequence_id: Optional[CURIE]
     chr: Optional[StrictStr]
     start: Optional[StrictInt]
     end: Optional[StrictInt]
     warnings: List
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
 
 
 class SequenceIDResponse(BaseModel):
@@ -67,9 +85,19 @@ class SequenceIDResponse(BaseModel):
     sequence_id: StrictStr = ''
     warnings: List
 
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
+
 
 class FusionValidationResponse(BaseModel):
     """Response model for fusion validation endpoint."""
 
     fusion: Optional[Fusion]
     warnings: List
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
