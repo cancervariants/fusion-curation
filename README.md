@@ -99,7 +99,11 @@ To run this version (from the root directory):
 cd client/testAPI
 npm i
 node app
-cd ../src
+```
+
+In a separate terminal (from the root directory):
+```commandline
+cd client/src
 yarn install
 yarn start
 ```
