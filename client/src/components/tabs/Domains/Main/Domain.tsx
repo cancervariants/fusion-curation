@@ -1,113 +1,71 @@
-import React, {useState} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-
-import Close from './Close'
+import React, { useContext, useRef} from 'react';
+import Close from '../../Domains/Main/Close';
+import { FusionContext } from '../../../../global/contexts/FusionContext';
 
 import './Domain.scss'
+import DomainForm from '../DomainForm/DomainForm';
 
 interface Props {
   index: number
 }
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: '80%',
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-}));
-
 export const Domain: React.FC<Props> = ( { index }) => {
-  const classes = useStyles();
-  const [type, setType] = useState(null);
-  const [gene, setGene] = useState(10);
-  const [domain, setDomain] = useState('');
-  const handleChange = (event) => {
-    setType(event.target.value);
-  };
+  const {fusion, setFusion} = useContext(FusionContext);
+
+  const domains = fusion["protein_domains"] || [];
+
+  // Don't want to change the suggested domain. should maybe create a separate context of the unmutated selected suggestion
+  const initialDomains= useRef(domains) 
+
+  const handleRemove = (domain) => {
+    //copy domain array, then remove the domain with the relevant ID
+    let cloneArray = Array.from(fusion['protein_domains']);
+    cloneArray = cloneArray.filter((obj) => {
+      return obj["domain_id"] !== domain["domain_id"]
+    })
+    setFusion({ ...fusion, ...{ "protein_domains" : cloneArray || [] }})
+  }
 
   return (
     <div className="domain-tab-container">
       <div className="left">
         <div className="blurb-container">
-          <div className="blurb">
-          We found <span className="bold">1</span>  protein functional domain that appears to be affected.
-          </div>
+          {
+            initialDomains.current.length > 0 ?
+            <div className="blurb">
+              The 
+               {  
+                initialDomains.current.map(domain => (
+                  <span className="bold"> {domain["gene_descriptor"]["label"]} {domain["type"]}</span>
+                ))  
+                } protein functional domain appears to be affected. 
+            </div>
+            :
+            <div className="blurb">
+              No protein functional domains found.  
+            </div>
+          }
           <div className="sub-blurb">
           You can add or remove domains. 
           </div>
-          <div className="domain">
-            MYC Kinase Domain [Preserved]
-            <span className="close-button">
-            <Close />
-            </span>
+          
+          { domains.map(domain => (
+            <div className="domain">
+              <span>{domain["gene_descriptor"]["label"]} {domain["name"]}</span>
+              <span className="close-button-domain" onClick={() => handleRemove(domain)}>
+              <Close />
+              </span>
+            </div>
+            ))  
+            } 
             
-          </div>
+            
         </div>
 
       </div>
       <div className="right">
-        <div className="form-container">
-          <div className="formInput">
-            <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-label">Gene</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={type}
-              onChange={handleChange}
-            >
-              <MenuItem value={10}>Enhancer</MenuItem>
-              <MenuItem value={20}>Promoter</MenuItem>
-            </Select>
-          </FormControl>
-            </div>
-          <div className="formInput">
-            <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-label">Domain</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={type}
-              onChange={handleChange}
-            >
-
-            </Select>
-          </FormControl>
-            </div>
-          <div className="formInput">
-            <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-label">Status</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={type}
-              onChange={handleChange}
-            >
-              <MenuItem value={10}>1 kb 5'</MenuItem>
-              <MenuItem value={20}>1 kb 5'</MenuItem>
-            </Select>
-          </FormControl> 
-          </div>
-          <div className="add-button">
-            <Button variant="outlined" color="primary">
-            Add
-            </Button>
-          </div>
-        
-        </div>
-        
-
-
+      
+      <DomainForm/>
 
       </div>
 
