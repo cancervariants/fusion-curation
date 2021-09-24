@@ -90,3 +90,17 @@ Python code style is enforced by [flake8](https://github.com/PyCQA/flake8), and 
 ```commandline
 pre-commit install
 ```
+
+### UI Version 2
+The most recent UI updates can be found in the client directory. It currently makes use of dummy data via the testAPI directory. 
+
+To run this version (from the root directory):
+```commandline
+cd client/testAPI
+npm i
+node app
+cd ../src
+yarn install
+yarn start
+```
+Navigate to http://localhost:3000/ to test the application locally (the server should be running on port 9000)
