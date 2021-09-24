@@ -103,7 +103,7 @@ node app
 
 In a separate terminal (from the root directory):
 ```commandline
-cd client/src
+cd client
 yarn install
 yarn start
 ```
