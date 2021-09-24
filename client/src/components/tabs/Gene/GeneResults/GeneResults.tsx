@@ -18,6 +18,7 @@ return (
       suggestions.length ? 
       <>
         <h1>
+          {/* TODO: Simulate searching genes array of fusion objects for potential suser uggestions */}
           {`${suggestions[0].genes[0]}, ${suggestions[0].genes[1]}`}
         </h1>
         <h4>We found some common fusion structures.</h4>

@@ -12,14 +12,14 @@ interface Props {
 export const RegElement: React.FC<Props> = ( { index }) => {
   const {fusion, setFusion} = useContext(FusionContext);
 
-  const regElements = fusion["regulatory_elements"] || [];
+  const regElements = fusion.regulatory_elements || [];
 
   // Don't want to change the suggested element. should maybe create a separate context of the unmutated selected suggestion
   const initialElements = useRef(regElements) 
 
   const handleRemove = (regEl) => {
     //copy regulatory elements array, then remove the element with the relevant ID
-    let cloneArray = Array.from(fusion['regulatory_elements']);
+    let cloneArray = Array.from(regElements);
     cloneArray = cloneArray.filter((obj) => {
       return obj["element_id"] !== regEl["element_id"]
     })
@@ -36,7 +36,7 @@ export const RegElement: React.FC<Props> = ( { index }) => {
               This transcript structure appears to be associated with a 
                {  
                 initialElements.current.map(regEl => (
-                  <span className="bold">{regEl["gene_descriptor"]["label"]} {regEl["type"]}</span>
+                  <span className="bold">{regEl.gene_descriptor.label} {regEl.type}</span>
                 ))  
                 } Regulatory Element. 
             </div>
@@ -51,7 +51,7 @@ export const RegElement: React.FC<Props> = ( { index }) => {
           
           { regElements.map(regEl => (
             <div className="regel">
-              <span>{regEl["gene_descriptor"]["label"]} {regEl["type"]}</span>
+              <span>{regEl.gene_descriptor.label} {regEl.type}</span>
               <span className="close-button-reg" onClick={() => handleRemove(regEl)}>
               <Close />
               </span>

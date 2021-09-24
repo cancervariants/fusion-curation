@@ -19,7 +19,7 @@ export const Structure: React.FC<Props> = ( { index }) => {
 
   const {fusion, setFusion} = useContext(FusionContext);
 
-  const structure = fusion["transcript_components"] || [];
+  const structure = fusion.transcript_components || [];
 
 
   return (
@@ -34,7 +34,7 @@ export const Structure: React.FC<Props> = ( { index }) => {
 
         {
           structure.map(comp => (
-            <span className={comp["component_type"]}>{`${comp["component_name"]}`} </span>
+            <span className={comp.component_type}>{`${comp.component_name}`} </span>
           ))
         }
 

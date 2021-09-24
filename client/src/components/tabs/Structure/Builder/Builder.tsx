@@ -72,7 +72,7 @@ const Builder: React.FC = () =>  {
     let diagram = [];
 
     if("transcript_components" in fusion){
-      fusion["transcript_components"].map(comp => (
+      fusion.transcript_components.map(comp => (
         diagram.push(comp)
       ))
       setStructure(diagram);
@@ -86,10 +86,10 @@ const Builder: React.FC = () =>  {
     const destClone = Array.from(structure);
     const item = sourceClone[source.index];
     const newItem = Object.assign({}, item);
-    newItem["component_id"] = uuid();
+    newItem.component_id = uuid();
     destClone.splice(destination.index, 0, newItem)
     setStructure(destClone);
-    setEditMode(newItem["component_id"]);
+    setEditMode(newItem.component_id);
   };
 
   const reorder = (result: DropResult) => {
@@ -136,7 +136,7 @@ const Builder: React.FC = () =>  {
 
   const handleCancel = (id) => {
     let items = Array.from(structure);
-    items = items.filter(item => item['component_id'] !== id);
+    items = items.filter(item => item.component_id !== id);
     
     setStructure(items);
     setEditMode('');

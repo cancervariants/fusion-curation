@@ -22,6 +22,8 @@ export const Summary: React.FC<Props> = ( { index }) => {
 
   const {fusion, setFusion} = useContext(FusionContext);
 
+  const {genes, protein_domains, transcript_components, regulatory_elements } = fusion;
+
   const [data, setData] = useState(json)
 
   useEffect(() => {
@@ -34,19 +36,19 @@ export const Summary: React.FC<Props> = ( { index }) => {
       <div className="row-items">
       <div className="row">
         <div className="left-item">Gene </div>
-        <div className="right-item">{`${data[0].genes[0]} :: ${data[0].genes[1]}`}</div>
+        <div className="right-item">{genes.map(gene => `${gene}`)}</div>
       </div>
       <div className="row">
         <span className="left-item">Structure </span>
-        <span className="right-item">{`${data[0].genes[0]} :: ${data[0].genes[1]}`} </span>
+        <span className="right-item">{transcript_components.map(comp => comp.component_name)} </span>
       </div>
       <div className="row">
         <span className="left-item">Regulatory Elements  </span>
-        <span className="right-item">enhancer IGH, promoter MYC</span>
+        <span className="right-item">{regulatory_elements.map(re => `${re.type} ${re.gene_descriptor.label}`)}</span>
       </div>
       <div className="row">
         <span className="left-item">Protein Domains</span>
-        <span className="right-item">preserved: MYC kinase domain </span>
+        <span className="right-item">{protein_domains.map(pd => `${pd.status}: ${pd.gene_descriptor.label}`)} </span>
       </div>
       </div>
       

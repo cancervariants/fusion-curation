@@ -20,8 +20,8 @@ export const StructureDiagram: React.FC = () => {
     // iterate over array of fusion objects from API, then push to diagram arrays
     suggestions.forEach(obj => {
       let diagram = [];
-      obj["transcript_components"].map(comp => {
-        diagram.push(comp["component_type"]); 
+      obj.transcript_components.map(comp => {
+        diagram.push(comp.component_type); 
       })
       setStructureList([...structureList, diagram])
     })

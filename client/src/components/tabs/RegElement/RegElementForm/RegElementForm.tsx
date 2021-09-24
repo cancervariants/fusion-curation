@@ -23,7 +23,6 @@ const RegElementForm: React.FC = () => {
 
   const [type, setType] = useState(null);
   const [gene, setGene] = useState(null);
-  const [location, setLocation] = useState(null);
 
   // const [open, setOpen] = useState(false);
 
@@ -33,10 +32,6 @@ const RegElementForm: React.FC = () => {
   const handleGeneChange = (event) => {
     setGene(event.target.value);
   };
-  const handleLocationChange = (event) => {
-    setLocation(event.target.value);
-  };
-
 
   const handleAdd = () => {
     //again, should make a d.ts file for this:
@@ -56,7 +51,6 @@ const RegElementForm: React.FC = () => {
     cloneArray.push(newRegElement);
 
     setFusion({ ...fusion, ...{ "regulatory_elements" :  cloneArray}});
-
   }
 
   return (
