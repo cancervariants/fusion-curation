@@ -2,7 +2,7 @@
 from curation import logger
 from gene.query import QueryHandler
 from gene.schemas import MatchType
-from typing import List, Tuple, Optional, Dict
+from typing import List, Tuple, Optional
 from boto3.dynamodb.conditions import Key
 
 
