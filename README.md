@@ -77,9 +77,10 @@ npm install
 npm run start
 ```
 
+Then proceed to http://localhost:3000/ in a browser window.
+
 ### Style
 
-Then proceed to http://localhost:3000/ in a browser window.
 
 Python code style is enforced by [flake8](https://github.com/PyCQA/flake8), and frontend style is enforced by [ESLint](https://eslint.org/). Conformance is ensured by [pre-commit](https://pre-commit.com/#usage). Before your first commit, run
 
