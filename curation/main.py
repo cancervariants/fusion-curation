@@ -11,7 +11,7 @@ from curation.sequence_services import get_ga4gh_sequence_id
 from curation.validation_services import validate_fusion
 
 
-app = FastAPI(version=str(version))
+app = FastAPI(version=__version__)
 
 @app.on_event('startup')
 async def startup():
