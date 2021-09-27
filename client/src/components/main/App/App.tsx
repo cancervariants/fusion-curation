@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import NavTabs from '../NavTabs/NavTabs';
+import NavTabs from '../Nav/NavTabs';
 import { SuggestionContext } from '../../../global/contexts/SuggestionContext'
 import { FusionContext } from '../../../global/contexts/FusionContext'
 import '../../../global/styles/global.scss'

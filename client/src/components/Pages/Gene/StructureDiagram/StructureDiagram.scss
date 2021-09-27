@@ -1,0 +1,83 @@
+.structure {
+  padding: 5px;
+  background-color: var(--white);
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  width: 275px;
+  margin: 7px;
+  cursor: pointer;
+  border: 5px solid var(--white);
+  position: relative;
+  font-size: small;
+
+  .dimmer { 
+    z-index: 10;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.58); 
+    position: absolute;
+    visibility: hidden;    
+  }
+
+  &:hover .dimmer {
+      visibility: visible;
+  }
+
+  .sub-structure {   
+    background-color: var(--white);
+    display: flex;
+    width: 275px;
+    padding: 2px;  
+    text-align: center;
+  }
+
+  .gene  {
+    padding: 2px;  
+    background-color: var(--gene);
+    width: 130px;
+    white-space: nowrap;
+  }
+  .transcript_segment {
+    padding: 2px;  
+    background-color: var(--transcript);
+    width: 100px;
+    white-space: nowrap;
+  }
+  .linker_sequence {
+    padding: 2px;  
+    background-color: var(--linker);
+    width: 35px;
+    white-space: nowrap;
+  }
+  .genomic_region {
+    padding: 2px;  
+    background-color: var(--region);
+    width: 35px;
+    white-space: nowrap;
+  }
+
+  .regel-row {
+    margin: 7px 0 0 20px;
+    
+    .regel-square {
+      text-align: center;
+      padding: 2px 5px;  
+      background-color: var(--medium-gray);
+      width: 25px;
+    }
+  }
+  &:hover {
+    border: 5px solid rgba(127, 127, 127, .15);
+  }
+}
+
+.highlighted {
+  border: 5px solid var(--primary);
+  &:hover {
+    border: 5px solid var(--primary);
+  }
+}
+

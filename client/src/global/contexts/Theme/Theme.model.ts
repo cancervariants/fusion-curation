@@ -2,9 +2,30 @@ export enum Color {
   VIOLET = '#9E25FC',
   DARK_VIOLET = '#250341',
   SEAFOAM = '#0BD3D3',
-  LIGHT_GRAY = '#F5F5F5',
+  LIGHT_GRAY = '#F5F5FA',
   WHITE = '#FFF',
-  MEDIUM_GRAY = '#878791',
+  MEDIUM_GRAY = '#c2c2c2',
+  CYAN = '#79FFFF',
+  YELLOW = '#FEFF91',
+  MAGENTA = '#FF94FF',
+  PASTEL_PURPLE = '#CCCCFF',
+  PALE_CYAN = '#bbfafa',
+  PALE_YELLOW = '#fcfcc0',
+  PALE_MAGENTA = '#ffbaff',
+  PALE_PASTEL_PURPLE = '#e1e1fc',
+  PINKRED = '#FE6B8B',
+  ORANGE = '#FF8E53',
+  //new pallette stuff
+  FLICKR = '#F72585',
+  BYZ = '#B5179E',
+  PURP1 = '#7209B7',
+  PURP2 = '#560BAD',
+  TRYPAN = '#480CA8',
+  TRYPAN2 = '#3A0CA3',
+  Persian = '#3F37C9',
+  ULTRA = '#4361EE',
+  DODGER = '#4895EF',
+  VIVID = '#4CC9F0',
 }
 
 export interface ColorTheme {
@@ -15,9 +36,19 @@ export interface ColorTheme {
   '--white': Color;
   '--medium-gray': Color;
   '--light-gray': Color;
+  '--gene': Color;
+  '--gene-light': Color;
+  '--transcript': Color;
+  '--transcript-light': Color;
+  '--linker': Color;
+  '--linker-light': Color;
+  '--region': Color;
+  '--region-light': Color;
+  '--gradient-1': Color;
+  '--gradient-2': Color;
 }
 
-export type ColorThemeType = 'dark' | 'light';
+export type ColorThemeType = 'two' | 'light' | 'dark';
 
 export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
   light: {
@@ -27,15 +58,54 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     '--background': Color.LIGHT_GRAY,
     '--white': Color.WHITE,
     '--medium-gray': Color.MEDIUM_GRAY,
-    '--light-gray': Color.LIGHT_GRAY
+    '--light-gray': Color.LIGHT_GRAY,
+    '--gene': Color.CYAN,
+    '--gene-light': Color.PALE_CYAN,
+    '--transcript': Color.YELLOW,
+    '--transcript-light': Color.PALE_YELLOW,
+    '--linker': Color.MAGENTA,
+    '--linker-light': Color.PALE_MAGENTA,
+    '--region': Color.PASTEL_PURPLE,
+    '--region-light': Color.PALE_PASTEL_PURPLE,
+    '--gradient-1': Color.PINKRED,
+    '--gradient-2': Color.ORANGE
   },
   dark: {
     '--primary': Color.SEAFOAM,
-    '--secondary': Color.WHITE,
+    '--secondary': Color.DARK_VIOLET,
     '--tabs': Color.WHITE,
-    '--background': Color.DARK_VIOLET,
+    '--background': Color.LIGHT_GRAY,
     '--white': Color.WHITE,
     '--medium-gray': Color.MEDIUM_GRAY,
-    '--light-gray': Color.LIGHT_GRAY
+    '--light-gray': Color.LIGHT_GRAY,
+    '--gene': Color.CYAN,
+    '--gene-light': Color.PALE_CYAN,
+    '--transcript': Color.YELLOW,
+    '--transcript-light': Color.PALE_YELLOW,
+    '--linker': Color.MAGENTA,
+    '--linker-light': Color.PALE_MAGENTA,
+    '--region': Color.PASTEL_PURPLE,
+    '--region-light': Color.PALE_PASTEL_PURPLE,
+    '--gradient-1': Color.PINKRED,
+    '--gradient-2': Color.ORANGE
+  },
+  two: {
+    '--primary': Color.DODGER,
+    '--secondary': Color.DARK_VIOLET,
+    '--tabs': Color.WHITE,
+    '--background': Color.LIGHT_GRAY,
+    '--white': Color.WHITE,
+    '--medium-gray': Color.MEDIUM_GRAY,
+    '--light-gray': Color.LIGHT_GRAY,
+    '--gene': Color.VIVID,
+    '--gene-light': Color.VIVID,
+    '--transcript': Color.PURP1,
+    '--transcript-light': Color.PURP1,
+    '--linker': Color.FLICKR,
+    '--linker-light': Color.FLICKR,
+    '--region': Color.ULTRA,
+    '--region-light': Color.ULTRA,
+    '--gradient-1': Color.PURP1,
+    '--gradient-2': Color.ULTRA
   }
 };
