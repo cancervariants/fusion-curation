@@ -1,10 +1,12 @@
 """Provide Views for curation application."""
 from typing import Dict
 from curation import app
-from flask import render_template
+from flask import render_template, request
 from curation.uta_services import uta
 from curation.gene_services import gene_service
+from curation.validation_services import validate_fusion
 from curation.domain_services import domain_service
+from curation.sequence_services import get_ga4gh_sequence_id
 import logging
 
 
@@ -27,7 +29,8 @@ def normalize_gene(symbol: str) -> Dict:
     """
     response = {
         'symbol': symbol,
-        'warnings': []
+        'warnings': [],
+        'concept_id': ''
     }
     try:
         concept_id = gene_service.get_gene_id(symbol)
@@ -138,12 +141,51 @@ def get_exon(tx_ac, start_exon, end_exon, start_exon_offset,
         gene=gene,
     )
     if genomic_coords:
-        response['gene'] = genomic_coords.get("gene", None)
-        response['chr'] = genomic_coords.get("chr", None)
+        gene = genomic_coords.get('gene', None)
+        response['gene'] = gene
+        response['gene_id'] = normalize_gene(gene)['concept_id']
+        chr = genomic_coords.get('chr', None)
+        response['chr'] = chr
+        sequence_id = get_sequence_id(chr)
+        response['sequence_id'] = sequence_id['sequence_id']
         response['start'] = genomic_coords.get("start", None)
-        response['end'] = genomic_coords.get("end", None)
-        response['start_exon'] = genomic_coords.get("start_exon", None)
-        response['end_exon'] = genomic_coords.get("end_exon", None)
+        response['end'] = genomic_coords.get('end', None)
+        response['start_exon'] = genomic_coords.get('start_exon', None)
+        response['end_exon'] = genomic_coords.get('end_exon', None)
         return response
     else:
         return {}
+
+
+@app.route('/sequence/<input_sequence>')
+def get_sequence_id(input_sequence: str) -> Dict:
+    """Get GA4GH sequence ID CURIE for input sequence.
+    :param str input_sequence: user-submitted sequence to retrieve ID for
+    :return: Dict (served as JSON) containing either GA4GH sequence ID or
+        warnings if unable to retrieve ID
+    """
+    response = {
+        'sequence_id': '',
+        'warnings': [],
+    }
+    try:
+        response['sequence_id'] = get_ga4gh_sequence_id(input_sequence)
+    except (KeyError, IndexError) as e:
+        msg = f'Unable to retrieve ga4gh sequence ID for {input_sequence}: {e}'
+        logger.warning(msg)
+        response['warnings'].append(
+            f'Lookup of sequence {input_sequence} failed.'
+        )
+    return response
+
+
+@app.route('/validate', methods=['POST'])
+def validate_object() -> Dict:
+    """Validate constructed Fusion object. Return warnings if invalid."""
+    try:
+        r = request.json
+    except TypeError:
+        logger.warning('Request raised unresolvable TypeError.')
+        return {'fusion': {}, 'warnings': ['Unable to validate submission']}
+    validated = validate_fusion(r)
+    return validated

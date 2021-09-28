@@ -1,7 +1,7 @@
 """Provide lookup services for functional domains."""
 from pathlib import Path
 from datetime import datetime
-from curation import PROJECT_ROOT
+from curation import APP_ROOT
 import logging
 import csv
 from ftplib import FTP
@@ -18,9 +18,9 @@ class DomainService():
     def __init__(self):
         """Initialize handler class. Download files if necessary, then load and store."""
         # check if files exist
-        self._data_dir = PROJECT_ROOT / 'data'
+        self._data_dir = APP_ROOT / 'data'
         self._data_dir.mkdir(exist_ok=True, parents=True)
-        interpro_files: Path = list(self._data_dir.glob('interpro_*.tsv'))
+        interpro_files: List[Path] = list(self._data_dir.glob('interpro_*.tsv'))
         if len(interpro_files) < 1:
             self.download_interpro()
             interpro_files = list(self._data_dir.glob('interpro_*.tsv'))

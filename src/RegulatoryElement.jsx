@@ -26,13 +26,13 @@ const RegulatoryElement = ({
       <TableCell className={cellClass}>
         <FormControl className={classes.formControl}>
           <Select
-            labelId="status-select"
-            id="status-select"
-            value={elementValues.status}
-            onChange={(event) => handleChange('status', event.target.value)}
+            labelId="type-select"
+            id="type-select"
+            value={elementValues.type}
+            onChange={(event) => handleChange('type', event.target.value)}
           >
-            <MenuItem value="lost">Lost</MenuItem>
-            <MenuItem value="preserved">Preserved</MenuItem>
+            <MenuItem value="promoter">Promoter</MenuItem>
+            <MenuItem value="enhancer">Enhancer</MenuItem>
           </Select>
         </FormControl>
       </TableCell>

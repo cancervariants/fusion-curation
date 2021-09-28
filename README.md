@@ -11,7 +11,17 @@ git clone https://github.com/cancervariants/fusion-curation
 cd fusion-curation
 ```
 
-Gene Fusion Curation uses [uta](https://github.com/biocommons/uta).
+[Install Pipenv](https://pipenv-fork.readthedocs.io/en/latest/#install-pipenv-today) if necessary.
+
+Install backend dependencies and enter Pipenv environment:
+
+```commandline
+pipenv lock
+pipenv sync
+pipenv shell
+```
+
+Set up [uta](https://github.com/biocommons/uta):
 
 _The following commands will likely need modification appropriate for the installation environment._
 1. Install [PostgreSQL](https://www.postgresql.org/)
@@ -34,12 +44,27 @@ To connect to the UTA database, you can use the default url (`postgresql://uta_a
 
 If you do not wish to use the default, you must set the environment variable `UTA_DB_URL` which has the format of `driver://user:pass@host/database/schema`.
 
-To start the backend development server, initialize the Python virtual environment and then run Flask. Once
-[Pipenv is installed](https://pipenv-fork.readthedocs.io/en/latest/#install-pipenv-today), run the following in the project root:
+Set up [SeqRepo](https://github.com/biocommons/biocommons.seqrepo):
 
 ```commandline
-pipenv shell
-pipenv sync
+# within fusion-curation root directory
+pipenv shell # if not already within pipenv shell
+cd curation
+mkdir data
+seqrepo -r data/seqrepo pull -i 2021-01-29
+sudo chmod -R u+w data/seqrepo
+cd data/seqrepo
+seqrepo_date_dir=$(ls -d */)
+sudo mv $seqrepo_date_dir latest
+```
+
+Alternate SeqRepo locations can be specified with the environment variable `SEQREPO_DATA_PATH`.
+
+The backend requires local DynamoDB service with tables initialized by the [Gene Normalization service](https://github.com/cancervariants/gene-normalization), listening on port 8000. See the Gene Normalizer documentation for initialization information.
+
+In a terminal running the Pipenv Python environment, start Flask:
+
+```commandline
 flask run
 ```
 
@@ -50,8 +75,6 @@ export FLASK_ENV=development
 export FLASK_APP=curation
 flask run
 ```
-
-The backend requires local DynamoDB service with tables initialized by the [Gene Normalization service](https://github.com/cancervariants/gene-normalization), listening on port 8000. See the Gene Normalizer documentation for initialization information. 
 
 In a separate terminal, install frontend dependencies and start the React development server:
 

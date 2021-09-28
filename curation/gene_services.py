@@ -1,5 +1,6 @@
 """Wrapper for required Gene Normalization services."""
 from gene.query import QueryHandler
+from gene.schemas import MatchType
 
 
 class GeneService():
@@ -17,8 +18,8 @@ class GeneService():
         :raises LookupError: if no match is found
         """
         response = self.gene_query_handler.normalize(term)
-        if response['match_type'] != 0:
-            return response['gene_descriptor']['value']['id']
+        if response['match_type'] != MatchType.NO_MATCH:
+            return response['gene_descriptor']['gene']['gene_id']
         else:
             raise LookupError(f"Could not find matching ID for symbol {term}")
 
