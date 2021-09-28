@@ -7,10 +7,12 @@ name = "pypi"
 flask = "*"
 gene-normalizer = ">=0.1.11"
 boto3 = "*"
-python-dotenv = "*"
-psycopg2 = "*"
+psycopg2-binary = "*"
+"biocommons.seqrepo" = "*"
+fusor = "*"
 
 [dev-packages]
+python-dotenv = "*"
 pytest = "*"
 pre-commit = "*"
 flake8 = "*"
@@ -20,6 +22,3 @@ pytest-cov = "*"
 fusion-curation = {editable = true, path = "."}
 coveralls = "*"
 jupyterlab = "*"
-
-[requires]
-python_version = "3.9"
