@@ -1,6 +1,6 @@
 """Test UTA data source."""
 import pytest
-from curation.uta_services import postgres_instance, get_genomic_coords  #, get_alt_ac_start_and_end
+from curation.uta_services import postgres_instance, get_genomic_coords
 import copy
 
 
@@ -77,13 +77,15 @@ async def test_uta_source(test_db, tpm3_exon1_exon8, ntrk1_exon10_exon17):
     expected["end"] = 154170394
     assert resp == expected
 
-    resp = await get_genomic_coords(test_db, 'NM_152263.3', 3, 8, start_exon_offset=3, end_exon_offset=5)
+    resp = await get_genomic_coords(test_db, 'NM_152263.3', 3, 8, start_exon_offset=3,
+                                    end_exon_offset=5)
     expected["exon_start"] = 3
     expected["exon_start_offset"] = 3
     expected["start"] = 154176245
     assert resp == expected
 
-    resp = await get_genomic_coords(test_db, 'NM_152263.3', 3, 8, start_exon_offset=-3, end_exon_offset=5)
+    resp = await get_genomic_coords(test_db, 'NM_152263.3', 3, 8, start_exon_offset=-3,
+                                    end_exon_offset=5)
     expected["exon_start_offset"] = -3
     expected["start"] = 154176251
     assert resp == expected

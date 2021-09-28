@@ -30,12 +30,12 @@ def test_sequence_id():
     check_get_sequence_id(
         'refsq:NM_002529.3',
         '',
-        ["Unable to retrieve GA4GH sequence ID for refsq:NM_002529.3: 'Alias NM_002529.3 (namespace: refsq)'"]
+        ["Unable to retrieve GA4GH sequence ID for refsq:NM_002529.3: 'Alias NM_002529.3 (namespace: refsq)'"]  # noqa: E501
     )
 
     # require correct assembly
     check_get_sequence_id(
         'refseq:NC_000001.19',
         '',
-        ["Unable to retrieve GA4GH sequence ID for refseq:NC_000001.19: 'Alias NC_000001.19 (namespace: refseq)'"]
+        ["Unable to retrieve GA4GH sequence ID for refseq:NC_000001.19: 'Alias NC_000001.19 (namespace: refseq)'"]  # noqa: E501
     )
