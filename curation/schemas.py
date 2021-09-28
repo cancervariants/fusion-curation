@@ -18,6 +18,19 @@ class NormalizeGeneResponse(BaseModel):
         extra = Extra.forbid
 
 
+class CompleteGeneResponse(BaseModel):
+    """Response model for gene autocomplete suggestions endpoint."""
+
+    term: StrictStr
+    suggestions: Optional[List[StrictStr]]
+    warnings: Optional[List[StrictStr]]
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
+
+
 class DomainIDResponse(BaseModel):
     """Response model for domain ID retrieval endpoint."""
 
