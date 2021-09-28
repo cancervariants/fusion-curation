@@ -1,0 +1,33 @@
+.nav-tabs {
+  background-color: var(--white);
+  height: 80vh;
+  width: 80vw;
+}
+
+.tab-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 87.5%;
+}
+
+.sub-tab {
+  width: 80vw;
+  height: 600px;
+}
+
+.previous {
+
+}
+
+.continue{ 
+  margin-left: auto;
+}
+
+.footer {
+  flex-shrink: 0;
+  padding: 15px 10px;
+  display: flex;
+  align-items: center;
+  background-color: var(--white);
+}

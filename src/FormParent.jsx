@@ -61,6 +61,7 @@ const FormParent = () => {
     resultField: selections['submitted'] === true,
   }), [selections]);
 
+
   // when visible updates, anything not visible is also removed from state
   useEffect(() => {
     // eslint-disable-next-line array-callback-return
@@ -94,7 +95,7 @@ const FormParent = () => {
    */
   const getDomainID = (name) => {
     // eslint-disable-next-line consistent-return
-    fetch(`/domain/${name}`)
+    fetch(encodeURIComponent(`/domain/${name}`))
       .then((response) => response.json())
       // eslint-disable-next-line
       .then((domainResponse) => {

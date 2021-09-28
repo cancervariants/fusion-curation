@@ -1,0 +1,33 @@
+.form-container {
+
+  .close-button-reg {
+    margin-left: 38px;
+    margin-top: -3px;
+    position: absolute;
+  }
+  
+  .formInput {
+    margin: 40px;
+  }
+  
+  .regel {
+    margin-top: 20px;
+    width: 34%;
+    font-size:medium;
+    font-weight: 200;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    margin-left: -35px;
+    border-radius: 7px;
+  }
+  
+  .add-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 690px;
+  }
+  
+}
+
+

@@ -1,0 +1,31 @@
+.summary-tab-container {
+  display: flex;
+  flex-direction: column;
+  width: 80vw;
+  height: 70vh;
+  align-items: center;
+  justify-content: center;
+  font-size:x-large;
+}
+
+.row {
+  margin: 20px;
+  width: 600px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.left-item {
+  align-items: flex-start;
+  font-weight: 300;
+}
+
+.right-item {
+  align-items: flex-end;
+  font-weight: 400;
+  text-align: right;
+  width: 200px;
+}
+
+.save-button {}
