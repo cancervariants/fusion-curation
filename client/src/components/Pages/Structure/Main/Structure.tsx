@@ -25,12 +25,12 @@ export const Structure: React.FC<Props> = ( { index }) => {
   return (
     <div className="structure-tab-container">
 
-      <div className="summary-title">
+      <div className="structure-summary">
       <h3>Structure Summary</h3>
-      </div>
+
       
       <div className="summary-container">
-      <div className="structure-summary">
+      <div >
 
         {
           structure.map(comp => (
@@ -38,6 +38,7 @@ export const Structure: React.FC<Props> = ( { index }) => {
           ))
         }
 
+      </div>
       </div>
       </div>
 

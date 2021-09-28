@@ -9,6 +9,7 @@ gene-normalizer = ">=0.1.11"
 boto3 = "*"
 python-dotenv = "*"
 psycopg2 = "*"
+"ga4gh.vrs" = "==0.7.0rc3"
 
 [dev-packages]
 pytest = "*"

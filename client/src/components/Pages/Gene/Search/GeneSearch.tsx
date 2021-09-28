@@ -65,9 +65,6 @@ export const GeneSearch: React.FC = () => {
   // API response
   const [suggestions, setSuggestions] = useContext(SuggestionContext);
 
-  // global fusion object (starts off empty)
-  const {fusion, setFusion} = useContext(FusionContext);
-
   // autocomplete
   const [open, setOpen] = React.useState(false);
   const [disabled, setDisabled] = React.useState(false)
@@ -102,7 +99,7 @@ export const GeneSearch: React.FC = () => {
     if(genes.length == 1){
       return
     }
-    setFusion({ ...fusion, ...{ "genes" : genes }})
+    // setFusion({ ...fusion, ...{ "genes" : genes }})
     getData()
   }, [genes])
 

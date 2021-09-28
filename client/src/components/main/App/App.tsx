@@ -26,7 +26,11 @@ function App() {
               style={{
                ...colorTheme
                } as React.CSSProperties}>
-              <NavTabs />
+              <h1 className="title">Fusion Curation</h1>
+              <div className="main-component">
+                <NavTabs />
+              </div>
+              
             </div>
           </FusionContext.Provider>
           

@@ -19,13 +19,6 @@ export const Summary: React.FC<Props> = ( { index }) => {
   const regulatory_elements= fusion.regulatory_elements|| [];
   const transcript_components = fusion.transcript_components || [];
 
-  const [data, setData] = useState(json)
-
-  useEffect(() => {
-
-    setData(json);
-  })
-
   return (
     <div className="summary-tab-container">
       <div className="row-items">

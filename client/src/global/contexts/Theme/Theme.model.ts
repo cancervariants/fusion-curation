@@ -2,9 +2,10 @@ export enum Color {
   VIOLET = '#9E25FC',
   DARK_VIOLET = '#250341',
   SEAFOAM = '#0BD3D3',
+  BLACKSEAFOAM = '043b3b',
   LIGHT_GRAY = '#F5F5FA',
   WHITE = '#FFF',
-  MEDIUM_GRAY = '#c2c2c2',
+  MEDIUM_GRAY = '#cfcfcf',
   CYAN = '#79FFFF',
   YELLOW = '#FEFF91',
   MAGENTA = '#FF94FF',
@@ -30,6 +31,7 @@ export enum Color {
 
 export interface ColorTheme {
   '--primary': Color;
+  '--black-primary': Color;
   '--tabs': Color;
   '--secondary': Color;
   '--background': Color;
@@ -53,6 +55,7 @@ export type ColorThemeType = 'two' | 'light' | 'dark';
 export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
   light: {
     '--primary': Color.SEAFOAM,
+    '--black-primary': Color.BLACKSEAFOAM,
     '--secondary': Color.DARK_VIOLET,
     '--tabs': Color.WHITE,
     '--background': Color.LIGHT_GRAY,
@@ -72,6 +75,7 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
   },
   dark: {
     '--primary': Color.SEAFOAM,
+    '--black-primary': Color.BLACKSEAFOAM,
     '--secondary': Color.DARK_VIOLET,
     '--tabs': Color.WHITE,
     '--background': Color.LIGHT_GRAY,
@@ -91,6 +95,7 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
   },
   two: {
     '--primary': Color.DODGER,
+    '--black-primary': Color.BLACKSEAFOAM,
     '--secondary': Color.DARK_VIOLET,
     '--tabs': Color.WHITE,
     '--background': Color.LIGHT_GRAY,

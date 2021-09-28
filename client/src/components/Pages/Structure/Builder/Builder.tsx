@@ -112,27 +112,113 @@ const Builder: React.FC = () =>  {
     }
   };
 
-  const handleSave = (index, input) => {
+  const handleSave = (index, compType, ...inputs) => {
+
+    // TODO: prevent from sending empty fields (where applicable)
 
     const items = Array.from(structure);
     let obj = items[index];
     let newObj = Object.assign({}, obj)
 
 
-    // need to actually handle inputs, validate from server    
-    newObj['component_name'] = input.current.value;
+    // get actual user input from ref objects
+    let values = inputs.map(i => (
+      i.current.value
+    ))
+
+    // anywhere form 1-4 inputs are passed based on the component type being entered
+    // but in each case, the component_name is passed as the first input param
+
+    newObj.component_name = values[0];
+
+    // TODO: Update backend schema to include component_name and any other keys
+
+    switch(compType){
+      case 'gene': 
+        newObj.gene_descriptor.gene_id = getGeneID(inputs[0])
+        break;
+      case 'transcript_segment': 
+        let [transcript, exon_start, exon_end, gene_symbol, exon_start_offset, exon_end_offset] = values
+
+        let exon = null;
+
+        exon = getExon(transcript, exon_start || 0, exon_end || 0,
+          exon_start_offset || 0, exon_end_offset || 0, gene_symbol);
+
+        // TODO: set stuff to exon
+        break;      
+    }  
+
+    // TODO: what other computing for fusion object should/could happen based on form input? 
 
     items.splice(index, 1, newObj);
 
-    // clear active state
+    // clear active state, update local state array, update global fusion object
     setEditMode('');
-
-    // update local state array
     setStructure(items);
-
-    // update global fusion object
-    setFusion({ ...fusion, ...{ "transcript_components" : items }})
+    setFusion({ ...fusion, ...{ "transcript_components" : items }});
   }
+
+  const getGeneID = (symbol) => {
+    // eslint-disable-next-line consistent-return
+    fetch(`/gene/${symbol}`).then((response) => response.json()).then((geneResponse) => {
+    if (geneResponse.warnings) {
+    return null;
+    }
+    return geneResponse;
+    });
+    };
+    
+  const getExon = (txAc, startExon, endExon, startExonOffset, endExonOffset, gene) => {
+    let url = null;
+    if (!gene) {
+    url = `/coordinates/${txAc}/${startExon}/${endExon}/${startExonOffset}/${endExonOffset}`;
+    } else {
+    url = `/coordinates/${txAc}/${startExon}/${endExon}/${startExonOffset}/${endExonOffset}/${gene}`;
+    }
+    fetch(url, {
+    method: 'GET',
+    headers: {
+    'Content-Type': 'application/json',
+    },
+    }).then((response) => response.json()).then((exonResponse) => {
+
+    if (exonResponse === null) {
+    return null;
+    }
+    if (exonResponse.warnings) {
+    return null;
+    }
+    const { chr, start, end } = exonResponse;
+    const geneSymbol = exonResponse.gene;
+
+    console.log(`chr: ${chr}`)
+
+    // do gene lookup for gene_descriptor, using gene symbol?
+
+    let result = {
+      "component_type": "transcript_segment",
+      "component_name": chr,
+      "component_id": uuid(),
+      "shorthand": "",
+      "exon_start": start,
+      "exon_start_offset": exonResponse.start_exon,
+      "exon_end": end,
+      "exon_end_offset": exonResponse.end_exon,
+      "gene_descriptor": {
+        "id": "gene:TPM3",
+        "gene_id": "hgnc:12012",
+        "type": "GeneDescriptor",
+        "label": "TPM3"
+      }
+    }
+
+    console.log(`assembled transcript segment: ${result}`)
+
+    return result;
+
+    });
+    };
 
   const handleCancel = (id) => {
     let items = Array.from(structure);
