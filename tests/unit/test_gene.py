@@ -15,20 +15,20 @@ def test_get_gene_id():
 
 def test_get_matching_genes():
     """Test gene term autocomplete service."""
-    suggestions = get_possible_genes('braf')
+    suggestions = get_possible_genes('brca')
     assert suggestions['matches'] == [
         ('brca1', 'hgnc:1100'),
-        ('brca1', 'ncbigene:672'),
         ('brca1', 'ensembl:ensg00000012048'),
+        ('brca1', 'ncbigene:672'),
         ('brca1p1', 'hgnc:28470'),
-        ('brca1p1', 'ncbigene:394269'),
         ('brca1p1', 'ensembl:ensg00000267595'),
-        ('brca2', 'ncbigene:675'),
+        ('brca1p1', 'ncbigene:394269'),
         ('brca2', 'hgnc:1101'),
         ('brca2', 'ensembl:ensg00000139618'),
+        ('brca2', 'ncbigene:675'),
         ('brca3', 'ncbigene:60500'),
-        ('brcaa1', 'ncbigene:51742'),
         ('brcaa1', 'hgnc:15550'),
+        ('brcaa1', 'ncbigene:51742'),
         ('brcacox', 'hgnc:120'),
         ('brcacox', 'ncbigene:8309'),
         ('brcai', 'ncbigene:672'),
@@ -40,7 +40,7 @@ def test_get_matching_genes():
         ('brcata', 'ncbigene:8068'),
         ('brcax', 'ncbigene:60500')
     ]
-    assert suggestions['term'] == 'braf'
+    assert suggestions['query'] == 'brca'
     assert suggestions.get('warnings') is None
 
     suggestions = get_possible_genes('ntr')
@@ -48,45 +48,45 @@ def test_get_matching_genes():
         ('ntr', 'hgnc:8039'),
         ('ntr', 'ncbigene:4923'),
         ('ntr1', 'ncbigene:24144'),
-        ('ntr2', 'ncbigene:23620'),
         ('ntr2', 'hgnc:8040'),
+        ('ntr2', 'ncbigene:23620'),
         ('ntr3', 'ncbigene:6272'),
-        ('ntra', 'ncbigene:257194'),
         ('ntra', 'hgnc:17302'),
+        ('ntra', 'ncbigene:257194'),
         ('ntrenv', 'hgnc:37653'),
         ('ntrenv', 'ncbigene:100379323'),
         ('ntri', 'hgnc:17941'),
         ('ntri', 'ncbigene:50863'),
-        ('ntrk1', 'ncbigene:4914'),
         ('ntrk1', 'hgnc:8031'),
         ('ntrk1', 'ensembl:ensg00000198400'),
+        ('ntrk1', 'ncbigene:4914'),
         ('ntrk2', 'hgnc:8032'),
-        ('ntrk2', 'ncbigene:4915'),
         ('ntrk2', 'ensembl:ensg00000148053'),
+        ('ntrk2', 'ncbigene:4915'),
         ('ntrk3', 'hgnc:8033'),
-        ('ntrk3', 'ncbigene:4916'),
         ('ntrk3', 'ensembl:ensg00000140538'),
-        ('ntrk3-as1', 'ensembl:ensg00000260305'),
+        ('ntrk3', 'ncbigene:4916'),
         ('ntrk3-as1', 'hgnc:27532'),
+        ('ntrk3-as1', 'ensembl:ensg00000260305'),
         ('ntrk3-as1', 'ncbigene:283738'),
         ('ntrk4', 'hgnc:2730'),
         ('ntrk4', 'ncbigene:780'),
-        ('ntrkr1', 'ncbigene:4919'),
         ('ntrkr1', 'hgnc:10256'),
+        ('ntrkr1', 'ncbigene:4919'),
         ('ntrkr2', 'hgnc:10257'),
         ('ntrkr2', 'ncbigene:4920'),
-        ('ntrkr3', 'ncbigene:4921'),
-        ('ntrkr3', 'hgnc:2731')
+        ('ntrkr3', 'hgnc:2731'),
+        ('ntrkr3', 'ncbigene:4921')
     ]
-    assert suggestions['term'] == 'ntr'
+    assert suggestions['query'] == 'ntr'
     assert suggestions.get('warnings') is None
 
     suggestions = get_possible_genes('sdflk')
     assert suggestions.get('matches') is None
-    assert suggestions['term'] == 'sdflk'
+    assert suggestions['query'] == 'sdflk'
     assert suggestions['warnings'] == ['No matching terms found']
 
     suggestions = get_possible_genes('b')
     assert suggestions.get('matches') is None
-    assert suggestions['term'] == 'b'
+    assert suggestions['query'] == 'b'
     assert suggestions['warnings'] == ['Max suggestions exceeded']

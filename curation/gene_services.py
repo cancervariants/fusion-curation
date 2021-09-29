@@ -63,7 +63,17 @@ def get_possible_genes(query: str) -> Dict:
     if len(items) == 0:
         response['warnings'] = ['No matching terms found']
         return response
-    response['matches'] = sorted(items, key=lambda i: i[0])
+
+    def order_by_source(concept_id: str) -> int:
+        if concept_id[0] == 'h':  # for hgnc
+            return 0
+        elif concept_id[0] == 'e':  # for ensembl
+            return 1
+        else:  # for ncbi
+            return 2
+
+    response['matches'] = sorted(sorted(items, key=lambda i: order_by_source(i[1])),
+                                 key=lambda i: i[0])
     return response
 
 
