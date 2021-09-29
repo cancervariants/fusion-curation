@@ -1,6 +1,6 @@
 """Provide schemas for FastAPI responses."""
 from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
 from fusor.model import Fusion
 
@@ -18,11 +18,11 @@ class NormalizeGeneResponse(BaseModel):
         extra = Extra.forbid
 
 
-class CompleteGeneResponse(BaseModel):
+class SuggestGeneResponse(BaseModel):
     """Response model for gene autocomplete suggestions endpoint."""
 
     term: StrictStr
-    suggestions: Optional[List[StrictStr]]
+    suggestions: Optional[List[Tuple[str, str]]]
     warnings: Optional[List[StrictStr]]
 
     class Config:

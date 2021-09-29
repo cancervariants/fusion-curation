@@ -2,9 +2,11 @@
 from curation import logger
 from gene.query import QueryHandler
 from gene.schemas import MatchType
-from typing import List, Tuple, Optional, Dict
+from typing import List, Tuple, Optional, Dict, Any
 from boto3.dynamodb.conditions import Key
 
+
+MAX_SUGGESTIONS = 50
 
 # set Gene Normalization settings via environment variables -- see Gene Normalization README
 gene_query_handler = QueryHandler()
@@ -28,7 +30,6 @@ def get_gene_id(term: str) -> Tuple[Optional[str], List[str]]:
 
 def get_possible_genes(query: str) -> Dict:
     """Given input query, return possible gene symbol/alias matches (for autocomplete).
-    Currently tries to provide exact match first, then all other possible matches
     # TODO
       * how to handle extremely large result lists (such that query wouldn't capture all of them?)
       * similarly, we probably need to impose a cutoff suggestion amount (25?)
@@ -38,39 +39,32 @@ def get_possible_genes(query: str) -> Dict:
       * pretty sure `query` should always be in items, right?
 
     :param str query: user-entered string (case-insensitive)
-    :return: list of valid gene search terms
+    :return: response, Dict, containing requested term, and either a List of suggested terms or
+        warning(s) if lookup fails
     """
-    item_types = ('symbol', 'prev_symbol', 'alias')
-    query_match = False
-    for item_type in item_types:
-        response = gene_query_handler.db.genes.query(
-            KeyConditionExpression=Key('label_and_type').eq(f'{query}##{item_type}'),
-            ProjectionExpression='label_and_type'
-        )
-        if response['Items']:
-            query_match = True
-            break
+    response: Dict[str, Any] = {'query': query}
 
     items = set()
-    for item_type in item_types:
-        response = gene_query_handler.db.genes.query(
+    for item_type in ('symbol', 'prev_symbol', 'alias'):
+        lookup_response = gene_query_handler.db.genes.query(
             IndexName='gene_startswith',
             KeyConditionExpression=(
                 Key('item_type').eq(item_type) & Key('label_and_type').begins_with(query.lower())
             ),
-            ProjectionExpression='label_and_type'
+            ProjectionExpression='label_and_type, concept_id'
         )
 
-        items |= {item['label_and_type'].split('##')[0] for item in response['Items']}
-    if query_match and query in items:
-        items.remove(query)
-        matches = [query] + list(items)
-    else:
-        matches = list(items)
-    return {
-        'query': query,
-        'matches': matches
-    }
+        items |= {(item['label_and_type'].split('##')[0], item['concept_id'])
+                  for item in lookup_response['Items']}
+        if len(items) > MAX_SUGGESTIONS:
+            response['warnings'] = ['Max suggestions exceeded']
+            return response
+
+    if len(items) == 0:
+        response['warnings'] = ['No matching terms found']
+        return response
+    response['matches'] = sorted(items, key=lambda i: i[0])
+    return response
 
 
 def update_gene_table():
@@ -109,10 +103,6 @@ def update_gene_table():
                         'ProjectionType': 'INCLUDE',
                         'NonKeyAttributes': ['concept_id']
                     },
-                    'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 10,
-                        'WriteCapacityUnits': 10
-                    }
                 }
             }
         ]

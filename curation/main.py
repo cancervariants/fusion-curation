@@ -3,7 +3,7 @@ from fastapi import FastAPI, Query, Request
 from fastapi.staticfiles import StaticFiles
 from typing import Dict, Any
 from curation.version import __version__
-from curation.schemas import NormalizeGeneResponse, CompleteGeneResponse, DomainIDResponse, \
+from curation.schemas import NormalizeGeneResponse, SuggestGeneResponse, DomainIDResponse, \
     ExonCoordsRequest, ExonCoordsResponse, SequenceIDResponse, FusionValidationResponse
 from curation.gene_services import get_gene_id, get_possible_genes
 from curation.domain_services import get_domain_id
@@ -40,10 +40,10 @@ def normalize_gene(term: str = Query('')) -> Dict:
 
 
 @app.get('/complete/gene',
-         operation_id='completeGene',
-         response_model=CompleteGeneResponse,
+         operation_id='suggestGene',
+         response_model=SuggestGeneResponse,
          response_model_exclude_none=True)
-def complete_gene(term: str = Query('')) -> Dict:
+def suggest_gene(term: str = Query('')) -> Dict:
     """Provide completion suggestions for term provided by user.
     :param str term: entered gene term
     :return: JSON response with suggestions listed, or warnings if unable to
