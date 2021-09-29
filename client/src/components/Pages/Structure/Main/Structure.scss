@@ -1,0 +1,78 @@
+.structure-tab-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: 100%;
+
+  .structure-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+    flex-grow: 0;
+    margin-bottom: 45px;
+
+    h3 {
+      font-weight: 400;
+    }
+
+    .gene {
+      background-color: var(--gene);
+      width: 320px;
+      text-align: center;
+      color: black;
+    }
+    
+    .transcript_segment {
+      background-color: var(--transcript);
+      width: 150px;
+      text-align: center;
+      color: black;
+    }
+    .linker_sequence {
+      background-color: var(--linker);
+      width: 60px;
+      text-align: center;
+    }
+    
+    .genomic_region {
+      background-color: var(--region);
+      width: 60px;
+      text-align: center;
+    }
+    
+  }
+
+
+}
+
+// .summary-title {
+//   h3 {
+//     font-weight: 400;
+//   } 
+// }
+
+
+
+
+// .structure-summary {
+//   padding: 5px;
+//   display: inline-block;
+//   background-color: white;
+//   display: flex;
+//   justify-content: space-around;
+//   width: 600px;
+//   margin: 5px;
+//   cursor: pointer;
+// }
+
+// .summary-container {
+//   display: flex;
+//   justify-content: center;
+//   min-width: 100%;
+//   padding-bottom: 15px;
+// }
+
+// .structure-container {
+//   min-width: 100%;
+// }

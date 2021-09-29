@@ -1,0 +1,124 @@
+.builder {
+  display: flex;
+  align-items: stretch;
+  background: var(--light-gray);
+  flex-grow: 1;
+
+  .gene {
+    background:var(--gene);
+  }
+  
+  .transcript_segment {
+    background-color: var(--transcript);
+  }
+  
+  .linker_sequence {
+    background-color: var(--linker);
+  }
+  
+  .genomic_region {
+    background-color: var(--region);
+  }
+
+
+.block-container {
+  padding: 40px 90px;
+  text-align: center;
+  flex: 1;
+  overflow: scroll;
+}
+
+.block {
+  // display: flex;
+  text-align: center;
+  justify-content: center;
+  font-weight: 300;
+  padding: 10px;
+  margin: 0 50px 10px 50px;
+	font-size: 18px;
+	border-radius: 5px;
+}
+
+h3 {
+  text-align: center;
+  font-weight: 500;
+}
+
+.options {
+  background-color: var(--medium-gray);
+  width: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.option-item {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  font-weight: 300;
+  padding: 10px;
+  margin: 0 50px 15px 50px;
+	font-size: 18px;
+	border-radius: 5px;
+
+  .gene {
+    border: 2px solid var(--gene-light) !important;
+    color: var(--dark-gray);
+    font-weight: 500
+  }
+  
+  .transcript_component{
+    border: 2px solid var(--transcript-light)!important;
+    color: var(--dark-gray);
+    font-weight: 500
+  }
+  
+  .linker_sequence {
+    border: 2px solid var(--linker-light) !important;
+    color: var(--dark-gray);
+    font-weight: 500
+  }
+  
+  .genomic_region {
+    border: 2px solid var(--region-light) !important;
+    color: var(--dark-gray);
+    font-weight: 500
+  }
+}
+
+
+
+
+.card-parent{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.input-parent {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+}
+
+.top-inputs {
+  display: flex;
+  justify-content: space-between;
+}
+
+.bottom-inputs {
+  display: flex;
+  justify-content: space-between;
+}
+
+.buttons {
+  width: 40px;
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+  
+}
