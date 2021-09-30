@@ -1,0 +1,7 @@
+[flake8]
+ignore = D205, D400
+max-line-length=100
+exclude =
+  .git
+  __pycache__
+  curation/version.py
