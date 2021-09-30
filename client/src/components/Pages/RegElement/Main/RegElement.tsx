@@ -15,7 +15,7 @@ export const RegElement: React.FC<Props> = ( { index }) => {
   const regElements = fusion.regulatory_elements || [];
 
   // Don't want to change the suggested element. should maybe create a separate context of the unmutated selected suggestion
-  const initialElements = useRef(regElements) 
+  const initialElements = useRef(regElements)
 
   const handleRemove = (regEl) => {
     //copy regulatory elements array, then remove the element with the relevant ID
@@ -51,7 +51,7 @@ export const RegElement: React.FC<Props> = ( { index }) => {
           
           { regElements.map(regEl => (
             <div className="regel">
-              <span>{regEl.gene_descriptor.label} {regEl.type}</span>
+              <span>{regEl.gene_descriptor.label.toUpperCase()} {regEl.type}</span>
               <span className="close-button-reg" onClick={() => handleRemove(regEl)}>
               <Close />
               </span>

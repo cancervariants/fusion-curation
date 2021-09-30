@@ -1,9 +1,12 @@
-import {useContext, useState} from 'react';
-import {InputLabel, MenuItem, FormControl, Select, Button} from '@material-ui/core/';
+import {useContext, useState, useEffect} from 'react';
+import {InputLabel, MenuItem, FormControl, Select, Button, TextField} from '@material-ui/core/';
+import { Autocomplete } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { v4 as uuid } from 'uuid';
 import './RegElementForm.scss'
+
+import { getGeneId } from '../../../../services/main';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -17,40 +20,62 @@ const useStyles = makeStyles((theme) => ({
 
 const RegElementForm: React.FC = () => {
 
+  // TODO: this shouldnt be necessary
+  useEffect(() => {
+    if (regElements === undefined){
+      setFusion({ ...fusion, ...{ "regulatory_elements" :  []}});
+    }
+  }, [])
+
   const classes = useStyles();
 
   const {fusion, setFusion} = useContext(FusionContext);
 
+  const regElements = fusion.regulatory_elements;
+
   const [type, setType] = useState(null);
   const [gene, setGene] = useState(null);
-
-  // const [open, setOpen] = useState(false);
-
+  const [geneWarning, setGeneWarning] = useState('');
+  
   const handleTypeChange = (event) => {
     setType(event.target.value);
   };
   const handleGeneChange = (event) => {
+    setGeneWarning('');
     setGene(event.target.value);
   };
 
   const handleAdd = () => {
-    //again, should make a d.ts file for this:
-    let cloneArray = Array.from(fusion['regulatory_elements']);
+    getGeneId(gene)
+      .then(geneResponse => {
+        if (geneResponse.concept_id === null){
+          setGeneWarning('Gene ID not found!')
+          throw new Error(geneWarning);
+        }
 
-    let newRegElement = {
-      "type": type,
-      "element_id": uuid(),
-      "gene_descriptor": {
-        "id": "",
-        "type": "",
-        "gene_id": "",
-        "label": gene,
-      }
-    }
+        let cloneArray = Array.from(regElements);
+        
+        let newRegElement = {
+          "type": type,
+          "element_id": uuid(),
+          "gene_descriptor": {
+            "id": geneResponse.concept_id,
+            "type": "hi",
+            "gene_id": "hi",
+            "label": geneResponse.term,
+           }
+        }
 
-    cloneArray.push(newRegElement);
+        cloneArray.push(newRegElement);
 
-    setFusion({ ...fusion, ...{ "regulatory_elements" :  cloneArray}});
+        setFusion({ ...fusion, ...{ "regulatory_elements" :  cloneArray}});
+        setGene('');
+        setType(null);
+    })
+    .catch((error) =>{
+      console.error(error)
+    }   
+    )
   }
 
   return (
@@ -70,7 +95,7 @@ const RegElementForm: React.FC = () => {
       </FormControl>
         </div>
         <div className="formInput">
-        <FormControl className={classes.formControl}>
+        {/* <FormControl className={classes.formControl}>
         <InputLabel id="demo-simple-select-label">Gene</InputLabel>
         <Select
           labelId="demo-simple-select-label"
@@ -78,12 +103,23 @@ const RegElementForm: React.FC = () => {
           value={gene}
           onChange={handleGeneChange}
         >
-          {/* TODO: link this to a separate API request that gives domain genes back based on genes */}
+
 
           <MenuItem value="BCR">BCR</MenuItem>
           <MenuItem value="ABL1">ABL1</MenuItem>
         </Select>
-      </FormControl>
+      </FormControl> */}
+
+        <TextField 
+          className={classes.formControl} 
+          id="standard-basic" 
+          label="Gene Symbol" 
+          variant="standard" 
+          value={gene}
+          error={geneWarning !== ''}
+          onChange={handleGeneChange}
+          helperText={geneWarning !== '' ? geneWarning : null}
+        />
         </div>
         
       <div className="add-button">

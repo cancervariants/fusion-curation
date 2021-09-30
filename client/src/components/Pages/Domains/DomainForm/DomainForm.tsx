@@ -1,9 +1,12 @@
-import {useContext, useState} from 'react';
-import {InputLabel, MenuItem, FormControl, Select, Button} from '@material-ui/core/';
+import {useContext, useState, useEffect} from 'react';
+import {InputLabel, MenuItem, FormControl, Select, Button, TextField} from '@material-ui/core/';
 import { makeStyles } from '@material-ui/core/styles';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { v4 as uuid } from 'uuid';
 import './DomainForm.scss'
+
+import { getDomainId } from '../../../../services/main';
+import { getGeneId } from '../../../../services/main';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -16,19 +19,31 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DomainForm: React.FC = () => {
+  // TODO: not necessary
+  useEffect(() => {
+    if (domains === undefined){
+      setFusion({ ...fusion, ...{ "protein_domains" :  []}});
+    }
+  }, [])
 
   const classes = useStyles();
 
   const {fusion, setFusion} = useContext(FusionContext);
+  const domains = fusion.protein_domains;
 
   const [domain, setDomain] = useState(null);
   const [gene, setGene] = useState(null);
   const [status, setStatus] = useState(null);
 
+  const [geneWarning, setGeneWarning] = useState('');
+  const [domainWarning, setDomainWarning] = useState('');
+
   const handleDomainChange = (event) => {
+    setDomainWarning('');
     setDomain(event.target.value);
   };
   const handleGeneChange = (event) => {
+    setGeneWarning('');
     setGene(event.target.value);
   };
   const handleStatusChange = (event) => {
@@ -37,49 +52,86 @@ const DomainForm: React.FC = () => {
 
 
   const handleAdd = () => {
-    let cloneArray = Array.from(fusion['protein_domains']);
-    
-    //again, should make a d.ts file for this:
+    //TODO: pull from model file
     let newDomain = {
-      "status": status,
-      "name": domain,
+      "status": "",
+      "name": "",
       "id": "",
       "domain_id": uuid(),
       "gene_descriptor": {
         "id": "",
-        "label": gene,
+        "label": "",
         "gene_id": ""
       }
     }
 
-    cloneArray.push(newDomain);
+    getDomainId(domain)
+      .then(domainResponse => {
+        console.log(`domainResponse is ${domainResponse}`)
+        let {domain, domain_id, warnings} = domainResponse;
 
-    setFusion({ ...fusion, ...{ "protein_domains" :  cloneArray}});
+        if (domainResponse.statusCode > 400){
+          console.log(`domain warnings are: ${warnings}`)
+          setDomainWarning(warnings);
+          throw new Error(warnings);
+        }
+        
+        newDomain.status = status;
+        newDomain.name = domain;
+        newDomain.id = domain_id;
 
+        return newDomain;
+      }
+    )
+    .then((newDomain) => {
+      getGeneId(gene).then(geneResponse => {
+        let {term, concept_id, warnings} = geneResponse;
+        if (concept_id === null){
+          setGeneWarning(warnings);
+          console.log(`gene warnings are: ${warnings}`)
+          throw new Error(warnings);
+        }
+
+        newDomain.gene_descriptor.label = term;
+        newDomain.gene_descriptor.id = `gene:${term}`;
+        newDomain.gene_descriptor.gene_id = concept_id;
+
+        let cloneArray = Array.from(fusion['protein_domains']);
+        cloneArray.push(newDomain);
+        setFusion({ ...fusion, ...{ "protein_domains" :  cloneArray}});
+      }
+    )
+    })
+    .catch(error => {
+      console.error(`Error!!!! ${error}`)
+    })
   }
 
   return (
     <div className="form-container">
-      <div className="formInput">
-        <FormControl className={classes.formControl}>
-          <InputLabel>Gene</InputLabel>
-          <Select value={gene} onChange={handleGeneChange}>
-            {/* TODO: link this to a separate API request that gives domain genes back based on user input genes */}
-            <MenuItem value="NTRK1">NTRK1</MenuItem>
-            <MenuItem value="BCR">BCR</MenuItem>
-            <MenuItem value="ABL1">ABL1</MenuItem>
-          </Select>
-        </FormControl>
+        <div className="formInput">
+        <TextField 
+          className={classes.formControl} 
+          id="standard-basic" 
+          label="Gene" 
+          variant="standard" 
+          value={gene}
+          error={geneWarning !== ''}
+          onChange={handleGeneChange}
+          helperText={geneWarning !== '' ? geneWarning : null}
+        />
         </div>
         <div className="formInput">
-        <FormControl className={classes.formControl}>
-          <InputLabel>Domain</InputLabel>
-          <Select value={domain} onChange={handleDomainChange}>
-            <MenuItem value="NTRK1">NTRK1</MenuItem>
-            <MenuItem value="BCR">BCR</MenuItem>
-            <MenuItem value="ABL1">ABL1</MenuItem>
-          </Select>
-        </FormControl>
+        <TextField 
+          className={classes.formControl} 
+          id="standard-basic" 
+          label="Domain" 
+          variant="standard" 
+          value={domain}
+          error={domainWarning !== ''}
+          onChange={handleDomainChange}
+          helperText={domainWarning !== '' ? domainWarning : null}
+        />
         </div>
         <div className="formInput">
         <FormControl className={classes.formControl}>

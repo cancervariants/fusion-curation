@@ -143,6 +143,7 @@ const Builder: React.FC = () =>  {
         newObj = {
           "component_type": "gene",
           "component_name": values[0],
+          "component_id": uuid(),
           "gene_descriptor": {
             "id": `gene:${geneResponse.term}`,
             "type": "GeneDescriptor",
@@ -189,7 +190,7 @@ const Builder: React.FC = () =>  {
 
             save(items, index, newObj);
 
-          //TODO: figure out whether genomic region should be nested under transcript segment
+          //TODO: nested genomic region (lookup GR based on transcript and vice versa)
             // getSequenceId(chr).then(sequenceResponse => {
             //   let [sequence, sequence_id, warnings] = sequenceResponse; 
             // })
@@ -202,10 +203,13 @@ const Builder: React.FC = () =>  {
           let [chromosome, strand, startPosition, endPosition] = values;
           console.log(`chromosome is ${chromosome}, strand is ${strand}, startPos is ${startPosition}, endpos is ${endPosition}`)
           getSequenceId(chromosome).then(sequenceResponse => {
-            let [sequence, sequence_id, warnings] = sequenceResponse
+
+            let {sequence, sequence_id, warnings} = sequenceResponse;
 
             newObj = {
               "component_type": "genomic_region",
+              "component_name": `chr${chromosome}:${startPosition}-${endPosition}(${strand})`,
+              "component_id": uuid(),
               "region": {
                 "id": `chr${chromosome}:${startPosition}-${endPosition}(${strand})`,
                 "type": "LocationDescriptor",
@@ -247,9 +251,6 @@ const Builder: React.FC = () =>  {
           save(items, index, newObj);
       break;
     }  
-
-
-    
   }
 
   const save = (items, index, newObj) => {
@@ -260,6 +261,7 @@ const Builder: React.FC = () =>  {
     setEditMode('');
     setStructure(items);
     setFusion({ ...fusion, ...{ "transcript_components" : items }});
+  
   }
 
   const getGeneId = async (symbol) => {
@@ -270,7 +272,7 @@ const Builder: React.FC = () =>  {
   };
 
   const getSequenceId = async (chr) => {
-    let response = await fetch(`http://localhost:5000/sequence_id?input_sequence=GRCh38:${chr}`);
+    let response = await fetch(`http://localhost:5000/lookup/sequence_id?input_sequence=GRCh38:${chr}`);
     let sequenceId = await response.json();
     return sequenceId;  
   }
@@ -340,13 +342,12 @@ const Builder: React.FC = () =>  {
                     <Draggable 
                       key={component_id} 
                       draggableId={component_id} 
-                      
                       index={index}
                       >
                       
                       {(provided, snapshot) => {
 
-                        //crude way of cancelling when user has an unsaved component
+                        // crude way of cancelling when user has an unsaved component
                         if(snapshot.isDragging && editMode !== ''){
                           handleCancel(editMode);
                         }
@@ -368,7 +369,7 @@ const Builder: React.FC = () =>  {
                             {component_type }
                           </div>
                           {snapshot.isDragging && (
-                              <div style={{ transform: 'none !important' }} className={`option-item clone ${component_type }`}>
+                              <div style={{ transform: 'none !important' }} key={component_id} className={`option-item clone ${component_type }`}>
                               {component_type }
                               </div>
                             )}
@@ -384,33 +385,33 @@ const Builder: React.FC = () =>  {
             
           </Droppable>
         <Droppable droppableId="structure">
-                {(provided) => (
-                  <div className="block-container" {...provided.droppableProps} ref={provided.innerRef}>
-                    {structure.map(({component_id, component_name, component_type}, index) => {
-                      return (
-                        <Draggable key={component_id} draggableId={component_id} index={index}>
-                          {(provided, snapshot) => (
-                            <div ref={provided.innerRef}
-                              className={`block ${component_type}`}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            
-                            >
-                              {
-                                component_id === editMode ?
-                                <TransCompInput handleSave={handleSave} handleCancel={handleCancel}  compType={component_type} index={index} id={component_id}/>
-                                : <span>{component_name}</span>
-                              }
-                              
-                            </div>
-                          )}
-                        </Draggable>
-                      )
-                    })}
-                    
-                  </div>
-                )}
-              </Droppable>
+          {(provided) => (
+            <div className="block-container" {...provided.droppableProps} ref={provided.innerRef}>
+              {structure.map(({component_id, component_name, component_type}, index) => {
+                return (
+                  <Draggable key={component_id} draggableId={component_id} index={index}>
+                    {(provided, snapshot) => (
+                      <div ref={provided.innerRef}
+                        className={`block ${component_type}`}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      
+                      >
+                        {
+                          component_id === editMode ?
+                          <TransCompInput handleSave={handleSave} handleCancel={handleCancel}  compType={component_type} index={index} key={component_id} id={component_id}/>
+                          : <span>{component_name}</span>
+                        }
+                        
+                      </div>
+                    )}
+                  </Draggable>
+                )
+              })}
+              
+            </div>
+          )}
+        </Droppable>
       </DragDropContext>
       </div>
     )

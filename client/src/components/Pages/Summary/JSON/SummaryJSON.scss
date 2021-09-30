@@ -1,0 +1,23 @@
+.summary-json-container {
+  height: 80%;
+  width: 50%;
+  padding: 20px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  border: .5px solid rgba(0, 0, 0, 0.1);
+  text-overflow: clip;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: x-small;
+  line-height: 1.2;
+  margin: 0 auto;
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0,0,0,.5);
+  box-shadow: 0 0 1px rgba(255,255,255,.5);
+}

@@ -1,0 +1,34 @@
+.readable-items-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size:x-large;
+  background-color: var(--white);
+  margin: 0 auto;
+}
+
+.row {
+  margin: 20px;
+  width: 600px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  
+}
+
+.left-item {
+  font-weight: 300;
+}
+
+.right-item {
+  display: flex;
+  flex-direction: column;
+  font-weight: 400;
+  text-align: right;
+}
+
+.right-sub-item {
+  font-size: medium;
+}

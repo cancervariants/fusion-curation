@@ -61,8 +61,9 @@ def fetch_domain_id(domain: str = Query('')) -> Dict:
         and relevant warnings
     """
     (domain_id, warnings) = get_domain_id(domain.strip())
+    print(domain_id)
     return {
-        'name': domain,
+        'domain': domain,
         'domain_id': domain_id,
         'warnings': warnings
     }
