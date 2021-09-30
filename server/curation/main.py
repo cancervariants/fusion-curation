@@ -2,6 +2,7 @@
 from fastapi import FastAPI, Query, Request
 from fastapi.staticfiles import StaticFiles
 from typing import Dict
+from curation import APP_ROOT
 from curation.version import __version__
 from curation.schemas import NormalizeGeneResponse, DomainIDResponse, ExonCoordsRequest, \
     ExonCoordsResponse, SequenceIDResponse, FusionValidationResponse
@@ -115,4 +116,4 @@ def validate_object(proposed_fusion: Dict) -> Dict:
 
 
 # serve static homepage
-app.mount('/', StaticFiles(directory='curation/build/'), name='static')
+app.mount('/', StaticFiles(directory=APP_ROOT / 'build'), name='static')
