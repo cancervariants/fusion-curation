@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { SuggestionContext } from '../../../../global/contexts/SuggestionContext';
 
 // MUI
@@ -88,7 +87,7 @@ export const GeneSearch: React.FC = () => {
       })
       .then(function(myJson) {
         // really should have search button, then check for presence of genes in objects
-        if(genes.length == 2){
+        if(genes.length === 2){
           setSuggestions([...suggestions, myJson[0]])
         }     
         return;   
@@ -96,7 +95,7 @@ export const GeneSearch: React.FC = () => {
   }
 
   useEffect(() => {
-    if(genes.length == 1){
+    if(genes.length === 1){
       return
     }
     // setFusion({ ...fusion, ...{ "genes" : genes }})
@@ -123,10 +122,10 @@ export const GeneSearch: React.FC = () => {
     setGenes([]);
   }
 
-  const onSelectGene = (value) => {
-    setGenes([...genes, value]);
-    resetter();
-  }
+  // const onSelectGene = (value) => {
+  //   setGenes([...genes, value]);
+  //   resetter();
+  // }
 
   const resetter = () => {
     setInputValue('');

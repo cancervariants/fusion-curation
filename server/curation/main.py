@@ -1,5 +1,6 @@
 """Initialize FastAPI and provide routes."""
 from fastapi import FastAPI, Query, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from typing import Dict
 from curation.version import __version__
@@ -14,6 +15,18 @@ from curation.validation_services import validate_fusion
 
 app = FastAPI(version=__version__)
 
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event('startup')
 async def startup():
@@ -66,6 +79,7 @@ async def get_exon_coords(request: Request, exon_data: ExonCoordsRequest) -> Dic
         expected structure.
     :return: Dict served as JSON containing transcript's exon information
     """
+    print(exon_data)
     if not exon_data.gene:
         exon_data.gene = ''
 

@@ -21,6 +21,7 @@ export const Summary: React.FC<Props> = ( { index }) => {
 
   return (
     <div className="summary-tab-container">
+      <div className="summary-items-container">
       <div className="row-items">
       <div className="row">
         <div className="left-item">Gene </div>
@@ -44,7 +45,7 @@ export const Summary: React.FC<Props> = ( { index }) => {
       <div className="save-button">
       <Button style={{width: '300px', marginTop: "30px"}} variant="contained" color="primary">Save</Button>
       </div>
-    
+      </div>
     </div>
   )
 }

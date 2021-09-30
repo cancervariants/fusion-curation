@@ -1,4 +1,4 @@
-import {useRef} from 'react';
+import {useRef, useState} from 'react';
 import {Card, CardContent, Button, TextField} from '@material-ui/core';
 
 import './TransCompInput.scss';
@@ -32,6 +32,10 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
 
   // Linker Sequence
   const sequenceInput = useRef('');
+
+  const [sequence, setSequence] = useState('');
+  
+  const containsOnlyBases = sequence && sequence.match(/^([aAgGtTcC]+)?$/) === null;
 
   // Gene
   const geneInput = useRef('');
@@ -108,11 +112,19 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
               <CardContent>
                 <div className="card-parent">
                   <div className="input-parent">
-                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Sequence" inputRef={sequenceInput}></TextField>                
+                  <TextField 
+                    margin="dense" 
+                    label="Sequence" 
+                    value={sequence.toUpperCase()}
+                    onChange={(event) => setSequence(event.target.value)}
+                    inputRef={sequenceInput}
+                    error={containsOnlyBases}
+                    helperText={containsOnlyBases ? 'Warning: must contain only {A, C, G, T}' : null}
+                  ></TextField>                
                   </div>
                   <div className="buttons">
                   <Button style={{margin: '8px'}} variant="outlined" color="secondary" onClick={() => handleCancel(id)}>Cancel</Button>
-                  <Button style={{margin: '8px'}} variant="outlined" color="primary" onClick={() => handleSave(index, compType, sequenceInput)}>Save</Button>
+                  <Button style={{margin: '8px'}} variant="outlined" disabled={containsOnlyBases} color="primary" onClick={() => handleSave(index, compType, sequenceInput)}>Save</Button>
                   </div>
                 </div>                
               </CardContent>

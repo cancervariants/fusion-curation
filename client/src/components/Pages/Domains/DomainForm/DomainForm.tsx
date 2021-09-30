@@ -80,6 +80,8 @@ const DomainForm: React.FC = () => {
             <MenuItem value="ABL1">ABL1</MenuItem>
           </Select>
         </FormControl>
+        </div>
+        <div className="formInput">
         <FormControl className={classes.formControl}>
           <InputLabel>Status</InputLabel>
           <Select value={status} onChange={handleStatusChange}>

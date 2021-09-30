@@ -1,11 +1,23 @@
 .summary-tab-container {
   display: flex;
   flex-direction: column;
-  width: 80vw;
-  height: 70vh;
+  width: 100%;
+  height: 100%;
   align-items: center;
   justify-content: center;
   font-size:x-large;
+  background-color: var(--light-gray);
+}
+
+.summary-items-container {
+  border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size:x-large;
+  background-color: var(--white);
+  padding: 30px;
 }
 
 .row {

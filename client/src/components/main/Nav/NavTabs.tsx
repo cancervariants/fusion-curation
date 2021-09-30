@@ -120,27 +120,27 @@ export default function NavTabs() {
           aria-label="nav tabs example"
           className={classes.enabledtabs}
         >
-          <LinkTab label="Gene" href="/drafts" {...a11yProps(0)}  />
-          <LinkTab label="Structure" href="/drafts" {...a11yProps(1)}  />
-          <LinkTab label="Regulatory Element" href="/trash" {...a11yProps(2)} />
-          <LinkTab label="Domains" href="/spam" {...a11yProps(3)} />
-          <LinkTab label="Summary" href="/spam" {...a11yProps(4)} />
+          {/* <LinkTab label="Gene" href="/drafts" {...a11yProps(0)}  /> */}
+          <LinkTab label="Structure" href="/drafts" {...a11yProps(0)}  />
+          <LinkTab label="Regulatory Element" href="/trash" {...a11yProps(1)} />
+          <LinkTab label="Domains" href="/spam" {...a11yProps(2)} />
+          <LinkTab label="Summary" href="/spam" {...a11yProps(3)} />
         </Tabs>
       </AppBar>
       <div className="tab-panel">
-        <TabPanel value={value} index={0} >    
+        {/* <TabPanel value={value} index={0} >    
           <Gene index={1}/>
-        </TabPanel>
-        <TabPanel value={value} index={1}>
+        </TabPanel> */}
+        <TabPanel value={value} index={0}>
           <Structure index={1}/>
         </TabPanel>
-        <TabPanel value={value} index={2}>
+        <TabPanel value={value} index={1}>
           <RegElement index={1}/>
         </TabPanel>
-        <TabPanel value={value} index={3}>
+        <TabPanel value={value} index={2}>
           <Domain index={1}/>
         </TabPanel>
-        <TabPanel value={value} index={4}>
+        <TabPanel value={value} index={3}>
           <Summary index={1}/>
         </TabPanel>
       </div>

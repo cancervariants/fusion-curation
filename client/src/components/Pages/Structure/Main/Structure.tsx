@@ -28,13 +28,12 @@ export const Structure: React.FC<Props> = ( { index }) => {
       <div className="structure-summary">
       <h3>Structure Summary</h3>
 
-      
       <div className="summary-container">
       <div >
 
         {
           structure.map(comp => (
-            <span className={comp.component_type}>{`${comp.component_name}`} </span>
+            <span key={comp.component_id} className={comp.component_type}>{`${comp.component_name}`} </span>
           ))
         }
 

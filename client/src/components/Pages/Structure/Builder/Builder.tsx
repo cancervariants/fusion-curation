@@ -5,6 +5,7 @@ import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautif
 import './Builder.scss';
 import { TransCompInput } from '../TransCompInput/TransCompInput';
 
+// TODO: should be dynamic
 const OPTIONS = [
   {
     "component_type": "gene",
@@ -79,7 +80,10 @@ const Builder: React.FC = () =>  {
     }
   }, [])
 
+
   const copy = (result: DropResult) => {
+    // TODO: remove forms that were never saved before adding new ones
+
     const {source, destination} = result;
   
     const sourceClone = Array.from(OPTIONS);
@@ -116,6 +120,7 @@ const Builder: React.FC = () =>  {
 
     // TODO: prevent from sending empty fields (where applicable)
 
+    
     const items = Array.from(structure);
     let obj = items[index];
     let newObj = Object.assign({}, obj)
@@ -126,30 +131,128 @@ const Builder: React.FC = () =>  {
       i.current.value
     ))
 
-    // anywhere form 1-4 inputs are passed based on the component type being entered
-    // but in each case, the component_name is passed as the first input param
-
-    newObj.component_name = values[0];
-
     // TODO: Update backend schema to include component_name and any other keys
 
+    // building properties of newObj (which then gets pushed to transcript_components)
     switch(compType){
+
       case 'gene': 
-        newObj.gene_descriptor.gene_id = getGeneID(inputs[0])
-        break;
+      let [symbol] = values;
+      getGeneId(symbol).then(geneResponse => {
+
+        newObj = {
+          "component_type": "gene",
+          "component_name": values[0],
+          "gene_descriptor": {
+            "id": `gene:${geneResponse.term}`,
+            "type": "GeneDescriptor",
+            "gene_id": geneResponse.concept_id,
+            "label": geneResponse.term
+          }
+        }
+
+        save(items, index, newObj);
+        
+      })
+      break;
+
       case 'transcript_segment': 
-        let [transcript, exon_start, exon_end, gene_symbol, exon_start_offset, exon_end_offset] = values
+        let [transcript,  gene_symbol, exon_start, exon_end, exon_start_offset, exon_end_offset] = values
 
-        let exon = null;
+        exon_start = parseInt(exon_start);
+        exon_end = parseInt(exon_end); 
+        exon_start_offset = parseInt(exon_start_offset);
+        exon_start_offset = parseInt(exon_end_offset);
 
-        exon = getExon(transcript, exon_start || 0, exon_end || 0,
-          exon_start_offset || 0, exon_end_offset || 0, gene_symbol);
+        getExon(transcript, exon_start || 0, exon_end || 0,
+          exon_start_offset || 0, exon_end_offset || 0, gene_symbol).then(exonResponse => {
 
-        // TODO: set stuff to exon
-        break;      
+            let {tx_ac, gene, gene_id, exon_start, exon_start_offset, exon_end, exon_end_offset, sequence_id, chr, start, end, warnings } = exonResponse;
+
+            newObj = {
+              "component_type": "transcript_segment",
+              "component_name": tx_ac,
+              "transcript": tx_ac,
+              "component_id": uuid(),
+              "shorthand": tx_ac,
+              "exon_start": exon_start,
+              "exon_start_offset": exon_start_offset,
+              "exon_end": exon_end,
+              "exon_end_offset": exon_end_offset,
+              "gene_descriptor": {
+                "id": `gene:${gene}`,
+                "gene_id": gene_id,
+                "type": "GeneDescriptor",
+                "label": `${gene}`
+              }
+            }
+
+            save(items, index, newObj);
+
+          //TODO: figure out whether genomic region should be nested under transcript segment
+            // getSequenceId(chr).then(sequenceResponse => {
+            //   let [sequence, sequence_id, warnings] = sequenceResponse; 
+            // })
+          }) 
+          
+          
+      break;
+      
+      case 'genomic_region':
+          let [chromosome, strand, startPosition, endPosition] = values;
+          console.log(`chromosome is ${chromosome}, strand is ${strand}, startPos is ${startPosition}, endpos is ${endPosition}`)
+          getSequenceId(chromosome).then(sequenceResponse => {
+            let [sequence, sequence_id, warnings] = sequenceResponse
+
+            newObj = {
+              "component_type": "genomic_region",
+              "region": {
+                "id": `chr${chromosome}:${startPosition}-${endPosition}(${strand})`,
+                "type": "LocationDescriptor",
+                "location": {
+                  "type": "SequenceLocation",
+                  "sequence_id": sequence_id,
+                  "interval": {
+                    "type": "SequenceLocation",
+                    "start": {
+                      "type": "Number",
+                      "value": startPosition,
+                    },
+                    "end": {
+                      "type": "Number",
+                      "value": endPosition,
+                    },                  
+                  }
+                },
+                "label": `chr${chromosome}:${startPosition}-${endPosition}(${strand})`
+              },
+              "strand": strand
+            }
+            save(items, index, newObj);
+          })
+      break;
+
+      case 'linker_sequence':
+          let [sequence] = values;
+          newObj = {
+            "component_type": "linker_sequence",
+            "component_name": sequence,
+            "component_id": uuid(),
+            "linker_sequence": {
+              "id": `sequence:${sequence}`,
+              "type": "SequenceDescriptor",
+              "sequence": sequence,
+            }
+          }
+          save(items, index, newObj);
+      break;
     }  
 
-    // TODO: what other computing for fusion object should/could happen based on form input? 
+
+    
+  }
+
+  const save = (items, index, newObj) => {
 
     items.splice(index, 1, newObj);
 
@@ -159,73 +262,50 @@ const Builder: React.FC = () =>  {
     setFusion({ ...fusion, ...{ "transcript_components" : items }});
   }
 
-  const getGeneID = (symbol) => {
-    // eslint-disable-next-line consistent-return
-    fetch(`/gene/${symbol}`).then((response) => response.json()).then((geneResponse) => {
-    if (geneResponse.warnings) {
-    return null;
+  const getGeneId = async (symbol) => {
+    // TODO: error handling
+    let response = await fetch(`http://localhost:5000/lookup/gene?term=${symbol}`);
+    let geneId = await response.json();
+    return geneId;
+  };
+
+  const getSequenceId = async (chr) => {
+    let response = await fetch(`http://localhost:5000/sequence_id?input_sequence=GRCh38:${chr}`);
+    let sequenceId = await response.json();
+    return sequenceId;  
+  }
+
+  const getExon = async (txAc, startExon, endExon, startExonOffset, endExonOffset, gene) => {
+    let reqObj = {
+      tx_ac: txAc,
+      gene: gene,
+      exon_start: startExon,
+      exon_start_offset: startExonOffset,
+      exon_end: endExon,
+      exon_end_offset: endExonOffset
     }
-    return geneResponse;
+
+    let response = await fetch(`/lookup/coords`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(reqObj),
     });
-    };
-    
-  const getExon = (txAc, startExon, endExon, startExonOffset, endExonOffset, gene) => {
-    let url = null;
-    if (!gene) {
-    url = `/coordinates/${txAc}/${startExon}/${endExon}/${startExonOffset}/${endExonOffset}`;
-    } else {
-    url = `/coordinates/${txAc}/${startExon}/${endExon}/${startExonOffset}/${endExonOffset}/${gene}`;
-    }
-    fetch(url, {
-    method: 'GET',
-    headers: {
-    'Content-Type': 'application/json',
-    },
-    }).then((response) => response.json()).then((exonResponse) => {
 
-    if (exonResponse === null) {
-    return null;
-    }
-    if (exonResponse.warnings) {
-    return null;
-    }
-    const { chr, start, end } = exonResponse;
-    const geneSymbol = exonResponse.gene;
+    let exonResponse = await response.json();
 
-    console.log(`chr: ${chr}`)
+    return exonResponse;
 
-    // do gene lookup for gene_descriptor, using gene symbol?
-
-    let result = {
-      "component_type": "transcript_segment",
-      "component_name": chr,
-      "component_id": uuid(),
-      "shorthand": "",
-      "exon_start": start,
-      "exon_start_offset": exonResponse.start_exon,
-      "exon_end": end,
-      "exon_end_offset": exonResponse.end_exon,
-      "gene_descriptor": {
-        "id": "gene:TPM3",
-        "gene_id": "hgnc:12012",
-        "type": "GeneDescriptor",
-        "label": "TPM3"
-      }
-    }
-
-    console.log(`assembled transcript segment: ${result}`)
-
-    return result;
-
-    });
-    };
+  }
 
   const handleCancel = (id) => {
     let items = Array.from(structure);
     items = items.filter(item => item.component_id !== id);
     
-    setStructure(items);
     setEditMode('');
+    setStructure(items);
   }
 
 
@@ -235,7 +315,7 @@ const Builder: React.FC = () =>  {
     // dropped outside the list
     if (!destination) return;
 
-    if(destination.droppableId === source.droppableId) {
+    if(destination.droppableId === source.droppableId ) {
       reorder(result);
     } else {
       copy(result);
@@ -246,12 +326,15 @@ const Builder: React.FC = () =>  {
       <div className="builder">
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="OPTIONS" isDropDisabled={true}>
+          
             {(provided, snapshot) => (
               <div className="options" 
                 {...provided.droppableProps} 
                 ref={provided.innerRef}
               >
+                
                 <div className="options-container">
+                
                 {OPTIONS.map(({component_id, component_type }, index) => (
                   
                     <Draggable 
@@ -261,8 +344,13 @@ const Builder: React.FC = () =>  {
                       index={index}
                       >
                       
-                      {(provided, snapshot) => (
-                        <React.Fragment>
+                      {(provided, snapshot) => {
+
+                        //crude way of cancelling when user has an unsaved component
+                        if(snapshot.isDragging && editMode !== ''){
+                          handleCancel(editMode);
+                        }
+                        return (<React.Fragment>
                           <div 
                            
                             ref={provided.innerRef}
@@ -284,8 +372,8 @@ const Builder: React.FC = () =>  {
                               {component_type }
                               </div>
                             )}
-                        </React.Fragment>
-                      )}
+                        </React.Fragment>)
+                      }}
                     </Draggable>
                   
                 ))}
@@ -293,6 +381,7 @@ const Builder: React.FC = () =>  {
 
               </div>
             )}
+            
           </Droppable>
         <Droppable droppableId="structure">
                 {(provided) => (
@@ -318,6 +407,7 @@ const Builder: React.FC = () =>  {
                         </Draggable>
                       )
                     })}
+                    
                   </div>
                 )}
               </Droppable>

@@ -14,6 +14,9 @@ function App() {
   const [suggestions, setSuggestions] = useState<unknown>([]);
   const [fusion, setFusion] = useState<unknown>([]);
 
+  // disable superfluous react_dnd warnings
+  window['__react-beautiful-dnd-disable-dev-warnings'] = true;
+
   const { colorTheme } = useColorTheme();
 
   return (
