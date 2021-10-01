@@ -7,14 +7,25 @@
   .structure-summary {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
     flex-direction: column;
     flex-grow: 0;
-    margin-bottom: 45px;
+    height: 100px;
+    font-weight: 400;
+    font-size: x-large;
 
     h3 {
       font-weight: 400;
+      font-size: x-large;
+      margin: 0;
     }
+    h5 {
+      font-weight: 300;
+      font-size: medium;
+      margin: 0 0 10px 0;
+    }
+
+
 
     .gene {
       background-color: var(--gene);
@@ -46,11 +57,12 @@
 
 }
 
-// .summary-title {
-//   h3 {
-//     font-weight: 400;
-//   } 
-// }
+.summary-title {
+  h3 {
+    font-weight: 400;
+    font-size: x-large;
+  } 
+}
 
 
 

@@ -90,7 +90,7 @@ export default function NavTabs() {
     },
     enabledtabs:{
       backgroundColor: colorTheme['--tabs'],
-      color: colorTheme['--medium-gray'],
+      color: colorTheme['--dark-gray'],
       borderBottom: `1px solid ${colorTheme['--medium-gray']}`
     },
   }));
@@ -152,7 +152,7 @@ export default function NavTabs() {
           <Button className={classes.previous} onClick={(event) => {handleChange(event, value - 1)}} variant="contained" color="primary" >Back</Button>
         </div>  
         : null} 
-        { value !== 4 ?
+        { value !== 3 ?
         <div className="continue">
            <Button style={{backgroundColor: colorTheme['--primary'], marginLeft: 'auto'}} onClick={(event) => {handleChange(event, value + 1)}} variant="contained" color="primary">Continue</Button>
         </div>

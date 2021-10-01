@@ -38,26 +38,28 @@
     font-weight: 200;
   }
 
-  .close-button-reg {
-    margin-left: 38px;
-    margin-top: -3px;
-    position: absolute;
-  }
+  
 
-  .formInput {
-    margin: 40px;
-  }
+
 
   .regel {
+    display: flex;
+    align-items: center;
     margin-top: 20px;
-    width: 38%;
+    // width: 38%;
     font-size:medium;
     font-weight: 200;
     border: 1px solid rgba(0, 0, 0, 0.3);
     padding: 10px;
-    margin-left: -35px;
+    // margin-left: -35px;
     border-radius: 7px;
   }
+
+  .close-button-reg {
+    margin-top: 6px;
+    text-align: right;
+  }
+
   .blurb-container {
     display: flex;
     flex-direction: column;

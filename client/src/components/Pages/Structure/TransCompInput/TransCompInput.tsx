@@ -1,5 +1,8 @@
-import {useRef, useState} from 'react';
+import {useState} from 'react';
 import {Card, CardContent, Button, TextField} from '@material-ui/core';
+
+import { getGeneId } from '../../../../services/main';
+import { getExon } from '../../../../services/main';
 
 import './TransCompInput.scss';
 
@@ -11,34 +14,92 @@ interface Props {
   handleCancel: (id: string) => void;
 }
 
-
-
-
-
+// TODO: disappear error onChange
 
 export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handleSave, index, id}) => {
 
+
   //Genomic Region
-  const strandInput = useRef('');
-  const chromosomeInput = useRef('');
-  const startPositionInput = useRef('');
-  const endPositionInput = useRef('');
+  const [strand, setStrand] = useState('');
+  const [chromosome, setChromosome] = useState('');
+  const [startPosition, setStartPosition] = useState('');
+  const [endPosition, setEndPosition] = useState('');
 
   // Transcript Segment
-  const transcriptInput = useRef('');
-  const transcriptGeneInput = useRef('');
-  const startingExonInput = useRef('');
-  const endingExonInput = useRef('');
+  const [transcriptError, setTranscriptError] = useState('');
+  const [transcriptGeneError, setTranscriptGeneError] = useState('');
+
+  const [txAc, setTxAc] = useState('');
+  const [transcriptGene, setTranscriptGene] = useState('');
+  const [startingExon, setStartingExon] = useState('');
+  const [endingExon, setEndingExon] = useState('');
+  const [startingExonOffset, setStartingExonOffset] = useState('');
+  const [endingExonOffset, setEndingExonOffset] = useState('');
+
+  const transcriptValidate = () => {
+    if(transcriptGene.length > 0){
+      getGeneId(transcriptGene)
+        .then(geneResponse => {
+          if (geneResponse.concept_id === null){
+            setTranscriptGeneError('Gene not found!')
+            throw new Error(geneResponse.warnings)
+          } 
+        })
+        .catch(err => {
+          console.error(err)
+        })
+        .then( res => {
+          console.log(`WE MADE IT!!!!`)
+          getExon(txAc, transcriptGene, parseInt(startingExon) || 0, parseInt(endingExon) || 0, parseInt(startingExonOffset) || 0, parseInt(endingExonOffset) || 0)
+          .then(exonResponse => {
+            console.log(`exonResponse is ${JSON.stringify(exonResponse)}`)
+            if(exonResponse.tx_ac === null){
+              setTranscriptError('Transcript not found!')
+              return
+            } else {
+              handleSave(index, compType, txAc, transcriptGene, parseInt(startingExon) || 0, parseInt(endingExon) || 0, parseInt(startingExonOffset) || 0, parseInt(endingExonOffset) || 0)
+            }
+          })
+        }
+          
+        )
+    } else {
+      getExon(txAc, transcriptGene, parseInt(startingExon) || 0, parseInt(endingExon) || 0, parseInt(startingExonOffset) || 0, parseInt(endingExonOffset) || 0)
+          .then(exonResponse => {
+            console.log(`exonResponse is ${JSON.stringify(exonResponse)}`)
+            if(exonResponse.tx_ac === null){
+              setTranscriptError('Transcript not found!')
+              return
+            } else {
+              handleSave(index, compType, txAc, transcriptGene, parseInt(startingExon) || 0, parseInt(endingExon) || 0, parseInt(startingExonOffset) || 0, parseInt(endingExonOffset) || 0)
+            }
+          })
+    }
+
+
+
+  }
 
   // Linker Sequence
-  const sequenceInput = useRef('');
-
   const [sequence, setSequence] = useState('');
-  
-  const containsOnlyBases = sequence && sequence.match(/^([aAgGtTcC]+)?$/) === null;
+  const linkerError = sequence && sequence.match(/^([aAgGtTcC]+)?$/) === null;
 
   // Gene
-  const geneInput = useRef('');
+  const [gene, setGene] = useState('');
+  const [geneError, setGeneError] = useState('');
+
+  const geneValidate = (symbol) => {
+    getGeneId(symbol)
+      .then(geneResponse => {
+        if (geneResponse.concept_id === null){
+          setGeneError('Gene not found!');
+          return
+        } else {
+          handleSave(index, compType, gene) 
+        }
+      })
+  }
+
 
   const renderSwitch = (compType) => {
     switch(compType) {
@@ -52,18 +113,33 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                   <TextField 
                     margin="dense" 
                     style={{ height: 38, width: 125 }} 
-                    inputRef={chromosomeInput}
+                    value={chromosome}
+                    onChange={(event) => setChromosome(event.target.value)}
                     label="Chromosome"></TextField>                
                   <TextField 
                     margin="dense" 
                     style={{ height: 38, width: 125 }} 
                     label="Strand"
-                    inputRef={strandInput}
+                    value={strand}
+                    onChange={(event) => setStrand(event.target.value)}
                     ></TextField>                
                   </div>
                   <div className="bottom-inputs">
-                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Start Position" inputRef={startPositionInput}></TextField>                
-                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="End Position" inputRef={endPositionInput}></TextField>      
+                  <TextField 
+                    margin="dense" 
+                    style={{ height: 38, width: 125 }} 
+                    label="Start Position" 
+                    value={startPosition}
+                    onChange={(event) => setStartPosition(event.target.value)}
+                  >
+                  </TextField>                
+                  <TextField 
+                    margin="dense" 
+                    style={{ height: 38, width: 125 }} 
+                    label="End Position" 
+                    value={endPosition}
+                    onChange={(event) => setEndPosition(event.target.value)}
+                  ></TextField>      
                   </div> 
                   </div>
                   <div className="buttons">
@@ -72,7 +148,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                     style={{margin: '8px'}} 
                     variant="outlined" 
                     color="primary" 
-                    onClick={() => handleSave(index, compType, chromosomeInput, strandInput, startPositionInput, endPositionInput)}
+                    onClick={() => handleSave(index, compType, chromosome, strand, startPosition, endPosition)}
                   >
                     Save
                   </Button>
@@ -88,18 +164,56 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                 <div className="card-parent">
                   <div className="input-parent">
                   <div className="top-inputs">
-                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Transcript" inputRef={transcriptInput}></TextField>                
-                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Gene" inputRef={transcriptGeneInput}></TextField>                
+                  <TextField 
+                    margin="dense" 
+                    style={{ width: 125 }} 
+                    label="Transcript" 
+                    value={txAc}
+                    onChange={(event) => setTxAc(event.target.value)}
+                    error={transcriptError.length > 0}
+                    helperText={transcriptError}
+                  ></TextField>                
+                  <TextField 
+                    margin="dense" 
+                    style={{ width: 125 }} 
+                    label="Gene Symbol" 
+                    value={transcriptGene}
+                    onChange={(event) => setTranscriptGene(event.target.value)}
+                    error={transcriptGeneError.length > 0}
+                    helperText={transcriptGeneError}
+                  ></TextField>                
                   </div>
                   <div className="bottom-inputs">
-                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Starting Exon" inputRef={startingExonInput}></TextField>                
-                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Ending Exon" inputRef={endingExonInput}></TextField>      
+                  <TextField 
+                    margin="dense" 
+                    style={{ width: 125 }} 
+                    label="Starting Exon" 
+                    value={startingExon}
+                    onChange={(event) => setStartingExon(event.target.value)}
+                    ></TextField>                
+                  <TextField 
+                    margin="dense" 
+                    style={{ width: 125 }} 
+                    label="Ending Exon" 
+                    value={endingExon}
+                    onChange={(event) => setEndingExon(event.target.value)}
+                    ></TextField>      
                   </div> 
+                  { (startingExon !== '' || endingExon !== '') ?
+
+                    <div className="bottom-inputs">
+                    <TextField margin="dense" style={{ width: 125 }} label="Starting Offset" ></TextField>                
+                    <TextField margin="dense" style={{ width: 125 }} label="Ending Offset" ></TextField>      
+                    </div> 
+
+                    : null
+                  }
+                  
                   </div>
                   <div className="buttons">
                   <Button style={{margin: '8px'}} variant="outlined" color="secondary" onClick={() => handleCancel(id)}>Cancel</Button>
                   <Button style={{margin: '8px'}} variant="outlined" color="primary" 
-                    onClick={() => handleSave(index, compType, transcriptInput, transcriptGeneInput, startingExonInput, endingExonInput)}
+                    onClick={transcriptValidate}
                   >Save</Button>
                   </div>
                 </div>                
@@ -117,14 +231,13 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                     label="Sequence" 
                     value={sequence.toUpperCase()}
                     onChange={(event) => setSequence(event.target.value)}
-                    inputRef={sequenceInput}
-                    error={containsOnlyBases}
-                    helperText={containsOnlyBases ? 'Warning: must contain only {A, C, G, T}' : null}
+                    error={linkerError}
+                    helperText={linkerError ? 'Warning: must contain only {A, C, G, T}' : null}
                   ></TextField>                
                   </div>
                   <div className="buttons">
                   <Button style={{margin: '8px'}} variant="outlined" color="secondary" onClick={() => handleCancel(id)}>Cancel</Button>
-                  <Button style={{margin: '8px'}} variant="outlined" disabled={containsOnlyBases} color="primary" onClick={() => handleSave(index, compType, sequenceInput)}>Save</Button>
+                  <Button style={{margin: '8px'}} variant="outlined" disabled={linkerError} color="primary" onClick={() => handleSave(index, compType, sequence)}>Save</Button>
                   </div>
                 </div>                
               </CardContent>
@@ -136,11 +249,20 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
               <CardContent>
                 <div className="card-parent">
                   <div className="input-parent">
-                  <TextField margin="dense" style={{ height: 38, width: 125 }} label="Gene" inputRef={geneInput}></TextField>                
+                  <TextField 
+                    margin="dense" 
+                    style={{width: 125 }} 
+                    label="Gene Symbol" 
+                    error={geneError.length > 0}
+                    helperText={geneError}
+                    onChange={(event) => setGene(event.target.value)}
+                    value={gene.toUpperCase()}
+                    >
+                    </TextField>                
                   </div>
                   <div className="buttons">
                   <Button style={{margin: '8px'}} variant="outlined" color="secondary" onClick={() => handleCancel(id)}>Cancel</Button>
-                  <Button style={{margin: '8px'}} variant="outlined" color="primary" onClick={() => handleSave(index, compType, geneInput)}>Save</Button>
+                  <Button style={{margin: '8px'}} variant="outlined" color="primary" onClick={() => geneValidate(gene)}>Save</Button>
                   </div>
                 </div>                
               </CardContent>

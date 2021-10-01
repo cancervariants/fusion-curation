@@ -120,5 +120,17 @@ h3 {
   align-items: center;
   justify-content: center;
 }
+
+.hidden {
+  display: none;
+}
+
+.instruction {
+  display: flex;
+  margin-top: 150px;
+  margin-left: 150px;
+  font-weight: 300;
+  font-size: xx-large;
+}
   
 }

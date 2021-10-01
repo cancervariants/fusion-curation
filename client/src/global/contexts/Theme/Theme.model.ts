@@ -5,7 +5,8 @@ export enum Color {
   BLACKSEAFOAM = '043b3b',
   LIGHT_GRAY = '#F5F5FA',
   WHITE = '#FFF',
-  MEDIUM_GRAY = '#cfcfcf',
+  MEDIUM_GRAY = '#e1e1eb',
+  DARK_GRAY = '#878799',
   CYAN = '#79FFFF',
   YELLOW = '#FEFF91',
   MAGENTA = '#FF94FF',
@@ -36,6 +37,7 @@ export interface ColorTheme {
   '--secondary': Color;
   '--background': Color;
   '--white': Color;
+  '--dark-gray': Color;
   '--medium-gray': Color;
   '--light-gray': Color;
   '--gene': Color;
@@ -60,6 +62,7 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     '--tabs': Color.WHITE,
     '--background': Color.LIGHT_GRAY,
     '--white': Color.WHITE,
+    '--dark-gray': Color.DARK_GRAY,
     '--medium-gray': Color.MEDIUM_GRAY,
     '--light-gray': Color.LIGHT_GRAY,
     '--gene': Color.CYAN,
@@ -80,6 +83,7 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     '--tabs': Color.WHITE,
     '--background': Color.LIGHT_GRAY,
     '--white': Color.WHITE,
+    '--dark-gray': Color.DARK_GRAY,
     '--medium-gray': Color.MEDIUM_GRAY,
     '--light-gray': Color.LIGHT_GRAY,
     '--gene': Color.CYAN,
@@ -100,6 +104,7 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     '--tabs': Color.WHITE,
     '--background': Color.LIGHT_GRAY,
     '--white': Color.WHITE,
+    '--dark-gray': Color.DARK_GRAY,
     '--medium-gray': Color.MEDIUM_GRAY,
     '--light-gray': Color.LIGHT_GRAY,
     '--gene': Color.VIVID,

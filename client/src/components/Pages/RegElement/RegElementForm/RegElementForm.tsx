@@ -122,7 +122,7 @@ const RegElementForm: React.FC = () => {
         />
         </div>
         
-      <div className="add-button">
+      <div className="regel-add-button ">
             <Button variant="outlined" color="primary" onClick={() => handleAdd()}>
             Add
             </Button>

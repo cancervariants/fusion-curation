@@ -116,7 +116,7 @@ const Builder: React.FC = () =>  {
     }
   };
 
-  const handleSave = (index, compType, ...inputs) => {
+  const handleSave = (index, compType, ...values) => {
 
     // TODO: prevent from sending empty fields (where applicable)
 
@@ -126,11 +126,6 @@ const Builder: React.FC = () =>  {
     let newObj = Object.assign({}, obj)
 
 
-    // get actual user input from ref objects
-    let values = inputs.map(i => (
-      i.current.value
-    ))
-
     // TODO: Update backend schema to include component_name and any other keys
 
     // building properties of newObj (which then gets pushed to transcript_components)
@@ -139,10 +134,9 @@ const Builder: React.FC = () =>  {
       case 'gene': 
       let [symbol] = values;
       getGeneId(symbol).then(geneResponse => {
-
         newObj = {
           "component_type": "gene",
-          "component_name": values[0],
+          "component_name": geneResponse.term,
           "component_id": uuid(),
           "gene_descriptor": {
             "id": `gene:${geneResponse.term}`,
@@ -255,6 +249,9 @@ const Builder: React.FC = () =>  {
 
   const save = (items, index, newObj) => {
 
+    console.log(`before splicing, items is: ${JSON.stringify(items)}`)
+    console.log(`before splicing, newObj is: ${newObj}`)
+    console.log(`before splicing, index is: ${JSON.stringify(index)}`)
     items.splice(index, 1, newObj);
 
     // clear active state, update local state array, update global fusion object
@@ -308,6 +305,20 @@ const Builder: React.FC = () =>  {
     
     setEditMode('');
     setStructure(items);
+  }
+
+  const formatType = (str) => {
+    switch(str){
+      case 'gene':
+        return 'Gene'
+      case 'transcript_segment':
+        return 'Transcript Segment'
+      case 'linker_sequence':
+        return 'Linker Sequence'
+      case 'genomic_region':
+        return 'Genomic Region'
+    }
+      
   }
 
 
@@ -366,11 +377,11 @@ const Builder: React.FC = () =>  {
                             }}
                             
                           >
-                            {component_type }
+                            {formatType(component_type) }
                           </div>
                           {snapshot.isDragging && (
                               <div style={{ transform: 'none !important' }} key={component_id} className={`option-item clone ${component_type }`}>
-                              {component_type }
+                              {formatType(component_type) }
                               </div>
                             )}
                         </React.Fragment>)
@@ -387,6 +398,7 @@ const Builder: React.FC = () =>  {
         <Droppable droppableId="structure">
           {(provided) => (
             <div className="block-container" {...provided.droppableProps} ref={provided.innerRef}>
+              <h2 className={`${structure.length === 0 ? "instruction" : "hidden"}`}>Drag components here</h2>
               {structure.map(({component_id, component_name, component_type}, index) => {
                 return (
                   <Draggable key={component_id} draggableId={component_id} index={index}>

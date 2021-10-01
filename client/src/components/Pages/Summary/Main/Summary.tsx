@@ -8,7 +8,9 @@ import { SummaryJSON } from '../JSON/SummaryJSON';
 import { makeStyles } from '@material-ui/core/styles';
 import { useColorTheme } from '../../../../global/contexts/Theme/ColorThemeContext';
 
+import { Success } from '../Success/Success';
 
+import {validateFusion} from '../../../../services/main';
 
 interface Props {
   index: number
@@ -38,18 +40,31 @@ function TabPanel(props) {
 
 
 
-
 export const Summary: React.FC<Props> = ( { index }) => {
 
   const { colorTheme } = useColorTheme();
 
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
+
+  const [saved, setSaved] = useState(false);
+  const [accepted, setAccepted] = useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  const handleSubmit = () => {
+    setSaved(true)
+    validateFusion(fusion)
+      .then(fusionResponse => {
+        let {fusion, warnings} = fusionResponse
+        if (fusion === null){
+          console.log(`didn't work because ${JSON.stringify(warnings)}`)
+        }
+      })
 
+  }
+  
   const {fusion} = useContext(FusionContext);
 
   const genes = fusion.genes || [];
@@ -60,9 +75,13 @@ export const Summary: React.FC<Props> = ( { index }) => {
   return (
     <div className="summary-tab-container">
       <div className="summary-sub-tab-container">
-        <div className="summary-nav">
+
+        {
+          (accepted || !saved) ? 
+          <>
+          <div className="summary-nav">
         <Tabs TabIndicatorProps={{style: {backgroundColor: colorTheme['--primary']}}} value={value} onChange={handleChange} centered>
-        <Tab label="Formatted" />
+        <Tab label="Summary" />
         <Tab label="JSON" />
       </Tabs>
         </div>
@@ -88,8 +107,15 @@ export const Summary: React.FC<Props> = ( { index }) => {
 
   
       <div className="save-button-container">
-      <Button style={{width: '300px', marginTop: "30px"}} variant="contained" color="primary">Save</Button>
+      <Button style={{width: '300px', marginTop: "30px"}} variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
       </div>
+      </>
+      : 
+      <div className="success-confirmation">
+        <Success setAccepted={setAccepted} />
+      </div>
+        }
+        
       </div>
       
       

@@ -36,7 +36,7 @@ export const RegElement: React.FC<Props> = ( { index }) => {
               This transcript structure appears to be associated with a 
                {  
                 initialElements.current.map(regEl => (
-                  <span className="bold">{regEl.gene_descriptor.label} {regEl.type}</span>
+                  <span className="bold"> {regEl.gene_descriptor.label.toUpperCase()} {regEl.type}</span>
                 ))  
                 } Regulatory Element. 
             </div>
@@ -51,10 +51,10 @@ export const RegElement: React.FC<Props> = ( { index }) => {
           
           { regElements.map(regEl => (
             <div className="regel">
-              <span>{regEl.gene_descriptor.label.toUpperCase()} {regEl.type}</span>
-              <span className="close-button-reg" onClick={() => handleRemove(regEl)}>
+              <div>{regEl.gene_descriptor.label.toUpperCase()} {regEl.type}</div>
+              <div className="close-button-reg" onClick={() => handleRemove(regEl)}>      
               <Close />
-              </span>
+              </div>
             </div>
             ))  
             } 
