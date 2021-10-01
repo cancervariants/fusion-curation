@@ -28,6 +28,10 @@ if 'FUSION_EB_PROD' in environ:
     ch.setLevel(logging.DEBUG)
     logger.addHandler(ch)
 
+    logging.getLogger('boto3').setLevel(logging.INFO)
+    logging.getLogger('botocore').setLevel(logging.INFO)
+    logging.getLogger('nose').setLevel(logging.INFO)
+
 # get UTA DB url
 if 'UTA_DB_URL' in environ:
     UTA_DB_URL = environ['UTA_DB_URL']
