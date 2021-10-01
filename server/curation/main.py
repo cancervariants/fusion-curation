@@ -1,6 +1,7 @@
 """Initialize FastAPI and provide routes."""
 from fastapi import FastAPI, Query, Request
 from fastapi.staticfiles import StaticFiles
+from starlette.responses import RedirectResponse
 from typing import Dict
 from curation import APP_ROOT
 from curation.version import __version__
@@ -116,4 +117,11 @@ def validate_object(proposed_fusion: Dict) -> Dict:
 
 
 # serve static homepage
+@app.get('/')
+def redirect_to_index():
+    """Redirect root URL to index page. Must be declared before static files are mounted."""
+    response = RedirectResponse('/index.html')
+    return response
+
+
 app.mount('/', StaticFiles(directory=APP_ROOT / 'build'), name='static')
