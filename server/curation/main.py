@@ -1,7 +1,10 @@
 """Initialize FastAPI and provide routes."""
+from typing import Dict
+
 from fastapi import FastAPI, Query, Request
 from fastapi.staticfiles import StaticFiles
-from typing import Dict
+import uvicorn
+
 from curation import APP_ROOT
 from curation.version import __version__
 from curation.schemas import NormalizeGeneResponse, DomainIDResponse, ExonCoordsRequest, \
@@ -116,3 +119,7 @@ def validate_object(proposed_fusion: Dict) -> Dict:
 
 
 app.mount('/', StaticFiles(html=True, directory=APP_ROOT / 'build'))
+
+
+if __name__ == '__main__':
+    uvicorn.run(app)

@@ -1,9 +1,11 @@
 """Provide sequence ID generation services."""
-from biocommons.seqrepo import SeqRepo
+from typing import Tuple, List
 from pathlib import Path
 import logging
+
+from biocommons.seqrepo import SeqRepo
+
 from curation import SEQREPO_DATA_PATH
-from typing import Tuple, List
 
 
 logger = logging.getLogger('curation_backend')

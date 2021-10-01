@@ -1,8 +1,9 @@
 """Provide schemas for FastAPI responses."""
-from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
 from typing import List, Optional
-from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
 from abc import ABC
+
+from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
+from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
 from fusor.model import Fusion, TranscriptSegmentComponent, LinkerComponent, \
     GenomicRegionComponent, GeneComponent, UnknownGeneComponent, \
     AnyGeneComponent

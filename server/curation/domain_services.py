@@ -1,10 +1,11 @@
 """Provide lookup services for functional domains."""
 from pathlib import Path
 from datetime import datetime
-from curation import APP_ROOT, logger
 import csv
 from ftplib import FTP
 from typing import List, Tuple, Optional
+
+from curation import APP_ROOT, logger
 
 
 class DomainService():
