@@ -122,4 +122,4 @@ app.mount('/', StaticFiles(html=True, directory=APP_ROOT / 'build'))
 
 
 if __name__ == '__main__':
-    uvicorn.run(app)
+    uvicorn.run(app, port=5000)
