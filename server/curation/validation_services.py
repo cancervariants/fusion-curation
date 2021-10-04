@@ -1,7 +1,8 @@
 """Perform validation of user-provided Fusion objects."""
-from fusor.model import Fusion
 from typing import Dict, Any
+
 from pydantic import ValidationError
+from fusor.model import Fusion
 
 
 def validate_fusion(fusion: Dict) -> Dict[str, Any]:

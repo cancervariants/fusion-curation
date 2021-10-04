@@ -19,6 +19,7 @@
     "clipboard-copy": "^4.0.1",
     "cors": "^2.8.5",
     "express-generator": "^4.16.1",
+    "json-schema-to-typescript": "^10.1.5",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.1.0",
     "react-dnd": "^14.0.3",

@@ -1,13 +1,15 @@
 """Module for UTA queries for genomic and transcript data."""
-from curation import UTA_DB_URL
-from six.moves.urllib import parse as urlparse
-import asyncpg
-from asyncpg.exceptions import InterfaceError
 from typing import Dict, List, Optional, Tuple
 from os import environ
 import logging
 from urllib.parse import quote, unquote
+
+import asyncpg
+from asyncpg.exceptions import InterfaceError
+from six.moves.urllib import parse as urlparse
 import boto3
+
+from curation import UTA_DB_URL
 
 logger = logging.getLogger('fusion_backend')
 logger.setLevel(logging.DEBUG)

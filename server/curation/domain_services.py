@@ -1,10 +1,11 @@
 """Provide lookup services for functional domains."""
 from pathlib import Path
 from datetime import datetime
-from curation import APP_ROOT, logger
 import csv
 from ftplib import FTP
-from typing import List, Tuple
+from typing import List, Tuple, Optional
+
+from curation import APP_ROOT, logger
 
 
 class DomainService():
@@ -45,7 +46,7 @@ class DomainService():
             raise Exception(e)
         logger.info('InterPro entry list download complete.')
 
-    def get_domain_id(self, name: str) -> Tuple[str, List[str]]:
+    def get_domain_id(self, name: str) -> Tuple[Optional[str], List[str]]:
         """Given functional domain name, return Interpro ID.
         :param str name: name to fetch ID for (case insensitive)
         :return: Tuple containing domain ID (as CURIE) if found, empty string otherwise,
@@ -55,7 +56,7 @@ class DomainService():
         if not domain_id:
             warn = f'Could not retrieve ID for domain {name}'
             logger.info(warn)
-            return ('', [warn])
+            return (None, [warn])
         else:
             return (f'interpro:{domain_id["id"]}', [])
 

@@ -1,8 +1,55 @@
 """Provide schemas for FastAPI responses."""
-from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
 from typing import List, Optional
+from abc import ABC
+
+from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
 from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
-from fusor.model import Fusion
+from fusor.model import Fusion, TranscriptSegmentComponent, LinkerComponent, \
+    GenomicRegionComponent, GeneComponent, UnknownGeneComponent, \
+    AnyGeneComponent
+
+
+class ClientComponent(BaseModel, ABC):
+    """Abstract class to provide identification properties used by client."""
+
+    uuid: StrictStr
+    component_name: StrictStr
+
+
+class ClientTranscriptSegmentComponent(TranscriptSegmentComponent, ClientComponent):
+    """TranscriptSegment component class used client-side."""
+
+    pass
+
+
+class ClientLinkerComponent(LinkerComponent, ClientComponent):
+    """Linker component class used client-side."""
+
+    pass
+
+
+class ClientGenomicRegionComponent(GenomicRegionComponent, ClientComponent):
+    """GenomicRegion component used client-side."""
+
+    pass
+
+
+class ClientGeneComponent(GeneComponent, ClientComponent):
+    """Gene component used client-side."""
+
+    pass
+
+
+class ClientUnknownGeneComponent(UnknownGeneComponent, ClientComponent):
+    """Unknown gene component used client-side."""
+
+    pass
+
+
+class ClientAnyGeneComponent(AnyGeneComponent, ClientComponent):
+    """Any gene component used client-side."""
+
+    pass
 
 
 class NormalizeGeneResponse(BaseModel):

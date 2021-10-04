@@ -10,7 +10,11 @@ asyncpg = "*"
 "biocommons.seqrepo" = "*"
 gene-normalizer = "==0.1.19"
 boto3 = "*"
-fusor = "*"
+fusor = ">=0.0.9"
+websockets = ">=9.1"
+uvloop = "*"
+httptools = "*"
+urllib3 = ">=1.26.5"
 
 [dev-packages]
 fusion-curation = {editable = true, path = "."}
