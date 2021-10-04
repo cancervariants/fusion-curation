@@ -1,5 +1,6 @@
 import {useContext, useState, useEffect} from 'react';
 import {InputLabel, MenuItem, FormControl, Select, Button, TextField} from '@material-ui/core/';
+import {Autocomplete} from '@material-ui/lab/';
 import { makeStyles } from '@material-ui/core/styles';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { v4 as uuid } from 'uuid';
@@ -7,6 +8,7 @@ import './DomainForm.scss'
 
 import { getDomainId } from '../../../../services/main';
 import { getGeneId } from '../../../../services/main';
+import { getDomainList } from '../../../../services/main';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -31,6 +33,8 @@ const DomainForm: React.FC = () => {
   const {fusion, setFusion} = useContext(FusionContext);
   const domains = fusion.protein_domains;
 
+  const [domainList, setDomainList] = useState([]);
+
   const [domain, setDomain] = useState(null);
   const [gene, setGene] = useState(null);
   const [status, setStatus] = useState(null);
@@ -38,9 +42,15 @@ const DomainForm: React.FC = () => {
   const [geneWarning, setGeneWarning] = useState('');
   const [domainWarning, setDomainWarning] = useState('');
 
-  const handleDomainChange = (event) => {
+  const handleDomainChange = (value) => {
     setDomainWarning('');
-    setDomain(event.target.value);
+
+    getDomainList(value).then(data => {
+      setDomainList(data.matches);
+    })
+
+    setDomain(value);
+    
   };
   const handleGeneChange = (event) => {
     setGeneWarning('');
@@ -67,7 +77,6 @@ const DomainForm: React.FC = () => {
 
     getDomainId(domain)
       .then(domainResponse => {
-        console.log(`domainResponse is ${domainResponse}`)
         let {domain, domain_id, warnings} = domainResponse;
 
         if (domainResponse.statusCode > 400){
@@ -110,6 +119,39 @@ const DomainForm: React.FC = () => {
   return (
     <div className="form-container">
         <div className="formInput">
+        <Autocomplete
+          id="combo-box-demo"
+          options={domainList}
+          getOptionLabel={(option) => option}
+          style={{ width: 300 }}
+          // onChange={(event, value) => onSelectDomain(value)}
+          renderInput={(params) => 
+            <TextField {...params}
+            className={classes.formControl} 
+            id="standard-basic" 
+            label="Domain" 
+            variant="standard" 
+            value={domain}
+            error={domainWarning !== ''}
+            onChange={ev => {
+              if (ev.target.value !== "" || ev.target.value !== null){
+                handleDomainChange(ev.target.value)
+              }
+            }}
+            helperText={domainWarning !== '' ? domainWarning : null}
+          />
+            // <TextField {...params} 
+            //   label="Combo box" 
+            //   variant="outlined" 
+            //   onChange={ev => {
+            //     // dont fire API on delete/blank
+            //     if (ev.target.value !== "" || ev.target.value !== null) {
+            //       getDomainList(ev.target.value);
+            //     }
+            //   }}
+            //   />
+          }
+        />  
         <TextField 
           className={classes.formControl} 
           id="standard-basic" 

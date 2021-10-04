@@ -6,6 +6,7 @@ import { Gene } from '../../Pages/Gene/Main/Gene';
 import { RegElement } from '../../Pages/RegElement/Main/RegElement';
 import { Summary } from '../../Pages/Summary/Main/Summary';
 import { Domain } from '../../Pages/Domains/Main/Domains';
+import { Questions } from '../../Pages/Questions/Questions';
 
 //MUI Stuff
 import { makeStyles, Theme } from '@material-ui/core/styles';
@@ -124,7 +125,8 @@ export default function NavTabs() {
           <LinkTab label="Structure" href="/drafts" {...a11yProps(0)}  />
           <LinkTab label="Regulatory Element" href="/trash" {...a11yProps(1)} />
           <LinkTab label="Domains" href="/spam" {...a11yProps(2)} />
-          <LinkTab label="Summary" href="/spam" {...a11yProps(3)} />
+          <LinkTab label="Questions" href="/spam" {...a11yProps(3)} />
+          <LinkTab label="Summary" href="/spam" {...a11yProps(4)} />
         </Tabs>
       </AppBar>
       <div className="tab-panel">
@@ -141,6 +143,9 @@ export default function NavTabs() {
           <Domain index={1}/>
         </TabPanel>
         <TabPanel value={value} index={3}>
+          <Questions index={1}/>
+        </TabPanel>
+        <TabPanel value={value} index={4}>
           <Summary index={1}/>
         </TabPanel>
       </div>
@@ -152,7 +157,7 @@ export default function NavTabs() {
           <Button className={classes.previous} onClick={(event) => {handleChange(event, value - 1)}} variant="contained" color="primary" >Back</Button>
         </div>  
         : null} 
-        { value !== 3 ?
+        { value !== 4 ?
         <div className="continue">
            <Button style={{backgroundColor: colorTheme['--primary'], marginLeft: 'auto'}} onClick={(event) => {handleChange(event, value + 1)}} variant="contained" color="primary">Continue</Button>
         </div>

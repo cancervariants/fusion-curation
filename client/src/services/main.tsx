@@ -79,3 +79,11 @@ export async function validateFusion(fusion) {
 
   //returns fusion, warnings
 }
+
+
+export async function getDomainList(query) {
+  const res = await fetch(`http://localhost:5000/lookup/domain_matches?domain_matches=${query}`)
+  const data = await res.json()
+
+  return data;
+}
