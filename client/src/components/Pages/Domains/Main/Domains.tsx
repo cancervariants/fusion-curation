@@ -49,6 +49,8 @@ export const Domain: React.FC<Props> = ( { index }) => {
           <div className="sub-blurb">
           You can add or remove domains. 
           </div>
+
+          
           
           {/* TODO: maybe create a two column list of lost vs preserved */}
           { domains.map(domain => (

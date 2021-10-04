@@ -66,30 +66,32 @@ export const Summary: React.FC<Props> = ( { index }) => {
   }
   
   let {fusion} = useContext(FusionContext);
-
+  let genes = [];
   let proteinDomains = fusion.protein_domains || [];
   let regulatoryElements = fusion.regulatory_elements|| [];
   let transcriptComponents = fusion.transcript_components || [];
+  let rFramePreserved = fusion.r_frame_preserved || null;
+  let causativeEvent = fusion.causative_event || 'Unknown'
 
   //TODO: fix this mess. formatting transcript stuff
 
-  let transcriptGeneComponents = transcriptComponents.filter(obj => {
-    return obj.component_type === 'gene'
-  })
+  // let transcriptGeneComponents = transcriptComponents.filter(obj => {
+  //   return obj.component_type === 'gene'
+  // })
 
-  let transcriptOthers = transcriptComponents.map(obj => {
-    if(obj.component_type !== 'gene'){ 
-      return obj.component_name
-    }
-  })
+  // let transcriptOthers = transcriptComponents.map(obj => {
+  //   if(obj.component_type !== 'gene'){ 
+  //     return obj.component_name
+  //   }
+  // })
 
-  let transcriptGenes = transcriptGeneComponents.map((comp, index) => {
-    return (`${index ? '::' : ''}${comp.gene_descriptor.label}`);
-  })
+  // let transcriptGenes = transcriptGeneComponents.map((comp, index) => {
+  //   return (`${index ? '::' : ''}${comp.gene_descriptor.label}`);
+  // })
 
-  transcriptGenes = transcriptGenes.join('').toUpperCase();
+  // transcriptGenes = transcriptGenes.join('').toUpperCase();
 
-  transcriptComponents = [transcriptGenes, ...transcriptOthers]
+  // transcriptComponents = [transcriptGenes, ...transcriptOthers]
 
   let regElementGenes = regulatoryElements.map((el)  => {
     return (`, ${el.gene_descriptor.label}`);
@@ -97,7 +99,7 @@ export const Summary: React.FC<Props> = ( { index }) => {
 
   
 
-  let genes = [...transcriptGenes, ...regElementGenes]
+  // let genes = [...transcriptGenes, ...regElementGenes]
 
   return (
     <div className="summary-tab-container">
@@ -120,6 +122,8 @@ export const Summary: React.FC<Props> = ( { index }) => {
           proteinDomains={proteinDomains} 
           regulatoryElements={regulatoryElements} 
           transcriptComponents={transcriptComponents} 
+          rFramePreserved={rFramePreserved}
+          causativeEvent={causativeEvent}
         />
         </div>
 

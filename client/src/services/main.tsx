@@ -1,7 +1,7 @@
 
 
 export async function getGeneId(symbol) {
-  let response = await fetch(`http://localhost:5000/lookup/gene?term=${symbol}`);
+  let response = await fetch(`/lookup/gene?term=${symbol}`);
   let geneResponse = await response.json();
   return geneResponse;
 
@@ -9,7 +9,7 @@ export async function getGeneId(symbol) {
 }
 
 export async function getDomainId(domain) {
-  let response = await fetch(`http://localhost:5000/lookup/domain?domain=${domain}`);
+  let response = await fetch(`/lookup/domain?domain=${domain}`);
   let domainResponse = await response.json();
   return domainResponse;
 
@@ -17,7 +17,7 @@ export async function getDomainId(domain) {
 }
 
 export async function getSequenceId(chr) {
-  let response = await fetch(`http://localhost:5000/lookup/sequence_id?input_sequence=GRCh38:${chr}`);
+  let response = await fetch(`/lookup/sequence_id?input_sequence=GRCh38:${chr}`);
   let sequenceId = await response.json();
   return sequenceId;  
 
@@ -66,7 +66,7 @@ export async function getExon(txAc, gene, startExon, endExon, startExonOffset, e
 }
 
 export async function validateFusion(fusion) {
-  let response = await fetch(`http://localhost:5000/lookup/validate`, {
+  let response = await fetch(`/lookup/validate`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -82,8 +82,8 @@ export async function validateFusion(fusion) {
 
 
 export async function getDomainList(query) {
-  const res = await fetch(`http://localhost:5000/lookup/domain_matches?domain_matches=${query}`)
-  const data = await res.json()
+  const response = await fetch(`/complete/domain?term=${query}`)
+  const data = await response.json()
 
   return data;
 }

@@ -156,6 +156,16 @@ export const Structure: React.FC<Props> = ( { index }) => {
         {/* <div className="summary-container">
           <div >
             {
+              structure.map((comp, index) => (
+                <span key={comp.component_id}>{`${index ? "::" : ""}${comp.hr_name}`}</span>
+              ))
+            }
+          </div>
+        </div> */}
+
+        {/* <div className="summary-container">
+          <div >
+            {
               structure.map(comp => (
                 <span key={comp.component_id} className={comp.component_type}>{`${comp.component_name}`} </span>
               ))

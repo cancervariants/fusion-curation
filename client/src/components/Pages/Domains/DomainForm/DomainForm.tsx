@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DomainForm: React.FC = () => {
-  // TODO: not necessary
+  // TODO: shouldn't be necessary
   useEffect(() => {
     if (domains === undefined){
       setFusion({ ...fusion, ...{ "protein_domains" :  []}});
@@ -42,19 +42,23 @@ const DomainForm: React.FC = () => {
   const [geneWarning, setGeneWarning] = useState('');
   const [domainWarning, setDomainWarning] = useState('');
 
-  const handleDomainChange = (value) => {
+  const handleDomainInput = (value) => {
+
     setDomainWarning('');
 
     getDomainList(value).then(data => {
-      setDomainList(data.matches);
+      let suggestions = [];
+      data.suggestions?.forEach(suggestion => {
+        suggestions.push(suggestion[0]);
+      })
+      setDomainList(suggestions);
+      
     })
-
-    setDomain(value);
-    
   };
+
   const handleGeneChange = (event) => {
     setGeneWarning('');
-    setGene(event.target.value);
+    setGene(event.target.value.toUpperCase());
   };
   const handleStatusChange = (event) => {
     setStatus(event.target.value);
@@ -110,6 +114,9 @@ const DomainForm: React.FC = () => {
         setFusion({ ...fusion, ...{ "protein_domains" :  cloneArray}});
       }
     )
+    .catch(error => {
+      console.error(`Error!!!! ${error}`)
+    })
     })
     .catch(error => {
       console.error(`Error!!!! ${error}`)
@@ -120,38 +127,30 @@ const DomainForm: React.FC = () => {
     <div className="form-container">
         <div className="formInput">
         <Autocomplete
+          className={classes.formControl}
           id="combo-box-demo"
           options={domainList}
           getOptionLabel={(option) => option}
           style={{ width: 300 }}
-          // onChange={(event, value) => onSelectDomain(value)}
+          onChange={(event, value) => setDomain(value)}
           renderInput={(params) => 
             <TextField {...params}
-            className={classes.formControl} 
             id="standard-basic" 
             label="Domain" 
             variant="standard" 
             value={domain}
             error={domainWarning !== ''}
-            onChange={ev => {
-              if (ev.target.value !== "" || ev.target.value !== null){
-                handleDomainChange(ev.target.value)
+            onChange={event => {
+              if (event.target.value !== "" && event.target.value !== null){
+                handleDomainInput(event.target.value)
               }
             }}
             helperText={domainWarning !== '' ? domainWarning : null}
           />
-            // <TextField {...params} 
-            //   label="Combo box" 
-            //   variant="outlined" 
-            //   onChange={ev => {
-            //     // dont fire API on delete/blank
-            //     if (ev.target.value !== "" || ev.target.value !== null) {
-            //       getDomainList(ev.target.value);
-            //     }
-            //   }}
-            //   />
           }
-        />  
+        /> 
+        </div>
+        <div className="formInput"> 
         <TextField 
           className={classes.formControl} 
           id="standard-basic" 
@@ -161,18 +160,6 @@ const DomainForm: React.FC = () => {
           error={geneWarning !== ''}
           onChange={handleGeneChange}
           helperText={geneWarning !== '' ? geneWarning : null}
-        />
-        </div>
-        <div className="formInput">
-        <TextField 
-          className={classes.formControl} 
-          id="standard-basic" 
-          label="Domain" 
-          variant="standard" 
-          value={domain}
-          error={domainWarning !== ''}
-          onChange={handleDomainChange}
-          helperText={domainWarning !== '' ? domainWarning : null}
         />
         </div>
         <div className="formInput">

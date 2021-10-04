@@ -67,6 +67,7 @@ const Builder: React.FC = () =>  {
   const {fusion, setFusion} = useContext(FusionContext);
   const [structure, setStructure] = useState([]);
   const [editMode, setEditMode] = useState('');
+  let transcriptComponents = fusion.transcript_components || [];
 
 
   useEffect(() => {
@@ -138,6 +139,7 @@ const Builder: React.FC = () =>  {
           "component_type": "gene",
           "component_name": `${geneResponse.term.toUpperCase()} ${geneResponse.concept_id}`,
           "component_id": uuid(),
+          "hr_name": `${geneResponse.term.toUpperCase()}(${geneResponse.concept_id})`,
           "gene_descriptor": {
             "id": `gene:${geneResponse.term}`,
             "type": "GeneDescriptor",
@@ -182,6 +184,26 @@ const Builder: React.FC = () =>  {
               }
             }
 
+            //TODO: learn what the actual possible cases are
+
+            if(exon_start){
+              if(exon_end){
+                if(exon_start_offset){
+                  if(exon_end_offset){
+                    newObj.hr_name = `${tx_ac}(${gene}):e[${exon_start}+${exon_start_offset},${exon_end}+${exon_end_offset}]`
+                  } else {
+                    newObj.hr_name = `${tx_ac}(${gene}):e[${exon_start}+${exon_start_offset},${exon_end}]`
+                  }
+                } else {
+                  newObj.hr_name = `${tx_ac}(${gene}):e[${exon_start}_${exon_end}]`
+                }
+              } else {
+                newObj.hr_name = `${tx_ac}(${gene}):exon[${exon_start}]`
+              }
+            } else {
+              newObj.hr_name = `${tx_ac}(${gene}):e[${exon_start}+${exon_start_offset},${exon_end}+${exon_end_offset}]`
+            }
+
             save(items, index, newObj);
 
           //TODO: nested genomic region (lookup GR based on transcript and vice versa)
@@ -203,6 +225,7 @@ const Builder: React.FC = () =>  {
             newObj = {
               "component_type": "genomic_region",
               "component_name": `chr${chromosome}:${startPosition}-${endPosition}(${strand})`,
+              "hr_name": `chr${chromosome}:${startPosition}-${endPosition}(${strand})`,
               "component_id": uuid(),
               "region": {
                 "id": `chr${chromosome}:${startPosition}-${endPosition}(${strand})`,
@@ -236,6 +259,7 @@ const Builder: React.FC = () =>  {
             "component_type": "linker_sequence",
             "component_name": sequence,
             "component_id": uuid(),
+            "hr_name": sequence,
             "linker_sequence": {
               "id": `sequence:${sequence}`,
               "type": "SequenceDescriptor",
@@ -260,13 +284,13 @@ const Builder: React.FC = () =>  {
 
   const getGeneId = async (symbol) => {
     // TODO: error handling
-    let response = await fetch(`http://localhost:5000/lookup/gene?term=${symbol}`);
+    let response = await fetch(`/lookup/gene?term=${symbol}`);
     let geneId = await response.json();
     return geneId;
   };
 
   const getSequenceId = async (chr) => {
-    let response = await fetch(`http://localhost:5000/lookup/sequence_id?input_sequence=GRCh38:${chr}`);
+    let response = await fetch(`/lookup/sequence_id?input_sequence=GRCh38:${chr}`);
     let sequenceId = await response.json();
     return sequenceId;  
   }
@@ -392,6 +416,9 @@ const Builder: React.FC = () =>  {
             )}
             
           </Droppable>
+          <div className="right-side">
+
+          
         <Droppable droppableId="structure">
           {(provided) => (
             <div className="block-container" {...provided.droppableProps} ref={provided.innerRef}>
@@ -421,7 +448,19 @@ const Builder: React.FC = () =>  {
             </div>
           )}
         </Droppable>
+
+          <div className="hr-section">
+            {
+              transcriptComponents.map((comp, index) => (
+                <div key={comp.component_id}>{`${index ? "::" : ""}${comp.hr_name}`}</div>
+              ))
+            }
+          </div>
+
+        </div>
+        
       </DragDropContext>
+      
       </div>
     )
 }
