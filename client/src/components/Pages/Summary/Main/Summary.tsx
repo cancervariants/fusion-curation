@@ -65,12 +65,39 @@ export const Summary: React.FC<Props> = ( { index }) => {
 
   }
   
-  const {fusion} = useContext(FusionContext);
+  let {fusion} = useContext(FusionContext);
 
-  const genes = fusion.genes || [];
-  const proteinDomains = fusion.protein_domains || [];
-  const regulatoryElements = fusion.regulatory_elements|| [];
-  const transcriptComponents = fusion.transcript_components || [];
+  let proteinDomains = fusion.protein_domains || [];
+  let regulatoryElements = fusion.regulatory_elements|| [];
+  let transcriptComponents = fusion.transcript_components || [];
+
+  //TODO: fix this mess. formatting transcript stuff
+
+  let transcriptGeneComponents = transcriptComponents.filter(obj => {
+    return obj.component_type === 'gene'
+  })
+
+  let transcriptOthers = transcriptComponents.map(obj => {
+    if(obj.component_type !== 'gene'){ 
+      return obj.component_name
+    }
+  })
+
+  let transcriptGenes = transcriptGeneComponents.map((comp, index) => {
+    return (`${index ? '::' : ''}${comp.gene_descriptor.label}`);
+  })
+
+  transcriptGenes = transcriptGenes.join('').toUpperCase();
+
+  transcriptComponents = [transcriptGenes, ...transcriptOthers]
+
+  let regElementGenes = regulatoryElements.map((el)  => {
+    return (`, ${el.gene_descriptor.label}`);
+  })
+
+  
+
+  let genes = [...transcriptGenes, ...regElementGenes]
 
   return (
     <div className="summary-tab-container">

@@ -59,9 +59,9 @@ const RegElementForm: React.FC = () => {
           "type": type,
           "element_id": uuid(),
           "gene_descriptor": {
-            "id": geneResponse.concept_id,
-            "type": "hi",
-            "gene_id": "hi",
+            "id": `gene:${geneResponse.term}`,
+            "type": "GeneDescriptor",
+            "gene_id": geneResponse.concept_id,
             "label": geneResponse.term,
            }
         }

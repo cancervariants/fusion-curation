@@ -136,7 +136,7 @@ const Builder: React.FC = () =>  {
       getGeneId(symbol).then(geneResponse => {
         newObj = {
           "component_type": "gene",
-          "component_name": geneResponse.term,
+          "component_name": `${geneResponse.term.toUpperCase()} ${geneResponse.concept_id}`,
           "component_id": uuid(),
           "gene_descriptor": {
             "id": `gene:${geneResponse.term}`,
@@ -166,7 +166,7 @@ const Builder: React.FC = () =>  {
 
             newObj = {
               "component_type": "transcript_segment",
-              "component_name": tx_ac,
+              "component_name": `${tx_ac} ${gene}`,
               "transcript": tx_ac,
               "component_id": uuid(),
               "shorthand": tx_ac,
@@ -249,9 +249,6 @@ const Builder: React.FC = () =>  {
 
   const save = (items, index, newObj) => {
 
-    console.log(`before splicing, items is: ${JSON.stringify(items)}`)
-    console.log(`before splicing, newObj is: ${newObj}`)
-    console.log(`before splicing, index is: ${JSON.stringify(index)}`)
     items.splice(index, 1, newObj);
 
     // clear active state, update local state array, update global fusion object
