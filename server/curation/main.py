@@ -1,5 +1,5 @@
 """Initialize FastAPI and provide routes."""
-from typing import Dict
+from typing import Dict, Any
 
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,10 +8,10 @@ import uvicorn
 
 from curation import APP_ROOT
 from curation.version import __version__
-from curation.schemas import NormalizeGeneResponse, DomainIDResponse, ExonCoordsRequest, \
-    ExonCoordsResponse, SequenceIDResponse, FusionValidationResponse
+from curation.schemas import NormalizeGeneResponse, DomainIDResponse, SuggestDomainResponse, \
+    ExonCoordsRequest, ExonCoordsResponse, SequenceIDResponse, FusionValidationResponse
 from curation.gene_services import get_gene_id
-from curation.domain_services import get_domain_id
+from curation.domain_services import get_domain_id, get_domain_matches
 from curation.uta_services import postgres_instance, get_genomic_coords
 from curation.sequence_services import get_ga4gh_sequence_id
 from curation.validation_services import validate_fusion
@@ -71,6 +71,27 @@ def fetch_domain_id(domain: str = Query('')) -> Dict:
         'domain_id': domain_id,
         'warnings': warnings
     }
+
+
+@app.get('/complete/domain',
+         operation_id='suggestDomain',
+         response_model=SuggestDomainResponse,
+         response_model_exclude_none=True)
+def suggest_domain(term: str = Query('')) -> Dict:
+    """Provide completion suggestions for domain term provided by user.
+    :param str term: text typed by user in domain field
+    :return: JSON response with suggestions listed, or warnings if unable to
+        provide suggestions.
+    """
+    response: Dict[str, Any] = {
+        'term': term,
+    }
+    possible_matches = get_domain_matches(term)
+    if len(possible_matches) < 25:
+        response['suggestions'] = possible_matches
+    else:
+        response['warnings'] = ['Max suggestions exceeded']
+    return response
 
 
 @app.post('/lookup/coords',
@@ -137,4 +158,4 @@ app.mount('/', StaticFiles(html=True, directory=APP_ROOT / 'build'))
 
 
 if __name__ == '__main__':
-    uvicorn.run(app, port=5000)
+    uvicorn.run("curation.main:app", port=5000, reload=True)
