@@ -1,5 +1,5 @@
 """Provide schemas for FastAPI responses."""
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from abc import ABC
 
 from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
@@ -71,6 +71,19 @@ class DomainIDResponse(BaseModel):
     domain: StrictStr
     domain_id: Optional[CURIE]
     warnings: List
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
+
+
+class SuggestDomainResponse(BaseModel):
+    """Response model for domain ID autocomplete suggestion endpoint."""
+
+    term: StrictStr
+    suggestions: Optional[List[Tuple[str, str]]]
+    warnings: Optional[List[StrictStr]]
 
     class Config:
         """Configure class."""
