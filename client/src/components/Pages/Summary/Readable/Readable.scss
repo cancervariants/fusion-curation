@@ -24,11 +24,13 @@
 
 .right-item {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   font-weight: 400;
-  text-align: right;
 }
 
 .right-sub-item {
-  font-size: medium;
+  margin-top: 12px;
+  font-size: x-small;
+  align-items: center;
+  justify-content: center;
 }
