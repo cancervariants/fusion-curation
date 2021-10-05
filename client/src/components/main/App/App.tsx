@@ -54,8 +54,8 @@ let demoData = {
     },
     {
       "component_type": "genomic_region",
-      "component_name": "chr12:44908821-44908822(+)",
-      "hr_name": "chr12:44908821-44908822(+)",
+      "component_name": "chr12:44908821_44908822(+)",
+      "hr_name": "chr12:44908821_44908822(+)",
       "component_id": "fa57c20d-cda5-480a-aa4b-bf0a2a2355c1",
       "region": {
         "id": "chr12:44908821-44908822(+)",
