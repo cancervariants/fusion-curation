@@ -49,10 +49,8 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
           console.error(err)
         })
         .then( res => {
-          console.log(`WE MADE IT!!!!`)
           getExon(txAc, transcriptGene, parseInt(startingExon) || 0, parseInt(endingExon) || 0, parseInt(startingExonOffset) || 0, parseInt(endingExonOffset) || 0)
           .then(exonResponse => {
-            console.log(`exonResponse is ${JSON.stringify(exonResponse)}`)
             if(exonResponse.tx_ac === null){
               setTranscriptError('Transcript not found!')
               return
@@ -66,7 +64,6 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
     } else {
       getExon(txAc, transcriptGene, parseInt(startingExon) || 0, parseInt(endingExon) || 0, parseInt(startingExonOffset) || 0, parseInt(endingExonOffset) || 0)
           .then(exonResponse => {
-            console.log(`exonResponse is ${JSON.stringify(exonResponse)}`)
             if(exonResponse.tx_ac === null){
               setTranscriptError('Transcript not found!')
               return
@@ -202,8 +199,20 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                   { (startingExon !== '' || endingExon !== '') ?
 
                     <div className="bottom-inputs">
-                    <TextField margin="dense" style={{ width: 125 }} label="Starting Offset" ></TextField>                
-                    <TextField margin="dense" style={{ width: 125 }} label="Ending Offset" ></TextField>      
+                    <TextField 
+                      margin="dense" 
+                      style={{ width: 125 }} 
+                      label="Starting Offset" 
+                      value={startingExonOffset}
+                      onChange={(event) => setStartingExonOffset(event.target.value)}
+                    ></TextField>                
+                    <TextField 
+                      margin="dense" 
+                      style={{ width: 125 }} 
+                      label="Ending Offset" 
+                      value={endingExonOffset}
+                      onChange={(event) => setEndingExonOffset(event.target.value)}
+                    ></TextField>      
                     </div> 
 
                     : null

@@ -58,9 +58,6 @@ export const Summary: React.FC<Props> = ( { index }) => {
     validateFusion(fusion)
       .then(fusionResponse => {
         let {fusion, warnings} = fusionResponse
-        if (fusion === null){
-          console.log(`didn't work because ${JSON.stringify(warnings)}`)
-        }
       })
 
   }

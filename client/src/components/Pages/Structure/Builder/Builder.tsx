@@ -159,12 +159,40 @@ const Builder: React.FC = () =>  {
         exon_start = parseInt(exon_start);
         exon_end = parseInt(exon_end); 
         exon_start_offset = parseInt(exon_start_offset);
-        exon_start_offset = parseInt(exon_end_offset);
+        exon_end_offset = parseInt(exon_end_offset);
 
         getExon(transcript, exon_start || 0, exon_end || 0,
           exon_start_offset || 0, exon_end_offset || 0, gene_symbol).then(exonResponse => {
 
-            let {tx_ac, gene, gene_id, exon_start, exon_start_offset, exon_end, exon_end_offset, sequence_id, chr, start, end, warnings } = exonResponse;
+            let {tx_ac, gene, gene_id, exon_start, exon_end, exon_start_offset, exon_end_offset, sequence_id, chr, start, end, warnings } = exonResponse;
+
+            let eso;
+            if(exon_start_offset > 0){
+              eso = `+${exon_start_offset}`
+            } else if (exon_start_offset < 0){
+              eso = `${exon_start_offset}`
+            } else {
+              eso = '';
+            }
+
+            let eeo;
+            if(exon_end_offset > 0){
+              eeo = `+${exon_end_offset}`
+            } else if (exon_end_offset < 0){
+              eeo = `${exon_end_offset}`
+            } else {
+              eeo = '';
+            }
+
+            let hrExon;
+            if(exon_start && exon_end){
+              hrExon = `e[${exon_start}${eso}_${exon_end}${eeo}]`;
+            } else if (exon_start) {
+              hrExon = `e[${exon_start}${eso}_]`;
+            } else {
+              hrExon = `e[_${exon_end}${eeo}]`;
+            }
+
 
             newObj = {
               "component_type": "transcript_segment",
@@ -184,25 +212,7 @@ const Builder: React.FC = () =>  {
               }
             }
 
-            //TODO: learn what the actual possible cases are
-
-            if(exon_start){
-              if(exon_end){
-                if(exon_start_offset){
-                  if(exon_end_offset){
-                    newObj.hr_name = `${tx_ac}(${gene}):e[${exon_start}+${exon_start_offset},${exon_end}+${exon_end_offset}]`
-                  } else {
-                    newObj.hr_name = `${tx_ac}(${gene}):e[${exon_start}+${exon_start_offset},${exon_end}]`
-                  }
-                } else {
-                  newObj.hr_name = `${tx_ac}(${gene}):e[${exon_start}_${exon_end}]`
-                }
-              } else {
-                newObj.hr_name = `${tx_ac}(${gene}):exon[${exon_start}]`
-              }
-            } else {
-              newObj.hr_name = `${tx_ac}(${gene}):e[${exon_start}+${exon_start_offset},${exon_end}+${exon_end_offset}]`
-            }
+            newObj.hr_name = `${tx_ac}(${gene}):${hrExon}`
 
             save(items, index, newObj);
 
@@ -217,7 +227,6 @@ const Builder: React.FC = () =>  {
       
       case 'genomic_region':
           let [chromosome, strand, startPosition, endPosition] = values;
-          console.log(`chromosome is ${chromosome}, strand is ${strand}, startPos is ${startPosition}, endpos is ${endPosition}`)
           getSequenceId(chromosome).then(sequenceResponse => {
 
             let {sequence, sequence_id, warnings} = sequenceResponse;
