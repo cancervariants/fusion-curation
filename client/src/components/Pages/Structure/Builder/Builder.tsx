@@ -5,6 +5,10 @@ import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautif
 import './Builder.scss';
 import { TransCompInput } from '../TransCompInput/TransCompInput';
 
+interface Props {
+  transcriptComponents
+}
+
 // TODO: should be dynamic
 const OPTIONS = [
   {
@@ -63,12 +67,11 @@ const OPTIONS = [
   },
 ]
 
-const Builder: React.FC = () =>  {
+const Builder: React.FC<Props> = ({transcriptComponents}) =>  {
   const {fusion, setFusion} = useContext(FusionContext);
   const [structure, setStructure] = useState([]);
   const [editMode, setEditMode] = useState('');
-  let transcriptComponents = fusion.transcript_components || [];
-
+  
 
   useEffect(() => {
     let diagram = [];
@@ -79,7 +82,7 @@ const Builder: React.FC = () =>  {
       ))
       setStructure(diagram);
     }
-  }, [])
+  }, [transcriptComponents])
 
 
   const copy = (result: DropResult) => {
