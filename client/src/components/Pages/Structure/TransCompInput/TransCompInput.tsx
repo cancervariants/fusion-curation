@@ -86,7 +86,6 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
   const [geneError, setGeneError] = useState('');
 
   const geneValidate = (symbol) => {
-    console.log(symbol)
     if(symbol === 'ANY'){
       handleSave(index, compType, gene) 
       return
