@@ -95,20 +95,20 @@ class ExonCoordsRequest(BaseModel):
     """Request model for genomic coordinates retrieval"""
 
     tx_ac: StrictStr
-    gene: Optional[StrictStr] = ''
+    gene: Optional[StrictStr] = ""
     exon_start: Optional[StrictInt] = 0
     exon_start_offset: Optional[StrictInt] = 0
     exon_end: Optional[StrictInt] = 0
     exon_end_offset: Optional[StrictInt] = 0
 
-    @validator('gene')
+    @validator("gene")
     def validate_gene(cls, v) -> str:
         """Replace None with empty string."""
         if v is None:
-            return ''
+            return ""
         return v
 
-    @validator('exon_start', 'exon_start_offset', 'exon_end', 'exon_end_offset')
+    @validator("exon_start", "exon_start_offset", "exon_end", "exon_end_offset")
     def validate_number(cls, v) -> int:
         """Replace None with 0 for numeric fields."""
         if v is None:
@@ -142,7 +142,7 @@ class SequenceIDResponse(BaseModel):
     """Response model for sequence ID retrieval endpoint."""
 
     sequence: StrictStr
-    sequence_id: StrictStr = ''
+    sequence_id: StrictStr = ""
     warnings: List
 
     class Config:
