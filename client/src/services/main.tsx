@@ -28,6 +28,7 @@ export async function getSequenceId(chr) {
 }
 
 export async function getExon(txAc, gene, startExon, endExon, startExonOffset, endExonOffset) {
+  console.log(`txac ${txAc}, gene ${gene}, startExon ${startExon}, endExon ${endExon}, startExonOffset ${startExonOffset}, endExonOffset ${endExonOffset}`)
   let reqObj = {
     tx_ac: txAc,
     gene: gene,

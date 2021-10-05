@@ -5,10 +5,14 @@ import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautif
 import './Builder.scss';
 import { TransCompInput } from '../TransCompInput/TransCompInput';
 
+import {getGeneId, getSequenceId, getExon} from '../../../../services/main';
+
+
 interface Props {
   transcriptComponents
 }
 
+// these are the empty object templates the user drags into the array
 // TODO: should be dynamic
 const OPTIONS = [
   {
@@ -86,8 +90,6 @@ const Builder: React.FC<Props> = ({transcriptComponents}) =>  {
 
 
   const copy = (result: DropResult) => {
-    // TODO: remove forms that were never saved before adding new ones
-
     const {source, destination} = result;
   
     const sourceClone = Array.from(OPTIONS);
@@ -110,14 +112,14 @@ const Builder: React.FC<Props> = ({transcriptComponents}) =>  {
 
     const {source, destination} = result;
 
-    if (structure.length > 0){
-      const sourceClone = Array.from(structure);
-      const [newOrder] = sourceClone.splice(source.index, 1);
-      sourceClone.splice(destination.index, 0, newOrder);
+
+    const sourceClone = Array.from(structure);
+    const [newOrder] = sourceClone.splice(source.index, 1);
+    sourceClone.splice(destination.index, 0, newOrder);
+  
+    setFusion({ ...fusion, ...{ "transcript_components" : sourceClone }})
+    setStructure(sourceClone);
     
-      setFusion({ ...fusion, ...{ "transcript_components" : sourceClone }})
-      setStructure(sourceClone);
-    }
   };
 
   const handleSave = (index, compType, ...values) => {
@@ -182,8 +184,8 @@ const Builder: React.FC<Props> = ({transcriptComponents}) =>  {
         exon_start_offset = parseInt(exon_start_offset);
         exon_end_offset = parseInt(exon_end_offset);
 
-        getExon(transcript, exon_start || 0, exon_end || 0,
-          exon_start_offset || 0, exon_end_offset || 0, gene_symbol).then(exonResponse => {
+        getExon(transcript, gene_symbol, exon_start || 0, exon_end || 0,
+          exon_start_offset || 0, exon_end_offset || 0).then(exonResponse => {
 
             let {tx_ac, gene, gene_id, exon_start, exon_end, exon_start_offset, exon_end_offset, sequence_id, chr, start, end, warnings } = exonResponse;
 
@@ -310,44 +312,6 @@ const Builder: React.FC<Props> = ({transcriptComponents}) =>  {
     setStructure(items);
     setFusion({ ...fusion, ...{ "transcript_components" : items }});
   
-  }
-
-  const getGeneId = async (symbol) => {
-    // TODO: error handling
-    let response = await fetch(`/lookup/gene?term=${symbol}`);
-    let geneId = await response.json();
-    return geneId;
-  };
-
-  const getSequenceId = async (chr) => {
-    let response = await fetch(`/lookup/sequence_id?input_sequence=GRCh38:${chr}`);
-    let sequenceId = await response.json();
-    return sequenceId;  
-  }
-
-  const getExon = async (txAc, startExon, endExon, startExonOffset, endExonOffset, gene) => {
-    let reqObj = {
-      tx_ac: txAc,
-      gene: gene,
-      exon_start: startExon,
-      exon_start_offset: startExonOffset,
-      exon_end: endExon,
-      exon_end_offset: endExonOffset
-    }
-
-    let response = await fetch(`/lookup/coords`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(reqObj),
-    });
-
-    let exonResponse = await response.json();
-
-    return exonResponse;
-
   }
 
   const handleCancel = (id) => {
