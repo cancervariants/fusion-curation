@@ -69,6 +69,7 @@ const Builder: React.FC = () =>  {
   const [editMode, setEditMode] = useState('');
   let transcriptComponents = fusion.transcript_components || [];
 
+  
 
   useEffect(() => {
     let diagram = [];
@@ -79,7 +80,7 @@ const Builder: React.FC = () =>  {
       ))
       setStructure(diagram);
     }
-  }, [])
+  })
 
 
   const copy = (result: DropResult) => {

@@ -2,10 +2,8 @@ import './Summary.scss'
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import React, { useContext, useState, useEffect } from 'react';
 import {Button, Tabs, Tab} from '@material-ui/core/';
-import TabContext from '@mui/lab/TabContext';
 import { Readable } from '../Readable/Readable';
 import { SummaryJSON } from '../JSON/SummaryJSON';
-import { makeStyles } from '@material-ui/core/styles';
 import { useColorTheme } from '../../../../global/contexts/Theme/ColorThemeContext';
 
 import { Success } from '../Success/Success';
