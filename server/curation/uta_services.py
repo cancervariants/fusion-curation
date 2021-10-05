@@ -240,7 +240,7 @@ async def get_tx_exons(db: PostgresDatabase, tx_ac: str) -> Optional[List[str]]:
         f"""
         SELECT cds_se_i
         FROM {postgres_instance.schema}._cds_exons_fp_v
-        WHERE tx_ac = "{tx_ac}";
+        WHERE tx_ac = '{tx_ac}';
         """
     )
     cds_se_i = await db.execute_query(query)
@@ -355,12 +355,12 @@ async def get_alt_ac_start_or_end(db: PostgresDatabase, tx_ac: str, tx_exon_star
         SELECT T.hgnc, T.alt_ac, T.alt_start_i, T.alt_end_i, T.alt_strand
         FROM uta_20210129._cds_exons_fp_v as C
         JOIN uta_20210129.tx_exon_aln_v as T ON T.tx_ac = C.tx_ac
-        WHERE T.tx_ac = "{tx_ac}"
+        WHERE T.tx_ac = '{tx_ac}'
         {gene_query}
         AND {tx_exon_start} BETWEEN T.tx_start_i AND T.tx_end_i
         AND {tx_exon_end} BETWEEN T.tx_start_i AND T.tx_end_i
-        AND T.alt_aln_method = "splign"
-        AND T.alt_ac LIKE "NC_00%"
+        AND T.alt_aln_method = 'splign'
+        AND T.alt_ac LIKE 'NC_00%'
         ORDER BY T.alt_ac DESC;
         """
     )
