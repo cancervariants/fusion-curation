@@ -86,6 +86,11 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
   const [geneError, setGeneError] = useState('');
 
   const geneValidate = (symbol) => {
+    console.log(symbol)
+    if(symbol === 'ANY'){
+      handleSave(index, compType, gene) 
+      return
+    }
     getGeneId(symbol)
       .then(geneResponse => {
         if (geneResponse.concept_id === null){
@@ -112,6 +117,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                     style={{ height: 38, width: 125 }} 
                     value={chromosome}
                     onChange={(event) => setChromosome(event.target.value)}
+                    onKeyDown={(e) => {if(e.key === 'Enter'){handleSave(index, compType, chromosome, strand, startPosition, endPosition)}}}
                     label="Chromosome"></TextField>                
                   <TextField 
                     margin="dense" 
@@ -119,6 +125,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                     label="Strand"
                     value={strand}
                     onChange={(event) => setStrand(event.target.value)}
+                    onKeyDown={(e) => {if(e.key === 'Enter'){handleSave(index, compType, chromosome, strand, startPosition, endPosition)}}}
                     ></TextField>                
                   </div>
                   <div className="bottom-inputs">
@@ -128,6 +135,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                     label="Start Position" 
                     value={startPosition}
                     onChange={(event) => setStartPosition(event.target.value)}
+                    onKeyDown={(e) => {if(e.key === 'Enter'){handleSave(index, compType, chromosome, strand, startPosition, endPosition)}}}
                   >
                   </TextField>                
                   <TextField 
@@ -136,6 +144,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                     label="End Position" 
                     value={endPosition}
                     onChange={(event) => setEndPosition(event.target.value)}
+                    onKeyDown={(e) => {if(e.key === 'Enter'){handleSave(index, compType, chromosome, strand, startPosition, endPosition)}}}
                   ></TextField>      
                   </div> 
                   </div>
@@ -167,6 +176,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                     label="Transcript" 
                     value={txAc}
                     onChange={(event) => setTxAc(event.target.value)}
+                    onKeyDown={(e) => {if(e.key === 'Enter'){transcriptValidate()}}}
                     error={transcriptError.length > 0}
                     helperText={transcriptError}
                   ></TextField>                
@@ -176,6 +186,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                     label="Gene Symbol" 
                     value={transcriptGene}
                     onChange={(event) => setTranscriptGene(event.target.value)}
+                    onKeyDown={(e) => {if(e.key === 'Enter'){transcriptValidate()}}}
                     error={transcriptGeneError.length > 0}
                     helperText={transcriptGeneError}
                   ></TextField>                
@@ -187,6 +198,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                     label="Starting Exon" 
                     value={startingExon}
                     onChange={(event) => setStartingExon(event.target.value)}
+                    onKeyDown={(e) => {if(e.key === 'Enter'){transcriptValidate()}}}
                     ></TextField>                
                   <TextField 
                     margin="dense" 
@@ -194,6 +206,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                     label="Ending Exon" 
                     value={endingExon}
                     onChange={(event) => setEndingExon(event.target.value)}
+                    onKeyDown={(e) => {if(e.key === 'Enter'){transcriptValidate()}}}
                     ></TextField>      
                   </div> 
                   { (startingExon !== '' || endingExon !== '') ?
@@ -205,6 +218,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                       label="Starting Offset" 
                       value={startingExonOffset}
                       onChange={(event) => setStartingExonOffset(event.target.value)}
+                      onKeyDown={(e) => {if(e.key === 'Enter'){transcriptValidate()}}}
                     ></TextField>                
                     <TextField 
                       margin="dense" 
@@ -212,6 +226,7 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                       label="Ending Offset" 
                       value={endingExonOffset}
                       onChange={(event) => setEndingExonOffset(event.target.value)}
+                      onKeyDown={(e) => {if(e.key === 'Enter'){transcriptValidate()}}}
                     ></TextField>      
                     </div> 
 
@@ -238,10 +253,11 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                   <TextField 
                     margin="dense" 
                     label="Sequence" 
-                    value={sequence.toUpperCase()}
-                    onChange={(event) => setSequence(event.target.value)}
+                    value={sequence}
+                    onChange={(event) => setSequence(event.target.value.toUpperCase())}
                     error={linkerError}
                     helperText={linkerError ? 'Warning: must contain only {A, C, G, T}' : null}
+                    onKeyDown={(e) => {if(e.key === 'Enter'){handleSave(index, compType, sequence)}}}
                   ></TextField>                
                   </div>
                   <div className="buttons">
@@ -264,8 +280,10 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                     label="Gene Symbol" 
                     error={geneError.length > 0}
                     helperText={geneError}
-                    onChange={(event) => setGene(event.target.value)}
-                    value={gene.toUpperCase()}
+                    onChange={(event) => setGene(event.target.value.toUpperCase())}
+                    value={gene}
+
+                    onKeyDown={(e) => {if(e.key === 'Enter'){geneValidate(gene)}}}
                     >
                     </TextField>                
                   </div>

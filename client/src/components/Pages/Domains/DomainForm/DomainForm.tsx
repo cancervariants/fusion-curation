@@ -84,7 +84,6 @@ const DomainForm: React.FC = () => {
         let {domain, domain_id, warnings} = domainResponse;
 
         if (domainResponse.statusCode > 400){
-          console.log(`domain warnings are: ${warnings}`)
           setDomainWarning(warnings);
           throw new Error(warnings);
         }
@@ -101,7 +100,6 @@ const DomainForm: React.FC = () => {
         let {term, concept_id, warnings} = geneResponse;
         if (concept_id === null){
           setGeneWarning(warnings);
-          console.log(`gene warnings are: ${warnings}`)
           throw new Error(warnings);
         }
 

@@ -134,23 +134,41 @@ const Builder: React.FC = () =>  {
 
       case 'gene': 
       let [symbol] = values;
-      getGeneId(symbol).then(geneResponse => {
+
+      if (symbol === 'ANY') {
         newObj = {
           "component_type": "gene",
-          "component_name": `${geneResponse.term.toUpperCase()} ${geneResponse.concept_id}`,
+          "component_name": "<ANY>",
           "component_id": uuid(),
-          "hr_name": `${geneResponse.term.toUpperCase()}(${geneResponse.concept_id})`,
+          "hr_name": "<ANY>",
           "gene_descriptor": {
-            "id": `gene:${geneResponse.term}`,
+            "id": "",
             "type": "GeneDescriptor",
-            "gene_id": geneResponse.concept_id,
-            "label": geneResponse.term
+            "gene_id": "",
+            "label": "ANY"
           }
         }
-
         save(items, index, newObj);
-        
-      })
+      } else {
+        getGeneId(symbol).then(geneResponse => {
+          newObj = {
+            "component_type": "gene",
+            "component_name": `${geneResponse.term.toUpperCase()} ${geneResponse.concept_id}`,
+            "component_id": uuid(),
+            "hr_name": `${geneResponse.term.toUpperCase()}(${geneResponse.concept_id})`,
+            "gene_descriptor": {
+              "id": `gene:${geneResponse.term}`,
+              "type": "GeneDescriptor",
+              "gene_id": geneResponse.concept_id,
+              "label": geneResponse.term
+            }
+          }
+  
+          save(items, index, newObj);
+          
+        })
+      }
+      
       break;
 
       case 'transcript_segment': 
