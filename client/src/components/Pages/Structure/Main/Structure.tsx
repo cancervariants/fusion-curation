@@ -19,6 +19,7 @@ export const Structure: React.FC<Props> = ( { index }) => {
 
   const {fusion, setFusion} = useContext(FusionContext);
   
+  const transcriptComponents = fusion.transcript_components || [];
 
   return (
     <div className="structure-tab-container">
@@ -50,7 +51,7 @@ export const Structure: React.FC<Props> = ( { index }) => {
         </div> */}
       </div>
 
-      <Builder/>
+      <Builder transcriptComponents={transcriptComponents} />
 
     </div>
   )
