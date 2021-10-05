@@ -256,11 +256,11 @@ const Builder: React.FC<Props> = ({transcriptComponents}) =>  {
 
             newObj = {
               "component_type": "genomic_region",
-              "component_name": `chr${chromosome}:${startPosition}-${endPosition}(${strand})`,
-              "hr_name": `chr${chromosome}:${startPosition}-${endPosition}(${strand})`,
+              "component_name": `chr${chromosome}:${startPosition}_${endPosition}(${strand})`,
+              "hr_name": `chr${chromosome}:${startPosition}_${endPosition}(${strand})`,
               "component_id": uuid(),
               "region": {
-                "id": `chr${chromosome}:${startPosition}-${endPosition}(${strand})`,
+                "id": `chr${chromosome}:${startPosition}_${endPosition}(${strand})`,
                 "type": "LocationDescriptor",
                 "location": {
                   "type": "SequenceLocation",

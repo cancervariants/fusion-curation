@@ -32,16 +32,17 @@ export const Readable: React.FC<Props> = ( { genes, proteinDomains, regulatoryEl
       <hr />
       <div className="row">
         <span className="left-item">Regulatory Elements  </span>
-        <span className="right-item">{regulatoryElements.map(re => `${re.gene_descriptor.label.toUpperCase()} ${re.type} `)}</span>
+        <span className="right-item">{regulatoryElements.map(re => <div className="right-sub-list-item">{`${re.gene_descriptor.label.toUpperCase()} ${re.type}`}</div>)}</span>
       </div>
       <hr />
       <div className="row">
         <span className="left-item">Protein Domains</span>
-        <span className="right-item">{proteinDomains.map(pd => `${pd.status}: ${pd.name}`)} </span>
+        <span className="right-list-item">{proteinDomains.map(pd => <div className="right-sub-list-item">{`${pd.status}: ${pd.name}`} </div>)} </span>
       </div>
       <hr />
       <div className="row">
         <span className="left-item">Reading Frame</span>
+        <span className="right-item"></span>
         <span className="right-item">{`${rFramePreserved ? 'Preserved' : 'Not preserved'}`} </span>
       </div>
       <hr />
