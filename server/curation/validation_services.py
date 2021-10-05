@@ -14,11 +14,11 @@ def validate_fusion(fusion: Dict) -> Dict[str, Any]:
         warnings if validation errors are raised
     """
     response: Dict[str, Any] = {
-        'warnings': []
+        "warnings": []
     }
     try:
-        response['fusion'] = Fusion(**fusion).dict(exclude_none=True)
+        response["fusion"] = Fusion(**fusion).dict(exclude_none=True)
     except ValidationError as e:
-        response['warnings'].append(e.errors())
-        response['fusion'] = None
+        response["warnings"].append(e.errors())
+        response["fusion"] = None
     return response

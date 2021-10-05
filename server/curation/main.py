@@ -32,33 +32,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.on_event('startup')
+@app.on_event("startup")
 async def startup():
     """Initialize asyncpg thread pool."""
     await postgres_instance.create_pool()
     app.state.db = postgres_instance
 
 
-@app.get('/lookup/gene',
-         operation_id='normalizeGene',
+@app.get("/lookup/gene",
+         operation_id="normalizeGene",
          response_model=NormalizeGeneResponse)
-def normalize_gene(term: str = Query('')) -> Dict:
+def normalize_gene(term: str = Query("")) -> Dict:
     """Normalize gene term provided by user.
     :param str term: gene symbol/alias/name/etc
     :return: JSON response with normalized ID if successful and warnings otherwise
     """
     concept_id, warnings = get_gene_id(term.strip())
     return {
-        'term': term,
-        'concept_id': concept_id,
-        'warnings': warnings
+        "term": term,
+        "concept_id": concept_id,
+        "warnings": warnings
     }
 
 
-@app.get('/lookup/domain',
-         operation_id='getDomainID',
+@app.get("/lookup/domain",
+         operation_id="getDomainID",
          response_model=DomainIDResponse)
-def fetch_domain_id(domain: str = Query('')) -> Dict:
+def fetch_domain_id(domain: str = Query("")) -> Dict:
     """Fetch interpro ID given functional domain name.
     :param str name: name of functional domain
     :return: Dict (to be served as JSON) containing provided name, ID (as CURIE) if available,
@@ -67,47 +67,47 @@ def fetch_domain_id(domain: str = Query('')) -> Dict:
     (domain_id, warnings) = get_domain_id(domain.strip())
     print(domain_id)
     return {
-        'domain': domain,
-        'domain_id': domain_id,
-        'warnings': warnings
+        "domain": domain,
+        "domain_id": domain_id,
+        "warnings": warnings
     }
 
 
-@app.get('/complete/domain',
-         operation_id='suggestDomain',
+@app.get("/complete/domain",
+         operation_id="suggestDomain",
          response_model=SuggestDomainResponse,
          response_model_exclude_none=True)
-def suggest_domain(term: str = Query('')) -> Dict:
+def suggest_domain(term: str = Query("")) -> Dict:
     """Provide completion suggestions for domain term provided by user.
     :param str term: text typed by user in domain field
     :return: JSON response with suggestions listed, or warnings if unable to
         provide suggestions.
     """
     response: Dict[str, Any] = {
-        'term': term,
+        "term": term,
     }
     possible_matches = get_domain_matches(term)
     if len(possible_matches) < 25:
-        response['suggestions'] = possible_matches
+        response["suggestions"] = possible_matches
     else:
-        response['warnings'] = ['Max suggestions exceeded']
+        response["warnings"] = ["Max suggestions exceeded"]
     return response
 
 
-@app.post('/lookup/coords',
-          operation_id='getExonCoords',
+@app.post("/lookup/coords",
+          operation_id="getExonCoords",
           response_model=ExonCoordsResponse)
 async def get_exon_coords(request: Request, exon_data: ExonCoordsRequest) -> Dict:
-    """Fetch a transcript's exon information.
+    """Fetch a transcript"s exon information.
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access DB
         retrieval methods by way of the `state` property.
     :param ExonCoordsRequest exon_data: exon data to retrieve coordinates for. See schemas for
         expected structure.
-    :return: Dict served as JSON containing transcript's exon information
+    :return: Dict served as JSON containing transcript"s exon information
     """
     print(exon_data)
     if not exon_data.gene:
-        exon_data.gene = ''
+        exon_data.gene = ""
 
     genomic_coords = await get_genomic_coords(request.app.state.db, exon_data.tx_ac,
                                               exon_data.exon_start,
@@ -116,17 +116,17 @@ async def get_exon_coords(request: Request, exon_data: ExonCoordsRequest) -> Dic
                                               exon_data.exon_end_offset, exon_data.gene)
 
     if genomic_coords:
-        genomic_coords['gene_id'] = get_gene_id(genomic_coords['gene'])[0]
-        genomic_coords['sequence_id'] = get_ga4gh_sequence_id(genomic_coords['chr'])[0]
-        genomic_coords['tx_ac'] = exon_data.tx_ac
-        genomic_coords['warnings'] = []
+        genomic_coords["gene_id"] = get_gene_id(genomic_coords["gene"])[0]
+        genomic_coords["sequence_id"] = get_ga4gh_sequence_id(genomic_coords["chr"])[0]
+        genomic_coords["tx_ac"] = exon_data.tx_ac
+        genomic_coords["warnings"] = []
         return genomic_coords
     else:
-        return {'warnings': ['Coordinate retrieval failed.']}
+        return {"warnings": ["Coordinate retrieval failed."]}
 
 
-@app.get('/lookup/sequence_id',
-         operation_id='getSequenceID',
+@app.get("/lookup/sequence_id",
+         operation_id="getSequenceID",
          response_model=SequenceIDResponse)
 def get_sequence_id(input_sequence: str) -> Dict:
     """Get GA4GH sequence ID CURIE for input sequence.
@@ -136,14 +136,14 @@ def get_sequence_id(input_sequence: str) -> Dict:
     """
     (sequence_id, warnings) = get_ga4gh_sequence_id(input_sequence.strip())
     return {
-        'sequence': input_sequence,
-        'sequence_id': sequence_id,
-        'warnings': warnings
+        "sequence": input_sequence,
+        "sequence_id": sequence_id,
+        "warnings": warnings
     }
 
 
-@app.post('/lookup/validate',
-          operation_id='validateFusion',
+@app.post("/lookup/validate",
+          operation_id="validateFusion",
           response_model=FusionValidationResponse)
 def validate_object(proposed_fusion: Dict) -> Dict:
     """Validate constructed Fusion object. Return warnings if invalid.
@@ -154,8 +154,8 @@ def validate_object(proposed_fusion: Dict) -> Dict:
     return validate_fusion(proposed_fusion)
 
 
-app.mount('/', StaticFiles(html=True, directory=APP_ROOT / 'build'))
+app.mount("/", StaticFiles(html=True, directory=APP_ROOT / "build"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     uvicorn.run("curation.main:app", port=5000, reload=True)

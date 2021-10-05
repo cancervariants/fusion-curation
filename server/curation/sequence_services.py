@@ -8,7 +8,7 @@ from biocommons.seqrepo import SeqRepo
 from curation import SEQREPO_DATA_PATH
 
 
-logger = logging.getLogger('curation_backend')
+logger = logging.getLogger("curation_backend")
 logger.setLevel(logging.DEBUG)
 
 
@@ -18,9 +18,9 @@ def get_seqrepo() -> SeqRepo:
     """
     seqrepo_path = Path(SEQREPO_DATA_PATH)
     if not seqrepo_path.exists():
-        raise NotADirectoryError(f'Invalid SeqRepo path provided at '
-                                 f'environment variable SEQREPO_DATA_PATH: '
-                                 f'{seqrepo_path}')
+        raise NotADirectoryError(f"Invalid SeqRepo path provided at "
+                                 f"environment variable SEQREPO_DATA_PATH: "
+                                 f"{seqrepo_path}")
     return SeqRepo(seqrepo_path)
 
 
@@ -33,11 +33,11 @@ def get_ga4gh_sequence_id(sequence: str) -> Tuple[str, List[str]]:
     :return: Tuple containing `sequence_id` and `warnings` fields
     """
     try:
-        sequence_id = sr.translate_identifier(sequence, 'ga4gh')[0]
+        sequence_id = sr.translate_identifier(sequence, "ga4gh")[0]
         warnings = []
     except (KeyError, IndexError) as e:
-        msg = f'Unable to retrieve GA4GH sequence ID for {sequence}: {e}'
+        msg = f"Unable to retrieve GA4GH sequence ID for {sequence}: {e}"
         logger.warning(msg)
-        sequence_id = ''
+        sequence_id = ""
         warnings = [msg]
     return (sequence_id, warnings)

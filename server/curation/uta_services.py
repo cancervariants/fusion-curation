@@ -11,7 +11,7 @@ import boto3
 
 from curation import UTA_DB_URL
 
-logger = logging.getLogger('fusion_backend')
+logger = logging.getLogger("fusion_backend")
 logger.setLevel(logging.DEBUG)
 
 
@@ -41,12 +41,12 @@ class ParseResult(urlparse.ParseResult):
 class PostgresDatabase():
     """Database instance class. Should survive for the duration of application runtime."""
 
-    def __init__(self, db_url: str = UTA_DB_URL, db_pwd: str = '') -> None:
+    def __init__(self, db_url: str = UTA_DB_URL, db_pwd: str = "") -> None:
         """Initialize DB class.
         :param str db_url: URL to DB
         :param str db_pwd: DB password if necessary
         """
-        self.args = self._get_conn_args(('FUSION_EB_PROD' in environ), db_url, db_pwd)
+        self.args = self._get_conn_args(("FUSION_EB_PROD" in environ), db_url, db_pwd)
         self._connection_pool = None
 
     async def create_pool(self):
@@ -58,14 +58,14 @@ class PostgresDatabase():
                     max_size=10,
                     max_inactive_connection_lifetime=3,
                     command_timeout=60,
-                    host=self.args['host'],
-                    port=self.args['port'],
-                    user=self.args['user'],
-                    password=self.args['password'],
-                    database=self.args['database'],
+                    host=self.args["host"],
+                    port=self.args["port"],
+                    user=self.args["user"],
+                    password=self.args["password"],
+                    database=self.args["database"],
                 )
             except InterfaceError as e:
-                logger.error(f'While creating connection pool, encountered exception {e}')
+                logger.error(f"While creating connection pool, encountered exception {e}")
 
     async def execute_query(self, query: str):
         """Execute given query.
@@ -79,12 +79,12 @@ class PostgresDatabase():
                 result = await connection.fetch(query)
                 return result
 
-    def _get_conn_args(self, is_prod: bool, db_url: str, db_pwd: str = '') -> Dict:
+    def _get_conn_args(self, is_prod: bool, db_url: str, db_pwd: str = "") -> Dict:
         """Return connection arguments.
 
         :param bool is_prod: `True` if production environment. `False` otherwise.
         :param str db_url: PostgreSQL db url
-        :param str db_pwd: uta_admin's user password
+        :param str db_pwd: uta_admin"s user password
         :return: A dictionary containing db credentials
         """
         if not is_prod:
@@ -95,42 +95,42 @@ class PostgresDatabase():
             return self._get_args(url.hostname, url.port, url.database,
                                   url.username, unquote(url.password))
         else:
-            self.schema = environ['UTA_SCHEMA']
-            region = 'us-east-2'
-            client = boto3.client('rds', region_name=region)
+            self.schema = environ["UTA_SCHEMA"]
+            region = "us-east-2"
+            client = boto3.client("rds", region_name=region)
             token = client.generate_db_auth_token(
-                DBHostname=environ['UTA_HOST'], Port=environ['UTA_PORT'],
-                DBUsername=environ['UTA_USER'], Region=region
+                DBHostname=environ["UTA_HOST"], Port=environ["UTA_PORT"],
+                DBUsername=environ["UTA_USER"], Region=region
             )
-            return self._get_args(environ['UTA_HOST'],
-                                  int(environ['UTA_PORT']),
-                                  environ['UTA_DATABASE'], environ['UTA_USER'],
+            return self._get_args(environ["UTA_HOST"],
+                                  int(environ["UTA_PORT"]),
+                                  environ["UTA_DATABASE"], environ["UTA_USER"],
                                   token)
 
     @staticmethod
     def _update_db_url(db_pwd: str, db_url: str) -> Optional[str]:
         """Return new db_url containing password.
 
-        :param str db_pwd: uta_admin's user password
+        :param str db_pwd: uta_admin"s user password
         :param str db_url: PostgreSQL db url
         :return: PostgreSQL db url with password included, or None if invalid parameters
             encountered
         """
-        if 'UTA_DB_URL' in environ:
+        if "UTA_DB_URL" in environ:
             return environ["UTA_DB_URL"]
-        if not db_pwd and 'UTA_PASSWORD' not in environ:
-            raise Exception('Environment variable UTA_PASSWORD '
-                            'or `db_pwd` param must be set')
+        if not db_pwd and "UTA_PASSWORD" not in environ:
+            raise Exception("Environment variable UTA_PASSWORD "
+                            "or `db_pwd` param must be set")
         else:
-            uta_password_in_environ = 'UTA_PASSWORD' in environ
-            db_url = db_url.split('@')
+            uta_password_in_environ = "UTA_PASSWORD" in environ
+            db_url = db_url.split("@")
             if uta_password_in_environ and db_pwd:
-                if db_pwd != environ['UTA_PASSWORD']:
-                    raise Exception('If both environment variable UTA_PASSWORD and param db_pwd '
-                                    'is set, they must both be the same')
+                if db_pwd != environ["UTA_PASSWORD"]:
+                    raise Exception("If both environment variable UTA_PASSWORD and param db_pwd "
+                                    "is set, they must both be the same")
             else:
                 if uta_password_in_environ and not db_pwd:
-                    db_pwd = environ['UTA_PASSWORD']
+                    db_pwd = environ["UTA_PASSWORD"]
             return f"{db_url[0]}:{db_pwd}@{db_url[1]}"
 
     def _url_encode_password(self, db_url: str) -> str:
@@ -139,7 +139,7 @@ class PostgresDatabase():
         :param str db_url: URL for PostgreSQL Database
         :return: DB URL encoded
         """
-        original_pwd = db_url.split('//')[-1].split('@')[0].split(':')[-1]
+        original_pwd = db_url.split("//")[-1].split("@")[0].split(":")[-1]
         return db_url.replace(original_pwd, quote(original_pwd))
 
     def _get_args(self, host: str, port: int, database: str, user: str, password: str) -> Dict:
@@ -158,7 +158,7 @@ class PostgresDatabase():
             database=database,
             user=user,
             password=password,
-            application_name='fusion_backend'
+            application_name="fusion_backend"
         )
 
 
@@ -234,20 +234,20 @@ async def get_tx_exons(db: PostgresDatabase, tx_ac: str) -> Optional[List[str]]:
 
     :param PostgresDatabase db: asyncpg-driven PostgreSQL database instance
     :param str tx_ac: Transcript accession
-    :return: List of a transcript's accessions, or None if lookup fails
+    :return: List of a transcript"s accessions, or None if lookup fails
     """
     query = (
         f"""
         SELECT cds_se_i
         FROM {postgres_instance.schema}._cds_exons_fp_v
-        WHERE tx_ac = '{tx_ac}';
+        WHERE tx_ac = "{tx_ac}";
         """
     )
     cds_se_i = await db.execute_query(query)
     if not cds_se_i:
         logger.warning(f"Unable to get exons for {tx_ac}")
         return None
-    return cds_se_i[0][0].split(';')
+    return cds_se_i[0][0].split(";")
 
 
 async def get_tx_exon_start_end(db: PostgresDatabase, tx_ac: str, start_exon: int, end_exon: int)\
@@ -258,7 +258,7 @@ async def get_tx_exon_start_end(db: PostgresDatabase, tx_ac: str, start_exon: in
     :param str tx_ac: Transcript accession
     :param int start_exon: Starting exon number
     :param int end_exon: Ending exon number
-    :return: Transcript's exons and start/end exon coordinates, or None if lookup fails
+    :return: Transcript"s exons and start/end exon coordinates, or None if lookup fails
     """
     if start_exon and end_exon:
         if start_exon > end_exon:
@@ -290,12 +290,12 @@ def get_tx_exon_coords(tx_exons: List[str], start_exon: int, end_exon: int)\
     :param list tx_exons: List of transcript exons
     :param int start_exon: Start exon number
     :param int end_exon: End exon number
-    :return: Transcript start exon coords, Transcript end exon coords, or None if there's a
+    :return: Transcript start exon coords, Transcript end exon coords, or None if there"s a
         mismatch between coordinates and retrieved exon numbers
     """
     try:
-        tx_exon_start = tx_exons[start_exon - 1].split(',')
-        tx_exon_end = tx_exons[end_exon - 1].split(',')
+        tx_exon_start = tx_exons[start_exon - 1].split(",")
+        tx_exon_end = tx_exons[end_exon - 1].split(",")
     except IndexError as e:
         logger.warning(e)
         return None
@@ -309,8 +309,8 @@ async def get_alt_ac_start_and_end(db: PostgresDatabase, tx_ac: str, tx_exon_sta
 
     :param PostgresDatabase db: asyncpg-driven PostgreSQL database instance
     :param str tx_ac: Transcript accession
-    :param List[str] tx_exon_start: Transcript's exon start coordinates
-    :param List[str] tx_exon_end: Transcript's exon end coordinates
+    :param List[str] tx_exon_start: Transcript"s exon start coordinates
+    :param List[str] tx_exon_end: Transcript"s exon end coordinates
     :param str gene: Gene symbol
     :return: Alt ac start and end data
     """
@@ -339,28 +339,28 @@ async def get_alt_ac_start_or_end(db: PostgresDatabase, tx_ac: str, tx_exon_star
 
     :param PostgresDatabase db: asyncpg-driven PostgreSQL database instance
     :param str tx_ac: Transcript accession
-    :param int tx_exon_start: Transcript's exon start coordinate
-    :param int tx_exon_end: Transcript's exon end coordinate
+    :param int tx_exon_start: Transcript"s exon start coordinate
+    :param int tx_exon_end: Transcript"s exon end coordinate
     :param Optional[str] gene: Gene symbol
     :return: hgnc symbol, genomic accession for chromosome,
-        start exon's end coordinate, end exon's start coordinate, strand
+        start exon"s end coordinate, end exon"s start coordinate, strand
     """
     if gene:
-        gene_query = f"AND T.hgnc = '{gene}'"
+        gene_query = f"""AND T.hgnc = "{gene}" """
     else:
-        gene_query = ''
+        gene_query = ""
 
     query = (
         f"""
         SELECT T.hgnc, T.alt_ac, T.alt_start_i, T.alt_end_i, T.alt_strand
         FROM uta_20210129._cds_exons_fp_v as C
         JOIN uta_20210129.tx_exon_aln_v as T ON T.tx_ac = C.tx_ac
-        WHERE T.tx_ac = '{tx_ac}'
+        WHERE T.tx_ac = "{tx_ac}"
         {gene_query}
         AND {tx_exon_start} BETWEEN T.tx_start_i AND T.tx_end_i
         AND {tx_exon_end} BETWEEN T.tx_start_i AND T.tx_end_i
-        AND T.alt_aln_method = 'splign'
-        AND T.alt_ac LIKE 'NC_00%'
+        AND T.alt_aln_method = "splign"
+        AND T.alt_ac LIKE "NC_00%"
         ORDER BY T.alt_ac DESC;
         """
     )

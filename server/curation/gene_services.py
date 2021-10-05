@@ -17,10 +17,10 @@ def get_gene_id(term: str) -> Tuple[Optional[str], List[str]]:
         warnings (empty if fully successful)
     """
     response = gene_query_handler.normalize(term)
-    if response['match_type'] != MatchType.NO_MATCH:
-        concept_id = response['gene_descriptor']['gene']['gene_id']
+    if response["match_type"] != MatchType.NO_MATCH:
+        concept_id = response["gene_descriptor"]["gene"]["gene_id"]
         return (concept_id, [])
     else:
-        warn = f'Lookup of gene term {term} failed.'
+        warn = f"Lookup of gene term {term} failed."
         logger.warning(warn)
         return (None, [warn])
