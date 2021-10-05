@@ -80,7 +80,7 @@ const Builder: React.FC = () =>  {
       ))
       setStructure(diagram);
     }
-  })
+  }, [])
 
 
   const copy = (result: DropResult) => {
