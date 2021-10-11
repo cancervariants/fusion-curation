@@ -89,6 +89,7 @@ const Builder: React.FC<Props> = ({transcriptComponents}) =>  {
   }, [transcriptComponents])
 
 
+  // 
   const copy = (result: DropResult) => {
     const {source, destination} = result;
   
@@ -143,9 +144,9 @@ const Builder: React.FC<Props> = ({transcriptComponents}) =>  {
       if (symbol === 'ANY') {
         newObj = {
           "component_type": "gene",
-          "component_name": "<ANY>",
+          "component_name": "*",
           "component_id": uuid(),
-          "hr_name": "<ANY>",
+          "hr_name": "*",
           "gene_descriptor": {
             "id": "",
             "type": "GeneDescriptor",
