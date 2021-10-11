@@ -32,11 +32,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.on_event("startup")
 async def startup():
     """Initialize asyncpg thread pool."""
     await postgres_instance.create_pool()
     app.state.db = postgres_instance
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    """Clean up thread pool."""
+    await app.state.db._connection_pool.close()
 
 
 @app.get("/lookup/gene",
