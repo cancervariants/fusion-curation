@@ -43,3 +43,15 @@ if "SEQREPO_DATA_PATH" not in environ:
     SEQREPO_DATA_PATH = f"{APP_ROOT}/data/seqrepo/latest"
 else:
     SEQREPO_DATA_PATH = environ["SEQREPO_DATA_PATH"]
+
+
+class ServiceWarning(Exception):
+    """Custom Exception to use when lookups fail in curation services."""
+
+    def __init__(self, *args, **kwargs):
+        """Initialize exception."""
+        super().__init__(*args, **kwargs)
+
+
+# define max acceptable matches for autocomplete suggestions
+MAX_SUGGESTIONS = 50

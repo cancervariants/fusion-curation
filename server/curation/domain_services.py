@@ -3,9 +3,9 @@ from pathlib import Path
 from datetime import datetime
 import csv
 from ftplib import FTP
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
-from curation import APP_ROOT, logger
+from curation import MAX_SUGGESTIONS, APP_ROOT, logger, ServiceWarning
 
 
 class DomainService():
@@ -30,7 +30,7 @@ class DomainService():
             self.domains = {row[2].lower(): {"case": row[2], "id": row[0]}
                             for row in reader if row[1] in valid_entry_types}
 
-    def download_interpro(self):
+    def download_interpro(self) -> None:
         """Retrieve InterPro entry list TSV from EMBL-EBI servers."""
         logger.info("Downloading InterPro entry list...")
         today = datetime.today().strftime("%Y%m%d")
@@ -46,30 +46,39 @@ class DomainService():
             raise Exception(e)
         logger.info("InterPro entry list download complete.")
 
-    def get_domain_id(self, name: str) -> Tuple[Optional[str], List[str]]:
+    def get_domain_id(self, name: str) -> str:
         """Given functional domain name, return Interpro ID.
         :param str name: name to fetch ID for (case insensitive)
-        :return: Tuple containing domain ID (as CURIE) if found, empty string otherwise,
+        :return: Tuple containing domain ID (as CURIE)
+            empty string otherwise,
             and a List of warnings (empty if successful)
+        :raise: ServiceWarning if lookup fails
         """
         domain_id = self.domains.get(name.lower())
         if not domain_id:
             warn = f"Could not retrieve ID for domain {name}"
             logger.info(warn)
-            return (None, [warn])
+            raise ServiceWarning(warn)
         else:
-            return (f"interpro:{domain_id['id']}", [])
+            return f"interpro:{domain_id['id']}"
 
-    def get_possible_matches(self, query: str, n: int = 50) -> List[Tuple[str, str]]:
+    def get_possible_domains(self, query: str, n: int = 50) -> List[Tuple[str, str]]:
         """Given input query, return possible domain matches (for autocomplete)
         :param str query: user-entered string (case insensitive)
         :param int n: max # of items to return
-        :return: List of valid domain names (up to n names)
+        :return: List of valid domain names (up to n names) paired with domain IDs
+        :raise: ServiceWarning if number of possible matches exceeds defined limit
         """
-        return [(v["case"], f'interpro:{v["id"]}') for k, v in self.domains.items()
-                if k.startswith(query.lower())][:n]
+        matches = [(v["case"], f'interpro:{v["id"]}') for k, v in self.domains.items()
+                   if k.startswith(query.lower())][:n]
+        n = len(matches)
+        if n > MAX_SUGGESTIONS:
+            warn = f"Got {n} possible matches for {query} (exceeds {MAX_SUGGESTIONS})"
+            logger.warning(warn)
+            raise ServiceWarning(warn)
+        return matches
 
 
 domain_service = DomainService()
 get_domain_id = domain_service.get_domain_id
-get_domain_matches = domain_service.get_possible_matches
+get_possible_domains = domain_service.get_possible_domains

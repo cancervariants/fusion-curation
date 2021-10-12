@@ -9,7 +9,7 @@ from asyncpg.exceptions import InterfaceError
 from six.moves.urllib import parse as urlparse
 import boto3
 
-from curation import UTA_DB_URL
+from curation import UTA_DB_URL, ServiceWarning
 
 logger = logging.getLogger("fusion_backend")
 logger.setLevel(logging.DEBUG)
@@ -167,7 +167,7 @@ postgres_instance = PostgresDatabase()
 
 async def get_genomic_coords(db: PostgresDatabase, tx_ac: str, start_exon: int, end_exon: int,
                              start_exon_offset: int = 0, end_exon_offset: int = 0,
-                             gene: str = None) -> Optional[Dict]:
+                             gene: str = None) -> Dict:
     """Get genomic chromosome and start/end exon coordinates.
 
     :param PostgresDatabase db: asyncpg-driven PostgreSQL database instance
@@ -187,18 +187,18 @@ async def get_genomic_coords(db: PostgresDatabase, tx_ac: str, start_exon: int, 
 
     tx_exon_start_end = await get_tx_exon_start_end(db, tx_ac, start_exon, end_exon)
     if not tx_exon_start_end:
-        return None
+        raise ServiceWarning("Unable to retrieve exon start/end coordinates.")
     (tx_exons, start_exon, end_exon) = tx_exon_start_end
 
     tx_exon_coords = get_tx_exon_coords(tx_exons, start_exon, end_exon)
     if not tx_exon_coords:
-        return None
+        raise ServiceWarning("Unable to retrieve transcript exon coordinates.")
     tx_exon_start, tx_exon_end = tx_exon_coords
 
     alt_ac_start_end = await get_alt_ac_start_and_end(db, tx_ac, tx_exon_start, tx_exon_end,
                                                       gene=gene)
     if not alt_ac_start_end:
-        return None
+        raise ServiceWarning("Unable to retrieve genomic coordinates.")
     alt_ac_start, alt_ac_end = alt_ac_start_end
 
     start = alt_ac_start[3]
@@ -216,7 +216,7 @@ async def get_genomic_coords(db: PostgresDatabase, tx_ac: str, start_exon: int, 
     gene = alt_ac_start[0]
     chr = alt_ac_start[1]
     if gene is None or chr is None:
-        return None
+        raise ServiceWarning("Unable to extract chromosome or gene from related transcript.")
     return {
         "gene": gene,
         "chr": chr,

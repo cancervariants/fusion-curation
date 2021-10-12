@@ -1,35 +1,32 @@
 """Wrapper for required Gene Normalization services."""
-from typing import List, Tuple, Optional, Dict, Any
+from typing import List, Tuple
 
 from gene.query import QueryHandler
 from gene.schemas import MatchType
 from boto3.dynamodb.conditions import Key
 
-from curation import logger
-
-MAX_SUGGESTIONS = 50
+from curation import logger, ServiceWarning, MAX_SUGGESTIONS
 
 # set Gene Normalization settings via environment variables -- see Gene Normalization README
 gene_query_handler = QueryHandler()
 
 
-def get_gene_id(term: str) -> Tuple[Optional[str], List[str]]:
+def get_gene_id(term: str) -> str:
     """Get normalized ID given gene symbol/label/alias.
     :param str term: user-entered gene term
-    :returns: Tuple with a concept ID (str, empty if fails) and List of
-        warnings (empty if fully successful)
+    :returns: concept ID, str, if successful
     """
     response = gene_query_handler.normalize(term)
     if response["match_type"] != MatchType.NO_MATCH:
         concept_id = response["gene_descriptor"]["gene"]["gene_id"]
-        return (concept_id, [])
+        return concept_id
     else:
         warn = f"Lookup of gene term {term} failed."
         logger.warning(warn)
-        return (None, [warn])
+        raise ServiceWarning(warn)
 
 
-def get_possible_genes(query: str) -> Dict:
+def get_possible_genes(query: str) -> List[Tuple[str, str]]:
     """Given input query, return possible gene symbol/alias matches (for autocomplete).
     # TODO
       * how to handle extremely large result lists (such that query wouldn't capture all of them?)
@@ -43,8 +40,6 @@ def get_possible_genes(query: str) -> Dict:
     :return: response, Dict, containing requested term, and either a List of suggested terms or
         warning(s) if lookup fails
     """
-    response: Dict[str, Any] = {'query': query}
-
     items = set()
     for item_type in ('symbol', 'prev_symbol', 'alias'):
         lookup_response = gene_query_handler.db.genes.query(
@@ -57,13 +52,14 @@ def get_possible_genes(query: str) -> Dict:
 
         items |= {(item['label_and_type'].split('##')[0], item['concept_id'])
                   for item in lookup_response['Items']}
-        if len(items) > MAX_SUGGESTIONS:
-            response['warnings'] = ['Max suggestions exceeded']
-            return response
 
-    if len(items) == 0:
-        response['warnings'] = ['No matching terms found']
-        return response
+    n = len(items)
+    if n > MAX_SUGGESTIONS:
+        warn = f"Got {n} possible matches for {query} (exceeds {MAX_SUGGESTIONS})"
+        logger.warning(warn)
+        raise ServiceWarning(warn)
+    elif n == 0:
+        return []
 
     def order_by_source(concept_id: str) -> int:
         if concept_id[0] == 'h':  # for hgnc
@@ -73,12 +69,11 @@ def get_possible_genes(query: str) -> Dict:
         else:  # for ncbi
             return 2
 
-    response['matches'] = sorted(sorted(items, key=lambda i: order_by_source(i[1])),
-                                 key=lambda i: i[0])
-    return response
+    matches = sorted(sorted(list(items), key=lambda i: order_by_source(i[1])), key=lambda i: i[0])
+    return matches
 
 
-def update_gene_table():
+def add_lookup_index():
     """Add global secondary index to gene_concepts table for autocomplete functionality."""
     gene_query_handler.db.dynamodb_client.update_table(
         TableName='gene_concepts',
@@ -114,6 +109,10 @@ def update_gene_table():
                         'ProjectionType': 'INCLUDE',
                         'NonKeyAttributes': ['concept_id']
                     },
+                    'ProvisionedThroughput': {
+                        'ReadCapacityUnits': 10,
+                        'WriteCapacityUnits': 10
+                    }
                 }
             }
         ]
@@ -124,4 +123,4 @@ def update_gene_table():
 if not any([i for i in gene_query_handler.db.genes.global_secondary_indexes
             if i['IndexName'] == 'gene_startswith']):
     logger.info('Updating gene_concepts DB table index')
-    update_gene_table()
+    add_lookup_index()
