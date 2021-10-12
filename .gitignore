@@ -181,5 +181,5 @@ frontend/node_modules
 node_modules/
 
 # Data
-curation/data
-node_modules
+server/curation/data
+client/node_modules
