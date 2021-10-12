@@ -1,0 +1,29 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "*"
+aiofiles = "*"
+asyncpg = "*"
+"biocommons.seqrepo" = "*"
+gene-normalizer = "==0.1.19"
+boto3 = "*"
+fusor = ">=0.0.9"
+websockets = ">=9.1"
+uvloop = "*"
+httptools = "*"
+urllib3 = ">=1.26.5"
+
+[dev-packages]
+fusion-curation = {editable = true, path = "."}
+pytest = "*"
+pytest-asyncio = "*"
+coverage = "*"
+pytest-cov = "*"
+pre-commit = "*"
+flake8 = "*"
+flake8-docstrings = "*"
+coveralls = "*"
+jupyterlab = "*"
