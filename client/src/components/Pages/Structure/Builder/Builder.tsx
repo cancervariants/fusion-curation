@@ -4,6 +4,7 @@ import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
 import './Builder.scss';
 import { TransCompInput } from '../TransCompInput/TransCompInput';
+import ButtonTrash from '../../../main/shared/Buttons/ButtonTrash';
 
 import {getGeneId, getSequenceId, getExon} from '../../../../services/main';
 
@@ -323,6 +324,14 @@ const Builder: React.FC<Props> = ({transcriptComponents}) =>  {
     setStructure(items);
   }
 
+  const handleDelete = (id) => {
+    let items = Array.from(structure);
+    items = items.filter(item => item.component_id !== id);
+
+    setStructure(items);
+    setFusion({ ...fusion, ...{ "transcript_components" : items }});
+  }
+
   const formatType = (str) => {
     switch(str){
       case 'gene':
@@ -418,7 +427,7 @@ const Builder: React.FC<Props> = ({transcriptComponents}) =>  {
           {(provided) => (
             <div className="block-container" {...provided.droppableProps} ref={provided.innerRef}>
               <h2 className={`${structure.length === 0 ? "instruction" : "hidden"}`}>Drag components here</h2>
-              {structure.map(({component_id, component_name, component_type}, index) => {
+              {structure.map(({component_id, hr_name, component_type}, index) => {
                 return (
                   <Draggable key={component_id} draggableId={component_id} index={index}>
                     {(provided, snapshot) => (
@@ -431,7 +440,15 @@ const Builder: React.FC<Props> = ({transcriptComponents}) =>  {
                         {
                           component_id === editMode ?
                           <TransCompInput handleSave={handleSave} handleCancel={handleCancel}  compType={component_type} index={index} key={component_id} id={component_id}/>
-                          : <span>{component_name}</span>
+                          : <div className="comp-input">
+                              <div className="hr-name">
+                                {hr_name}
+                              </div> 
+                              <div className="button-trash" onClick={() => handleDelete(component_id)}>
+                                <ButtonTrash fill="#878799" width="40" height="15"/>
+                              </div>
+                              
+                            </div>
                         }
                         
                       </div>
