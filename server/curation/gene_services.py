@@ -7,7 +7,7 @@ from boto3.dynamodb.conditions import Key
 
 from curation import logger, ServiceWarning, MAX_SUGGESTIONS
 
-# set Gene Normalization settings via environment variables -- see Gene Normalization README
+# set Gene Normalization settings via env variables -- see Gene Normalization README
 gene_query_handler = QueryHandler()
 
 
@@ -29,7 +29,8 @@ def get_gene_id(term: str) -> str:
 def get_possible_genes(query: str) -> List[Tuple[str, str]]:
     """Given input query, return possible gene symbol/alias matches (for autocomplete).
     # TODO
-      * how to handle extremely large result lists (such that query wouldn't capture all of them?)
+      * how to handle extremely large result lists (such that query wouldn't capture all
+        of them?)
       * similarly, we probably need to impose a cutoff suggestion amount (25?)
       * move index generation into gene-norm?
       * consider cache strategies?
@@ -37,15 +38,16 @@ def get_possible_genes(query: str) -> List[Tuple[str, str]]:
       * pretty sure `query` should always be in items, right?
 
     :param str query: user-entered string (case-insensitive)
-    :return: response, Dict, containing requested term, and either a List of suggested terms or
-        warning(s) if lookup fails
+    :return: response, Dict, containing requested term, and either a List of suggested
+        terms or warning(s) if lookup fails
     """
     items = set()
     for item_type in ('symbol', 'prev_symbol', 'alias'):
+        beginswith_key = Key('label_and_type').begins_with(query.lower())
         lookup_response = gene_query_handler.db.genes.query(
             IndexName='gene_startswith',
             KeyConditionExpression=(
-                Key('item_type').eq(item_type) & Key('label_and_type').begins_with(query.lower())
+                Key('item_type').eq(item_type) & beginswith_key
             ),
             ProjectionExpression='label_and_type, concept_id'
         )
@@ -69,12 +71,15 @@ def get_possible_genes(query: str) -> List[Tuple[str, str]]:
         else:  # for ncbi
             return 2
 
-    matches = sorted(sorted(list(items), key=lambda i: order_by_source(i[1])), key=lambda i: i[0])
+    matches = sorted(sorted(list(items), key=lambda i: order_by_source(i[1])),
+                     key=lambda i: i[0])
     return matches
 
 
 def add_lookup_index():
-    """Add global secondary index to gene_concepts table for autocomplete functionality."""
+    """Add global secondary index to gene_concepts table for autocomplete
+    functionality.
+    """
     gene_query_handler.db.dynamodb_client.update_table(
         TableName='gene_concepts',
         AttributeDefinitions=[
@@ -119,8 +124,8 @@ def add_lookup_index():
     )
 
 
-# add `startswith` GSI if it doesn't already exist
-if not any([i for i in gene_query_handler.db.genes.global_secondary_indexes
-            if i['IndexName'] == 'gene_startswith']):
-    logger.info('Updating gene_concepts DB table index')
-    add_lookup_index()
+# # add `startswith` GSI if it doesn't already exist
+# if not any([i for i in gene_query_handler.db.genes.global_secondary_indexes
+#             if i['IndexName'] == 'gene_startswith']):
+#     logger.info('Updating gene_concepts DB table index')
+#     add_lookup_index()
