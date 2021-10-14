@@ -1,6 +1,6 @@
 """Provide utilities relating to data fetched from InterPro service."""
 import gzip
-from typing import Tuple, Dict
+from typing import Tuple, Dict, Optional, Set
 from pathlib import Path
 import csv
 from datetime import datetime
@@ -24,7 +24,7 @@ def download_protein2ipr(output_dir: Path) -> None:
     logger.info("Retrieving Uniprot mapping data from InterPro")
 
     gz_file_path = output_dir / "protein2ipr.dat.gz"
-    with open(gz_file_path, 'w') as fp:
+    with open(gz_file_path, "w") as fp:
         def writefile(data):
             fp.write(data)
         ftp_download("ftp.ebi.ac.uk", "pub/databases/interpro", "protein2ipr.dat.gz",
@@ -32,7 +32,7 @@ def download_protein2ipr(output_dir: Path) -> None:
 
     today = datetime.strftime(datetime.today(), "%Y%m%d")
     outfile_path = output_dir / f"protein2ipr_{today}.dat"
-    with open(outfile_path, 'wb') as f_out, gzip.open(gz_file_path, 'rb') as f_in:
+    with open(outfile_path, "wb") as f_out, gzip.open(gz_file_path, "rb") as f_in:
         shutil.copyfileobj(f_in, f_out)
     os.remove(gz_file_path)
     assert outfile_path.exists()
@@ -41,24 +41,28 @@ def download_protein2ipr(output_dir: Path) -> None:
 
 
 def get_uniprot_refs() -> UniprotRefs:
-    """Produce reference list for all Uniprot IDs referenced in the VICC
-    gene normalizer.
+    """Produce list of all Uniprot IDs referenced in the Gene Normalizer along with
+    the normalized label and concept ID of the associated gene. Used in conjunction
+    with Interpro's provided Uniprot mappings to identify possible functional
+    domains for genes.
+
     :return: Dict keying uniprot ID (lower-case) to tuple of normalized ID and
         label.
     """
     start = timer()
 
+    # scanning on DynamoDB_Local is extremely slow
     os.environ["GENE_NORM_PROD"] = "TRUE"
     q = QueryHandler()
-    g = q.db.genes
+    genes = q.db.genes
 
     uniprot_ids: UniprotRefs = {}
     last_evaluated_key = None
     while True:
         if last_evaluated_key:
-            response = g.scan(ExclusiveStartKey=last_evaluated_key)
+            response = genes.scan(ExclusiveStartKey=last_evaluated_key)
         else:
-            response = g.scan()
+            response = genes.scan()
         last_evaluated_key = response.get("LastEvaluatedKey")
         records = response["Items"]
         for record in records:
@@ -80,55 +84,80 @@ def get_uniprot_refs() -> UniprotRefs:
     logger.info(msg)
     print(msg)
 
+    today = datetime.strftime(datetime.today(), "%Y%m%d")
+    save_path = APP_ROOT / "data" / f"uniprot_refs_{today}.tsv"
+    with open(save_path, "w") as out:
+        for uniprot_ref, data in uniprot_ids.items():
+            out.write(f"{uniprot_ref}\t{data[0]}\t{data[1]}\n")
+
     return uniprot_ids
 
 
-def produce_gene_domain_table(protein_ipr_path: Path,
-                              output_dir: Path = APP_ROOT / 'data') -> None:
+def build_gene_domain_maps(interpro_types: Set[str] = {"Domain"},
+                           protein_ipr_path: Optional[Path] = None,
+                           uniprot_refs_path: Optional[Path] = None,
+                           output_dir: Path = APP_ROOT / "data") -> None:
     """Produce the gene-to-domain lookup table at out_path using the Interpro-Uniprot
     translation table, the Interpro names table, and the VICC Gene Normalizer.
-    :param Path protein_ipr_path: path to protein2ipr_{date}.dat
+
+    :param Set[str] interpro_types: types of interpro fields to check references for
+    :param Path protein_ipr_path: path to protein2ipr_{date}.dat if available
+    :param Optional[Path] uniprot_refs_path: path to existing uniprot_refs_<date>.tsv
+        file if available.
     :param Path output_dir: location to save output file within. Defaults to app data
         directory.
     """
     start = timer()
+    today = datetime.strftime(datetime.today(), "%Y%m%d")
 
+    # get relevant Interpro names/IDs
     interpro_data_bin = []
 
     def get_interpro_data(data):
         interpro_data_bin.append(data)
     ftp_download("ftp.ebi.ac.uk", "pub/databases/interpro", "entry.list",
                  get_interpro_data)
-    interpro_data_tsv = "".join([d.decode('ascii')
+    interpro_data_tsv = "".join([d.decode("ascii")
                                  for d in interpro_data_bin]).split("\n")
     interpro_reader = csv.reader(interpro_data_tsv, delimiter="\t")
     interpro_reader.__next__()  # skip header
-    valid_entry_types = {"Domain"}
     domain_ids = set([row[0] for row in interpro_reader
-                      if row[1] in valid_entry_types])
+                      if row[1] in interpro_types])
 
-    uniprot_refs = get_uniprot_refs()
+    # get Uniprot to gene references
+    if not uniprot_refs_path:
+        uniprot_refs: UniprotRefs = get_uniprot_refs()
+    else:
+        uniprot_refs = {}
+        with open(uniprot_refs_path, "r") as f:
+            row = f.read()
+            uniprot_refs[row[0]] = (row[1], row[2])
 
+    if not protein_ipr_path:
+        download_protein2ipr(APP_ROOT / "data")
+        protein_ipr_path = APP_ROOT / "data" / f"protein2ipr_{today}.dat"
     protein_ipr = open(protein_ipr_path, "r")
     protein_ipr_reader = csv.reader(protein_ipr, delimiter="\t")
 
-    today = datetime.strftime(datetime.today(), '%Y%m%d')
+    # associate InterPro domains to genes via Uniprot references
     outfile_path = output_dir / f"domain_lookup_{today}.tsv"
-    outfile = open(outfile_path, 'w')
+    outfile = open(outfile_path, "w")
     for row in protein_ipr_reader:
         if row[1] in domain_ids:
             uniprot_id = f"uniprot:{row[0]}"
             normed_values = uniprot_refs.get(uniprot_id.lower())
             if not normed_values:
-                logger.info(f"Unable to retrieve normalized gene for {row[1]} {row[2]}")
+                logger.warning(
+                    f"Unable to retrieve normalized gene for {row[1]} {row[2]}"
+                )
                 continue
 
             gene_id, gene_label = normed_values
             line = f"{gene_id}\t{gene_label}\t{row[1]}\t{row[2]}\n"
             outfile.write(line)
-
     outfile.close()
     protein_ipr.close()
+
     stop = timer()
     msg = f"Wrote gene-domain table in {(stop - start):.5f} seconds."
     logger.info(msg)
