@@ -1,1 +1,1 @@
-web: uvicorn curation.main:app
+web: uvicorn curation.routes:app
