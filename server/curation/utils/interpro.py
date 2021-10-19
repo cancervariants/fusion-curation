@@ -119,10 +119,11 @@ def build_gene_domain_maps(interpro_types: Set[str] = {"Domain"},
                  get_interpro_data)
     interpro_data_tsv = "".join([d.decode("ascii")
                                  for d in interpro_data_bin]).split("\n")
+    interpro_types = {t.lower() for t in interpro_types}
     interpro_reader = csv.reader(interpro_data_tsv, delimiter="\t")
     interpro_reader.__next__()  # skip header
     domain_ids = set([row[0] for row in interpro_reader
-                      if row[1] in interpro_types])
+                      if row and row[1].lower() in interpro_types])
 
     # get Uniprot to gene references
     if not uniprot_refs_path:
@@ -130,8 +131,9 @@ def build_gene_domain_maps(interpro_types: Set[str] = {"Domain"},
     else:
         uniprot_refs = {}
         with open(uniprot_refs_path, "r") as f:
-            row = f.read()
-            uniprot_refs[row[0]] = (row[1], row[2])
+            reader = csv.reader(f, delimiter="\t")
+            for row in reader:
+                uniprot_refs[row[0]] = (row[1], row[2])
 
     if not protein_ipr_path:
         download_protein2ipr(APP_ROOT / "data")
@@ -140,6 +142,7 @@ def build_gene_domain_maps(interpro_types: Set[str] = {"Domain"},
     protein_ipr_reader = csv.reader(protein_ipr, delimiter="\t")
 
     # associate InterPro domains to genes via Uniprot references
+    unique_maps = set()
     outfile_path = output_dir / f"domain_lookup_{today}.tsv"
     outfile = open(outfile_path, "w")
     for row in protein_ipr_reader:
@@ -147,14 +150,14 @@ def build_gene_domain_maps(interpro_types: Set[str] = {"Domain"},
             uniprot_id = f"uniprot:{row[0]}"
             normed_values = uniprot_refs.get(uniprot_id.lower())
             if not normed_values:
-                logger.warning(
-                    f"Unable to retrieve normalized gene for {row[1]} {row[2]}"
-                )
                 continue
 
             gene_id, gene_label = normed_values
-            line = f"{gene_id}\t{gene_label}\t{row[1]}\t{row[2]}\n"
-            outfile.write(line)
+            line_tuple = (gene_id, gene_label, row[1], row[2])
+            if line_tuple not in unique_maps:
+                line_str = f"{gene_id}\t{gene_label}\t{row[1]}\t{row[2]}\n"
+                outfile.write(line_str)
+                unique_maps.add(line_tuple)
     outfile.close()
     protein_ipr.close()
 
