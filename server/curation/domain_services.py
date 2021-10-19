@@ -1,84 +1,67 @@
-"""Provide lookup services for functional domains."""
-from pathlib import Path
-from datetime import datetime
-import csv
-from ftplib import FTP
-from typing import List, Tuple
+"""Provide lookup services for functional domains.
 
-from curation import MAX_SUGGESTIONS, APP_ROOT, logger, ServiceWarning
+TODO
+ * domains file should be a JSON and pre-pruned to unique pairs
+ * get_possible_domains shouldn't have to force uniqueness
+"""
+from typing import List, Tuple, Dict
+import csv
+import os
+from pathlib import Path
+
+from curation import APP_ROOT, logger, ServiceWarning
+
+
+# type stubs
+DomainPair = Tuple[str, str]
 
 
 class DomainService():
     """Handler class providing requisite services for functional domain lookup."""
 
-    def __init__(self):
-        """Initialize handler class. Download files if necessary, then load and store."""
-        # check if files exist
-        self._data_dir = APP_ROOT / "data"
-        self._data_dir.mkdir(exist_ok=True, parents=True)
-        interpro_files: List[Path] = list(self._data_dir.glob("interpro_*.tsv"))
-        if len(interpro_files) < 1:
-            self.download_interpro()
-            interpro_files = list(self._data_dir.glob("interpro_*.tsv"))
-        interpro_file: Path = sorted(interpro_files, reverse=True)[0]
+    domains: Dict[str, List[DomainPair]] = {}
 
-        # load file
-        with open(interpro_file) as tsvfile:
-            reader = csv.reader(tsvfile, delimiter="\t")
-            reader.__next__()  # skip header
-            valid_entry_types = {"Active_site", "Binding_site", "Conserved_site", "Domain"}
-            self.domains = {row[2].lower(): {"case": row[2], "id": row[0]}
-                            for row in reader if row[1] in valid_entry_types}
+    def load_mapping(self) -> None:
+        """Load mapping file.
 
-    def download_interpro(self) -> None:
-        """Retrieve InterPro entry list TSV from EMBL-EBI servers."""
-        logger.info("Downloading InterPro entry list...")
-        today = datetime.today().strftime("%Y%m%d")
-        fpath: Path = self._data_dir / f"interpro_{today}.tsv"
-        try:
-            with FTP("ftp.ebi.ac.uk") as ftp:
-                ftp.login()
-                ftp.cwd("pub/databases/interpro")
-                with open(fpath, "wb") as fp:
-                    ftp.retrbinary("RETR entry.list", fp.write)
-        except Exception as e:
-            logger.error(f"FTP download failed: {e}")
-            raise Exception(e)
-        logger.info("InterPro entry list download complete.")
-
-    def get_domain_id(self, name: str) -> str:
-        """Given functional domain name, return Interpro ID.
-        :param str name: name to fetch ID for (case insensitive)
-        :return: Tuple containing domain ID (as CURIE)
-            empty string otherwise,
-            and a List of warnings (empty if successful)
-        :raise: ServiceWarning if lookup fails
+        Checks the environment variable FUSION_CURATION_DOMAIN_FILE for a valid path.
+        If that fails, checks APP_ROOT/data for a file matching the glob
+        `domain_lookup_*.tsv`.
         """
-        domain_id = self.domains.get(name.lower())
-        if not domain_id:
-            warn = f"Could not retrieve ID for domain {name}"
-            logger.info(warn)
-            raise ServiceWarning(warn)
-        else:
-            return f"interpro:{domain_id['id']}"
+        domain_file = os.environ.get("FUSION_CURATION_DOMAIN_FILE")
+        if not domain_file or not Path(domain_file).exists():
+            domain_files = list((APP_ROOT / "data").glob("domain_lookup_*.tsv"))
+            if not domain_files:
+                msg = "No domain lookup mappings found."
+                print("Warning: " + msg)
+                logger.warning(msg)
+                return
+            domain_files.sort(key=lambda f: f.name, reverse=True)
+            domain_file = domain_files[0]
+        with open(domain_file, "r") as df:
+            reader = csv.reader(df, delimiter="\t")
+            for row in reader:
+                interpro_id = f"interpro:{row[2]}"
+                gene_id = row[0].lower()
+                if gene_id in self.domains:
+                    self.domains[gene_id].append((interpro_id, row[3]))
+                else:
+                    self.domains[gene_id] = [(interpro_id, row[3])]
 
-    def get_possible_domains(self, query: str, n: int = 50) -> List[Tuple[str, str]]:
-        """Given input query, return possible domain matches (for autocomplete)
-        :param str query: user-entered string (case insensitive)
-        :param int n: max # of items to return
+    def get_possible_domains(self, gene_id: str) -> List[DomainPair]:
+        """Given normalized gene ID, return associated domain names and IDs
+
         :return: List of valid domain names (up to n names) paired with domain IDs
-        :raise: ServiceWarning if number of possible matches exceeds defined limit
+        :raise: ServiceWarning if no matches are available for gene ID
         """
-        matches = [(v["case"], f'interpro:{v["id"]}') for k, v in self.domains.items()
-                   if k.startswith(query.lower())][:n]
-        n = len(matches)
-        if n > MAX_SUGGESTIONS:
-            warn = f"Got {n} possible matches for {query} (exceeds {MAX_SUGGESTIONS})"
-            logger.warning(warn)
-            raise ServiceWarning(warn)
-        return matches
+        try:
+            domains = self.domains[gene_id.lower()]
+        except KeyError:
+            logger.warning(f"Unable to retrieve associated domains for {gene_id}")
+            raise ServiceWarning
+        return list(set(domains))
 
 
 domain_service = DomainService()
-get_domain_id = domain_service.get_domain_id
+domain_service.load_mapping()
 get_possible_domains = domain_service.get_possible_domains

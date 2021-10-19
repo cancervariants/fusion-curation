@@ -8,10 +8,10 @@ from fastapi.staticfiles import StaticFiles
 from curation import APP_ROOT, ServiceWarning
 from curation.version import __version__
 from curation.schemas import NormalizeGeneResponse, SuggestGeneResponse, \
-    DomainIDResponse, ExonCoordsRequest, ExonCoordsResponse, SequenceIDResponse, \
+    ExonCoordsRequest, ExonCoordsResponse, SequenceIDResponse, \
     FusionValidationResponse, SuggestDomainResponse
 from curation.gene_services import get_gene_id, get_possible_genes
-from curation.domain_services import get_domain_id, get_possible_domains
+from curation.domain_services import get_possible_domains
 from curation.uta_services import postgres_instance, get_genomic_coords
 from curation.sequence_services import get_ga4gh_sequence_id
 from curation.validation_services import validate_fusion
@@ -89,41 +89,22 @@ def suggest_gene(term: str = Query('')) -> ResponseDict:
     return response
 
 
-@app.get("/lookup/domain",
-         operation_id="getDomainID",
-         response_model=DomainIDResponse,
-         response_model_exclude_none=True)
-def fetch_domain_id(domain: str = Query("")) -> ResponseDict:
-    """Fetch interpro ID given functional domain name.
-    :param str name: name of functional domain
-    :return: Dict (to be served as JSON) containing provided name, ID (as CURIE) if
-        available, and relevant warnings
-    """
-    response: ResponseDict = {"domain": domain}
-    try:
-        domain_id = get_domain_id(domain.strip())
-        response["domain_id"] = domain_id
-    except ServiceWarning as e:
-        response["warnings"] = [str(e)]
-    return response
-
-
 @app.get("/complete/domain",
          operation_id="suggestDomain",
          response_model=SuggestDomainResponse,
          response_model_exclude_none=True)
-def suggest_domain(term: str = Query("")) -> ResponseDict:
-    """Provide completion suggestions for domain term provided by user.
-    :param str term: text typed by user in domain field
-    :return: JSON response with suggestions listed, or warnings if unable to
-        provide suggestions.
+def suggest_domain(gene_id: str = Query("")) -> ResponseDict:
+    """Provide possible domains associated with a given gene to be selected by a user.
+    :param str gene_id: normalized gene concept ID
+    :return: JSON response with a list of possible domain name and ID options, or
+        warning(s) if relevant
     """
-    response: Dict[str, Any] = {"term": term}
-    possible_matches = get_possible_domains(term)
-    if len(possible_matches) < 25:
+    response: Dict[str, Any] = {"gene_id": gene_id}
+    try:
+        possible_matches = get_possible_domains(gene_id)
         response["suggestions"] = possible_matches
-    else:
-        response["warnings"] = ["Max suggestions exceeded"]
+    except ServiceWarning:
+        response["warnings"] = [f"No associated domains for {gene_id}"]
     return response
 
 
