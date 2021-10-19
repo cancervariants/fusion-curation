@@ -15,6 +15,7 @@ websockets = ">=9.1"
 uvloop = "*"
 httptools = "*"
 urllib3 = ">=1.26.5"
+click = "*"
 
 [dev-packages]
 fusion-curation = {editable = true, path = "."}
