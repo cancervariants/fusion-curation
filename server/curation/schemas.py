@@ -78,23 +78,10 @@ class SuggestGeneResponse(BaseModel):
         extra = Extra.forbid
 
 
-class DomainIDResponse(BaseModel):
-    """Response model for domain ID retrieval endpoint."""
-
-    domain: StrictStr
-    domain_id: Optional[CURIE]
-    warnings: List
-
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
-
-
 class SuggestDomainResponse(BaseModel):
     """Response model for domain ID autocomplete suggestion endpoint."""
 
-    term: StrictStr
+    gene_id: StrictStr
     suggestions: Optional[List[Tuple[str, str]]]
     warnings: Optional[List[StrictStr]]
 
