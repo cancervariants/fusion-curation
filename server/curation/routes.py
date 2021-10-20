@@ -46,7 +46,9 @@ async def shutdown():
     await app.state.db._connection_pool.close()
 
 
-ResponseDict = Dict[str, Union[str, List[str], List[Tuple[str, str]]]]
+ResponseDict = Dict[str, Union[str,
+                               List[str],
+                               List[Tuple[str, str]]]]
 
 
 @app.get("/lookup/gene",
@@ -93,7 +95,7 @@ def suggest_gene(term: str = Query('')) -> ResponseDict:
          operation_id="suggestDomain",
          response_model=SuggestDomainResponse,
          response_model_exclude_none=True)
-def suggest_domain(gene_id: str = Query("")) -> ResponseDict:
+def get_domain_suggestions(gene_id: str = Query("")) -> ResponseDict:
     """Provide possible domains associated with a given gene to be selected by a user.
     :param str gene_id: normalized gene concept ID
     :return: JSON response with a list of possible domain name and ID options, or

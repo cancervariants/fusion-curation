@@ -57,7 +57,7 @@ class NormalizeGeneResponse(BaseModel):
 
     term: StrictStr
     concept_id: Optional[CURIE]
-    warnings: List
+    warnings: Optional[List]
 
     class Config:
         """Configure class."""
