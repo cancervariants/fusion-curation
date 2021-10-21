@@ -301,7 +301,7 @@ export interface ExonCoordsResponse {
   chr?: string;
   start?: number;
   end?: number;
-  warnings: unknown[];
+  warnings?: string[];
 }
 /**
  * Define Fusion class
@@ -385,7 +385,7 @@ export interface RegulatoryElement {
  */
 export interface FusionValidationResponse {
   fusion?: Fusion;
-  warnings: unknown[];
+  warnings?: string[];
 }
 /**
  * Response model for gene normalization endpoint.
@@ -393,7 +393,7 @@ export interface FusionValidationResponse {
 export interface NormalizeGeneResponse {
   term: string;
   concept_id?: CURIE;
-  warnings?: unknown[];
+  warnings?: string[];
 }
 /**
  * Response model for sequence ID retrieval endpoint.
@@ -401,7 +401,7 @@ export interface NormalizeGeneResponse {
 export interface SequenceIDResponse {
   sequence: string;
   sequence_id?: string;
-  warnings: unknown[];
+  warnings?: string[];
 }
 /**
  * Response model for domain ID autocomplete suggestion endpoint.

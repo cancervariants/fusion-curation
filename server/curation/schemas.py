@@ -9,6 +9,9 @@ from fusor.model import Fusion, TranscriptSegmentComponent, LinkerComponent, \
     AnyGeneComponent
 
 
+ResponseWarnings = Optional[List[StrictStr]]
+
+
 class ClientComponent(BaseModel, ABC):
     """Abstract class to provide identification properties used by client."""
 
@@ -57,7 +60,7 @@ class NormalizeGeneResponse(BaseModel):
 
     term: StrictStr
     concept_id: Optional[CURIE]
-    warnings: Optional[List]
+    warnings: ResponseWarnings
 
     class Config:
         """Configure class."""
@@ -70,7 +73,7 @@ class SuggestGeneResponse(BaseModel):
 
     term: StrictStr
     suggestions: Optional[List[Tuple[str, str]]]
-    warnings: Optional[List[StrictStr]]
+    warnings: ResponseWarnings
 
     class Config:
         """Configure class."""
@@ -83,7 +86,7 @@ class SuggestDomainResponse(BaseModel):
 
     gene_id: StrictStr
     suggestions: Optional[List[Tuple[str, str]]]
-    warnings: Optional[List[StrictStr]]
+    warnings: ResponseWarnings
 
     class Config:
         """Configure class."""
@@ -130,7 +133,7 @@ class ExonCoordsResponse(BaseModel):
     chr: Optional[StrictStr]
     start: Optional[StrictInt]
     end: Optional[StrictInt]
-    warnings: List
+    warnings: ResponseWarnings
 
     class Config:
         """Configure class."""
@@ -143,7 +146,7 @@ class SequenceIDResponse(BaseModel):
 
     sequence: StrictStr
     sequence_id: StrictStr = ""
-    warnings: List
+    warnings: ResponseWarnings
 
     class Config:
         """Configure class."""
@@ -155,7 +158,7 @@ class FusionValidationResponse(BaseModel):
     """Response model for fusion validation endpoint."""
 
     fusion: Optional[Fusion]
-    warnings: List
+    warnings: ResponseWarnings
 
     class Config:
         """Configure class."""
