@@ -53,7 +53,8 @@ ResponseDict = Dict[str, Union[str,
 
 @app.get("/lookup/gene",
          operation_id="normalizeGene",
-         response_model=NormalizeGeneResponse)
+         response_model=NormalizeGeneResponse,
+         response_model_exclude_none=True)
 def normalize_gene(term: str = Query("")) -> ResponseDict:
     """Normalize gene term provided by user.
     :param str term: gene symbol/alias/name/etc
@@ -164,7 +165,8 @@ def get_sequence_id(input_sequence: str) -> ResponseDict:
 
 @app.post("/lookup/validate",
           operation_id="validateFusion",
-          response_model=FusionValidationResponse)
+          response_model=FusionValidationResponse,
+          response_model_exclude_none=True)
 def validate_object(proposed_fusion: Dict) -> Dict:
     """Validate constructed Fusion object. Return warnings if invalid.
     No arguments supplied, but receives a POSTed JSON payload via Flask request context.
