@@ -8,6 +8,7 @@ import click
 from curation.utils.interpro import build_gene_domain_maps
 from curation.utils.gene import GeneSuggestionBuilder
 
+
 @click.command()
 @click.option("--port", "-p", default=5000, help="Bind socket to this port.")
 def serve(port: int) -> None:
@@ -30,6 +31,7 @@ comma-separated list (that likely must be quoted to be parsed correctly by your 
 Possible values: {"active_site", "binding_site", "conserved_site", "domain", "family",
 "homologous_superfamily", "ptm", "repeat"}
 """
+
 
 @utils.command()
 @click.option("--types", "-t", help=types_help, default="domain")
@@ -59,6 +61,7 @@ def build_domains(types: str, protein2ipr: Optional[str], uniprot: Optional[str]
     build_gene_domain_maps(interpro_types=types_split,
                            protein_ipr_path=protein2ipr_path,
                            uniprot_refs_path=uniprot_refs_path)
+
 
 @utils.command()
 def build_genes() -> None:
