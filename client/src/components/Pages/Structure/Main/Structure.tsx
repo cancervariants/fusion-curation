@@ -3,33 +3,27 @@ import { useContext, useEffect, useState } from 'react';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 
 import Builder from '../Builder/Builder';
-import {Button} from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import './Structure.scss';
 
 interface Props {
   index: number
 }
 
-
 // const Text = React.memo(() => {
 //   const {fusion} = useContext(FusionContext);
 // });
 
-export const Structure: React.FC<Props> = ( { index }) => {
+export const Structure: React.FC<Props> = ({ index }) => {
+  const { fusion, setFusion } = useContext(FusionContext);
 
-  const {fusion, setFusion} = useContext(FusionContext);
-  
   const transcriptComponents = fusion.transcript_components || [];
 
   return (
     <div className="structure-tab-container">
-
       <div className="structure-summary">
-
         <h3>Structure Overview</h3>
-
         <h5>Drag and rearrange components to build the chimeric transcript.</h5>
-
         {/* <div className="summary-container">
           <div >
             {
@@ -50,10 +44,7 @@ export const Structure: React.FC<Props> = ( { index }) => {
           </div>
         </div> */}
       </div>
-
       <Builder transcriptComponents={transcriptComponents} />
-
     </div>
-  )
-
-}
+  );
+};

@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import {ColorThemeType, ColorTheme, COLORTHEMES} from './Theme.model'
+import {ColorThemeType, ColorTheme, COLORTHEMES} from './Theme.model';
 
 interface ColorThemeContextProps {
   colorThemeType: ColorThemeType;
@@ -23,7 +23,7 @@ export const ColorThemeProvider: React.FC = ({ children }) => {
     }}>
       {children}
     </ColorThemeContext.Provider>
-  )
-}
+  );
+};
 
 export const useColorTheme = () => React.useContext(ColorThemeContext);

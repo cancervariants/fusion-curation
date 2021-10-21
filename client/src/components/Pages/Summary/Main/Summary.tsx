@@ -1,21 +1,22 @@
-import './Summary.scss'
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import './Summary.scss';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import React, { useContext, useState, useEffect } from 'react';
-import {Button, Tabs, Tab} from '@material-ui/core/';
+import { Button, Tabs, Tab } from '@material-ui/core/';
 import { Readable } from '../Readable/Readable';
 import { SummaryJSON } from '../JSON/SummaryJSON';
 import { useColorTheme } from '../../../../global/contexts/Theme/ColorThemeContext';
 
 import { Success } from '../Success/Success';
 
-import {validateFusion} from '../../../../services/main';
+import { validateFusion } from '../../../../services/main';
 
 interface Props {
   index: number
 }
 
-
-function TabPanel(props) {
+const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
 
   return (
@@ -33,12 +34,9 @@ function TabPanel(props) {
       )}
     </div>
   );
-}
+};
 
-
-
-
-export const Summary: React.FC<Props> = ( { index }) => {
+export const Summary: React.FC<Props> = ({ index }) => {
 
   const { colorTheme } = useColorTheme();
 
@@ -52,21 +50,20 @@ export const Summary: React.FC<Props> = ( { index }) => {
   };
 
   const handleSubmit = () => {
-    setSaved(true)
+    setSaved(true);
     validateFusion(fusion)
       .then(fusionResponse => {
-        let {fusion, warnings} = fusionResponse
-      })
+        const { fusion, warnings } = fusionResponse;
+      });
+  };
 
-  }
-  
-  let {fusion} = useContext(FusionContext);
+  let { fusion } = useContext(FusionContext);
   let genes = [];
   let proteinDomains = fusion.protein_domains || [];
-  let regulatoryElements = fusion.regulatory_elements|| [];
+  let regulatoryElements = fusion.regulatory_elements || [];
   let transcriptComponents = fusion.transcript_components || [];
   let rFramePreserved = fusion.r_frame_preserved || null;
-  let causativeEvent = fusion.causative_event || 'Unknown'
+  let causativeEvent = fusion.causative_event || 'Unknown';
 
   //TODO: fix this mess. formatting transcript stuff
 
@@ -75,7 +72,7 @@ export const Summary: React.FC<Props> = ( { index }) => {
   // })
 
   // let transcriptOthers = transcriptComponents.map(obj => {
-  //   if(obj.component_type !== 'gene'){ 
+  //   if(obj.component_type !== 'gene'){
   //     return obj.component_name
   //   }
   // })
@@ -88,11 +85,11 @@ export const Summary: React.FC<Props> = ( { index }) => {
 
   // transcriptComponents = [transcriptGenes, ...transcriptOthers]
 
-  let regElementGenes = regulatoryElements.map((el)  => {
+  let regElementGenes = regulatoryElements.map((el) => {
     return (`, ${el.gene_descriptor.label}`);
-  })
+  });
 
-  
+
 
   // let genes = [...transcriptGenes, ...regElementGenes]
 
@@ -101,50 +98,50 @@ export const Summary: React.FC<Props> = ( { index }) => {
       <div className="summary-sub-tab-container">
 
         {
-          (accepted || !saved) ? 
-          <>
-          <div className="summary-nav">
-        <Tabs TabIndicatorProps={{style: {backgroundColor: colorTheme['--primary']}}} value={value} onChange={handleChange} centered>
-        <Tab label="Summary" />
-        <Tab label="JSON" />
-      </Tabs>
-        </div>
+          (accepted || !saved) ?
+            <>
+              <div className="summary-nav">
+                <Tabs TabIndicatorProps={{ style: { backgroundColor: colorTheme['--primary'] } }} value={value} onChange={handleChange} centered>
+                  <Tab label="Summary" />
+                  <Tab label="JSON" />
+                </Tabs>
+              </div>
 
-      <TabPanel value={value} index={0}>
-        <div className="summary-sub-tab">
-          <Readable 
-          genes={genes} 
-          proteinDomains={proteinDomains} 
-          regulatoryElements={regulatoryElements} 
-          transcriptComponents={transcriptComponents} 
-          rFramePreserved={rFramePreserved}
-          causativeEvent={causativeEvent}
-        />
-        </div>
+              <TabPanel value={value} index={0}>
+                <div className="summary-sub-tab">
+                  <Readable
+                    genes={genes}
+                    proteinDomains={proteinDomains}
+                    regulatoryElements={regulatoryElements}
+                    transcriptComponents={transcriptComponents}
+                    rFramePreserved={rFramePreserved}
+                    causativeEvent={causativeEvent}
+                  />
+                </div>
 
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-      <div className="summary-sub-tab">
-        <SummaryJSON 
-          fusion={fusion}
-        />
-      </div>
-      </TabPanel>
+              </TabPanel>
+              <TabPanel value={value} index={1}>
+                <div className="summary-sub-tab">
+                  <SummaryJSON
+                    fusion={fusion}
+                  />
+                </div>
+              </TabPanel>
 
-  
-      <div className="save-button-container">
-      <Button style={{width: '300px', marginTop: "30px"}} variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
-      </div>
-      </>
-      : 
-      <div className="success-confirmation">
-        <Success setAccepted={setAccepted} />
-      </div>
+
+              <div className="save-button-container">
+                <Button style={{ width: '300px', marginTop: '30px' }} variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
+              </div>
+            </>
+            :
+            <div className="success-confirmation">
+              <Success setAccepted={setAccepted} />
+            </div>
         }
-        
+
       </div>
-      
-      
+
+
     </div>
-  )
-}
+  );
+};

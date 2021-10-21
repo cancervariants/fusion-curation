@@ -1,12 +1,12 @@
-import * as React from "react"
+import * as React from 'react';
 
-import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
+import { useColorTheme } from '../../../../global/contexts/Theme/ColorThemeContext';
 
 
 
-function SvgComponent(props) {
+const SvgComponent = (props) => {
   const { colorTheme } = useColorTheme();
-  
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -32,7 +32,7 @@ function SvgComponent(props) {
         fill="#f2f2f4"
       />
     </svg>
-  )
-}
+  );
+};
 
-export default SvgComponent
+export default SvgComponent;
