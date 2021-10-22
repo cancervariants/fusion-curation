@@ -9,13 +9,6 @@ export async function getGeneId(symbol: string): Promise<NormalizeGeneResponse> 
   return geneResponse;
 }
 
-// TODO: remove?
-export async function getDomainId(domain: string): Promise<Object> {
-  const response = await fetch(`/lookup/domain?domain=${domain}`);
-  const domainResponse = await response.json();
-  return domainResponse;
-}
-
 export async function getAssociatedDomains(gene_id: string): Promise<AssociatedDomainResponse> {
   const response = await fetch(`/complete/domain?gene_id=${gene_id}`);
   const responseJson = await response.json();
