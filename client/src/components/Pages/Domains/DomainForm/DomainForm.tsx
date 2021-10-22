@@ -1,11 +1,11 @@
-import React, { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, ChangeEvent } from 'react';
 import { InputLabel, MenuItem, FormControl, Select, Button } from '@material-ui/core/';
 import { makeStyles } from '@material-ui/core/styles';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { DomainOptionsContext } from '../../../../global/contexts/DomainOptionsContext';
 import { v4 as uuid } from 'uuid';
 import './DomainForm.scss';
-import { CriticalDomain } from '../../../../services/ResponseModels';
+import { CriticalDomain, DomainStatus } from '../../../../services/ResponseModels';
 
 interface ClientCriticalDomain extends CriticalDomain {
   domain_id: string,
@@ -32,14 +32,12 @@ const DomainForm: React.FC = () => {
   const classes = useStyles();
 
   const { domainOptions } = useContext(DomainOptionsContext);
-
   const { fusion, setFusion } = useContext(FusionContext);
-  const domains = fusion.protein_domains || [];
 
   // values for visible item
-  const [gene, setGene] = useState(null);
-  const [domain, setDomain] = useState(null);
-  const [status, setStatus] = useState(null);
+  const [gene, setGene] = useState('');
+  const [domain, setDomain] = useState('');
+  const [status, setStatus] = useState('');
 
   const handleGeneChange = (event) => {
     setGene(event.target.value);
@@ -54,49 +52,60 @@ const DomainForm: React.FC = () => {
   };
 
   const handleAdd = () => {
+    if (!(status === 'Lost' || status === 'Preserved')) {
+      console.error('error');
+      return;
+    }
     const newDomain: ClientCriticalDomain = {
-      'status': status,
-      'name': domainOptions[gene].find(e => e[0] === domain)[1],
-      'id': domain,
-      'domain_id': uuid(),
-      'gene_descriptor': {
-        'id': '',
-        'type': 'GeneDescriptor',
-        'label': '',
-        'gene_id': gene
+      status: status.toLowerCase() as DomainStatus,
+      name: domainOptions[gene].find(e => e[0] === domain)[1],
+      id: domain,
+      domain_id: uuid(),
+      gene_descriptor: {
+        id: '',  // TODO get more gene info
+        type: 'GeneDescriptor',
+        label: '',
+        gene_id: gene
       }
     };
 
     const cloneArray = Array.from(fusion['protein_domains']);
     cloneArray.push(newDomain);
     setFusion({ ...fusion, ...{ 'protein_domains': cloneArray } });
+
+    setGene('');
+    setDomain('');
+    setStatus('');
   };
 
   const renderGeneOptions = () => {
-    return Object.keys(domainOptions).map((gene_name: string, index: number) => (
+    // concatenate default/unselectable option with all selectable genes
+    return [
+      (<MenuItem key={-1} value="" disabled></MenuItem>)
+    ].concat(Object.keys(domainOptions).map((gene_name: string, index: number) => (
       <MenuItem
         key={index}
         value={gene_name}
       >
         {gene_name}
       </MenuItem>
-    ));
+    )));
   };
 
   const renderDomainOptions = () => {
+    const domainOptionMenuItems = [(
+      <MenuItem key={-1} value="" disabled></MenuItem>
+    )];
     if (domainOptions[gene]) {
-      return domainOptions[gene].map((domain: Array<string>, index: number) => (
-        <MenuItem
-          key={index}
-          value={domain[0]}
-        >
-          {domain[1]}
-        </MenuItem>
-      ));
+      return domainOptionMenuItems.concat(
+        domainOptions[gene].map((domain: Array<string>, index: number) => (
+          <MenuItem key={index} value={domain[0]}>
+            {domain[1]}
+          </MenuItem>
+        ))
+      );
     }
-    else {
-      return <div></div>;
-    }
+    return domainOptionMenuItems;
   };
 
   return (
@@ -109,6 +118,7 @@ const DomainForm: React.FC = () => {
             id='demo-simple-select'
             value={gene}
             onChange={handleGeneChange}
+            disabled={Object.keys(domainOptions).length === 0}
           >
             {renderGeneOptions()}
           </Select>
@@ -123,6 +133,7 @@ const DomainForm: React.FC = () => {
             id='demo-simple-select'
             value={domain}
             onChange={handleDomainChange}
+            disabled={gene === ''}
           >
             {renderDomainOptions()}
           </Select>
@@ -131,14 +142,24 @@ const DomainForm: React.FC = () => {
       <div className='formInput'>
         <FormControl className={classes.formControl}>
           <InputLabel>Status</InputLabel>
-          <Select value={status} onChange={handleStatusChange}>
+          <Select
+            value={status}
+            onChange={handleStatusChange}
+            disabled={domain === ''}
+          >
+            <MenuItem value='default' disabled></MenuItem>
             <MenuItem value='Lost'>Lost</MenuItem>
             <MenuItem value='Preserved'>Preserved</MenuItem>
           </Select>
         </FormControl>
       </div>
       <div className='add-button'>
-        <Button variant='outlined' color='primary' onClick={() => handleAdd()}>
+        <Button
+          variant='outlined'
+          color='primary'
+          onClick={handleAdd}
+          disabled={status === ''}
+        >
           Add
         </Button>
       </div>
