@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { v4 as uuid } from 'uuid';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
+import { DomainOptionsContext } from '../../../../global/contexts/DomainOptionsContext';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import './Builder.scss';
 import { TransCompInput } from '../TransCompInput/TransCompInput';
-
-import { getGeneId, getSequenceId, getExon } from '../../../../services/main';
+import { getGeneId, getAssociatedDomains, getSequenceId, getExon } from '../../../../services/main';
 
 
 interface Props {
@@ -72,13 +72,16 @@ const OPTIONS = [
 ];
 
 const Builder: React.FC<Props> = ({ transcriptComponents }) => {
+  // Fusion object constructed throughout app lifecycle
   const { fusion, setFusion } = useContext(FusionContext);
+  // Choosable domains based on genes provided in components
+  const { domainOptions, setDomainOptions } = useContext(DomainOptionsContext);
+
   const [structure, setStructure] = useState([]);
   const [editMode, setEditMode] = useState('');
 
   useEffect(() => {
     const diagram = [];
-
     if ('transcript_components' in fusion) {
       fusion.transcript_components.map(comp => (
         diagram.push(comp)
@@ -116,7 +119,7 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
     setStructure(sourceClone);
   };
 
-  const handleSave = (index, compType, ...values) => {
+  const handleSave = (index: number, compType: string, ...values: Array<string>) => {
     // TODO: prevent from sending empty fields (where applicable)
     const items = Array.from(structure);
     const obj = items[index];
@@ -142,9 +145,10 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
               'label': 'ANY'
             }
           };
-          save(items, index, newObj);
+          saveComponent(items, index, newObj);
         } else {
           getGeneId(symbol).then(geneResponse => {
+            const geneId = geneResponse.concept_id;
             newObj = {
               'component_type': 'gene',
               'component_name': `${geneResponse.term.toUpperCase()} ${geneResponse.concept_id}`,
@@ -153,31 +157,34 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
               'gene_descriptor': {
                 'id': `gene:${geneResponse.term}`,
                 'type': 'GeneDescriptor',
-                'gene_id': geneResponse.concept_id,
+                'gene_id': geneId,
                 'label': geneResponse.term
               }
             };
-            save(items, index, newObj);
+            updateDomainOptions(geneId);
+            saveComponent(items, index, newObj);
           });
         }
         break;
-
       case 'transcript_segment':
-        // eslint-disable-next-line prefer-const
-        let [transcript, gene_symbol, exon_start, exon_end, exon_start_offset, exon_end_offset] = values;
+        const [transcript, gene_symbol, exon_start_str, exon_end_str, exon_start_offset_str,
+          exon_end_offset_str] = values;
 
-        exon_start = parseInt(exon_start);
-        exon_end = parseInt(exon_end);
-        exon_start_offset = parseInt(exon_start_offset);
-        exon_end_offset = parseInt(exon_end_offset);
+        const exon_start = parseInt(exon_start_str);
+        const exon_end = parseInt(exon_end_str);
+        const exon_start_offset = parseInt(exon_start_offset_str);
+        const exon_end_offset = parseInt(exon_end_offset_str);
 
         getExon(
-          transcript, gene_symbol, exon_start || 0, exon_end || 0, exon_start_offset || 0, exon_end_offset || 0
+          transcript, gene_symbol, exon_start || 0, exon_end || 0, exon_start_offset || 0,
+          exon_end_offset || 0
         ).then(exonResponse => {
-          // eslint-disable-next-line prefer-const
-          let { tx_ac, gene, gene_id, exon_start, exon_end, exon_start_offset, exon_end_offset, sequence_id, chr, start, end, warnings } = exonResponse;
+          const {
+            tx_ac, gene, gene_id, exon_start, exon_end, exon_start_offset, exon_end_offset,
+            sequence_id, chr, start, end, warnings
+          } = exonResponse;
 
-          let eso;
+          let eso: string;
           if (exon_start_offset > 0) {
             eso = `+${exon_start_offset}`;
           } else if (exon_start_offset < 0) {
@@ -186,7 +193,7 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
             eso = '';
           }
 
-          let eeo;
+          let eeo: string;
           if (exon_end_offset > 0) {
             eeo = `+${exon_end_offset}`;
           } else if (exon_end_offset < 0) {
@@ -195,7 +202,7 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
             eeo = '';
           }
 
-          let hrExon;
+          let hrExon: string;
           if (exon_start && exon_end) {
             hrExon = `e[${exon_start}${eso}_${exon_end}${eeo}]`;
           } else if (exon_start) {
@@ -224,7 +231,7 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
 
           newObj.hr_name = `${tx_ac}(${gene}):${hrExon}`;
 
-          save(items, index, newObj);
+          saveComponent(items, index, newObj);
 
           //TODO: nested genomic region (lookup GR based on transcript and vice versa)
           // getSequenceId(chr).then(sequenceResponse => {
@@ -266,10 +273,9 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
             },
             'strand': strand
           };
-          save(items, index, newObj);
+          saveComponent(items, index, newObj);
         });
         break;
-
       case 'linker_sequence':
         // eslint-disable-next-line prefer-const
         let [sequence] = values;
@@ -284,12 +290,25 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
             'sequence': sequence,
           }
         };
-        save(items, index, newObj);
+        saveComponent(items, index, newObj);
         break;
     }
   };
 
-  const save = (items, index, newObj) => {
+  const updateDomainOptions = (geneId: string) => {
+    if (!(geneId in domainOptions)) {
+      getAssociatedDomains(geneId).then(associatedDomainsResponse => {
+        setDomainOptions(
+          {
+            ...domainOptions,
+            ...{ [geneId]: associatedDomainsResponse.suggestions }
+          }
+        );
+      });
+    }
+  };
+
+  const saveComponent = (items: Array<Object>, index: number, newObj: Object) => {
     items.splice(index, 1, newObj);
 
     // clear active state, update local state array, update global fusion object
@@ -298,15 +317,14 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
     setFusion({ ...fusion, ...{ 'transcript_components': items } });
   };
 
-  const handleCancel = (id) => {
+  const handleCancel = (id: string) => {
     let items = Array.from(structure);
     items = items.filter(item => item.component_id !== id);
-
     setEditMode('');
     setStructure(items);
   };
 
-  const formatType = (str) => {
+  const formatType = (str: string) => {
     switch (str) {
       case 'gene':
         return 'Gene';
@@ -318,7 +336,6 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
         return 'Genomic Region';
     }
   };
-
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
@@ -368,7 +385,11 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
                           {formatType(component_type)}
                         </div>
                         {snapshot.isDragging && (
-                          <div style={{ transform: 'none !important' }} key={component_id} className={`option-item clone ${component_type}`}>
+                          <div
+                            style={{ transform: 'none !important' }}
+                            key={component_id}
+                            className={`option-item clone ${component_type}`}
+                          >
                             {formatType(component_type)}
                           </div>
                         )}
@@ -384,7 +405,11 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
           <Droppable droppableId='structure'>
             {(provided) => (
               <div className='block-container' {...provided.droppableProps} ref={provided.innerRef}>
-                <h2 className={`${structure.length === 0 ? 'instruction' : 'hidden'}`}>Drag components here</h2>
+                <h2
+                  className={`${structure.length === 0 ? 'instruction' : 'hidden'}`}
+                >
+                  Drag components here
+                </h2>
                 {structure.map(({ component_id, component_name, component_type }, index) => {
                   return (
                     <Draggable key={component_id} draggableId={component_id} index={index}>
@@ -396,7 +421,14 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
                         >
                           {
                             component_id === editMode ?
-                              <TransCompInput handleSave={handleSave} handleCancel={handleCancel} compType={component_type} index={index} key={component_id} id={component_id} />
+                              <TransCompInput
+                                handleSave={handleSave}
+                                handleCancel={handleCancel}
+                                compType={component_type}
+                                index={index}
+                                key={component_id}
+                                id={component_id}
+                              />
                               : <span>{component_name}</span>
                           }
                         </div>
@@ -409,7 +441,7 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
           </Droppable>
           <div className='hr-section'>
             {
-              transcriptComponents.map((comp, index) => (
+              transcriptComponents.map((comp, index: number) => (
                 <div key={comp.component_id}>{`${index ? '::' : ''}${comp.hr_name}`}</div>
               ))
             }

@@ -14,7 +14,8 @@ export const RegElement: React.FC<Props> = ({ index }) => {
 
   const regElements = fusion.regulatory_elements || [];
 
-  // Don't want to change the suggested element. should maybe create a separate context of the unmutated selected suggestion
+  // Don't want to change the suggested element. should maybe create a separate context of the
+  // unmutated selected suggestion
   const initialElements = useRef(regElements);
 
   const handleRemove = (regEl) => {

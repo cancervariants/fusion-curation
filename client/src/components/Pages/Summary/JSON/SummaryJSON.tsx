@@ -31,7 +31,11 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
       <div className="headline">
         <span className="copy-message">{isCopied ? 'Copied to Clipboard!' : 'Click to Copy'}</span>
       </div>
-      <pre className={`${isDown ? 'clicking' : ''} summary-json-container`} onClick={handleCopy} onMouseDown={handleMouseDown}>
+      <pre
+        className={`${isDown ? 'clicking' : ''} summary-json-container`}
+        onClick={handleCopy}
+        onMouseDown={handleMouseDown}
+      >
         <div>
           {formattedJSON}
         </div>

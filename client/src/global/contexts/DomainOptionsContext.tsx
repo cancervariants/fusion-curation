@@ -1,5 +1,3 @@
-import {createContext} from 'react';
-
-// the object being built by the user
+import { createContext } from 'react';
 
 export const DomainOptionsContext = createContext({} as any);

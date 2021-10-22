@@ -141,7 +141,7 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <DomainOptionsContext.Provider value={[domainOptions, setDomainOptions]}>
+      <DomainOptionsContext.Provider value={{ domainOptions, setDomainOptions }}>
         <SuggestionContext.Provider value={[suggestions, setSuggestions]}>
           <FusionContext.Provider value={{ fusion, setFusion }}>
             <div className='App'

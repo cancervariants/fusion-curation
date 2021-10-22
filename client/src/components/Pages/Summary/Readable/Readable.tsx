@@ -11,7 +11,9 @@ interface Props {
   causativeEvent: any
 }
 
-export const Readable: React.FC<Props> = ({ genes, proteinDomains, regulatoryElements, transcriptComponents, rFramePreserved, causativeEvent }) => {
+export const Readable: React.FC<Props> = ({
+  genes, proteinDomains, regulatoryElements, transcriptComponents, rFramePreserved, causativeEvent
+}) => {
 
 
 
@@ -61,7 +63,9 @@ export const Readable: React.FC<Props> = ({ genes, proteinDomains, regulatoryEle
         <div className="row">
           <span className="left-item">Reading Frame</span>
           <span className="right-item"></span>
-          <span className="right-item">{`${rFramePreserved ? 'Preserved' : 'Not preserved'}`} </span>
+          <span className="right-item">
+            {`${rFramePreserved ? 'Preserved' : 'Not preserved'}`}
+          </span>
         </div>
         <hr />
         <div className="row">

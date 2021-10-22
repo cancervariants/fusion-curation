@@ -16,9 +16,9 @@ interface Props {
 
 // TODO: disappear error onChange
 
-export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handleSave, index, id }) => {
-
-
+export const TransCompInput: React.FC<Props> = (
+  { compType, handleCancel, handleSave, index, id }
+) => {
   //Genomic Region
   const [strand, setStrand] = useState('');
   const [chromosome, setChromosome] = useState('');
@@ -49,26 +49,39 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
           console.error(err);
         })
         .then(res => {
-          getExon(txAc, transcriptGene, parseInt(startingExon) || 0, parseInt(endingExon) || 0, parseInt(startingExonOffset) || 0, parseInt(endingExonOffset) || 0)
+          getExon(
+            txAc, transcriptGene, parseInt(startingExon) || 0, parseInt(endingExon) || 0,
+            parseInt(startingExonOffset) || 0, parseInt(endingExonOffset) || 0
+          )
             .then(exonResponse => {
               if (exonResponse.tx_ac === null) {
                 setTranscriptError('Transcript not found!');
                 return;
               } else {
-                handleSave(index, compType, txAc, transcriptGene, parseInt(startingExon) || 0, parseInt(endingExon) || 0, parseInt(startingExonOffset) || 0, parseInt(endingExonOffset) || 0);
+                handleSave(
+                  index, compType, txAc, transcriptGene, parseInt(startingExon) || 0,
+                  parseInt(endingExon) || 0, parseInt(startingExonOffset) || 0,
+                  parseInt(endingExonOffset) || 0
+                );
               }
             });
         });
     } else {
-      getExon(txAc, transcriptGene, parseInt(startingExon) || 0, parseInt(endingExon) || 0, parseInt(startingExonOffset) || 0, parseInt(endingExonOffset) || 0)
-        .then(exonResponse => {
-          if (exonResponse.tx_ac === null) {
-            setTranscriptError('Transcript not found!');
-            return;
-          } else {
-            handleSave(index, compType, txAc, transcriptGene, parseInt(startingExon) || 0, parseInt(endingExon) || 0, parseInt(startingExonOffset) || 0, parseInt(endingExonOffset) || 0);
-          }
-        });
+      getExon(
+        txAc, transcriptGene, parseInt(startingExon) || 0, parseInt(endingExon) || 0,
+        parseInt(startingExonOffset) || 0, parseInt(endingExonOffset) || 0
+      ).then(exonResponse => {
+        if (exonResponse.tx_ac === null) {
+          setTranscriptError('Transcript not found!');
+          return;
+        } else {
+          handleSave(
+            index, compType, txAc, transcriptGene, parseInt(startingExon) || 0,
+            parseInt(endingExon) || 0, parseInt(startingExonOffset) || 0,
+            parseInt(endingExonOffset) || 0
+          );
+        }
+      });
     }
   };
 
@@ -96,7 +109,6 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
       });
   };
 
-
   const renderSwitch = (compType) => {
     switch (compType) {
       case 'genomic_region':
@@ -113,7 +125,9 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                       onChange={(event) => setChromosome(event.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          handleSave(index, compType, chromosome, strand, startPosition, endPosition);
+                          handleSave(
+                            index, compType, chromosome, strand, startPosition, endPosition
+                          );
                         }
                       }}
                       label="Chromosome"></TextField>
@@ -125,7 +139,9 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                       onChange={(event) => setStrand(event.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          handleSave(index, compType, chromosome, strand, startPosition, endPosition);
+                          handleSave(
+                            index, compType, chromosome, strand, startPosition, endPosition
+                          );
                         }
                       }}
                     ></TextField>
@@ -139,7 +155,9 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                       onChange={(event) => setStartPosition(event.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          handleSave(index, compType, chromosome, strand, startPosition, endPosition);
+                          handleSave(
+                            index, compType, chromosome, strand, startPosition, endPosition
+                          );
                         }
                       }}
                     >
@@ -152,21 +170,30 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                       onChange={(event) => setEndPosition(event.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          handleSave(index, compType, chromosome, strand, startPosition, endPosition);
+                          handleSave(
+                            index, compType, chromosome, strand, startPosition, endPosition
+                          );
                         }
                       }}
                     ></TextField>
                   </div>
                 </div>
                 <div className="buttons">
-                  <Button style={{ margin: '8px' }} variant="outlined" color="secondary" onClick={() => handleCancel(id)}>
+                  <Button
+                    style={{ margin: '8px' }}
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => handleCancel(id)}
+                  >
                     Cancel
                   </Button>
                   <Button
                     style={{ margin: '8px' }}
                     variant="outlined"
                     color="primary"
-                    onClick={() => handleSave(index, compType, chromosome, strand, startPosition, endPosition)}
+                    onClick={() => handleSave(
+                      index, compType, chromosome, strand, startPosition, endPosition
+                    )}
                   >
                     Save
                   </Button>
@@ -246,7 +273,14 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                   }
                 </div>
                 <div className="buttons">
-                  <Button style={{ margin: '8px' }} variant="outlined" color="secondary" onClick={() => handleCancel(id)}>Cancel</Button>
+                  <Button
+                    style={{ margin: '8px' }}
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => handleCancel(id)}
+                  >
+                    Cancel
+                  </Button>
                   <Button style={{ margin: '8px' }} variant="outlined" color="primary"
                     onClick={transcriptValidate}
                   >Save</Button>
@@ -268,12 +302,31 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                     onChange={(event) => setSequence(event.target.value.toUpperCase())}
                     error={linkerError}
                     helperText={linkerError ? 'Warning: must contain only {A, C, G, T}' : null}
-                    onKeyDown={(e) => { if (e.key === 'Enter') { handleSave(index, compType, sequence); } }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSave(index, compType, sequence);
+                      }
+                    }}
                   ></TextField>
                 </div>
                 <div className="buttons">
-                  <Button style={{ margin: '8px' }} variant="outlined" color="secondary" onClick={() => handleCancel(id)}>Cancel</Button>
-                  <Button style={{ margin: '8px' }} variant="outlined" disabled={linkerError} color="primary" onClick={() => handleSave(index, compType, sequence)}>Save</Button>
+                  <Button
+                    style={{ margin: '8px' }}
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => handleCancel(id)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    style={{ margin: '8px' }}
+                    variant="outlined"
+                    disabled={linkerError}
+                    color="primary"
+                    onClick={() => handleSave(index, compType, sequence)}
+                  >
+                    Save
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -303,8 +356,22 @@ export const TransCompInput: React.FC<Props> = ({ compType, handleCancel, handle
                   </TextField>
                 </div>
                 <div className="buttons">
-                  <Button style={{ margin: '8px' }} variant="outlined" color="secondary" onClick={() => handleCancel(id)}>Cancel</Button>
-                  <Button style={{ margin: '8px' }} variant="outlined" color="primary" onClick={() => geneValidate(gene)}>Save</Button>
+                  <Button
+                    style={{ margin: '8px' }}
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => handleCancel(id)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    style={{ margin: '8px' }}
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => geneValidate(gene)}
+                  >
+                    Save
+                  </Button>
                 </div>
               </div>
             </CardContent>

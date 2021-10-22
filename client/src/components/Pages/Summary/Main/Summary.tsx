@@ -89,10 +89,7 @@ export const Summary: React.FC<Props> = ({ index }) => {
     return (`, ${el.gene_descriptor.label}`);
   });
 
-
-
   // let genes = [...transcriptGenes, ...regElementGenes]
-
   return (
     <div className="summary-tab-container">
       <div className="summary-sub-tab-container">
@@ -101,12 +98,16 @@ export const Summary: React.FC<Props> = ({ index }) => {
           (accepted || !saved) ?
             <>
               <div className="summary-nav">
-                <Tabs TabIndicatorProps={{ style: { backgroundColor: colorTheme['--primary'] } }} value={value} onChange={handleChange} centered>
+                <Tabs
+                  TabIndicatorProps={{ style: { backgroundColor: colorTheme['--primary'] } }}
+                  value={value}
+                  onChange={handleChange}
+                  centered
+                >
                   <Tab label="Summary" />
                   <Tab label="JSON" />
                 </Tabs>
               </div>
-
               <TabPanel value={value} index={0}>
                 <div className="summary-sub-tab">
                   <Readable
@@ -127,10 +128,15 @@ export const Summary: React.FC<Props> = ({ index }) => {
                   />
                 </div>
               </TabPanel>
-
-
               <div className="save-button-container">
-                <Button style={{ width: '300px', marginTop: '30px' }} variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
+                <Button
+                  style={{ width: '300px', marginTop: '30px' }}
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </Button>
               </div>
             </>
             :
@@ -138,10 +144,7 @@ export const Summary: React.FC<Props> = ({ index }) => {
               <Success setAccepted={setAccepted} />
             </div>
         }
-
       </div>
-
-
     </div>
   );
 };

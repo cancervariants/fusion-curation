@@ -1,7 +1,7 @@
+/* eslint-disable max-len */
 import * as React from 'react';
 
 import { useColorTheme } from '../../../../global/contexts/Theme/ColorThemeContext';
-
 
 
 const SvgComponent = (props) => {

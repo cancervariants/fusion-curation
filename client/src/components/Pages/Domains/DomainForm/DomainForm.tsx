@@ -2,11 +2,10 @@ import React, { useContext, useState, useEffect } from 'react';
 import { InputLabel, MenuItem, FormControl, Select, Button } from '@material-ui/core/';
 import { makeStyles } from '@material-ui/core/styles';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
+import { DomainOptionsContext } from '../../../../global/contexts/DomainOptionsContext';
 import { v4 as uuid } from 'uuid';
 import './DomainForm.scss';
-
-import { getDomainId } from '../../../../services/main';
-import { getGeneId } from '../../../../services/main';
+import { CriticalDomain } from '../../../../services/ResponseModels';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -19,36 +18,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DomainForm: React.FC = () => {
-  // TODO: shouldn't be necessary
+  // // TODO: shouldn't be necessary
   useEffect(() => {
-    if (domains === undefined) {
+    if (fusion.protein_domains === undefined) {
       setFusion({ ...fusion, ...{ 'protein_domains': [] } });
     }
   }, []);
 
   const classes = useStyles();
 
-  const { fusion, setFusion } = useContext(FusionContext);
-  const domains = fusion.protein_domains;
-  const [domainList, setDomainList] = useState([]);
+  const { domainOptions } = useContext(DomainOptionsContext);
 
-  const geneOptions = fusion.transcript_components.filter((component) => {
-    if (['gene'].includes(component.component_type)) {
-      return true;
-    } else {
-      return false;
-    }
-  }).map((component) => {
-    // start with just genes
-    return component.gene_descriptor.label;
-  });
+  const { fusion, setFusion } = useContext(FusionContext);
+  const domains = fusion.protein_domains || [];
 
   // values for visible item
   const [gene, setGene] = useState(null);
   const [domain, setDomain] = useState(null);
   const [status, setStatus] = useState(null);
-
-  const [geneWarning, setGeneWarning] = useState('');
 
   const handleGeneChange = (event) => {
     setGene(event.target.value);
@@ -56,6 +43,10 @@ const DomainForm: React.FC = () => {
 
   const handleStatusChange = (event) => {
     setStatus(event.target.value);
+  };
+
+  const handleDomainChange = (event) => {
+    setDomain(event.target.value);
   };
 
   const handleAdd = () => {
@@ -72,62 +63,43 @@ const DomainForm: React.FC = () => {
       }
     };
 
-    // TODO: should be able to remove
-    // just update structure object and be done
-    getDomainId(domain)
-      .then(domainResponse => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { domain, domain_id, warnings } = domainResponse;
+    newDomain.status = status;
+    newDomain.name = domainOptions[gene].find(e => e[0] === domain)[1];
+    newDomain.id = domain;
+    newDomain.gene_descriptor.id = '';
+    newDomain.gene_descriptor.label = '';
+    newDomain.gene_descriptor.gene_id = gene;
 
-        // if (domainResponse.statusCode > 400) {
-        //   setDomainWarning(warnings);
-        //   throw new Error(warnings);
-        // }
-
-        newDomain.status = status;
-        newDomain.name = domain;
-        newDomain.id = domain_id;
-
-        return newDomain;
-      }
-      )
-      .then((newDomain) => {
-        getGeneId(gene).then(geneResponse => {
-          // eslint-disable-next-line prefer-const
-          let { term, concept_id, warnings } = geneResponse;
-          if (concept_id === null) {
-            setGeneWarning(warnings);
-            throw new Error(warnings);
-          }
-
-          newDomain.gene_descriptor.label = term;
-          newDomain.gene_descriptor.id = `gene:${term}`;
-          newDomain.gene_descriptor.gene_id = concept_id;
-
-          // eslint-disable-next-line prefer-const
-          let cloneArray = Array.from(fusion['protein_domains']);
-          cloneArray.push(newDomain);
-          setFusion({ ...fusion, ...{ 'protein_domains': cloneArray } });
-        }
-        )
-          .catch(error => {
-            console.error(`Error!!!! ${error}`);
-          });
-      })
-      .catch(error => {
-        console.error(`Error!!!! ${error}`);
-      });
+    const cloneArray = Array.from(fusion['protein_domains']);
+    cloneArray.push(newDomain);
+    setFusion({ ...fusion, ...{ 'protein_domains': cloneArray } });
   };
 
-  const renderGeneOption = () => {
-    return geneOptions.map((gene: string, index: number) => (
+  const renderGeneOptions = () => {
+    return Object.keys(domainOptions).map((gene_name: string, index: number) => (
       <MenuItem
         key={index}
-        value={gene}
+        value={gene_name}
       >
-        {gene}
+        {gene_name}
       </MenuItem>
     ));
+  };
+
+  const renderDomainOptions = () => {
+    if (domainOptions[gene]) {
+      return domainOptions[gene].map((domain: Array<string>, index: number) => (
+        <MenuItem
+          key={index}
+          value={domain[0]}
+        >
+          {domain[1]}
+        </MenuItem>
+      ));
+    }
+    else {
+      return <div></div>;
+    }
   };
 
   return (
@@ -141,7 +113,21 @@ const DomainForm: React.FC = () => {
             value={gene}
             onChange={handleGeneChange}
           >
-            {renderGeneOption()}
+            {renderGeneOptions()}
+          </Select>
+        </FormControl>
+      </div>
+
+      <div className='formInput'>
+        <FormControl className={classes.formControl}>
+          <InputLabel>Domain</InputLabel>
+          <Select
+            labelId='demo-simple-select-label'
+            id='demo-simple-select'
+            value={domain}
+            onChange={handleDomainChange}
+          >
+            {renderDomainOptions()}
           </Select>
         </FormControl>
       </div>
@@ -154,7 +140,6 @@ const DomainForm: React.FC = () => {
           </Select>
         </FormControl>
       </div>
-
       <div className='add-button'>
         <Button variant='outlined' color='primary' onClick={() => handleAdd()}>
           Add

@@ -38,7 +38,8 @@ export const Structure: React.FC<Props> = ({ index }) => {
           <div >
             {
               structure.map(comp => (
-                <span key={comp.component_id} className={comp.component_type}>{`${comp.component_name}`} </span>
+                <span key={comp.component_id}
+                className={comp.component_type}>{`${comp.component_name}`} </span>
               ))
             }
           </div>
