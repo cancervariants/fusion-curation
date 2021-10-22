@@ -7,6 +7,10 @@ import { v4 as uuid } from 'uuid';
 import './DomainForm.scss';
 import { CriticalDomain } from '../../../../services/ResponseModels';
 
+interface ClientCriticalDomain extends CriticalDomain {
+  domain_id: string,
+}
+
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -50,25 +54,18 @@ const DomainForm: React.FC = () => {
   };
 
   const handleAdd = () => {
-    //TODO: pull from model file
-    const newDomain = {
-      'status': '',
-      'name': '',
-      'id': '',
+    const newDomain: ClientCriticalDomain = {
+      'status': status,
+      'name': domainOptions[gene].find(e => e[0] === domain)[1],
+      'id': domain,
       'domain_id': uuid(),
       'gene_descriptor': {
         'id': '',
+        'type': 'GeneDescriptor',
         'label': '',
-        'gene_id': ''
+        'gene_id': gene
       }
     };
-
-    newDomain.status = status;
-    newDomain.name = domainOptions[gene].find(e => e[0] === domain)[1];
-    newDomain.id = domain;
-    newDomain.gene_descriptor.id = '';
-    newDomain.gene_descriptor.label = '';
-    newDomain.gene_descriptor.gene_id = gene;
 
     const cloneArray = Array.from(fusion['protein_domains']);
     cloneArray.push(newDomain);
