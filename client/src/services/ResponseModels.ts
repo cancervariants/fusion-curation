@@ -68,6 +68,14 @@ export interface AnyGeneComponent {
   component_type?: "any_gene";
 }
 /**
+ * Response model for domain ID autocomplete suggestion endpoint.
+ */
+export interface AssociatedDomainResponse {
+  gene_id: string;
+  suggestions?: [] | [string] | [string, string][];
+  warnings?: string[];
+}
+/**
  * Any gene component used client-side.
  */
 export interface ClientAnyGeneComponent {
@@ -401,14 +409,6 @@ export interface NormalizeGeneResponse {
 export interface SequenceIDResponse {
   sequence: string;
   sequence_id?: string;
-  warnings?: string[];
-}
-/**
- * Response model for domain ID autocomplete suggestion endpoint.
- */
-export interface SuggestDomainResponse {
-  gene_id: string;
-  suggestions?: [] | [string] | [string, string][];
   warnings?: string[];
 }
 /**

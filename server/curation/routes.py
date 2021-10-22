@@ -9,7 +9,7 @@ from curation import APP_ROOT, ServiceWarning
 from curation.version import __version__
 from curation.schemas import NormalizeGeneResponse, SuggestGeneResponse, \
     ExonCoordsRequest, ExonCoordsResponse, SequenceIDResponse, \
-    FusionValidationResponse, SuggestDomainResponse
+    FusionValidationResponse, AssociatedDomainResponse
 from curation.gene_services import get_gene_id, get_possible_genes
 from curation.domain_services import get_possible_domains
 from curation.uta_services import postgres_instance, get_genomic_coords
@@ -94,7 +94,7 @@ def suggest_gene(term: str = Query('')) -> ResponseDict:
 
 @app.get("/complete/domain",
          operation_id="suggestDomain",
-         response_model=SuggestDomainResponse,
+         response_model=AssociatedDomainResponse,
          response_model_exclude_none=True)
 def get_domain_suggestions(gene_id: str = Query("")) -> ResponseDict:
     """Provide possible domains associated with a given gene to be selected by a user.

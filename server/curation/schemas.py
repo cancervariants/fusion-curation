@@ -81,7 +81,7 @@ class SuggestGeneResponse(BaseModel):
         extra = Extra.forbid
 
 
-class SuggestDomainResponse(BaseModel):
+class AssociatedDomainResponse(BaseModel):
     """Response model for domain ID autocomplete suggestion endpoint."""
 
     gene_id: StrictStr
