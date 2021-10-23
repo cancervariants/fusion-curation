@@ -72,7 +72,8 @@ class SuggestGeneResponse(BaseModel):
     """Response model for gene autocomplete suggestions endpoint."""
 
     term: StrictStr
-    suggestions: Optional[List[Tuple[str, str]]]
+    # complete term, normalized ID, normalized label, item type
+    suggestions: Optional[List[Tuple[str, str, str, str]]]
     warnings: ResponseWarnings
 
     class Config:

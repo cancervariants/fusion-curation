@@ -10,7 +10,7 @@ from curation.version import __version__
 from curation.schemas import NormalizeGeneResponse, SuggestGeneResponse, \
     ExonCoordsRequest, ExonCoordsResponse, SequenceIDResponse, \
     FusionValidationResponse, AssociatedDomainResponse
-from curation.gene_services import get_gene_id, get_possible_genes
+from curation.gene_services import get_gene_id, suggest_genes
 from curation.domain_services import get_possible_domains
 from curation.uta_services import postgres_instance, get_genomic_coords
 from curation.sequence_services import get_ga4gh_sequence_id
@@ -48,7 +48,7 @@ async def shutdown():
 
 ResponseDict = Dict[str, Union[str,
                                List[str],
-                               List[Tuple[str, str]]]]
+                               List[Tuple[str, str, str, str]]]]
 
 
 @app.get("/lookup/gene",
@@ -81,11 +81,9 @@ def suggest_gene(term: str = Query('')) -> ResponseDict:
     :return: JSON response with suggestions listed, or warnings if unable to
         provide suggestions.
     """
-    response: ResponseDict = {
-        'term': term,
-    }
+    response: ResponseDict = {'term': term}
     try:
-        possible_matches = get_possible_genes(term)
+        possible_matches = suggest_genes(term)
         response["suggestions"] = possible_matches
     except ServiceWarning as e:
         response["warnings"] = [str(e)]
