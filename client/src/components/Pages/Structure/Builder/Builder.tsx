@@ -212,26 +212,27 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
           }
 
           newObj = {
-            'component_type': 'transcript_segment',
-            'component_name': `${tx_ac} ${gene}`,
-            'transcript': tx_ac,
-            'component_id': uuid(),
-            'shorthand': tx_ac,
-            'exon_start': exon_start,
-            'exon_start_offset': exon_start_offset,
-            'exon_end': exon_end,
-            'exon_end_offset': exon_end_offset,
-            'gene_descriptor': {
-              'id': `gene:${gene}`,
-              'gene_id': gene_id,
-              'type': 'GeneDescriptor',
-              'label': `${gene}`
+            component_type: 'transcript_segment',
+            component_name: `${tx_ac} ${gene}`,
+            transcript: tx_ac,
+            component_id: uuid(),
+            shorthand: tx_ac,
+            exon_start: exon_start,
+            exon_start_offset: exon_start_offset,
+            exon_end: exon_end,
+            exon_end_offset: exon_end_offset,
+            gene_descriptor: {
+              id: `gene:${gene}`,
+              gene_id: gene_id,
+              type: 'GeneDescriptor',
+              label: `${gene}`
             }
           };
 
           newObj.hr_name = `${tx_ac}(${gene}):${hrExon}`;
 
           saveComponent(items, index, newObj);
+          updateDomainOptions(gene_id);
 
           //TODO: nested genomic region (lookup GR based on transcript and vice versa)
           // getSequenceId(chr).then(sequenceResponse => {
