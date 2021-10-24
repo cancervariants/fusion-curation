@@ -124,7 +124,6 @@ async def get_exon_coords(request: Request, exon_data: ExonCoordsRequest)\
     """
     if not exon_data.gene:
         exon_data.gene = ""
-
     try:
         genomic_coords = await get_genomic_coords(request.app.state.db,
                                                   exon_data.tx_ac,
@@ -135,8 +134,12 @@ async def get_exon_coords(request: Request, exon_data: ExonCoordsRequest)\
                                                   exon_data.gene)
     except ServiceWarning as e:
         return {"warnings": [str(e)]}
-    genomic_coords["gene_id"] = get_gene_id(genomic_coords["gene"])[0]
-    genomic_coords["sequence_id"] = get_ga4gh_sequence_id(genomic_coords["chr"])[0]
+    gene_name = genomic_coords["gene"]
+    try:
+        genomic_coords["gene_id"] = get_gene_id(gene_name)
+    except ServiceWarning:
+        return {"warnings": [f"Unable to normalize gene {gene_name}"]}
+    genomic_coords["sequence_id"] = get_ga4gh_sequence_id(genomic_coords["chr"])
     genomic_coords["tx_ac"] = exon_data.tx_ac
     genomic_coords["warnings"] = []
     return genomic_coords
