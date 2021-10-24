@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Card, CardContent, Button, TextField } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { getGeneId } from '../../../../services/main';
+import { getGeneId, getGeneSuggestions } from '../../../../services/main';
 import { getExon } from '../../../../services/main';
 
 import './TransCompInput.scss';
@@ -28,7 +29,6 @@ export const TransCompInput: React.FC<Props> = (
   // Transcript Segment
   const [transcriptError, setTranscriptError] = useState('');
   const [transcriptGeneError, setTranscriptGeneError] = useState('');
-
   const [txAc, setTxAc] = useState('');
   const [transcriptGene, setTranscriptGene] = useState('');
   const [startingExon, setStartingExon] = useState('');
@@ -36,13 +36,19 @@ export const TransCompInput: React.FC<Props> = (
   const [startingExonOffset, setStartingExonOffset] = useState('');
   const [endingExonOffset, setEndingExonOffset] = useState('');
 
+  /**
+   * TODO:
+   * - add handling of exon vs genomic position here
+   * - think about how to handle gene esp if contradicts transcript
+   * - long term: enable selection of transcript given gene
+   */
   const transcriptValidate = () => {
     if (transcriptGene.length > 0) {
       getGeneId(transcriptGene)
         .then(geneResponse => {
           if (geneResponse.concept_id === null) {
             setTranscriptGeneError('Gene not found!');
-            throw new Error(geneResponse.warnings);
+            throw new Error(geneResponse.warnings.join(','));
           }
         })
         .catch(err => {
@@ -91,6 +97,7 @@ export const TransCompInput: React.FC<Props> = (
 
   // Gene
   const [gene, setGene] = useState('');
+  const [geneOptions, setGeneOptions] = useState([]);
   const [geneError, setGeneError] = useState('');
 
   const geneValidate = (symbol) => {
@@ -109,7 +116,18 @@ export const TransCompInput: React.FC<Props> = (
       });
   };
 
-  const renderSwitch = (compType) => {
+  const handleGeneInput = (term: string) => {
+    setGeneError('');
+    getGeneSuggestions(term).then(responseJson => {
+      const suggestions = [];
+      responseJson.suggestions?.forEach(suggestion => {
+        suggestions.push(suggestion[0]);
+      });
+      setGeneOptions(suggestions);
+    });
+  };
+
+  const renderSwitch = (compType: string) => {
     switch (compType) {
       case 'genomic_region':
         return (
@@ -219,16 +237,30 @@ export const TransCompInput: React.FC<Props> = (
                       error={transcriptError.length > 0}
                       helperText={transcriptError}
                     ></TextField>
-                    <TextField
-                      margin="dense"
+                    <Autocomplete
+                      freeSolo
+                      options={geneOptions}
+                      getOptionLabel={(option) => option}
                       style={{ width: 125 }}
-                      label="Gene Symbol"
-                      value={transcriptGene}
-                      onChange={(event) => setTranscriptGene(event.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') transcriptValidate(); }}
-                      error={transcriptGeneError.length > 0}
-                      helperText={transcriptGeneError}
-                    ></TextField>
+                      onChange={(event, value) => setGene(value)}
+                      renderInput={(params) =>
+                        <TextField
+                          {...params}
+                          label="Gene Symbol"
+                          margin="dense"
+                          style={{ width: 125 }}
+                          variant="standard"
+                          value={gene}
+                          error={geneError !== ''}
+                          onChange={event => {
+                            if (event.target.value !== '' && event.target.value !== null) {
+                              handleGeneInput(event.target.value);
+                            }
+                          }}
+                          helperText={geneError !== '' ? geneError : null}
+                        />
+                      }
+                    />
                   </div>
                   <div className="bottom-inputs">
                     <TextField
@@ -338,22 +370,30 @@ export const TransCompInput: React.FC<Props> = (
             <CardContent>
               <div className="card-parent">
                 <div className="input-parent">
-                  <TextField
-                    margin="dense"
+                  <Autocomplete
+                    freeSolo
+                    options={geneOptions}
+                    getOptionLabel={(option) => option}
                     style={{ width: 125 }}
-                    label="Gene Symbol"
-                    error={geneError.length > 0}
-                    helperText={geneError}
-                    onChange={(event) => setGene(event.target.value.toUpperCase())}
-                    value={gene}
-
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        geneValidate(gene);
-                      }
-                    }}
-                  >
-                  </TextField>
+                    onChange={(event, value) => setGene(value)}
+                    renderInput={(params) =>
+                      <TextField
+                        {...params}
+                        label="Gene Symbol"
+                        margin="dense"
+                        style={{ width: 125 }}
+                        variant="standard"
+                        value={gene}
+                        error={geneError !== ''}
+                        onChange={event => {
+                          if (event.target.value !== '' && event.target.value !== null) {
+                            handleGeneInput(event.target.value);
+                          }
+                        }}
+                        helperText={geneError !== '' ? geneError : null}
+                      />
+                    }
+                  />
                 </div>
                 <div className="buttons">
                   <Button

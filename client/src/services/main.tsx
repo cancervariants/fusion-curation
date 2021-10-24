@@ -1,12 +1,18 @@
 import {
   ExonCoordsRequest, ExonCoordsResponse, Fusion, FusionValidationResponse, NormalizeGeneResponse,
-  SequenceIDResponse, AssociatedDomainResponse
+  SequenceIDResponse, AssociatedDomainResponse, SuggestGeneResponse
 } from './ResponseModels';
 
 export async function getGeneId(symbol: string): Promise<NormalizeGeneResponse> {
   const response = await fetch(`/lookup/gene?term=${symbol}`);
   const geneResponse = await response.json();
   return geneResponse;
+}
+
+export async function getGeneSuggestions(term: string): Promise<SuggestGeneResponse> {
+  const response = await fetch(`complete/gene?term=${term}`);
+  const responseJson = await response.json();
+  return responseJson;
 }
 
 export async function getAssociatedDomains(gene_id: string): Promise<AssociatedDomainResponse> {

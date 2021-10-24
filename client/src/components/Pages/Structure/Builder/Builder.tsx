@@ -77,8 +77,9 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
   const { fusion, setFusion } = useContext(FusionContext);
   // Choosable domains based on genes provided in components
   const { domainOptions, setDomainOptions } = useContext(DomainOptionsContext);
-
+  // displayed structural elements
   const [structure, setStructure] = useState([]);
+
   const [editMode, setEditMode] = useState('');
 
   useEffect(() => {
@@ -120,7 +121,7 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
     setStructure(sourceClone);
   };
 
-  const handleSave = (index: number, compType: string, ...values: Array<string>) => {
+  const handleSave = (index, compType, ...values) => {
     // TODO: prevent from sending empty fields (where applicable)
     const items = Array.from(structure);
     const obj = items[index];
@@ -182,7 +183,7 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
         ).then(exonResponse => {
           const {
             tx_ac, gene, gene_id, exon_start, exon_end, exon_start_offset, exon_end_offset,
-            sequence_id, chr, start, end, warnings
+            sequence_id, chr, start, end,
           } = exonResponse;
 
           let eso: string;
@@ -278,8 +279,7 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
         });
         break;
       case 'linker_sequence':
-        // eslint-disable-next-line prefer-const
-        let [sequence] = values;
+        const [sequence] = values;
         newObj = {
           'component_type': 'linker_sequence',
           'component_name': sequence,
