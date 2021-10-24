@@ -66,7 +66,10 @@ class GeneService:
          parameter? in gene services? All of the above?
          * how to reduce redundant suggestions
          * how to order suggestions
-         * think about case
+         * think about case. Keys need to be case-insensitive, but how much correctly
+        cased data needs to be provided?
+            * should redo gene maps to include correct-case term as one of the tuple
+            entries
 
         :param str query: text entered by user
         :returns: list containing any number of suggestion tuples, where each is the
@@ -75,8 +78,9 @@ class GeneService:
         MAX_SUGGESTIONS
         """
         # tentatively, just search terms
+        q_lower = query.lower()
         suggestions = [(t, v[0], v[1], "term") for t, v in self.terms_map.items()
-                       if t.startswith(query)]
+                       if t.startswith(q_lower)]
         n = len(suggestions)
         if n > MAX_SUGGESTIONS:
             warn = f"Got {n} possible matches for {query} (exceeds {MAX_SUGGESTIONS})"
