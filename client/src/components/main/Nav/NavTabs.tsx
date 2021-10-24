@@ -2,7 +2,6 @@ import React from 'react';
 
 // Pages
 import { Structure } from '../../Pages/Structure/Main/Structure';
-import { Gene } from '../../Pages/Gene/Main/Gene';
 import { RegElement } from '../../Pages/RegElement/Main/RegElement';
 import { Summary } from '../../Pages/Summary/Main/Summary';
 import { Domain } from '../../Pages/Domains/Main/Domains';
@@ -43,7 +42,7 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-function a11yProps(index: any) {
+function a11yProps(index) {
   return {
     id: `nav-tab-${index}`,
     'aria-controls': `nav-tabpanel-${index}`,

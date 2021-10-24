@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import NavTabs from '../Nav/NavTabs';
 import { SuggestionContext } from '../../../global/contexts/SuggestionContext';
 import { FusionContext } from '../../../global/contexts/FusionContext';
@@ -9,7 +9,6 @@ import theme from '../../../global/styles/theme';
 
 import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext';
 import './App.scss';
-import { getAssociatedDomains } from '../../../services/main';
 
 const demoData = {
   'transcript_components': [
@@ -116,19 +115,6 @@ const App = () => {
   const [suggestions, setSuggestions] = useState<unknown>([]);
   const [fusion, setFusion] = useState<Object>({});
   const [domainOptions, setDomainOptions] = useState<Object>({});
-
-  // useEffect(() => {
-  //   if (!!fusion && 'transcript_components' in fusion) {
-  //     fusion.transcript_components.forEach((component) => {
-  //       const gene_id = component.gene_descriptor.gene_id;
-  //       if (!(gene_id in domainOptions)) {
-  //         const domains = getAssociatedDomains(gene_id);
-  //         console.log(domains);
-  //         domainOptions[gene_id] = domains;
-  //       }
-  //     })
-  //   }
-  // }, [fusion, domainOptions])
 
   // disable superfluous react_dnd warnings
   window['__react-beautiful-dnd-disable-dev-warnings'] = true;

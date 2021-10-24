@@ -6,6 +6,7 @@ import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautif
 import './Builder.scss';
 import { TransCompInput } from '../TransCompInput/TransCompInput';
 import { getGeneId, getAssociatedDomains, getSequenceId, getExon } from '../../../../services/main';
+import { SequenceIDResponse } from '../../../../services/ResponseModels';
 
 
 interface Props {
@@ -243,10 +244,9 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
       case 'genomic_region':
         // eslint-disable-next-line prefer-const
         let [chromosome, strand, startPosition, endPosition] = values;
-        getSequenceId(chromosome).then(sequenceResponse => {
+        getSequenceId(chromosome).then((sequenceResponse: SequenceIDResponse) => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          // eslint-disable-next-line prefer-const
-          let { sequence, sequence_id, warnings } = sequenceResponse;
+          const { sequence, sequence_id, warnings } = sequenceResponse;
           newObj = {
             'component_type': 'genomic_region',
             'component_name': `chr${chromosome}:${startPosition}_${endPosition}(${strand})`,

@@ -1,7 +1,7 @@
 import './Questions.scss';
 import { FusionContext } from '../../../global/contexts/FusionContext';
-import React, { useContext, useState, useEffect } from 'react';
-import { FormLabel, FormControl, FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
+import React, { useContext, useState } from 'react';
+import { FormControl, FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 interface Props {

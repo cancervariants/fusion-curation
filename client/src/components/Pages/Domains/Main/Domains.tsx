@@ -9,7 +9,7 @@ interface Props {
   index: number
 }
 
-export const Domain: React.FC<Props> = ({ index }) => {
+export const Domain: React.FC<Props> = ( ) => {
   const { fusion, setFusion } = useContext(FusionContext);
 
   const domains = fusion.protein_domains || [];
