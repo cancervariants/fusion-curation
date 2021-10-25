@@ -11,7 +11,7 @@ from curation import APP_ROOT, logger
 
 
 # type stub
-Map = Dict[str, Tuple[str, str]]
+Map = Dict[str, Tuple[str, str, str]]
 
 
 class GeneSuggestionBuilder:
@@ -44,7 +44,7 @@ class GeneSuggestionBuilder:
         """
         with open(outfile_path, 'w') as fp:
             for key, normed in mapping.items():
-                fp.write(f"{key}\t{normed[0]}\t{normed[1]}\n")
+                fp.write(f"{key}\t{normed[0]}\t{normed[1]}\t{normed[2]}\n")
 
     def update_maps(self, record: Dict) -> None:
         """Add map entries for relevant data in given DB record.
