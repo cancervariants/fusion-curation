@@ -121,7 +121,11 @@ export const TransCompInput: React.FC<Props> = (
     getGeneSuggestions(term).then(responseJson => {
       const suggestions = [];
       responseJson.suggestions?.forEach(suggestion => {
-        suggestions.push(suggestion[0]);
+        if (suggestion[0] === '') {
+          suggestions.push(suggestion[2]);
+        } else {
+          suggestions.push(suggestion[0]);
+        }
       });
       setGeneOptions(suggestions);
     });
@@ -374,14 +378,13 @@ export const TransCompInput: React.FC<Props> = (
                     freeSolo
                     options={geneOptions}
                     getOptionLabel={(option) => option}
-                    style={{ width: 125 }}
                     onChange={(event, value) => setGene(value)}
                     renderInput={(params) =>
                       <TextField
                         {...params}
                         label="Gene Symbol"
                         margin="dense"
-                        style={{ width: 125 }}
+                        style={{ width: 200 }}
                         variant="standard"
                         value={gene}
                         error={geneError !== ''}

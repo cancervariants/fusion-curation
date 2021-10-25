@@ -416,6 +416,6 @@ export interface SequenceIDResponse {
  */
 export interface SuggestGeneResponse {
   term: string;
-  suggestions?: [] | [string] | [string, string][];
+  suggestions?: [] | [string] | [string, string] | [string, string, string] | [string, string, string, string][];
   warnings?: string[];
 }
