@@ -20,6 +20,13 @@ class GeneSuggestionBuilder:
     Implemented as a class for easier sharing of DynamoDB resources between methods.
     """
 
+    xrefs_map = {}
+    symbol_map = {}
+    label_map = {}
+    prev_symbol_map = {}
+    alias_map = {}
+    assoc_with_map = {}
+
     def __init__(self):
         """Initialize class.
 
@@ -28,37 +35,44 @@ class GeneSuggestionBuilder:
         self.q = QueryHandler()
         self.genes = self.q.db.genes
 
-    def add_norm_to_mapping(self, mapping: Map, term: str) -> None:
-        """Add normalized gene data to an individual mapping object. Performs
-        in-place update.
-
-        :param Map mapping: dictionary keying values of a specific item_type set
-            to normalized gene data
-        :param str term: term to received normalized ID and label for
-        :raise Exception: if normalization fails
-        """
-        if term not in mapping:
-            norm_response = self.q.normalize(term)
-            try:
-                descriptor = norm_response["gene_descriptor"]
-            except KeyError:
-                msg = f"Unable to normalize term: {term}"
-                logger.error(msg)
-                raise Exception(msg)
-            norm_id = descriptor["gene"]["gene_id"]
-            norm_label = descriptor["label"]
-            mapping[term] = (norm_id, norm_label)
-
     @staticmethod
     def write_map_to_file(mapping: Map, outfile_path: Path) -> None:
         """Save individual gene mapping to file.
         :param Map mapping: dictionary keying values of a specific item_type set
-            to normalized gene data
+        to normalized gene data
         :param outfile_path Path: path to save mapping at
         """
         with open(outfile_path, 'w') as fp:
             for key, normed in mapping.items():
                 fp.write(f"{key}\t{normed[0]}\t{normed[1]}\n")
+
+    def update_maps(self, record: Dict) -> None:
+        """Add map entries for relevant data in given DB record.
+        :param Dict record: individual identity or merged record from DDB. Ideally,
+        should not duplicate previous records (i.e., `record` should not be a record
+        for which an associated merged record exists).
+        """
+        norm_id = record["concept_id"]
+        norm_symbol = record["symbol"]
+
+        for concept_id in [norm_id] + record.get("xrefs", []):
+            self.xrefs_map[concept_id.lower()] = (concept_id, norm_id, norm_symbol)
+
+        self.symbol_map[norm_symbol.lower()] = ("", norm_id, norm_symbol)
+
+        for prev_symbol in record.get("previous_symbols", []):
+            self.prev_symbol_map[prev_symbol.lower()] = (prev_symbol, norm_id,
+                                                         norm_symbol)
+
+        for assoc_with in record.get("associated_with", []):
+            self.assoc_with_map[assoc_with.lower()] = (assoc_with, norm_id, norm_symbol)
+
+        label = record.get("label")
+        if label:
+            self.label_map[label.lower()] = (label, norm_id, norm_symbol)
+
+        for alias in record.get("aliases", []):
+            self.alias_map[alias.lower()] = (alias, norm_id, norm_symbol)
 
     def build_gene_suggest_maps(self, output_dir: Path = APP_ROOT / 'data') -> None:
         """Construct gene autocomplete suggestion mappings.
@@ -69,11 +83,9 @@ class GeneSuggestionBuilder:
         :param Path output_dir: path to directory to save output files in
         """
         start = timer()
-        gene_terms: Map = {}
-        gene_xrefs: Map = {}
-        gene_assoc: Map = {}
 
         last_evaluated_key = None
+        valid_item_types = ("identity", "merger")
         while True:
             if last_evaluated_key:
                 response = self.genes.scan(ExclusiveStartKey=last_evaluated_key)
@@ -81,36 +93,28 @@ class GeneSuggestionBuilder:
                 response = self.genes.scan()
             last_evaluated_key = response.get("LastEvaluatedKey")
             records = response["Items"]
+
             for record in records:
-                item_type = record.get("item_type")
-                if not item_type:
-                    logger.error(f"item_type attribute not set in record {record}")
+                if record["item_type"] not in valid_item_types:
                     continue
-
-                label_and_type = record["label_and_type"]
-                term = label_and_type[:label_and_type.rfind("#") - 1]
-
-                if item_type in {"identity", "xref", "merger"}:
-                    self.add_norm_to_mapping(gene_xrefs, term)
-                elif item_type in {"symbol", "prev_symbol", "alias"}:
-                    self.add_norm_to_mapping(gene_terms, term)
-                elif item_type in {"associated_with"}:
-                    self.add_norm_to_mapping(gene_assoc, term)
-                else:
-                    logger.error(f"unrecognized item_type attribute {item_type} in "
-                                 f"record {record}")
+                elif "merge_ref" in record:
                     continue
+                self.update_maps(record)
 
             if not last_evaluated_key:
                 break
 
         today = dt.strftime(dt.today(), "%Y%m%d")
-        for (map, name) in ((gene_terms, "terms"),
-                            (gene_xrefs, "xrefs"),
-                            (gene_assoc, "assoc")):
+        for (map, name) in ((self.xrefs_map, "xrefs"),
+                            (self.symbol_map, "symbols"),
+                            (self.label_map, "labels"),
+                            (self.prev_symbol_map, "prev_symbols"),
+                            (self.alias_map, "aliases"),
+                            (self.assoc_with_map, "assoc_with")):
             self.write_map_to_file(map,
                                    output_dir / f"gene_{name}_suggest_{today}.tsv")
+
         stop = timer()
-        msg = f"Wrote gene suggestions table in {(stop - start):.5f} seconds."
+        msg = f"Built gene suggestions table in {(stop - start):.5f} seconds."
         click.echo(msg)
         logger.info(msg)
