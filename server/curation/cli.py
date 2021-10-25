@@ -14,7 +14,7 @@ from curation.utils.gene import GeneSuggestionBuilder
 def serve(port: int) -> None:
     """Start application service on localhost.
     \f
-    :param int port: port to serve at
+    :param int port: port to serve at (default: 5000)
     """
     uvicorn.run("curation.routes:app", port=port, reload=True)
 

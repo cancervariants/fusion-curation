@@ -16,171 +16,219 @@ def test_get_gene_id():
 
 def test_get_matching_genes():
     """Test gene term autocomplete service."""
-    assert suggest_genes('brca') == [
+    assert suggest_genes('BRCA1') == [
         (
-            "brca1",
+            "",
             "hgnc:1100",
             "BRCA1",
-            "term"
+            "symbol"
         ),
         (
-            "brcat107",
-            "hgnc:53093",
-            "LINC02224",
-            "term"
-        ),
-        (
-            "brca3",
-            "ncbigene:60500",
-            "BRCA3",
-            "term"
-        ),
-        (
-            "brcacox",
-            "hgnc:120",
-            "ACOX2",
-            "term"
-        ),
-        (
-            "brcai",
-            "hgnc:1100",
-            "BRCA1",
-            "term"
-        ),
-        (
-            "brcata",
-            "ncbigene:8068",
-            "BRCATA",
-            "term"
-        ),
-        (
-            "brca2",
-            "hgnc:1101",
-            "BRCA2",
-            "term"
-        ),
-        (
-            "brca1p1",
+            "",
             "hgnc:28470",
             "BRCA1P1",
-            "term"
+            "symbol"
         ),
         (
-            "brcaa1",
-            "hgnc:15550",
-            "ARID4B",
-            "term"
+            "BRCA1 associated protein",
+            "hgnc:1099",
+            "BRAP",
+            "label"
         ),
         (
-            "brcat8",
-            "hgnc:51144",
-            "LINC01488",
-            "term"
+            "BRCA1 associated RING domain 1",
+            "hgnc:952",
+            "BARD1",
+            "label"
         ),
         (
-            "brcax",
-            "ncbigene:60500",
-            "BRCA3",
-            "term"
+            "BRCA1 associated ATM activator 1",
+            "hgnc:21701",
+            "BRAT1",
+            "label"
         ),
         (
-            "brcat54",
-            "hgnc:53420",
-            "MRPS30-DT",
-            "term"
+            "BRCA1 intronic recombination region",
+            "ncbigene:110485084",
+            "LOC110485084",
+            "label"
+        ),
+        (
+            "BRCA1/BRCA2-containing complex subunit 3",
+            "hgnc:24185",
+            "BRCC3",
+            "label"
+        ),
+        (
+            "BRCA1 intron 2 regulatory region",
+            "ncbigene:111589216",
+            "LOC111589216",
+            "label"
+        ),
+        (
+            "BRCA1/BRCA2-containing complex subunit 3 pseudogene 1",
+            "hgnc:51444",
+            "BRCC3P1",
+            "label"
+        ),
+        (
+            "BRCA1 DNA repair associated",
+            "hgnc:1100",
+            "BRCA1",
+            "label"
+        ),
+        (
+            "BRCA1 pseudogene 1",
+            "hgnc:28470",
+            "BRCA1P1",
+            "label"
+        ),
+        (
+            "BRCA1 interacting helicase 1",
+            "hgnc:20473",
+            "BRIP1",
+            "label"
+        ),
+        (
+            "BRCA1 associated protein 1",
+            "hgnc:950",
+            "BAP1",
+            "label"
+        ),
+        (
+            "BRCA1P1 intergenic recombination region",
+            "ncbigene:110485085",
+            "LOC110485085",
+            "label"
+        ),
+        (
+            "BRCA1 promoter region",
+            "ncbigene:111589215",
+            "LOC111589215",
+            "label"
         )
     ]
 
     assert suggest_genes('ntr') == [
         (
-            "ntr",
-            "hgnc:8039",
-            "NTSR1",
-            "term"
-        ),
-        (
-            "ntrkr2",
-            "hgnc:10257",
-            "ROR2",
-            "term"
-        ),
-        (
-            "ntra",
-            "hgnc:17302",
-            "NEGR1",
-            "term"
-        ),
-        (
-            "ntrk3-as1",
+            "",
             "hgnc:27532",
             "NTRK3-AS1",
-            "term"
+            "symbol"
         ),
         (
-            "ntrkr3",
-            "hgnc:2731",
-            "DDR2",
-            "term"
-        ),
-        (
-            "ntrk1",
-            "hgnc:8031",
-            "NTRK1",
-            "term"
-        ),
-        (
-            "ntr2",
-            "hgnc:8040",
-            "NTSR2",
-            "term"
-        ),
-        (
-            "ntrenv",
-            "hgnc:37653",
-            "ERVW-2",
-            "term"
-        ),
-        (
-            "ntr3",
-            "hgnc:11186",
-            "SORT1",
-            "term"
-        ),
-        (
-            "ntrkr1",
-            "hgnc:10256",
-            "ROR1",
-            "term"
-        ),
-        (
-            "ntrk2",
-            "hgnc:8032",
-            "NTRK2",
-            "term"
-        ),
-        (
-            "ntrk3",
+            "",
             "hgnc:8033",
             "NTRK3",
-            "term"
+            "symbol"
         ),
         (
-            "ntr1",
-            "hgnc:17165",
-            "TFIP11",
-            "term"
+            "",
+            "hgnc:8032",
+            "NTRK2",
+            "symbol"
         ),
         (
-            "ntrk4",
-            "hgnc:2730",
-            "DDR1",
-            "term"
+            "",
+            "hgnc:8031",
+            "NTRK1",
+            "symbol"
         ),
         (
-            "ntri",
+            "NTRK3 antisense RNA 1",
+            "hgnc:27532",
+            "NTRK3-AS1",
+            "label"
+        ),
+        (
+            "NTR",
+            "hgnc:8039",
+            "NTSR1",
+            "alias"
+        ),
+        (
+            "NTrenv",
+            "hgnc:37653",
+            "ERVW-2",
+            "alias"
+        ),
+        (
+            "NTR3",
+            "hgnc:11186",
+            "SORT1",
+            "alias"
+        ),
+        (
+            "NTRI",
             "hgnc:17941",
             "NTM",
-            "term"
+            "alias"
+        ),
+        (
+            "NTRK4",
+            "hgnc:2730",
+            "DDR1",
+            "alias"
+        ),
+        (
+            "NTRKR1",
+            "hgnc:10256",
+            "ROR1",
+            "alias"
+        ),
+        (
+            "NTRKR3",
+            "hgnc:2731",
+            "DDR2",
+            "alias"
+        ),
+        (
+            "NTR2",
+            "hgnc:8040",
+            "NTSR2",
+            "alias"
+        ),
+        (
+            "NTR1",
+            "hgnc:17165",
+            "TFIP11",
+            "alias"
+        ),
+        (
+            "NTRKR2",
+            "hgnc:10257",
+            "ROR2",
+            "alias"
+        ),
+        (
+            "Ntra",
+            "hgnc:17302",
+            "NEGR1",
+            "alias"
+        ),
+        (
+            "NTRK4",
+            "hgnc:2730",
+            "DDR1",
+            "prev_symbol"
+        ),
+        (
+            "NTRKR1",
+            "hgnc:10256",
+            "ROR1",
+            "prev_symbol"
+        ),
+        (
+            "NTRKR3",
+            "hgnc:2731",
+            "DDR2",
+            "prev_symbol"
+        ),
+        (
+            "NTRKR2",
+            "hgnc:10257",
+            "ROR2",
+            "prev_symbol"
         )
     ]
 
