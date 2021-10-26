@@ -23,14 +23,18 @@ logger = logging.getLogger("fusion_backend")
 logger.setLevel(logging.DEBUG)
 logger.handlers = []
 
+# double check that this doesn't break prod logging
+logging.getLogger("boto3").setLevel(logging.INFO)
+logging.getLogger("botocore").setLevel(logging.INFO)
+logging.getLogger("nose").setLevel(logging.INFO)
+
 if "FUSION_EB_PROD" in environ:
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
     logger.addHandler(ch)
+else:
+    logging.getLogger("urllib3").setLevel(logging.INFO)
 
-    logging.getLogger("boto3").setLevel(logging.INFO)
-    logging.getLogger("botocore").setLevel(logging.INFO)
-    logging.getLogger("nose").setLevel(logging.INFO)
 
 # get UTA DB url
 if "UTA_DB_URL" in environ:
