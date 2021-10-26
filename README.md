@@ -64,17 +64,24 @@ Alternate SeqRepo locations can be specified with the environment variable `SEQR
 
 The backend requires local DynamoDB service with tables initialized by the [Gene Normalization service](https://github.com/cancervariants/gene-normalization), listening on port 8000. See the Gene Normalizer documentation for initialization information.
 
+Backend domain and gene autocomplete services require generation of their respective indexes.
+
+```commandline
+curutils build-genes
+curutils build-domains
+```
+
 In a terminal running the Pipenv Python environment, start a Uvicorn process to serve the FastAPI backend:
 
 ```commandline
-uvicorn curation.main:app --reload --port=5000
+curserve
 ```
 
 In a separate terminal, install frontend dependencies and start the React development server:
 
 ```commandline
-npm install
-npm run start
+yarn install
+yarn start
 ```
 
 Then proceed to http://localhost:3000/ in a browser window.
