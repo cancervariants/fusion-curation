@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import './RegElementForm.scss';
 
 import { getGeneId } from '../../../../services/main';
-import { GeneAutocomplete } from '../../General/GeneAutocomplete/GeneAutocomplete';
+import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {

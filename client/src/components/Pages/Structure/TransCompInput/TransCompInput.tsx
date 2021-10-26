@@ -4,7 +4,7 @@ import { Card, CardContent, Button, TextField } from '@material-ui/core';
 import { getGeneId } from '../../../../services/main';
 import { getExon } from '../../../../services/main';
 
-import { GeneAutocomplete } from '../../General/GeneAutocomplete/GeneAutocomplete';
+import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
 
 import './TransCompInput.scss';
 
