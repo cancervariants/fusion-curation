@@ -64,8 +64,9 @@ def normalize_gene(term: str = Query("")) -> ResponseDict:
         "term": term,
     }
     try:
-        concept_id = get_gene_id(term.strip())
+        concept_id, symbol = get_gene_id(term.strip())
         response["concept_id"] = concept_id
+        response["symbol"] = symbol
     except ServiceWarning as e:
         response["warnings"] = [str(e)]
     return response

@@ -47,7 +47,7 @@ class GeneService:
                 for term_lower, term, normalized_id, normalized_label in reader:
                     map[term_lower] = (term, normalized_id, normalized_label)
 
-    def get_gene_id(self, term: str) -> str:
+    def get_normalized_gene(self, term: str) -> Tuple[str, str]:
         """Get normalized ID given gene symbol/label/alias.
         :param str term: user-entered gene term
         :returns: concept ID, str, if successful
@@ -56,7 +56,8 @@ class GeneService:
         response = self.gene_query_handler.normalize(term)
         if response["match_type"] != MatchType.NO_MATCH:
             concept_id = response["gene_descriptor"]["gene"]["gene_id"]
-            return concept_id
+            symbol = response["gene_descriptor"]["label"]
+            return (concept_id, symbol)
         else:
             warn = f"Lookup of gene term {term} failed."
             logger.warning(warn)
@@ -68,12 +69,11 @@ class GeneService:
         Outstanding questions:
          * Where to make decisions about item types -- in client? provide as route
          parameter? in gene services? All of the above?
-         * how to reduce redundant suggestions
-         * how to order suggestions
+         * how to safely reduce redundant suggestions
 
         :param str query: text entered by user
         :returns: list containing any number of suggestion tuples, where each is the
-        normalized ID, normalized label, and item type
+        correctly-cased term, normalized ID, normalized label, and item type
         :raises ServiceWarning: if number of matching suggestions exceeds
         MAX_SUGGESTIONS
         """
@@ -81,14 +81,12 @@ class GeneService:
         q_lower = query.lower()
         symbols = [(v[0], v[1], v[2], "symbol") for t, v in self.symbols_map.items()
                    if t.startswith(q_lower)]
-        labels = [(v[0], v[1], v[2], "label") for t, v in self.labels_map.items()
-                  if t.startswith(q_lower)]
         aliases = [(v[0], v[1], v[2], "alias") for t, v in self.aliases_map.items()
                    if t.startswith(q_lower)]
         prev_symbols = [(v[0], v[1], v[2], "prev_symbol") for t, v
                         in self.prev_symbols_map.items() if t.startswith(q_lower)]
 
-        suggestions = symbols + labels + aliases + prev_symbols  # type: ignore
+        suggestions = symbols + aliases + prev_symbols  # type: ignore
 
         n = len(suggestions)
         if n > MAX_SUGGESTIONS:
@@ -101,5 +99,5 @@ class GeneService:
 
 gene_service = GeneService()
 gene_service.load_mapping()
-get_gene_id = gene_service.get_gene_id
+get_gene_id = gene_service.get_normalized_gene
 suggest_genes = gene_service.suggest_genes

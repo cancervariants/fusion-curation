@@ -15,8 +15,9 @@ ResponseWarnings = Optional[List[StrictStr]]
 class ClientComponent(BaseModel, ABC):
     """Abstract class to provide identification properties used by client."""
 
-    uuid: StrictStr
+    component_id: StrictStr
     component_name: StrictStr
+    hr_name: StrictStr
 
 
 class ClientTranscriptSegmentComponent(TranscriptSegmentComponent, ClientComponent):
@@ -60,6 +61,7 @@ class NormalizeGeneResponse(BaseModel):
 
     term: StrictStr
     concept_id: Optional[CURIE]
+    symbol: Optional[StrictStr]
     warnings: ResponseWarnings
 
     class Config:
