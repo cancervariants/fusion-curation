@@ -1,12 +1,12 @@
 import { useContext, useState, useEffect } from 'react';
-import { InputLabel, MenuItem, FormControl, Select, Button, TextField } from '@material-ui/core/';
-import { Autocomplete } from '@material-ui/lab';
+import { InputLabel, MenuItem, FormControl, Select, Button } from '@material-ui/core/';
 import { makeStyles } from '@material-ui/core/styles';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { v4 as uuid } from 'uuid';
 import './RegElementForm.scss';
 
 import { getGeneId } from '../../../../services/main';
+import { GeneAutocomplete } from '../../General/GeneAutocomplete/GeneAutocomplete';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -35,14 +35,10 @@ const RegElementForm: React.FC = () => {
 
   const [type, setType] = useState(null);
   const [gene, setGene] = useState(null);
-  const [geneWarning, setGeneWarning] = useState('');
+  const [geneError, setGeneError] = useState('');
 
   const handleTypeChange = (event) => {
     setType(event.target.value);
-  };
-  const handleGeneChange = (event) => {
-    setGeneWarning('');
-    setGene(event.target.value);
   };
 
   const handleAdd = () => {
@@ -97,33 +93,13 @@ const RegElementForm: React.FC = () => {
         </FormControl>
       </div>
       <div className='formInput'>
-        {/* <FormControl className={classes.formControl}>
-        <InputLabel id="demo-simple-select-label">Gene</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={gene}
-          onChange={handleGeneChange}
-        >
-
-
-          <MenuItem value="BCR">BCR</MenuItem>
-          <MenuItem value="ABL1">ABL1</MenuItem>
-        </Select>
-      </FormControl> */}
-
-        <TextField
-          className={classes.formControl}
-          id='standard-basic'
-          label='Gene Symbol'
-          variant='standard'
-          value={gene}
-          error={geneWarning !== ''}
-          onChange={handleGeneChange}
-          helperText={geneWarning !== '' ? geneWarning : null}
+        <GeneAutocomplete
+          selectedGene={gene}
+          setSelectedGene={setGene}
+          geneError={geneError}
+          setGeneError={setGeneError}
         />
       </div>
-
       <div className='regel-add-button '>
         <Button variant='outlined' color='primary' onClick={() => handleAdd()}>
           Add

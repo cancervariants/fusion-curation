@@ -5,6 +5,8 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getGeneId, getGeneSuggestions } from '../../../../services/main';
 import { getExon } from '../../../../services/main';
 
+import { GeneAutocomplete } from '../../General/GeneAutocomplete/GeneAutocomplete';
+
 import './TransCompInput.scss';
 
 interface Props {
@@ -96,11 +98,10 @@ export const TransCompInput: React.FC<Props> = (
   const linkerError = sequence && sequence.match(/^([aAgGtTcC]+)?$/) === null;
 
   // Gene
-  const [gene, setGene] = useState('');
-  const [geneOptions, setGeneOptions] = useState([]);
+  const [gene, setGene] = useState<string>('');
   const [geneError, setGeneError] = useState('');
 
-  const geneValidate = (symbol) => {
+  const geneValidate = (symbol: string) => {
     if (symbol === 'ANY') {
       handleSave(index, compType, gene);
       return;
@@ -114,21 +115,6 @@ export const TransCompInput: React.FC<Props> = (
           handleSave(index, compType, gene);
         }
       });
-  };
-
-  const handleGeneInput = (term: string) => {
-    setGeneError('');
-    getGeneSuggestions(term).then(responseJson => {
-      const suggestions = [];
-      responseJson.suggestions?.forEach(suggestion => {
-        if (suggestion[0] === '') {
-          suggestions.push(suggestion[2]);
-        } else {
-          suggestions.push(suggestion[0]);
-        }
-      });
-      setGeneOptions(suggestions);
-    });
   };
 
   const renderSwitch = (compType: string) => {
@@ -241,29 +227,11 @@ export const TransCompInput: React.FC<Props> = (
                       error={transcriptError.length > 0}
                       helperText={transcriptError}
                     ></TextField>
-                    <Autocomplete
-                      freeSolo
-                      options={geneOptions}
-                      getOptionLabel={(option) => option}
-                      style={{ width: 125 }}
-                      onChange={(event, value) => setGene(value)}
-                      renderInput={(params) =>
-                        <TextField
-                          {...params}
-                          label="Gene Symbol"
-                          margin="dense"
-                          style={{ width: 125 }}
-                          variant="standard"
-                          value={gene}
-                          error={geneError !== ''}
-                          onChange={event => {
-                            if (event.target.value !== '' && event.target.value !== null) {
-                              handleGeneInput(event.target.value);
-                            }
-                          }}
-                          helperText={geneError !== '' ? geneError : null}
-                        />
-                      }
+                    <GeneAutocomplete
+                      selectedGene={transcriptGene}
+                      setSelectedGene={setTranscriptGene}
+                      geneError={transcriptGeneError}
+                      setGeneError={setTranscriptGeneError}
                     />
                   </div>
                   <div className="bottom-inputs">
@@ -374,28 +342,11 @@ export const TransCompInput: React.FC<Props> = (
             <CardContent>
               <div className="card-parent">
                 <div className="input-parent">
-                  <Autocomplete
-                    freeSolo
-                    options={geneOptions}
-                    getOptionLabel={(option) => option}
-                    onChange={(event, value) => setGene(value)}
-                    renderInput={(params) =>
-                      <TextField
-                        {...params}
-                        label="Gene Symbol"
-                        margin="dense"
-                        style={{ width: 200 }}
-                        variant="standard"
-                        value={gene}
-                        error={geneError !== ''}
-                        onChange={event => {
-                          if (event.target.value !== '' && event.target.value !== null) {
-                            handleGeneInput(event.target.value);
-                          }
-                        }}
-                        helperText={geneError !== '' ? geneError : null}
-                      />
-                    }
+                  <GeneAutocomplete
+                    selectedGene={gene}
+                    setSelectedGene={setGene}
+                    geneError={geneError}
+                    setGeneError={setGeneError}
                   />
                 </div>
                 <div className="buttons">
