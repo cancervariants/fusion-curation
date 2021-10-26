@@ -16,6 +16,7 @@ uvloop = "*"
 httptools = "*"
 urllib3 = ">=1.26.5"
 click = "*"
+sqlparse = ">=0.4.2"
 
 [dev-packages]
 fusion-curation = {editable = true, path = "."}
