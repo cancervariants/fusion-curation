@@ -98,6 +98,7 @@ const RegElementForm: React.FC = () => {
           setSelectedGene={setGene}
           geneError={geneError}
           setGeneError={setGeneError}
+          style={{ width: 440 }}
         />
       </div>
       <div className='regel-add-button '>

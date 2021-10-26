@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Card, CardContent, Button, TextField } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { getGeneId, getGeneSuggestions } from '../../../../services/main';
+import { getGeneId } from '../../../../services/main';
 import { getExon } from '../../../../services/main';
 
 import { GeneAutocomplete } from '../../General/GeneAutocomplete/GeneAutocomplete';
@@ -232,6 +231,7 @@ export const TransCompInput: React.FC<Props> = (
                       setSelectedGene={setTranscriptGene}
                       geneError={transcriptGeneError}
                       setGeneError={setTranscriptGeneError}
+                      style={{ width: 125 }}
                     />
                   </div>
                   <div className="bottom-inputs">
@@ -347,6 +347,7 @@ export const TransCompInput: React.FC<Props> = (
                     setSelectedGene={setGene}
                     geneError={geneError}
                     setGeneError={setGeneError}
+                    style={{ width: 125 }}
                   />
                 </div>
                 <div className="buttons">
