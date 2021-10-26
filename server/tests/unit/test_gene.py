@@ -7,7 +7,7 @@ from curation.gene_services import get_gene_id, suggest_genes
 
 def test_get_gene_id():
     """Test gene ID fetching service."""
-    assert get_gene_id('ABL1') == 'hgnc:76'
+    assert get_gene_id('ABL1') == ('hgnc:76', 'ABL1')
 
     match = r"Lookup of gene term ABL33 failed."
     with pytest.raises(ServiceWarning, match=match):
@@ -29,84 +29,6 @@ def test_get_matching_genes():
             "BRCA1P1",
             "symbol"
         ),
-        (
-            "BRCA1 associated protein",
-            "hgnc:1099",
-            "BRAP",
-            "label"
-        ),
-        (
-            "BRCA1 associated RING domain 1",
-            "hgnc:952",
-            "BARD1",
-            "label"
-        ),
-        (
-            "BRCA1 associated ATM activator 1",
-            "hgnc:21701",
-            "BRAT1",
-            "label"
-        ),
-        (
-            "BRCA1 intronic recombination region",
-            "ncbigene:110485084",
-            "LOC110485084",
-            "label"
-        ),
-        (
-            "BRCA1/BRCA2-containing complex subunit 3",
-            "hgnc:24185",
-            "BRCC3",
-            "label"
-        ),
-        (
-            "BRCA1 intron 2 regulatory region",
-            "ncbigene:111589216",
-            "LOC111589216",
-            "label"
-        ),
-        (
-            "BRCA1/BRCA2-containing complex subunit 3 pseudogene 1",
-            "hgnc:51444",
-            "BRCC3P1",
-            "label"
-        ),
-        (
-            "BRCA1 DNA repair associated",
-            "hgnc:1100",
-            "BRCA1",
-            "label"
-        ),
-        (
-            "BRCA1 pseudogene 1",
-            "hgnc:28470",
-            "BRCA1P1",
-            "label"
-        ),
-        (
-            "BRCA1 interacting helicase 1",
-            "hgnc:20473",
-            "BRIP1",
-            "label"
-        ),
-        (
-            "BRCA1 associated protein 1",
-            "hgnc:950",
-            "BAP1",
-            "label"
-        ),
-        (
-            "BRCA1P1 intergenic recombination region",
-            "ncbigene:110485085",
-            "LOC110485085",
-            "label"
-        ),
-        (
-            "BRCA1 promoter region",
-            "ncbigene:111589215",
-            "LOC111589215",
-            "label"
-        )
     ]
 
     assert suggest_genes('ntr') == [
@@ -133,12 +55,6 @@ def test_get_matching_genes():
             "hgnc:8031",
             "NTRK1",
             "symbol"
-        ),
-        (
-            "NTRK3 antisense RNA 1",
-            "hgnc:27532",
-            "NTRK3-AS1",
-            "label"
         ),
         (
             "NTR",

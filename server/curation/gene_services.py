@@ -4,6 +4,7 @@ import csv
 
 from gene.query import QueryHandler
 from gene.schemas import MatchType
+from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
 
 from curation import logger, ServiceWarning, MAX_SUGGESTIONS, APP_ROOT
 
@@ -47,16 +48,24 @@ class GeneService:
                 for term_lower, term, normalized_id, normalized_label in reader:
                     map[term_lower] = (term, normalized_id, normalized_label)
 
-    def get_normalized_gene(self, term: str) -> Tuple[str, str]:
+    def get_normalized_gene(self, term: str) -> Tuple[CURIE, str]:
         """Get normalized ID given gene symbol/label/alias.
         :param str term: user-entered gene term
         :returns: concept ID, str, if successful
         :raises ServiceWarning: if lookup fails
         """
         response = self.gene_query_handler.normalize(term)
-        if response["match_type"] != MatchType.NO_MATCH:
-            concept_id = response["gene_descriptor"]["gene"]["gene_id"]
-            symbol = response["gene_descriptor"]["label"]
+        if response.match_type != MatchType.NO_MATCH:
+            if not response.gene_descriptor or not response.gene_descriptor.gene_id:
+                msg = f"Unexpected null property in normalized response for `{term}`"
+                logger.error(msg)
+                raise ServiceWarning(msg)
+            concept_id = response.gene_descriptor.gene_id
+            symbol = response.gene_descriptor.label
+            if not symbol:
+                msg = f"Unable to retrieve symbol for gene {concept_id}"
+                logger.error(msg)
+                raise ServiceWarning(msg)
             return (concept_id, symbol)
         else:
             warn = f"Lookup of gene term {term} failed."

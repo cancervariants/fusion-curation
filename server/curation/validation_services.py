@@ -2,7 +2,7 @@
 from typing import Dict, Any
 
 from pydantic import ValidationError
-from fusor.model import Fusion
+from fusor.models import Fusion
 
 
 def validate_fusion(fusion: Dict) -> Dict[str, Any]:

@@ -4,6 +4,7 @@ from typing import Dict, Any, Union, List, Tuple
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
 
 from curation import APP_ROOT, ServiceWarning
 from curation.version import __version__
@@ -47,6 +48,7 @@ async def shutdown():
 
 
 ResponseDict = Dict[str, Union[str,
+                               CURIE,
                                List[str],
                                List[Tuple[str, str, str, str]]]]
 

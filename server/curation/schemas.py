@@ -4,8 +4,8 @@ from abc import ABC
 
 from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
 from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
-from fusor.model import Fusion, TranscriptSegmentComponent, LinkerComponent, \
-    GenomicRegionComponent, GeneComponent, UnknownGeneComponent, \
+from fusor.models import Fusion, TranscriptSegmentComponent, LinkerComponent, \
+    TemplatedSequenceComponent, GeneComponent, UnknownGeneComponent, \
     AnyGeneComponent
 
 
@@ -18,6 +18,7 @@ class ClientComponent(BaseModel, ABC):
     component_id: StrictStr
     component_name: StrictStr
     hr_name: StrictStr
+    shorthand: Optional[StrictStr]
 
 
 class ClientTranscriptSegmentComponent(TranscriptSegmentComponent, ClientComponent):
@@ -32,7 +33,7 @@ class ClientLinkerComponent(LinkerComponent, ClientComponent):
     pass
 
 
-class ClientGenomicRegionComponent(GenomicRegionComponent, ClientComponent):
+class ClientTemplatedSequenceComponent(TemplatedSequenceComponent, ClientComponent):
     """GenomicRegion component used client-side."""
 
     pass
@@ -56,13 +57,18 @@ class ClientAnyGeneComponent(AnyGeneComponent, ClientComponent):
     pass
 
 
-class NormalizeGeneResponse(BaseModel):
+class Response(BaseModel):
+    """Base Response class for defining API response structures."""
+
+    warnings: ResponseWarnings
+
+
+class NormalizeGeneResponse(Response):
     """Response model for gene normalization endpoint."""
 
     term: StrictStr
     concept_id: Optional[CURIE]
     symbol: Optional[StrictStr]
-    warnings: ResponseWarnings
 
     class Config:
         """Configure class."""
@@ -70,13 +76,12 @@ class NormalizeGeneResponse(BaseModel):
         extra = Extra.forbid
 
 
-class SuggestGeneResponse(BaseModel):
+class SuggestGeneResponse(Response):
     """Response model for gene autocomplete suggestions endpoint."""
 
     term: StrictStr
     # complete term, normalized ID, normalized label, item type
     suggestions: Optional[List[Tuple[str, str, str, str]]]
-    warnings: ResponseWarnings
 
     class Config:
         """Configure class."""
@@ -84,12 +89,11 @@ class SuggestGeneResponse(BaseModel):
         extra = Extra.forbid
 
 
-class AssociatedDomainResponse(BaseModel):
+class AssociatedDomainResponse(Response):
     """Response model for domain ID autocomplete suggestion endpoint."""
 
     gene_id: StrictStr
     suggestions: Optional[List[Tuple[str, str]]]
-    warnings: ResponseWarnings
 
     class Config:
         """Configure class."""
@@ -144,12 +148,11 @@ class ExonCoordsResponse(BaseModel):
         extra = Extra.forbid
 
 
-class SequenceIDResponse(BaseModel):
+class SequenceIDResponse(Response):
     """Response model for sequence ID retrieval endpoint."""
 
     sequence: StrictStr
     sequence_id: StrictStr = ""
-    warnings: ResponseWarnings
 
     class Config:
         """Configure class."""
@@ -157,11 +160,10 @@ class SequenceIDResponse(BaseModel):
         extra = Extra.forbid
 
 
-class FusionValidationResponse(BaseModel):
+class FusionValidationResponse(Response):
     """Response model for fusion validation endpoint."""
 
     fusion: Optional[Fusion]
-    warnings: ResponseWarnings
 
     class Config:
         """Configure class."""
