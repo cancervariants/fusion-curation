@@ -28,6 +28,7 @@ export const GeneAutocomplete = (
       freeSolo
       options={geneOptions}
       getOptionLabel={(option) => option}
+      onChange={(event, value) => setSelectedGene(value)}
       renderInput={(params) =>
         <TextField
           {...params}
