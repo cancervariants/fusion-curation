@@ -1,153 +1,166 @@
 .builder {
-  display: flex;
-  align-items: stretch;
-  background: var(--light-gray);
-  flex-grow: 1;
+	display: flex;
+	align-items: stretch;
+	background: var(--light-gray);
+	flex-grow: 1;
 
-  .gene {
-    background:var(--gene);
-  }
-  
-  .transcript_segment {
-    background-color: var(--transcript);
-  }
-  
-  .linker_sequence {
-    background-color: var(--linker);
-  }
-  
-  .genomic_region {
-    background-color: var(--region);
-  }
+	.gene {
+		background: var(--gene);
+	}
 
+	.transcript_segment {
+		background-color: var(--transcript);
+	}
 
-.block-container {
-  padding: 40px 90px;
-  text-align: center;
-  flex: 1;
-  overflow: scroll;
-}
+	.linker_sequence {
+		background-color: var(--linker);
+	}
 
-.block {
-  // display: flex;
-  text-align: center;
-  justify-content: center;
-  font-weight: 300;
-  padding: 10px;
-  margin: 0 50px 10px 50px;
-	font-size: 18px;
-	border-radius: 5px;
-}
+	.genomic_region {
+		background-color: var(--region);
+	}
 
-h3 {
-  text-align: center;
-  font-weight: 500;
-}
+	.block-container {
+		padding: 40px 90px;
+		text-align: center;
+		flex: 1;
+		overflow: scroll;
+	}
 
-.options {
-  background-color: var(--medium-gray);
-  width: 30%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+	.comp-input {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: relative;
 
-.option-item {
-  display: flex;
-  text-align: center;
-  justify-content: center;
-  font-weight: 300;
-  padding: 10px;
-  margin: 0 50px 15px 50px;
-	font-size: 18px;
-	border-radius: 5px;
+		.hr-name {
+			text-align: center;
+		}
 
-  .gene {
-    border: 2px solid var(--gene-light) !important;
-    color: var(--dark-gray);
-    font-weight: 500
-  }
-  
-  .transcript_component{
-    border: 2px solid var(--transcript-light)!important;
-    color: var(--dark-gray);
-    font-weight: 500
-  }
-  
-  .linker_sequence {
-    border: 2px solid var(--linker-light) !important;
-    color: var(--dark-gray);
-    font-weight: 500
-  }
-  
-  .genomic_region {
-    border: 2px solid var(--region-light) !important;
-    color: var(--dark-gray);
-    font-weight: 500
-  }
-}
+		.button-trash {
+			position: absolute;
+			right: 0;
+			top: 1px;
+			cursor: pointer;
+		}
+	}
 
+	.block {
+		// display: flex;
+		text-align: center;
+		justify-content: center;
+		font-weight: 300;
+		padding: 10px;
+		margin: 0 50px 10px 50px;
+		font-size: 18px;
+		border-radius: 5px;
+	}
 
+	h3 {
+		text-align: center;
+		font-weight: 500;
+	}
 
+	.options {
+		background-color: var(--medium-gray);
+		width: 30%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
 
-.card-parent{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  width: 100%;
-}
+	.option-item {
+		display: flex;
+		text-align: center;
+		justify-content: center;
+		font-weight: 300;
+		padding: 10px;
+		margin: 0 50px 15px 50px;
+		font-size: 18px;
+		border-radius: 5px;
 
-.input-parent {
-  display: flex;
-  flex-direction: column;
-  width: 300px;
-}
+		.gene {
+			border: 2px solid var(--gene-light) !important;
+			color: var(--dark-gray);
+			font-weight: 500;
+		}
 
-.top-inputs {
-  display: flex;
-  justify-content: space-between;
-}
+		.transcript_component {
+			border: 2px solid var(--transcript-light) !important;
+			color: var(--dark-gray);
+			font-weight: 500;
+		}
 
-.bottom-inputs {
-  display: flex;
-  justify-content: space-between;
-}
+		.linker_sequence {
+			border: 2px solid var(--linker-light) !important;
+			color: var(--dark-gray);
+			font-weight: 500;
+		}
 
-.buttons {
-  width: 40px;
-  margin-left: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+		.genomic_region {
+			border: 2px solid var(--region-light) !important;
+			color: var(--dark-gray);
+			font-weight: 500;
+		}
+	}
 
-.hidden {
-  display: none;
-}
+	.card-parent {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+		width: 100%;
 
-.instruction {
-  display: flex;
-  margin-top: 150px;
-  margin-left: 150px;
-  font-weight: 300;
-  font-size: xx-large;
-}
+		.input-parent {
+			display: flex;
+			flex-direction: column;
+			width: 300px;
+		}
 
-.right-side {
-  display: flex;
-  flex-direction: column;
-  width: 75%;
-  
-  .hr-section{
-    align-self: center;
-    background-color: #e1e7ed;
-    width: 100%;
-    height: 20%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-  }
-}
-  
+		.buttons {
+			width: 40px;
+			margin-left: -15px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+
+	.top-inputs {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.bottom-inputs {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.hidden {
+		display: none;
+	}
+
+	.instruction {
+		display: flex;
+		margin-top: 150px;
+		margin-left: 150px;
+		font-weight: 300;
+		font-size: xx-large;
+	}
+
+	.right-side {
+		display: flex;
+		flex-direction: column;
+		width: 75%;
+
+		.hr-section {
+			align-self: center;
+			background-color: #e1e7ed;
+			width: 100%;
+			height: 20%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 0 auto;
+		}
+	}
 }
