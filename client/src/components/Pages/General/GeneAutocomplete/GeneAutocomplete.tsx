@@ -28,7 +28,6 @@ export const GeneAutocomplete = (
       freeSolo
       options={geneOptions}
       getOptionLabel={(option) => option}
-      onChange={(event, value) => setSelectedGene(value)}
       renderInput={(params) =>
         <TextField
           {...params}
@@ -41,6 +40,7 @@ export const GeneAutocomplete = (
           onChange={event => {
             if (event.target.value !== '' && event.target.value !== null) {
               updateAutocomplete(event.target.value);
+              setSelectedGene(event.target.value);
             }
           }}
           helperText={geneError !== '' ? geneError : null}
