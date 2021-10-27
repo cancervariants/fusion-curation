@@ -5,10 +5,14 @@ import { DomainOptionsContext } from '../../../../global/contexts/DomainOptionsC
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import './Builder.scss';
 import { TransCompInput } from '../TransCompInput/TransCompInput';
-import { getGeneId, getAssociatedDomains, getSequenceId, getExon } from '../../../../services/main';
-import { SequenceIDResponse } from '../../../../services/ResponseModels';
+import { getAssociatedDomains } from '../../../../services/main';
+import {
+  ClientGeneComponent, ClientLinkerComponent, ClientTemplatedSequenceComponent,
+  ClientTranscriptSegmentComponent, GeneComponent, LinkerComponent, TemplatedSequenceComponent,
+  TranscriptSegmentComponent
+} from '../../../../services/ResponseModels';
 import ButtonTrash from '../../../main/shared/Buttons/ButtonTrash';
-
+// import { unstable_createMuiStrictModeTheme } from '@material-ui/core';
 
 interface Props {
   transcriptComponents
@@ -51,7 +55,7 @@ const OPTIONS = [
   },
   {
     'component_name': '',
-    'component_type': 'genomic_region',
+    'component_type': 'templated_sequence',
     'component_id': uuid(),
     'id': '',
     'type': '',
@@ -122,188 +126,118 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
     setStructure(sourceClone);
   };
 
-  const handleSave = (index, compType, ...values) => {
+  const handleSave = (
+    index: number, component: GeneComponent | LinkerComponent | TranscriptSegmentComponent |
+    TemplatedSequenceComponent
+  ) => {
     // TODO: prevent from sending empty fields (where applicable)
     const items = Array.from(structure);
-    const obj = items[index];
-    let newObj = Object.assign({}, obj);
 
-    // TODO: Update backend schema to include component_name and any other keys
-
-    // building properties of newObj (which then gets pushed to transcript_components)
-    switch (compType) {
+    switch (component.component_type) {
       case 'gene':
-        // eslint-disable-next-line prefer-const
-        let [symbol] = values;
-        if (symbol === 'ANY') {
-          newObj = {
-            'component_type': 'gene',
-            'component_name': '*',
-            'component_id': uuid(),
-            'hr_name': '*',
-            'gene_descriptor': {
-              'id': '',
-              'type': 'GeneDescriptor',
-              'gene_id': '',
-              'label': 'ANY'
-            }
-          };
-          saveComponent(items, index, newObj);
-        } else {
-          getGeneId(symbol).then(geneResponse => {
-            const geneId = geneResponse.concept_id;
-            newObj = {
-              'component_type': 'gene',
-              'component_name': `${geneResponse.term.toUpperCase()} ${geneResponse.concept_id}`,
-              'component_id': uuid(),
-              'hr_name': `${geneResponse.term.toUpperCase()}(${geneResponse.concept_id})`,
-              'gene_descriptor': {
-                'id': `gene:${geneResponse.term}`,
-                'type': 'GeneDescriptor',
-                'gene_id': geneId,
-                'label': geneResponse.term
-              }
-            };
-            updateDomainOptions(geneId);
-            saveComponent(items, index, newObj);
-          });
-        }
+        const descriptor = component.gene_descriptor;
+        const nomenclature =
+          `${descriptor.label}(${descriptor.gene_id})`;
+        const geneComponent: ClientGeneComponent = {
+          ...component,
+          component_id: uuid(),
+          component_name: nomenclature,
+          hr_name: nomenclature,
+        };
+        updateDomainOptions(descriptor.gene_id, descriptor.label);
+        saveComponent(items, index, geneComponent);
         break;
       case 'transcript_segment':
-        const [transcript, gene_symbol, exon_start_str, exon_end_str, exon_start_offset_str,
-          exon_end_offset_str] = values;
+        const { exon_start, exon_start_offset, exon_end, exon_end_offset } = component;
+        const tx_ac = component.transcript;
+        const tx_descriptor = component.gene_descriptor;
+        const tx_gene = tx_descriptor.label;
+        let eso: string;
+        if (exon_start_offset > 0) {
+          eso = `+${exon_start_offset}`;
+        } else if (exon_start_offset < 0) {
+          eso = `${exon_start_offset}`;
+        } else {
+          eso = '';
+        }
 
-        const exon_start = parseInt(exon_start_str);
-        const exon_end = parseInt(exon_end_str);
-        const exon_start_offset = parseInt(exon_start_offset_str);
-        const exon_end_offset = parseInt(exon_end_offset_str);
+        let eeo: string;
+        if (exon_end_offset > 0) {
+          eeo = `+${exon_end_offset}`;
+        } else if (exon_end_offset < 0) {
+          eeo = `${exon_end_offset}`;
+        } else {
+          eeo = '';
+        }
 
-        getExon(
-          transcript, gene_symbol, exon_start || 0, exon_end || 0, exon_start_offset || 0,
-          exon_end_offset || 0
-        ).then(exonResponse => {
-          const {
-            tx_ac, gene, gene_id, exon_start, exon_end, exon_start_offset, exon_end_offset,
-            sequence_id, chr, start, end,
-          } = exonResponse;
+        let hrExon: string;
+        if (exon_start && exon_end) {
+          hrExon = `e[${exon_start}${eso}_${exon_end}${eeo}]`;
+        } else if (exon_start) {
+          hrExon = `e[${exon_start}${eso}_]`;
+        } else {
+          hrExon = `e[_${exon_end}${eeo}]`;
+        }
 
-          let eso: string;
-          if (exon_start_offset > 0) {
-            eso = `+${exon_start_offset}`;
-          } else if (exon_start_offset < 0) {
-            eso = `${exon_start_offset}`;
-          } else {
-            eso = '';
-          }
-
-          let eeo: string;
-          if (exon_end_offset > 0) {
-            eeo = `+${exon_end_offset}`;
-          } else if (exon_end_offset < 0) {
-            eeo = `${exon_end_offset}`;
-          } else {
-            eeo = '';
-          }
-
-          let hrExon: string;
-          if (exon_start && exon_end) {
-            hrExon = `e[${exon_start}${eso}_${exon_end}${eeo}]`;
-          } else if (exon_start) {
-            hrExon = `e[${exon_start}${eso}_]`;
-          } else {
-            hrExon = `e[_${exon_end}${eeo}]`;
-          }
-
-          newObj = {
-            component_type: 'transcript_segment',
-            component_name: `${tx_ac} ${gene}`,
-            transcript: tx_ac,
-            component_id: uuid(),
-            shorthand: tx_ac,
-            exon_start: exon_start,
-            exon_start_offset: exon_start_offset,
-            exon_end: exon_end,
-            exon_end_offset: exon_end_offset,
-            gene_descriptor: {
-              id: `gene:${gene}`,
-              gene_id: gene_id,
-              type: 'GeneDescriptor',
-              label: `${gene}`
-            }
-          };
-
-          newObj.hr_name = `${tx_ac}(${gene}):${hrExon}`;
-
-          saveComponent(items, index, newObj);
-          updateDomainOptions(gene_id);
-
-          //TODO: nested genomic region (lookup GR based on transcript and vice versa)
-          // getSequenceId(chr).then(sequenceResponse => {
-          //   let [sequence, sequence_id, warnings] = sequenceResponse;
-          // })
-        });
+        const txComponent: ClientTranscriptSegmentComponent = {
+          ...component,
+          component_id: uuid(),
+          component_name: `${tx_ac} ${tx_gene}`,
+          hr_name: `${tx_ac}(${tx_gene}):${hrExon}`,
+          shorthand: tx_ac,
+        };
+        updateDomainOptions(tx_descriptor.gene_id, tx_descriptor.label);
+        saveComponent(items, index, txComponent);
         break;
-      case 'genomic_region':
-        // eslint-disable-next-line prefer-const
-        let [chromosome, strand, startPosition, endPosition] = values;
-        getSequenceId(chromosome).then((sequenceResponse: SequenceIDResponse) => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { sequence, sequence_id, warnings } = sequenceResponse;
-          newObj = {
-            'component_type': 'genomic_region',
-            'component_name': `chr${chromosome}:${startPosition}_${endPosition}(${strand})`,
-            'hr_name': `chr${chromosome}:${startPosition}_${endPosition}(${strand})`,
-            'component_id': uuid(),
-            'region': {
-              'id': `chr${chromosome}:${startPosition}_${endPosition}(${strand})`,
-              'type': 'LocationDescriptor',
-              'location': {
-                'type': 'SequenceLocation',
-                'sequence_id': sequence_id,
-                'interval': {
-                  'type': 'SequenceLocation',
-                  'start': {
-                    'type': 'Number',
-                    'value': startPosition,
-                  },
-                  'end': {
-                    'type': 'Number',
-                    'value': endPosition,
-                  },
-                }
-              },
-              'label': `chr${chromosome}:${startPosition}-${endPosition}(${strand})`
-            },
-            'strand': strand
-          };
-          saveComponent(items, index, newObj);
-        });
+
+        //TODO: nested genomic region (lookup GR based on transcript and vice versa)
+        // getSequenceId(chr).then(sequenceResponse => {
+        //   let [sequence, sequence_id, warnings] = sequenceResponse;
+        // })
+        // });
+
+        break;
+      case 'templated_sequence':
+        if (
+          component.region.location.type !== 'SequenceLocation'
+          || component.region.location.interval.type !== 'SequenceInterval'
+          || component.region.location.interval.start.type !== 'Number'
+          || component.region.location.interval.end.type !== 'Number'
+        ) {
+          // TODO error
+          return;
+        }
+        const name = `chr${component.region.location.sequence_id.split(':')[1]}:` +
+          `${component.region.location.interval.start.value}_` +
+          `${component.region.location.interval.end.value}(${component.strand})`;
+        const templatedSequenceComponent: ClientTemplatedSequenceComponent = {
+          ...component,
+          component_id: uuid(),
+          component_name: name,
+          hr_name: name,
+        };
+        saveComponent(items, index, templatedSequenceComponent);
+        console.log(component);
         break;
       case 'linker_sequence':
-        const [sequence] = values;
-        newObj = {
-          'component_type': 'linker_sequence',
-          'component_name': sequence,
-          'component_id': uuid(),
-          'hr_name': sequence,
-          'linker_sequence': {
-            'id': `sequence:${sequence}`,
-            'type': 'SequenceDescriptor',
-            'sequence': sequence,
-          }
+        const linkerComponent: ClientLinkerComponent = {
+          ...component,
+          component_id: uuid(),
+          component_name: component.linker_sequence.sequence,
+          hr_name: component.linker_sequence.sequence,
         };
-        saveComponent(items, index, newObj);
+        saveComponent(items, index, linkerComponent);
         break;
     }
   };
 
-  const updateDomainOptions = (geneId: string) => {
+  const updateDomainOptions = (geneId: string, geneSymbol: string) => {
     if (!(geneId in domainOptions)) {
       getAssociatedDomains(geneId).then(associatedDomainsResponse => {
         setDomainOptions(
           {
             ...domainOptions,
-            ...{ [geneId]: associatedDomainsResponse.suggestions }
+            ...{ [`${geneSymbol}(${geneId})`]: associatedDomainsResponse.suggestions }
           }
         );
       });
@@ -341,8 +275,8 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
         return 'Transcript Segment';
       case 'linker_sequence':
         return 'Linker Sequence';
-      case 'genomic_region':
-        return 'Genomic Region';
+      case 'templated_sequence':
+        return 'Templated Sequence';
     }
   };
 

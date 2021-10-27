@@ -23,6 +23,13 @@
  */
 export type CURIE = string;
 /**
+ * A character string of residues that represents a biological sequence
+ * using the conventional sequence order (5’-to-3’ for nucleic acid sequences,
+ * and amino-to-carboxyl for amino acid sequences). IUPAC ambiguity codes
+ * are permitted in Sequences.
+ */
+export type Sequence = string;
+/**
  * A range comparator.
  */
 export type Comparator = "<=" | ">=";
@@ -32,13 +39,6 @@ export type Comparator = "<=" | ">=";
  * cytobands.
  */
 export type HumanCytoband = string;
-/**
- * A character string of residues that represents a biological sequence
- * using the conventional sequence order (5’-to-3’ for nucleic acid sequences,
- * and amino-to-carboxyl for amino acid sequences). IUPAC ambiguity codes
- * are permitted in Sequences.
- */
-export type Sequence = string;
 /**
  * Define possible values for strand
  */
@@ -57,12 +57,14 @@ export type Event = "rearrangement" | "read-through" | "trans-splicing";
 export type RegulatoryElementType = "promoter" | "enhancer";
 
 /**
- * Define AnyGene class. This is primarily intended to represent a partner in a categorical
- * fusion, typifying generalizable characteristics of a class of fusions such as retained or
- * lost regulatory elements and/or functional domains, often curated from biomedical literature
- * for use in genomic knowledgebases. For example, EWSR1 rearrangements are often found in
- * Ewing and Ewing-like small round cell sarcomas, regardless of the partner gene. We would
- * associate this assertion with the fusion of EWSR1 with an AnyGene component.
+ * Define AnyGene class. This is primarily intended to represent a partner
+ * in a categorical fusion, typifying generalizable characteristics of a class
+ * of fusions such as retained or lost regulatory elements and/or functional
+ * domains, often curated from biomedical literature for use in genomic
+ * knowledgebases. For example, EWSR1 rearrangements are often found in Ewing
+ * and Ewing-like small round cell sarcomas, regardless of the partner gene.
+ * We would associate this assertion with the fusion of EWSR1 with an
+ * AnyGene component.
  */
 export interface AnyGeneComponent {
   component_type?: "any_gene";
@@ -71,31 +73,37 @@ export interface AnyGeneComponent {
  * Response model for domain ID autocomplete suggestion endpoint.
  */
 export interface AssociatedDomainResponse {
+  warnings?: string[];
   gene_id: string;
   suggestions?: [] | [string] | [string, string][];
-  warnings?: string[];
 }
 /**
  * Any gene component used client-side.
  */
 export interface ClientAnyGeneComponent {
-  uuid: string;
+  component_id: string;
   component_name: string;
+  hr_name: string;
+  shorthand?: string;
   component_type?: "any_gene";
 }
 /**
  * Abstract class to provide identification properties used by client.
  */
 export interface ClientComponent {
-  uuid: string;
+  component_id: string;
   component_name: string;
+  hr_name: string;
+  shorthand?: string;
 }
 /**
  * Gene component used client-side.
  */
 export interface ClientGeneComponent {
-  uuid: string;
+  component_id: string;
   component_name: string;
+  hr_name: string;
+  shorthand?: string;
   component_type?: "gene";
   gene_descriptor: GeneDescriptor;
 }
@@ -135,12 +143,40 @@ export interface Gene {
   gene_id: CURIE;
 }
 /**
- * GenomicRegion component used client-side.
+ * Linker component class used client-side.
  */
-export interface ClientGenomicRegionComponent {
-  uuid: string;
+export interface ClientLinkerComponent {
+  component_id: string;
   component_name: string;
-  component_type?: "genomic_region";
+  hr_name: string;
+  shorthand?: string;
+  component_type?: "linker_sequence";
+  linker_sequence: SequenceDescriptor;
+}
+/**
+ * This descriptor is intended to reference VRS Sequence value objects.
+ */
+export interface SequenceDescriptor {
+  id: CURIE;
+  type?: "SequenceDescriptor";
+  label?: string;
+  description?: string;
+  xrefs?: CURIE[];
+  alternate_labels?: string[];
+  extensions?: Extension[];
+  sequence_id?: CURIE;
+  sequence?: Sequence;
+  residue_type?: CURIE;
+}
+/**
+ * Templated sequence component used client-side.
+ */
+export interface ClientTemplatedSequenceComponent {
+  component_id: string;
+  component_name: string;
+  hr_name: string;
+  shorthand?: string;
+  component_type?: "templated_sequence";
   region: LocationDescriptor;
   strand: Strand;
 }
@@ -237,50 +273,31 @@ export interface CytobandInterval {
   end: HumanCytoband;
 }
 /**
- * This descriptor is intended to reference VRS Sequence value objects.
- */
-export interface SequenceDescriptor {
-  id: CURIE;
-  type?: "SequenceDescriptor";
-  label?: string;
-  description?: string;
-  xrefs?: CURIE[];
-  alternate_labels?: string[];
-  extensions?: Extension[];
-  sequence_id?: CURIE;
-  sequence?: Sequence;
-  residue_type?: CURIE;
-}
-/**
- * Linker component class used client-side.
- */
-export interface ClientLinkerComponent {
-  uuid: string;
-  component_name: string;
-  component_type?: "linker_sequence";
-  linker_sequence: SequenceDescriptor;
-}
-/**
  * TranscriptSegment component class used client-side.
  */
 export interface ClientTranscriptSegmentComponent {
-  uuid: string;
+  component_id: string;
   component_name: string;
+  hr_name: string;
+  shorthand?: string;
   component_type?: "transcript_segment";
   transcript: CURIE;
-  exon_start: number;
+  exon_start?: number;
   exon_start_offset?: number;
-  exon_end: number;
+  exon_end?: number;
   exon_end_offset?: number;
   gene_descriptor: GeneDescriptor;
-  component_genomic_region: LocationDescriptor;
+  component_genomic_start?: LocationDescriptor;
+  component_genomic_end?: LocationDescriptor;
 }
 /**
  * Unknown gene component used client-side.
  */
 export interface ClientUnknownGeneComponent {
-  uuid: string;
+  component_id: string;
   component_name: string;
+  hr_name: string;
+  shorthand?: string;
   component_type?: "unknown_gene";
 }
 /**
@@ -317,10 +334,10 @@ export interface ExonCoordsResponse {
 export interface Fusion {
   r_frame_preserved?: boolean;
   protein_domains?: CriticalDomain[];
-  transcript_components: (
+  structural_components: (
     | TranscriptSegmentComponent
     | GeneComponent
-    | GenomicRegionComponent
+    | TemplatedSequenceComponent
     | LinkerComponent
     | UnknownGeneComponent
   )[];
@@ -331,9 +348,9 @@ export interface Fusion {
  * Define CriticalDomain class
  */
 export interface CriticalDomain {
-  status: DomainStatus;
-  name: string;
   id: CURIE;
+  name: string;
+  status: DomainStatus;
   gene_descriptor: GeneDescriptor;
 }
 /**
@@ -342,12 +359,13 @@ export interface CriticalDomain {
 export interface TranscriptSegmentComponent {
   component_type?: "transcript_segment";
   transcript: CURIE;
-  exon_start: number;
+  exon_start?: number;
   exon_start_offset?: number;
-  exon_end: number;
+  exon_end?: number;
   exon_end_offset?: number;
   gene_descriptor: GeneDescriptor;
-  component_genomic_region: LocationDescriptor;
+  component_genomic_start?: LocationDescriptor;
+  component_genomic_end?: LocationDescriptor;
 }
 /**
  * Define Gene component class.
@@ -357,10 +375,12 @@ export interface GeneComponent {
   gene_descriptor: GeneDescriptor;
 }
 /**
- * Define GenomicRegion component class.
+ * Define Templated Sequence Component class.
+ * A templated sequence is contiguous genomic sequence found in the
+ * gene product
  */
-export interface GenomicRegionComponent {
-  component_type?: "genomic_region";
+export interface TemplatedSequenceComponent {
+  component_type?: "templated_sequence";
   region: LocationDescriptor;
   strand: Strand;
 }
@@ -372,11 +392,13 @@ export interface LinkerComponent {
   linker_sequence: SequenceDescriptor;
 }
 /**
- * Define UnknownGene class. This is primarily intended to represent a partner in the result of
- * a fusion partner-agnostic assay, which identifies the absence of an expected gene. For
- * example, a FISH break-apart probe may indicate rearrangement of an MLL gene, but by design,
- * the test cannot provide the identity of the new partner. In this case, we would associate any
- * clinical observations from this patient with the fusion of MLL with an UnknownGene component.
+ * Define UnknownGene class. This is primarily intended to represent a
+ * partner in the result of a fusion partner-agnostic assay, which identifies
+ * the absence of an expected gene. For example, a FISH break-apart probe may
+ * indicate rearrangement of an MLL gene, but by design, the test cannot
+ * provide the identity of the new partner. In this case, we would associate
+ * any clinical observations from this patient with the fusion of MLL with
+ * an UnknownGene component.
  */
 export interface UnknownGeneComponent {
   component_type?: "unknown_gene";
@@ -392,30 +414,65 @@ export interface RegulatoryElement {
  * Response model for fusion validation endpoint.
  */
 export interface FusionValidationResponse {
-  fusion?: Fusion;
   warnings?: string[];
+  fusion?: Fusion;
+}
+/**
+ * Response model for gene component construction endoint.
+ */
+export interface GeneComponentResponse {
+  warnings?: string[];
+  component?: GeneComponent;
+}
+/**
+ * Response model for linker sequence component construction endpoint.
+ */
+export interface LinkerComponentResponse {
+  warnings?: string[];
+  component?: LinkerComponent;
 }
 /**
  * Response model for gene normalization endpoint.
  */
 export interface NormalizeGeneResponse {
+  warnings?: string[];
   term: string;
   concept_id?: CURIE;
+  symbol?: string;
+}
+/**
+ * Abstract Response class for defining API response structures.
+ */
+export interface Response {
   warnings?: string[];
 }
 /**
  * Response model for sequence ID retrieval endpoint.
  */
 export interface SequenceIDResponse {
+  warnings?: string[];
   sequence: string;
   sequence_id?: string;
-  warnings?: string[];
 }
 /**
  * Response model for gene autocomplete suggestions endpoint.
  */
 export interface SuggestGeneResponse {
+  warnings?: string[];
   term: string;
   suggestions?: [] | [string] | [string, string] | [string, string, string] | [string, string, string, string][];
+}
+/**
+ * Response model for transcript segment component construction endpoint.
+ */
+export interface TemplatedSequenceComponentResponse {
   warnings?: string[];
+  component?: TemplatedSequenceComponent;
+}
+/**
+ * Response model for transcript segment component construction endpoint.
+ */
+export interface TxSegmentComponentResponse {
+  warnings?: string[];
+  component?: TranscriptSegmentComponent;
 }

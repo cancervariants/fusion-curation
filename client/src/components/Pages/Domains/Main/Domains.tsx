@@ -9,7 +9,7 @@ interface Props {
   index: number
 }
 
-export const Domain: React.FC<Props> = ( ) => {
+export const Domain: React.FC<Props> = () => {
   const { fusion, setFusion } = useContext(FusionContext);
 
   const domains = fusion.protein_domains || [];
@@ -36,9 +36,13 @@ export const Domain: React.FC<Props> = ( ) => {
               <div className='blurb'>
                 The
                 {
-                  initialDomains.current.map(domain => (
-                    // eslint-disable-next-line react/jsx-key
-                    <span className='bold'> {domain.gene_descriptor.label} {domain.type}</span>
+                  initialDomains.current.map((domain, index: number) => (
+                    <span
+                      className='bold'
+                      key={index}
+                    >
+                      {domain.gene_descriptor.label} {domain.type}
+                    </span>
                   ))
                 } protein functional domain appears to be affected.
               </div>
@@ -52,16 +56,14 @@ export const Domain: React.FC<Props> = ( ) => {
           </div>
 
           {/* TODO: maybe create a two column list of lost vs preserved */}
-          {domains.map(domain => (
-            // eslint-disable-next-line react/jsx-key
-            <div className='domain'>
+          {domains.map((domain, index: number) => (
+            <div className='domain' key={index}>
               <span>{domain.gene_descriptor.label} {domain.name} {domain.status}</span>
               <span className='close-button-domain' onClick={() => handleRemove(domain)}>
                 <Close />
               </span>
             </div>
-          ))
-          }
+          ))}
         </div>
       </div>
       <div className='right'>

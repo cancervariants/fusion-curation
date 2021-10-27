@@ -16,7 +16,7 @@
 		background-color: var(--linker);
 	}
 
-	.genomic_region {
+	.templated_sequence {
 		background-color: var(--region);
 	}
 
@@ -97,7 +97,7 @@
 			font-weight: 500;
 		}
 
-		.genomic_region {
+		.templated_sequence {
 			border: 2px solid var(--region-light) !important;
 			color: var(--dark-gray);
 			font-weight: 500;

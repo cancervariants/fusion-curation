@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { Card, CardContent, Button, TextField } from '@material-ui/core';
-
-import { getGeneId } from '../../../../services/main';
-import { getExon } from '../../../../services/main';
-
 import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
-
+import {
+  getGeneComponent, getTxSegmentComponent, getTemplatedSequenceComponent
+} from '../../../../services/main';
+import { LinkerComponent } from '../../../../services/ResponseModels';
 import './TransCompInput.scss';
 
 interface Props {
@@ -21,13 +20,31 @@ interface Props {
 export const TransCompInput: React.FC<Props> = (
   { compType, handleCancel, handleSave, index, id }
 ) => {
-  //Genomic Region
+  // Templated sequence
   const [strand, setStrand] = useState('');
   const [chromosome, setChromosome] = useState('');
   const [startPosition, setStartPosition] = useState('');
   const [endPosition, setEndPosition] = useState('');
 
+  const buildTemplatedSequenceComponent = () => {
+    getTemplatedSequenceComponent(chromosome, strand, startPosition, endPosition)
+      .then(templatedSequenceResponse => {
+        if (templatedSequenceResponse.warnings.length > 0) {
+          // TODO error handling
+          return;
+        } else {
+          handleSave(index, templatedSequenceResponse.component);
+        }
+      });
+  };
+
   // Transcript Segment
+  /**
+   * TODO:
+   * - add handling of exon vs genomic position here
+   * - think about how to handle gene esp if contradicts transcript
+   * - long term: enable selection of transcript given gene
+   */
   const [transcriptError, setTranscriptError] = useState('');
   const [transcriptGeneError, setTranscriptGeneError] = useState('');
   const [txAc, setTxAc] = useState('');
@@ -37,88 +54,59 @@ export const TransCompInput: React.FC<Props> = (
   const [startingExonOffset, setStartingExonOffset] = useState('');
   const [endingExonOffset, setEndingExonOffset] = useState('');
 
-  /**
-   * TODO:
-   * - add handling of exon vs genomic position here
-   * - think about how to handle gene esp if contradicts transcript
-   * - long term: enable selection of transcript given gene
-   */
-  const transcriptValidate = () => {
-    if (transcriptGene.length > 0) {
-      getGeneId(transcriptGene)
-        .then(geneResponse => {
-          if (geneResponse.concept_id === null) {
-            setTranscriptGeneError('Gene not found!');
-            throw new Error(geneResponse.warnings.join(','));
+  const buildTranscriptSegmentComponent = () => {
+    getTxSegmentComponent(
+      txAc, transcriptGene, startingExon, endingExon, startingExonOffset, endingExonOffset
+    )
+      .then(txSegmentResponse => {
+        if (txSegmentResponse.warnings) {
+          const txWarning = `Unable to get exons for ${txAc}`;
+          if (txSegmentResponse.warnings.includes(txWarning)) {
+            setTranscriptError(txWarning);
           }
-        })
-        .catch(err => {
-          console.error(err);
-        })
-        .then(res => {
-          getExon(
-            txAc, transcriptGene, parseInt(startingExon) || 0, parseInt(endingExon) || 0,
-            parseInt(startingExonOffset) || 0, parseInt(endingExonOffset) || 0
-          )
-            .then(exonResponse => {
-              if (exonResponse.tx_ac === null) {
-                setTranscriptError('Transcript not found!');
-                return;
-              } else {
-                handleSave(
-                  index, compType, txAc, transcriptGene, parseInt(startingExon) || 0,
-                  parseInt(endingExon) || 0, parseInt(startingExonOffset) || 0,
-                  parseInt(endingExonOffset) || 0
-                );
-              }
-            });
-        });
-    } else {
-      getExon(
-        txAc, transcriptGene, parseInt(startingExon) || 0, parseInt(endingExon) || 0,
-        parseInt(startingExonOffset) || 0, parseInt(endingExonOffset) || 0
-      ).then(exonResponse => {
-        if (exonResponse.tx_ac === null) {
-          setTranscriptError('Transcript not found!');
-          return;
+          // TODO set gene error
         } else {
-          handleSave(
-            index, compType, txAc, transcriptGene, parseInt(startingExon) || 0,
-            parseInt(endingExon) || 0, parseInt(startingExonOffset) || 0,
-            parseInt(endingExonOffset) || 0
-          );
+          handleSave(index, txSegmentResponse.component);
         }
       });
-    }
   };
 
   // Linker Sequence
   const [sequence, setSequence] = useState('');
   const linkerError = sequence && sequence.match(/^([aAgGtTcC]+)?$/) === null;
 
+  const buildLinkerComponent = () => {
+    const linkerComponent: LinkerComponent = {
+      component_type: 'linker_sequence',
+      linker_sequence: {
+        id: `fusor.sequence:${sequence}`,
+        type: 'SequenceDescriptor',
+        sequence: sequence,
+        residue_type: 'SO:0000348'
+      }
+    };
+    handleSave(index, linkerComponent);
+  };
+
   // Gene
   const [gene, setGene] = useState<string>('');
   const [geneError, setGeneError] = useState('');
 
-  const geneValidate = (symbol: string) => {
-    if (symbol === 'ANY') {
-      handleSave(index, compType, gene);
-      return;
-    }
-    getGeneId(symbol)
-      .then(geneResponse => {
-        if (geneResponse.concept_id === null) {
-          setGeneError('Gene not found!');
+  const buildGeneComponent = (term: string) => {
+    getGeneComponent(term)
+      .then(geneComponentResponse => {
+        if (geneComponentResponse.warnings) {
+          setGeneError('Gene not found');
           return;
         } else {
-          handleSave(index, compType, gene);
+          handleSave(index, geneComponentResponse.component);
         }
       });
   };
 
   const renderSwitch = (compType: string) => {
     switch (compType) {
-      case 'genomic_region':
+      case 'templated_sequence':
         return (
           <Card >
             <CardContent>
@@ -132,9 +120,7 @@ export const TransCompInput: React.FC<Props> = (
                       onChange={(event) => setChromosome(event.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          handleSave(
-                            index, compType, chromosome, strand, startPosition, endPosition
-                          );
+                          buildTemplatedSequenceComponent();
                         }
                       }}
                       label="Chromosome"></TextField>
@@ -146,9 +132,7 @@ export const TransCompInput: React.FC<Props> = (
                       onChange={(event) => setStrand(event.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          handleSave(
-                            index, compType, chromosome, strand, startPosition, endPosition
-                          );
+                          buildTemplatedSequenceComponent();
                         }
                       }}
                     ></TextField>
@@ -162,9 +146,7 @@ export const TransCompInput: React.FC<Props> = (
                       onChange={(event) => setStartPosition(event.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          handleSave(
-                            index, compType, chromosome, strand, startPosition, endPosition
-                          );
+                          buildTemplatedSequenceComponent();
                         }
                       }}
                     >
@@ -177,9 +159,7 @@ export const TransCompInput: React.FC<Props> = (
                       onChange={(event) => setEndPosition(event.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          handleSave(
-                            index, compType, chromosome, strand, startPosition, endPosition
-                          );
+                          buildTemplatedSequenceComponent();
                         }
                       }}
                     ></TextField>
@@ -198,9 +178,7 @@ export const TransCompInput: React.FC<Props> = (
                     style={{ margin: '8px' }}
                     variant="outlined"
                     color="primary"
-                    onClick={() => handleSave(
-                      index, compType, chromosome, strand, startPosition, endPosition
-                    )}
+                    onClick={() => buildTemplatedSequenceComponent()}
                   >
                     Save
                   </Button>
@@ -222,7 +200,9 @@ export const TransCompInput: React.FC<Props> = (
                       label="Transcript"
                       value={txAc}
                       onChange={(event) => setTxAc(event.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') transcriptValidate(); }}
+                      onKeyDown={(e) => { if (e.key === 'Enter') {
+                        buildTranscriptSegmentComponent();
+                      }}}
                       error={transcriptError.length > 0}
                       helperText={transcriptError}
                     ></TextField>
@@ -241,7 +221,9 @@ export const TransCompInput: React.FC<Props> = (
                       label="Starting Exon"
                       value={startingExon}
                       onChange={(event) => setStartingExon(event.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') transcriptValidate(); }}
+                      onKeyDown={(e) => { if (e.key === 'Enter') {
+                        buildTranscriptSegmentComponent();
+                      }}}
                     ></TextField>
                     <TextField
                       margin="dense"
@@ -249,7 +231,9 @@ export const TransCompInput: React.FC<Props> = (
                       label="Ending Exon"
                       value={endingExon}
                       onChange={(event) => setEndingExon(event.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') transcriptValidate(); }}
+                      onKeyDown={(e) => { if (e.key === 'Enter') {
+                        buildTranscriptSegmentComponent();
+                      }}}
                     ></TextField>
                   </div>
                   {(startingExon !== '' || endingExon !== '') ?
@@ -260,7 +244,9 @@ export const TransCompInput: React.FC<Props> = (
                         label="Starting Offset"
                         value={startingExonOffset}
                         onChange={(event) => setStartingExonOffset(event.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') transcriptValidate(); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter') {
+                          buildTranscriptSegmentComponent();
+                        } }}
                       ></TextField>
                       <TextField
                         margin="dense"
@@ -269,7 +255,9 @@ export const TransCompInput: React.FC<Props> = (
                         value={endingExonOffset}
                         onChange={(event) => setEndingExonOffset(event.target.value)}
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter') transcriptValidate();
+                          if (e.key === 'Enter') {
+                            buildTranscriptSegmentComponent();
+                          }
                         }}
                       ></TextField>
                     </div>
@@ -286,7 +274,7 @@ export const TransCompInput: React.FC<Props> = (
                     Cancel
                   </Button>
                   <Button style={{ margin: '8px' }} variant="outlined" color="primary"
-                    onClick={transcriptValidate}
+                    onClick={buildTranscriptSegmentComponent}
                   >Save</Button>
                 </div>
               </div>
@@ -308,7 +296,7 @@ export const TransCompInput: React.FC<Props> = (
                     helperText={linkerError ? 'Warning: must contain only {A, C, G, T}' : null}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
-                        handleSave(index, compType, sequence);
+                        buildLinkerComponent();
                       }
                     }}
                   ></TextField>
@@ -327,7 +315,7 @@ export const TransCompInput: React.FC<Props> = (
                     variant="outlined"
                     disabled={linkerError}
                     color="primary"
-                    onClick={() => handleSave(index, compType, sequence)}
+                    onClick={buildLinkerComponent}
                   >
                     Save
                   </Button>
@@ -363,7 +351,7 @@ export const TransCompInput: React.FC<Props> = (
                     style={{ margin: '8px' }}
                     variant="outlined"
                     color="primary"
-                    onClick={() => geneValidate(gene)}
+                    onClick={() => buildGeneComponent(gene)}
                   >
                     Save
                   </Button>

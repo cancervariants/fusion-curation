@@ -1,36 +1,82 @@
 import {
   ExonCoordsRequest, ExonCoordsResponse, Fusion, FusionValidationResponse, NormalizeGeneResponse,
-  SequenceIDResponse, AssociatedDomainResponse, SuggestGeneResponse
+  SequenceIDResponse, AssociatedDomainResponse, SuggestGeneResponse, GeneComponentResponse,
+  TxSegmentComponentResponse
 } from './ResponseModels';
 
-export async function getGeneId(symbol: string): Promise<NormalizeGeneResponse> {
+export const getGeneComponent = async (term: string): Promise<GeneComponentResponse> => {
+  const response = await fetch(`component/gene?term=${term}`);
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+export const getTemplatedSequenceComponent = async (
+  chr: string, strand: string, start: string, end: string
+) => {
+  const response = await fetch(
+    `component/templated_sequence?sequence_id=${chr}&start=${start}&end=${end}` +
+    `&strand=${strand === '+' ? '%2B' : '-'}`
+  );
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+export const getTxSegmentComponent = async (
+  transcript: string, gene: string, exonStart: string, exonEnd: string, exonStartOffset: string,
+  exonEndOffset: string
+): Promise<TxSegmentComponentResponse> => {
+  const params: Array<string> = [`transcript=${transcript}`];
+  // add optional params -- previous methods should've already checked that the request as a whole
+  // is valid
+  if (gene) {
+    params.push(`gene=${gene}`);
+  }
+  if (exonStart !== '') {
+    params.push(`exon_start=${exonStart}`);
+  }
+  if (exonStartOffset !== '') {
+    params.push(`exon_start_offset=${exonStartOffset}`);
+  }
+  if (exonEnd !== '') {
+    params.push(`exon_end=${exonEnd}`);
+  }
+  if (exonEndOffset !== '') {
+    params.push(`exon_end_offset=${exonEndOffset}`);
+  }
+  const url = 'component/tx_segment_tx_to_g?' + params.join('&');
+  const response = await fetch(url);
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+export const getGeneId = async (symbol: string): Promise<NormalizeGeneResponse> => {
   const response = await fetch(`/lookup/gene?term=${symbol}`);
   const geneResponse = await response.json();
   return geneResponse;
-}
+};
 
-export async function getGeneSuggestions(term: string): Promise<SuggestGeneResponse> {
+export const getGeneSuggestions = async (term: string): Promise<SuggestGeneResponse> => {
   const response = await fetch(`complete/gene?term=${term}`);
   const responseJson = await response.json();
   return responseJson;
-}
+};
 
-export async function getAssociatedDomains(gene_id: string): Promise<AssociatedDomainResponse> {
+export const getAssociatedDomains = async (gene_id: string): Promise<AssociatedDomainResponse> => {
   const response = await fetch(`/complete/domain?gene_id=${gene_id}`);
   const responseJson = await response.json();
   return responseJson;
-}
+};
 
-export async function getSequenceId(chr: string): Promise<SequenceIDResponse> {
+export const getSequenceId = async (chr: string): Promise<SequenceIDResponse> => {
   const response = await fetch(`/lookup/sequence_id?input_sequence=GRCh38:${chr}`);
   const sequenceId = await response.json();
   return sequenceId;
-}
+};
 
-export async function getExon(
+export const getExon = async (
   txAc: string, gene: string, startExon: number, endExon: number, startExonOffset: number,
   endExonOffset: number
-): Promise<ExonCoordsResponse> {
+): Promise<ExonCoordsResponse> => {
   const reqObj: ExonCoordsRequest = {
     tx_ac: txAc,
     gene: gene,
@@ -51,9 +97,9 @@ export async function getExon(
 
   const exonResponse = await response.json();
   return exonResponse;
-}
+};
 
-export async function validateFusion(fusion: Fusion): Promise<FusionValidationResponse> {
+export const validateFusion = async (fusion: Fusion): Promise<FusionValidationResponse> => {
   const response = await fetch('/lookup/validate', {
     method: 'POST',
     headers: {
@@ -64,4 +110,4 @@ export async function validateFusion(fusion: Fusion): Promise<FusionValidationRe
   });
   const fusionResponse = await response.json();
   return fusionResponse;
-}
+};
