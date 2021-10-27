@@ -57,10 +57,54 @@ class ClientAnyGeneComponent(AnyGeneComponent, ClientComponent):
     pass
 
 
-class Response(BaseModel):
-    """Base Response class for defining API response structures."""
+class Response(BaseModel, ABC):
+    """Abstract Response class for defining API response structures."""
 
     warnings: ResponseWarnings
+
+
+class GeneComponentResponse(Response):
+    """Response model for gene component construction endoint."""
+
+    component: Optional[GeneComponent]
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
+
+
+class TxSegmentComponentResponse(Response):
+    """Response model for transcript segment component construction endpoint."""
+
+    component: Optional[TranscriptSegmentComponent]
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
+
+
+class LinkerComponentResponse(Response):
+    """Response model for linker sequence component construction endpoint."""
+
+    component: Optional[LinkerComponent]
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
+
+
+class TemplatedSequenceComponentResponse(Response):
+    """Response model for transcript segment component construction endpoint."""
+
+    component: Optional[TemplatedSequenceComponent]
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
 
 
 class NormalizeGeneResponse(Response):

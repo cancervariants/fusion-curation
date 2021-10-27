@@ -1,19 +1,22 @@
 """Provide FastAPI application and route declarations."""
-from typing import Dict, Any, Union, List, Tuple
+from typing import Dict, Any, Union, List, Tuple, Optional
 
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
+from fusor import FUSOR
+from fusor.models import Strand
 
-from curation import APP_ROOT, ServiceWarning
+
+from curation import APP_ROOT, ServiceWarning, logger
 from curation.version import __version__
+from curation.schemas import GeneComponentResponse, TxSegmentComponentResponse, \
+    LinkerComponentResponse, TemplatedSequenceComponentResponse
 from curation.schemas import NormalizeGeneResponse, SuggestGeneResponse, \
-    ExonCoordsRequest, ExonCoordsResponse, SequenceIDResponse, \
-    FusionValidationResponse, AssociatedDomainResponse
+    SequenceIDResponse, FusionValidationResponse, AssociatedDomainResponse
 from curation.gene_services import get_gene_id, suggest_genes
 from curation.domain_services import get_possible_domains
-from curation.uta_services import postgres_instance, get_genomic_coords
 from curation.sequence_services import get_ga4gh_sequence_id
 from curation.validation_services import validate_fusion
 
@@ -36,21 +39,120 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup():
-    """Initialize asyncpg thread pool."""
-    await postgres_instance.create_pool()
-    app.state.db = postgres_instance
+    """Initialize asyncpg connection pool."""
+    fusor_instance = FUSOR()
+    await fusor_instance.uta_tools.uta_db.create_pool()
+    app.state.fusor = fusor_instance
 
 
 @app.on_event("shutdown")
 async def shutdown():
     """Clean up thread pool."""
-    await app.state.db._connection_pool.close()
+    await app.state.fusor.uta_tools.uta_db._connection_pool.close()
 
 
 ResponseDict = Dict[str, Union[str,
                                CURIE,
                                List[str],
                                List[Tuple[str, str, str, str]]]]
+Warnings = List[str]
+
+
+@app.get("/component/gene",
+         operation_id="buildGeneComponent",
+         response_model=GeneComponentResponse,
+         response_model_exclude_none=True)
+def build_gene_component(request: Request, term: str = Query("")) \
+        -> GeneComponentResponse:
+    """Construct valid gene component given user-provided term.
+    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+        FUSOR and UTA-associated tools.
+    :param str term: gene symbol/alias/name/etc
+    :return: Pydantic class with gene component if successful and warnings otherwise
+    """
+    gene_component, warnings = request.app.state.fusor.gene_component(term)
+    return GeneComponentResponse(component=gene_component, warnings=warnings)
+
+
+@app.get("/component/transcript_segment_tx_to_g",
+         operation_id="buildTranscriptSegmentComponent",
+         response_model=TxSegmentComponentResponse,
+         response_model_exclude_none=True)
+def build_tx_to_g_segment_component(request: Request,
+                                    transcript: str,
+                                    gene: Optional[str] = Query(None),
+                                    exon_start: Optional[int] = Query(None),
+                                    exon_start_offset: Optional[int] = Query(None),
+                                    exon_end: Optional[int] = Query(None),
+                                    exon_end_offset: Optional[int] = Query(None)) \
+        -> TxSegmentComponentResponse:
+    """Construct Transcript Segment component by providing transcript/exon numbers.
+    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+        FUSOR and UTA-associated tools.
+    :param str transcript: transcript accession identifier
+    :param Optional[str] gene: name of gene
+    :param Optional[int] exon_start: number of starting exon
+    :param Optional[int] exon_start_offset: offset from starting exon
+    :param Optional[int] exon_end: number of ending exon
+    :param Optional[int] exon_end_offset: offset from ending exon
+    :return: Pydantic class with TranscriptSegment component if successful, and warnings
+        otherwise.
+    """
+    tx_segment, warnings = request.app.state.fusor.transcript_segment_component(
+        transcript=transcript,
+        gene=gene,
+        exon_start=exon_start,
+        exon_start_offset=exon_start_offset,
+        exon_end=exon_end,
+        exon_end_offset=exon_end_offset
+    )
+    return TxSegmentComponentResponse(component=tx_segment, warnings=warnings)
+
+
+@app.get("component/linker",
+         operation_id="buildLinkerComponent",
+         response_model=LinkerComponentResponse,
+         response_model_exclude_none=True)
+def build_linker_component(request: Request, sequence: str) -> LinkerComponentResponse:
+    """Build linker sequence component from provided sequence string.
+    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+        FUSOR and UTA-associated tools.
+    :param str sequence: string of nucleotide base codes
+    :return: Pydantic class with LinkerSequence component if valid and warnings
+        otherwise
+    """
+    linker, warnings = request.app.state.fusor.linker_component(sequence)
+    return LinkerComponentResponse(linker=linker, warnings=warnings)
+
+
+@app.get("/component/templated_sequence",
+         operation_id="buildTemplatedSequenceComponent",
+         response_model=TemplatedSequenceComponentResponse,
+         response_model_exclude_none=True)
+def build_templated_sequence_component(request: Request, start: int, end: int,
+                                       sequence_id: str, strand: str) \
+        -> TemplatedSequenceComponentResponse:
+    """Construct templated sequence component
+    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+        FUSOR and UTA-associated tools.
+    :param int start: genomic starting position
+    :param int end: genomic ending position
+    :param str sequence_id: chromosome accession for sequence
+    :param str strand: chromosome strand - must be one of {'+', '-'}
+    :return: Pydantic class with Templated Sequnce component if successful, or warnings
+        otherwise
+    """
+    try:
+        strand_n = Strand(str)
+    except ValueError:
+        warning = f"Received invalid strand value: {strand}"
+        logger.warning(warning)
+        return TemplatedSequenceComponentResponse(warnings=[warning])
+    component, warnings = request.app.state.fusor.templated_sequence_component(
+        start=start, end=end, sequence_id=sequence_id, strand=strand_n,
+        add_location_id=True
+    )
+    return TemplatedSequenceComponentResponse(component=component, warnings=warnings)
 
 
 @app.get("/lookup/gene",
@@ -112,40 +214,40 @@ def get_domain_suggestions(gene_id: str = Query("")) -> ResponseDict:
     return response
 
 
-@app.post('/lookup/coords',
-          operation_id='getExonCoords',
-          response_model=ExonCoordsResponse,
-          response_model_exclude_none=True)
-async def get_exon_coords(request: Request, exon_data: ExonCoordsRequest)\
-        -> ResponseDict:
-    """Fetch a transcript"s exon information.
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        DB retrieval methods by way of the `state` property.
-    :param ExonCoordsRequest exon_data: exon data to retrieve coordinates for. See
-        schemas for expected structure.
-    :return: Dict served as JSON containing transcript"s exon information
-    """
-    if not exon_data.gene:
-        exon_data.gene = ""
-    try:
-        genomic_coords = await get_genomic_coords(request.app.state.db,
-                                                  exon_data.tx_ac,
-                                                  exon_data.exon_start,
-                                                  exon_data.exon_end,
-                                                  exon_data.exon_start_offset,
-                                                  exon_data.exon_end_offset,
-                                                  exon_data.gene)
-    except ServiceWarning as e:
-        return {"warnings": [str(e)]}
-    gene_name = genomic_coords["gene"]
-    try:
-        genomic_coords["gene_id"] = get_gene_id(gene_name)
-    except ServiceWarning:
-        return {"warnings": [f"Unable to normalize gene {gene_name}"]}
-    genomic_coords["sequence_id"] = get_ga4gh_sequence_id(genomic_coords["chr"])
-    genomic_coords["tx_ac"] = exon_data.tx_ac
-    genomic_coords["warnings"] = []
-    return genomic_coords
+# @app.post('/lookup/coords',
+#           operation_id='getExonCoords',
+#           response_model=ExonCoordsResponse,
+#           response_model_exclude_none=True)
+# async def get_exon_coords(request: Request, exon_data: ExonCoordsRequest)\
+#         -> ResponseDict:
+#     """Fetch a transcript"s exon information.
+#     :param Request request: the HTTP request context, supplied by FastAPI. Use
+#         to access DB retrieval methods by way of the `state` property.
+#     :param ExonCoordsRequest exon_data: exon data to retrieve coordinates for. See
+#         schemas for expected structure.
+#     :return: Dict served as JSON containing transcript"s exon information
+#     """
+#     if not exon_data.gene:
+#         exon_data.gene = ""
+#     try:
+#         genomic_coords = await get_genomic_coords(request.app.state.db,
+#                                                   exon_data.tx_ac,
+#                                                   exon_data.exon_start,
+#                                                   exon_data.exon_end,
+#                                                   exon_data.exon_start_offset,
+#                                                   exon_data.exon_end_offset,
+#                                                   exon_data.gene)
+#     except ServiceWarning as e:
+#         return {"warnings": [str(e)]}
+#     gene_name = genomic_coords["gene"]
+#     try:
+#         genomic_coords["gene_id"] = get_gene_id(gene_name)[0]
+#     except ServiceWarning:
+#         return {"warnings": [f"Unable to normalize gene {gene_name}"]}
+#     genomic_coords["sequence_id"] = get_ga4gh_sequence_id(genomic_coords["chr"])
+#     genomic_coords["tx_ac"] = exon_data.tx_ac
+#     genomic_coords["warnings"] = []
+#     return genomic_coords
 
 
 @app.get("/lookup/sequence_id",
