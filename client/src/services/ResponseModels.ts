@@ -73,7 +73,7 @@ export interface AnyGeneComponent {
  * Response model for domain ID autocomplete suggestion endpoint.
  */
 export interface AssociatedDomainResponse {
-  warnings?: string[];
+  warnings?: string | string[];
   gene_id: string;
   suggestions?: [] | [string] | [string, string][];
 }
@@ -326,7 +326,7 @@ export interface ExonCoordsResponse {
   chr?: string;
   start?: number;
   end?: number;
-  warnings?: string[];
+  warnings?: string | string[];
 }
 /**
  * Define Fusion class
@@ -414,28 +414,21 @@ export interface RegulatoryElement {
  * Response model for fusion validation endpoint.
  */
 export interface FusionValidationResponse {
-  warnings?: string[];
+  warnings?: string | string[];
   fusion?: Fusion;
 }
 /**
  * Response model for gene component construction endoint.
  */
 export interface GeneComponentResponse {
-  warnings?: string[];
+  warnings?: string | string[];
   component?: GeneComponent;
-}
-/**
- * Response model for linker sequence component construction endpoint.
- */
-export interface LinkerComponentResponse {
-  warnings?: string[];
-  component?: LinkerComponent;
 }
 /**
  * Response model for gene normalization endpoint.
  */
 export interface NormalizeGeneResponse {
-  warnings?: string[];
+  warnings?: string | string[];
   term: string;
   concept_id?: CURIE;
   symbol?: string;
@@ -444,13 +437,13 @@ export interface NormalizeGeneResponse {
  * Abstract Response class for defining API response structures.
  */
 export interface Response {
-  warnings?: string[];
+  warnings?: string | string[];
 }
 /**
  * Response model for sequence ID retrieval endpoint.
  */
 export interface SequenceIDResponse {
-  warnings?: string[];
+  warnings?: string | string[];
   sequence: string;
   sequence_id?: string;
 }
@@ -458,7 +451,7 @@ export interface SequenceIDResponse {
  * Response model for gene autocomplete suggestions endpoint.
  */
 export interface SuggestGeneResponse {
-  warnings?: string[];
+  warnings?: string | string[];
   term: string;
   suggestions?: [] | [string] | [string, string] | [string, string, string] | [string, string, string, string][];
 }
@@ -466,13 +459,13 @@ export interface SuggestGeneResponse {
  * Response model for transcript segment component construction endpoint.
  */
 export interface TemplatedSequenceComponentResponse {
-  warnings?: string[];
+  warnings?: string | string[];
   component?: TemplatedSequenceComponent;
 }
 /**
  * Response model for transcript segment component construction endpoint.
  */
 export interface TxSegmentComponentResponse {
-  warnings?: string[];
+  warnings?: string | string[];
   component?: TranscriptSegmentComponent;
 }
