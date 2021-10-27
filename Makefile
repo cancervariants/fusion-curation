@@ -16,5 +16,5 @@ clean:
 build_client:
 	yarn --cwd client/ build
 
-build_models: server/curation/schemas.py
+models: server/curation/schemas.py
 	pydantic2ts --module server/curation/schemas.py --output client/src/services/ResponseModels.ts --json2ts-cmd client/node_modules/.bin/json2ts
