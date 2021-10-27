@@ -1,5 +1,5 @@
 """Provide schemas for FastAPI responses."""
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 from abc import ABC
 
 from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
@@ -9,7 +9,7 @@ from fusor.models import Fusion, TranscriptSegmentComponent, LinkerComponent, \
     AnyGeneComponent
 
 
-ResponseWarnings = Optional[List[StrictStr]]
+ResponseWarnings = Optional[Union[StrictStr, List[StrictStr]]]
 
 
 class ClientComponent(BaseModel, ABC):
@@ -34,7 +34,7 @@ class ClientLinkerComponent(LinkerComponent, ClientComponent):
 
 
 class ClientTemplatedSequenceComponent(TemplatedSequenceComponent, ClientComponent):
-    """GenomicRegion component used client-side."""
+    """Templated sequence component used client-side."""
 
     pass
 
@@ -78,17 +78,6 @@ class TxSegmentComponentResponse(Response):
     """Response model for transcript segment component construction endpoint."""
 
     component: Optional[TranscriptSegmentComponent]
-
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
-
-
-class LinkerComponentResponse(Response):
-    """Response model for linker sequence component construction endpoint."""
-
-    component: Optional[LinkerComponent]
 
     class Config:
         """Configure class."""

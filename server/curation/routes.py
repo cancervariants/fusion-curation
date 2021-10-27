@@ -12,12 +12,11 @@ from fusor.models import Strand
 from curation import APP_ROOT, ServiceWarning, logger
 from curation.version import __version__
 from curation.schemas import GeneComponentResponse, TxSegmentComponentResponse, \
-    LinkerComponentResponse, TemplatedSequenceComponentResponse
+    TemplatedSequenceComponentResponse
 from curation.schemas import NormalizeGeneResponse, SuggestGeneResponse, \
-    SequenceIDResponse, FusionValidationResponse, AssociatedDomainResponse
+    FusionValidationResponse, AssociatedDomainResponse
 from curation.gene_services import get_gene_id, suggest_genes
 from curation.domain_services import get_possible_domains
-from curation.sequence_services import get_ga4gh_sequence_id
 from curation.validation_services import validate_fusion
 
 
@@ -74,31 +73,31 @@ def build_gene_component(request: Request, term: str = Query("")) \
     return GeneComponentResponse(component=gene_component, warnings=warnings)
 
 
-@app.get("/component/transcript_segment_tx_to_g",
+@app.get("/component/tx_segment_tx_to_g",
          operation_id="buildTranscriptSegmentComponent",
          response_model=TxSegmentComponentResponse,
          response_model_exclude_none=True)
-def build_tx_to_g_segment_component(request: Request,
-                                    transcript: str,
-                                    gene: Optional[str] = Query(None),
-                                    exon_start: Optional[int] = Query(None),
-                                    exon_start_offset: Optional[int] = Query(None),
-                                    exon_end: Optional[int] = Query(None),
-                                    exon_end_offset: Optional[int] = Query(None)) \
+async def build_tx_to_g_segment_component(request: Request,
+                                          transcript: str,
+                                          gene: Optional[str] = Query(None),
+                                          exon_start: Optional[int] = Query(None),
+                                          exon_start_offset: int = Query(0),
+                                          exon_end: Optional[int] = Query(None),
+                                          exon_end_offset: int = Query(0)) \
         -> TxSegmentComponentResponse:
     """Construct Transcript Segment component by providing transcript/exon numbers.
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param str transcript: transcript accession identifier
     :param Optional[str] gene: name of gene
-    :param Optional[int] exon_start: number of starting exon
-    :param Optional[int] exon_start_offset: offset from starting exon
+    :param Optional[int] exon_start: number of starting exon, 0 by default
+    :param int exon_start_offset: offset from starting exon
     :param Optional[int] exon_end: number of ending exon
-    :param Optional[int] exon_end_offset: offset from ending exon
+    :param int exon_end_offset: offset from ending exon, 0 by default
     :return: Pydantic class with TranscriptSegment component if successful, and warnings
         otherwise.
     """
-    tx_segment, warnings = request.app.state.fusor.transcript_segment_component(
+    tx_segment, warnings = await request.app.state.fusor.transcript_segment_component(
         transcript=transcript,
         gene=gene,
         exon_start=exon_start,
@@ -107,22 +106,6 @@ def build_tx_to_g_segment_component(request: Request,
         exon_end_offset=exon_end_offset
     )
     return TxSegmentComponentResponse(component=tx_segment, warnings=warnings)
-
-
-@app.get("component/linker",
-         operation_id="buildLinkerComponent",
-         response_model=LinkerComponentResponse,
-         response_model_exclude_none=True)
-def build_linker_component(request: Request, sequence: str) -> LinkerComponentResponse:
-    """Build linker sequence component from provided sequence string.
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param str sequence: string of nucleotide base codes
-    :return: Pydantic class with LinkerSequence component if valid and warnings
-        otherwise
-    """
-    linker, warnings = request.app.state.fusor.linker_component(sequence)
-    return LinkerComponentResponse(linker=linker, warnings=warnings)
 
 
 @app.get("/component/templated_sequence",
@@ -143,16 +126,16 @@ def build_templated_sequence_component(request: Request, start: int, end: int,
         otherwise
     """
     try:
-        strand_n = Strand(str)
+        strand_n = Strand(strand)
     except ValueError:
         warning = f"Received invalid strand value: {strand}"
         logger.warning(warning)
         return TemplatedSequenceComponentResponse(warnings=[warning])
-    component, warnings = request.app.state.fusor.templated_sequence_component(
+    component = request.app.state.fusor.templated_sequence_component(
         start=start, end=end, sequence_id=sequence_id, strand=strand_n,
         add_location_id=True
     )
-    return TemplatedSequenceComponentResponse(component=component, warnings=warnings)
+    return TemplatedSequenceComponentResponse(component=component, warnings=[])
 
 
 @app.get("/lookup/gene",
@@ -211,61 +194,6 @@ def get_domain_suggestions(gene_id: str = Query("")) -> ResponseDict:
         response["suggestions"] = possible_matches
     except ServiceWarning:
         response["warnings"] = [f"No associated domains for {gene_id}"]
-    return response
-
-
-# @app.post('/lookup/coords',
-#           operation_id='getExonCoords',
-#           response_model=ExonCoordsResponse,
-#           response_model_exclude_none=True)
-# async def get_exon_coords(request: Request, exon_data: ExonCoordsRequest)\
-#         -> ResponseDict:
-#     """Fetch a transcript"s exon information.
-#     :param Request request: the HTTP request context, supplied by FastAPI. Use
-#         to access DB retrieval methods by way of the `state` property.
-#     :param ExonCoordsRequest exon_data: exon data to retrieve coordinates for. See
-#         schemas for expected structure.
-#     :return: Dict served as JSON containing transcript"s exon information
-#     """
-#     if not exon_data.gene:
-#         exon_data.gene = ""
-#     try:
-#         genomic_coords = await get_genomic_coords(request.app.state.db,
-#                                                   exon_data.tx_ac,
-#                                                   exon_data.exon_start,
-#                                                   exon_data.exon_end,
-#                                                   exon_data.exon_start_offset,
-#                                                   exon_data.exon_end_offset,
-#                                                   exon_data.gene)
-#     except ServiceWarning as e:
-#         return {"warnings": [str(e)]}
-#     gene_name = genomic_coords["gene"]
-#     try:
-#         genomic_coords["gene_id"] = get_gene_id(gene_name)[0]
-#     except ServiceWarning:
-#         return {"warnings": [f"Unable to normalize gene {gene_name}"]}
-#     genomic_coords["sequence_id"] = get_ga4gh_sequence_id(genomic_coords["chr"])
-#     genomic_coords["tx_ac"] = exon_data.tx_ac
-#     genomic_coords["warnings"] = []
-#     return genomic_coords
-
-
-@app.get("/lookup/sequence_id",
-         operation_id="getSequenceID",
-         response_model=SequenceIDResponse,
-         response_model_exclude_none=True)
-def get_sequence_id(input_sequence: str) -> ResponseDict:
-    """Get GA4GH sequence ID CURIE for input sequence.
-    :param str input_sequence: user-submitted sequence to retrieve ID for
-    :return: Dict (served as JSON) containing either GA4GH sequence ID or
-        warnings if unable to retrieve ID
-    """
-    response: ResponseDict = {"sequence": input_sequence}
-    try:
-        sequence_id = get_ga4gh_sequence_id(input_sequence.strip())
-        response["sequence_id"] = sequence_id
-    except ServiceWarning as e:
-        response["warnings"] = [str(e)]
     return response
 
 
