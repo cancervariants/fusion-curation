@@ -70,7 +70,11 @@ def build_gene_component(request: Request, term: str = Query("")) \
     :return: Pydantic class with gene component if successful and warnings otherwise
     """
     gene_component, warnings = request.app.state.fusor.gene_component(term)
-    return GeneComponentResponse(component=gene_component, warnings=warnings)
+    if not warnings:
+        warnings_l = []
+    else:
+        warnings_l = [warnings]
+    return GeneComponentResponse(component=gene_component, warnings=warnings_l)
 
 
 @app.get("/component/tx_segment_tx_to_g",
