@@ -45,8 +45,8 @@ const RegElementForm: React.FC = () => {
     getGeneId(gene)
       .then(geneResponse => {
         if (geneResponse.concept_id === null) {
-          setGeneWarning('Gene ID not found!');
-          throw new Error(geneWarning);
+          setGeneError('Gene ID not found!');
+          throw new Error(geneError);
         }
 
         // eslint-disable-next-line prefer-const
