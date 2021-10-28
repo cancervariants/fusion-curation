@@ -9,6 +9,7 @@ interface Props {
   index: number
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const RegElement: React.FC<Props> = ({ index }) => {
   const { fusion, setFusion } = useContext(FusionContext);
 

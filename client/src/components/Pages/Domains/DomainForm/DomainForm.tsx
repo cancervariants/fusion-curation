@@ -3,6 +3,7 @@ import { InputLabel, MenuItem, FormControl, Select, Button } from '@material-ui/
 import { makeStyles } from '@material-ui/core/styles';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { DomainOptionsContext } from '../../../../global/contexts/DomainOptionsContext';
+import { GeneContext } from '../../../../global/contexts/GeneContext';
 import { v4 as uuid } from 'uuid';
 import './DomainForm.scss';
 import { CriticalDomain, DomainStatus } from '../../../../services/ResponseModels';
@@ -32,6 +33,7 @@ const DomainForm: React.FC = () => {
   const classes = useStyles();
 
   const { domainOptions } = useContext(DomainOptionsContext);
+  const { globalGenes } = useContext(GeneContext);
   const { fusion, setFusion } = useContext(FusionContext);
 
   // values for visible item
@@ -56,17 +58,14 @@ const DomainForm: React.FC = () => {
       console.error('error');
       return;
     }
+    console.log(gene);
+    const geneId = gene.split(/\(|\)/)[1];
     const newDomain: ClientCriticalDomain = {
       status: status.toLowerCase() as DomainStatus,
       name: domainOptions[gene].find(e => e[0] === domain)[1],
       id: domain,
       domain_id: uuid(),
-      gene_descriptor: {
-        id: '',  // TODO get more gene info
-        type: 'GeneDescriptor',
-        label: '',
-        gene_id: gene
-      }
+      gene_descriptor: globalGenes[geneId]
     };
 
     const cloneArray = Array.from(fusion['protein_domains']);

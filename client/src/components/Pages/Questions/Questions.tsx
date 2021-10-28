@@ -8,12 +8,15 @@ interface Props {
   index: number
 }
 
+// TODO merge theme with FormControl?
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useStyles = makeStyles((theme) => ({
   formControl: {
     fontWeight: 300
   },
 }));
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Questions: React.FC<Props> = ({ index }) => {
 
   const { fusion, setFusion } = useContext(FusionContext);

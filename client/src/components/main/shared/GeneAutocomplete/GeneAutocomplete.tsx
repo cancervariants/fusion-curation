@@ -3,7 +3,15 @@ import { TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getGeneSuggestions } from '../../../../services/main';
 
-export const GeneAutocomplete = (
+interface Props {
+  selectedGene: string,
+  setSelectedGene: CallableFunction,
+  geneError: string,
+  setGeneError: CallableFunction,
+  style: Object
+}
+
+export const GeneAutocomplete: React.FC<Props> = (
   { selectedGene, setSelectedGene, geneError, setGeneError, style }
 ) => {
   const [geneOptions, setGeneOptions] = useState([]);

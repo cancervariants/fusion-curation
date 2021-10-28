@@ -2,7 +2,7 @@ import './SummaryJSON.scss';
 import { useEffect, useState } from 'react';
 import {
   // AnyGeneComponent,
-  ClientFusion, Fusion, GeneComponent, LinkerComponent, RegulatoryElement,
+  ClientFusion, CriticalDomain, Fusion, GeneComponent, LinkerComponent, RegulatoryElement,
   TemplatedSequenceComponent, TranscriptSegmentComponent, UnknownGeneComponent
 } from '../../../../services/ResponseModels';
 import copy from 'clipboard-copy';
@@ -24,7 +24,7 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
     // drop client fields
     const formattedFusion: Fusion = {
       structural_components: fusion.structural_components?.map(comp => {
-        switch(comp.component_type) {
+        switch (comp.component_type) {
           case 'transcript_segment':
             const txSegment: TranscriptSegmentComponent = {
               component_type: comp.component_type,
@@ -77,13 +77,21 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
         };
         return element;
       }),
-      protein_domains: fusion.protein_domains,
+      protein_domains: fusion.protein_domains.map(domain => {
+        const newDomain: CriticalDomain = {
+          id: domain.id,
+          name: domain.name,
+          status: domain.status,
+          gene_descriptor: domain.gene_descriptor
+        };
+        return newDomain;
+      }),
     };
     validateFusion(formattedFusion)
       .then(response => {
         if (response.warnings?.length > 0) {
           if (JSON.stringify(response.warnings.sort()) !==
-              JSON.stringify(validationErrors.sort())) {
+            JSON.stringify(validationErrors.sort())) {
             setValidationErrors(response.warnings);
             return;
           }

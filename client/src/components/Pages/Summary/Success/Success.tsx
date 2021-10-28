@@ -3,10 +3,8 @@ import SuccessCheck from './SuccessCheck';
 import { Button } from '@material-ui/core/';
 
 interface Props {
-  setAccepted
+  setAccepted: CallableFunction
 }
-
-
 
 export const Success: React.FC<Props> = ({ setAccepted }) => {
   const handleReturn = () => setAccepted(true);

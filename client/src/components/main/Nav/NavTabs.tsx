@@ -17,7 +17,8 @@ import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext'
 
 interface TabPanelProps {
   children?: React.ReactNode;
-  index: any;
+  index: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
 }
 
@@ -66,8 +67,9 @@ function LinkTab(props: LinkTabProps) {
   );
 }
 
-export default function NavTabs() {
+export default function NavTabs(): React.ReactElement {
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const useStyles = makeStyles((theme: Theme) => ({
     root: {
       backgroundColor: colorTheme['--white'],

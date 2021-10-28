@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { v4 as uuid } from 'uuid';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
+import { GeneContext } from '../../../../global/contexts/GeneContext';
 import { DomainOptionsContext } from '../../../../global/contexts/DomainOptionsContext';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import './Builder.scss';
@@ -9,8 +10,8 @@ import { TransCompInput } from '../TransCompInput/TransCompInput';
 import { getAssociatedDomains } from '../../../../services/main';
 import {
   ClientGeneComponent, ClientLinkerComponent, ClientTemplatedSequenceComponent,
-  ClientTranscriptSegmentComponent, GeneComponent, LinkerComponent, TemplatedSequenceComponent,
-  TranscriptSegmentComponent
+  ClientTranscriptSegmentComponent, GeneComponent, GeneDescriptor, LinkerComponent,
+  TemplatedSequenceComponent, TranscriptSegmentComponent
 } from '../../../../services/ResponseModels';
 import ButtonTrash from '../../../main/shared/Buttons/ButtonTrash';
 // import { unstable_createMuiStrictModeTheme } from '@material-ui/core';
@@ -81,6 +82,8 @@ const OPTIONS = [
 const Builder: React.FC<Props> = ({ structuralComponents }) => {
   // Fusion object constructed throughout app lifecycle
   const { fusion, setFusion } = useContext(FusionContext);
+  // global genes context
+  const { globalGenes, setGlobalGenes } = useContext(GeneContext);
   // Choosable domains based on genes provided in components
   const { domainOptions, setDomainOptions } = useContext(DomainOptionsContext);
   // displayed structural elements
@@ -145,7 +148,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           component_name: nomenclature,
           hr_name: nomenclature,
         };
-        updateDomainOptions(descriptor.gene_id, descriptor.label);
+        updateGeneContexts(descriptor);
         saveComponent(items, index, geneComponent);
         break;
       case 'transcript_segment':
@@ -187,7 +190,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           hr_name: `${tx_ac}(${tx_gene}):${hrExon}`,
           shorthand: tx_ac,
         };
-        updateDomainOptions(tx_descriptor.gene_id, tx_descriptor.label);
+        updateGeneContexts(tx_descriptor);
         saveComponent(items, index, txComponent);
         break;
 
@@ -231,13 +234,21 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     }
   };
 
-  const updateDomainOptions = (geneId: string, geneSymbol: string) => {
-    if (!(geneId in domainOptions)) {
-      getAssociatedDomains(geneId).then(associatedDomainsResponse => {
+
+  const updateGeneContexts = (geneDescriptor: GeneDescriptor) => {
+    const geneId = geneDescriptor.gene_id;
+    if (!(geneId in globalGenes)) {
+      setGlobalGenes(
+        {
+          ...globalGenes,
+          ...{ [geneId]: geneDescriptor }
+        }
+      );
+      getAssociatedDomains(geneId).then(response => {
         setDomainOptions(
           {
             ...domainOptions,
-            ...{ [`${geneSymbol}(${geneId})`]: associatedDomainsResponse.suggestions }
+            ...{ [`${geneDescriptor.label}(${geneId})`]: response.suggestions }
           }
         );
       });

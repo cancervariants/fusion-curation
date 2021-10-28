@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import NavTabs from '../Nav/NavTabs';
 import { SuggestionContext } from '../../../global/contexts/SuggestionContext';
 import { FusionContext } from '../../../global/contexts/FusionContext';
+import { GeneContext } from '../../../global/contexts/GeneContext';
 import { DomainOptionsContext } from '../../../global/contexts/DomainOptionsContext';
 import '../../../global/styles/global.scss';
 import { ThemeProvider, Button } from '@material-ui/core';
@@ -110,10 +111,11 @@ const demoData = {
   'causative_event': 'Rearrangement'
 };
 
-const App = () => {
+const App = (): React.ReactElement => {
 
   const [suggestions, setSuggestions] = useState<unknown>([]);
   const [fusion, setFusion] = useState<Object>({});
+  const [globalGenes, setGlobalGenes] = useState<Object>({});
   const [domainOptions, setDomainOptions] = useState<Object>({});
 
   // disable superfluous react_dnd warnings
@@ -127,28 +129,30 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <DomainOptionsContext.Provider value={{ domainOptions, setDomainOptions }}>
-        <SuggestionContext.Provider value={[suggestions, setSuggestions]}>
-          <FusionContext.Provider value={{ fusion, setFusion }}>
-            <div className='App'
-              style={{
-                ...colorTheme
-              } as React.CSSProperties}>
-              <div className='demo-button-container'>
-                <Button
-                  variant='contained'
-                  color='secondary'
-                  onClick={() => handleDemo()}
-                >Demo Data</Button>
+      <GeneContext.Provider value={{ globalGenes, setGlobalGenes }}>
+        <DomainOptionsContext.Provider value={{ domainOptions, setDomainOptions }}>
+          <SuggestionContext.Provider value={[suggestions, setSuggestions]}>
+            <FusionContext.Provider value={{ fusion, setFusion }}>
+              <div className='App'
+                style={{
+                  ...colorTheme
+                } as React.CSSProperties}>
+                <div className='demo-button-container'>
+                  <Button
+                    variant='contained'
+                    color='secondary'
+                    onClick={() => handleDemo()}
+                  >Demo Data</Button>
+                </div>
+                <h1 className='title'>Fusion Curation</h1>
+                <div className='main-component'>
+                  <NavTabs />
+                </div>
               </div>
-              <h1 className='title'>Fusion Curation</h1>
-              <div className='main-component'>
-                <NavTabs />
-              </div>
-            </div>
-          </FusionContext.Provider>
-        </SuggestionContext.Provider>
-      </DomainOptionsContext.Provider>
+            </FusionContext.Provider>
+          </SuggestionContext.Provider>
+        </DomainOptionsContext.Provider>
+      </GeneContext.Provider>
     </ThemeProvider>
   );
 };

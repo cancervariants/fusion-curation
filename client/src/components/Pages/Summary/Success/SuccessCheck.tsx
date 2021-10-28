@@ -6,6 +6,7 @@ import { useColorTheme } from '../../../../global/contexts/Theme/ColorThemeConte
 
 const SvgComponent = (props) => {
   const { colorTheme } = useColorTheme();
+  console.log(props);
 
   return (
     <svg
