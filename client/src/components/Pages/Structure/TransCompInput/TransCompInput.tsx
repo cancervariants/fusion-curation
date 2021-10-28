@@ -49,6 +49,8 @@ export const TransCompInput: React.FC<Props> = (
   const [transcriptGeneError, setTranscriptGeneError] = useState('');
   const [txAc, setTxAc] = useState('');
   const [transcriptGene, setTranscriptGene] = useState('');
+  const [txStartingGenomic, setTxStartingGenomic] = useState('');
+  const [txEndingGenomic, setTxEndingGenomic] = useState('');
   const [startingExon, setStartingExon] = useState('');
   const [endingExon, setEndingExon] = useState('');
   const [startingExonOffset, setStartingExonOffset] = useState('');
@@ -205,13 +207,35 @@ export const TransCompInput: React.FC<Props> = (
                       }}}
                       error={transcriptError.length > 0}
                       helperText={transcriptError}
-                    ></TextField>
+                    />
                     <GeneAutocomplete
                       selectedGene={transcriptGene}
                       setSelectedGene={setTranscriptGene}
                       geneError={transcriptGeneError}
                       setGeneError={setTranscriptGeneError}
                       style={{ width: 125 }}
+                    />
+                  </div>
+                  <div className="mid-inputs">
+                    <TextField
+                      margin="dense"
+                      style={{ width: 125 }}
+                      label="Genome Start"
+                      value={txStartingGenomic}
+                      onChange={(event) => setTxStartingGenomic(event.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') {
+                        buildTranscriptSegmentComponent();
+                      }}}
+                    />
+                    <TextField
+                      margin="dense"
+                      style={{ width: 125 }}
+                      label="Genome End"
+                      value={txEndingGenomic}
+                      onChange={(event) => setTxEndingGenomic(event.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') {
+                        buildTranscriptSegmentComponent();
+                      }}}
                     />
                   </div>
                   <div className="bottom-inputs">
@@ -224,7 +248,7 @@ export const TransCompInput: React.FC<Props> = (
                       onKeyDown={(e) => { if (e.key === 'Enter') {
                         buildTranscriptSegmentComponent();
                       }}}
-                    ></TextField>
+                    />
                     <TextField
                       margin="dense"
                       style={{ width: 125 }}
@@ -234,7 +258,7 @@ export const TransCompInput: React.FC<Props> = (
                       onKeyDown={(e) => { if (e.key === 'Enter') {
                         buildTranscriptSegmentComponent();
                       }}}
-                    ></TextField>
+                    />
                   </div>
                   {(startingExon !== '' || endingExon !== '') ?
                     <div className="bottom-inputs">
@@ -247,7 +271,7 @@ export const TransCompInput: React.FC<Props> = (
                         onKeyDown={(e) => { if (e.key === 'Enter') {
                           buildTranscriptSegmentComponent();
                         } }}
-                      ></TextField>
+                      />
                       <TextField
                         margin="dense"
                         style={{ width: 125 }}
@@ -259,7 +283,7 @@ export const TransCompInput: React.FC<Props> = (
                             buildTranscriptSegmentComponent();
                           }
                         }}
-                      ></TextField>
+                      />
                     </div>
                     : null
                   }
