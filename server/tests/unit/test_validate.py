@@ -18,7 +18,7 @@ def test_validate():
                 }
             }
         ],
-        "transcript_components": [
+        "structural_components": [
             {
                 "component_type": "transcript_segment",
                 "transcript": "refseq:NM_152263.3",
@@ -85,10 +85,10 @@ def test_validate():
     # spot check some values
     assert fusion['protein_domains'][0]['gene_descriptor']['gene_id'] == 'hgnc:8031'  # noqa: E501
     assert fusion['r_frame_preserved']
-    assert fusion['transcript_components'][0]['exon_end'] == 8
-    assert fusion['transcript_components'][0]['gene_descriptor']['label'] == 'TPM3'  # noqa: E501
-    assert fusion['transcript_components'][0]['component_genomic_region']['location']['type'] == 'SequenceLocation'  # noqa: E501
-    assert fusion['transcript_components'][1]['component_type'] == 'gene'
+    assert fusion['structural_components'][0]['exon_end'] == 8
+    assert fusion['structural_components'][0]['gene_descriptor']['label'] == 'TPM3'  # noqa: E501
+    assert fusion['structural_components'][0]['component_genomic_region']['location']['type'] == 'SequenceLocation'  # noqa: E501
+    assert fusion['structural_components'][1]['component_type'] == 'gene'
     assert fusion['regulatory_elements'][0]['type'] == 'promoter'
     assert fusion['regulatory_elements'][0]['gene_descriptor']['gene_id'] == 'hgnc:1097'  # noqa: E501
     assert fusion['causative_event'] == 'rearrangement'
@@ -96,7 +96,7 @@ def test_validate():
     # empty fusion should fail
     response = validate_fusion({})
     assert response['warnings'] == [[{
-        'loc': ('transcript_components',),
+        'loc': ('structural_components',),
         'msg': 'field required',
         'type': 'value_error.missing'
     }]]
@@ -105,7 +105,7 @@ def test_validate():
     # should get specific warnings for various fields
     fusion = {
         'r_frame_preserved': 98,
-        'transcript_components': [
+        'structural_components': [
             {
                 'component_type': 'gene',
                 'gene_descriptor': {
@@ -124,7 +124,7 @@ def test_validate():
                 'type': 'value_error.strictbool'
             },
             {
-                'loc': ('transcript_components',),
+                'loc': ('structural_components',),
                 'msg': 'Fusion must contain at least 2 transcript components.',
                 'type': 'value_error'
             }
