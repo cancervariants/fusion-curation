@@ -9,7 +9,7 @@ from fusor.models import Fusion, TranscriptSegmentComponent, LinkerComponent, \
     AnyGeneComponent
 
 
-ResponseWarnings = Optional[Union[StrictStr, List[StrictStr]]]
+ResponseWarnings = Optional[List[StrictStr]]
 
 
 class ClientComponent(BaseModel, ABC):
@@ -202,3 +202,16 @@ class FusionValidationResponse(Response):
         """Configure class."""
 
         extra = Extra.forbid
+
+
+class ClientFusion(Fusion):
+    """Fusion with client-oriented structural component models. Used in global
+    FusionContext.
+    """
+
+    structural_components: List[Union[ClientTranscriptSegmentComponent,
+                                      ClientGeneComponent,
+                                      ClientAnyGeneComponent,
+                                      ClientUnknownGeneComponent,
+                                      ClientTemplatedSequenceComponent,
+                                      ClientLinkerComponent]]
