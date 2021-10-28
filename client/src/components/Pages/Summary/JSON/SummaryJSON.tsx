@@ -1,6 +1,7 @@
 import './SummaryJSON.scss';
 import { useEffect, useState } from 'react';
 import {
+  AnyGeneComponent,
   // AnyGeneComponent,
   ClientFusion, CriticalDomain, Fusion, GeneComponent, LinkerComponent, RegulatoryElement,
   TemplatedSequenceComponent, TranscriptSegmentComponent, UnknownGeneComponent
@@ -57,11 +58,11 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
               gene_descriptor: comp.gene_descriptor,
             };
             return geneComponent;
-          // case 'any_gene':
-          //   const anyGene: AnyGeneComponent = {
-          //     component_type: comp.component_type
-          //   };
-          //   return anyGene;
+          case 'any_gene':
+            const anyGene: AnyGeneComponent = {
+              component_type: comp.component_type
+            };
+            return anyGene;
           case 'unknown_gene':
             const unknownGene: UnknownGeneComponent = {
               component_type: comp.component_type

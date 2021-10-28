@@ -374,6 +374,7 @@ export interface Fusion {
     | TemplatedSequenceComponent
     | LinkerComponent
     | UnknownGeneComponent
+    | AnyGeneComponent
   )[];
   causative_event?: Event;
   regulatory_elements?: RegulatoryElement[];
