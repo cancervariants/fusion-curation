@@ -1,7 +1,8 @@
 import {
   Fusion, FusionValidationResponse, NormalizeGeneResponse,
   AssociatedDomainResponse, SuggestGeneResponse, GeneComponentResponse,
-  TxSegmentComponentResponse
+  TxSegmentComponentResponse,
+  TemplatedSequenceComponentResponse
 } from './ResponseModels';
 
 export const getGeneComponent = async (term: string): Promise<GeneComponentResponse> => {
@@ -12,7 +13,7 @@ export const getGeneComponent = async (term: string): Promise<GeneComponentRespo
 
 export const getTemplatedSequenceComponent = async (
   chr: string, strand: string, start: string, end: string
-) => {
+): Promise<TemplatedSequenceComponentResponse> => {
   const response = await fetch(
     `component/templated_sequence?sequence_id=${chr}&start=${start}&end=${end}` +
     `&strand=${strand === '+' ? '%2B' : '-'}`
