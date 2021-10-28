@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useContext } from 'react';
 import { v4 as uuid } from 'uuid';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
@@ -15,7 +16,7 @@ import ButtonTrash from '../../../main/shared/Buttons/ButtonTrash';
 // import { unstable_createMuiStrictModeTheme } from '@material-ui/core';
 
 interface Props {
-  transcriptComponents
+  structuralComponents
 }
 
 // these are the empty object templates the user drags into the array
@@ -77,7 +78,7 @@ const OPTIONS = [
   },
 ];
 
-const Builder: React.FC<Props> = ({ transcriptComponents }) => {
+const Builder: React.FC<Props> = ({ structuralComponents }) => {
   // Fusion object constructed throughout app lifecycle
   const { fusion, setFusion } = useContext(FusionContext);
   // Choosable domains based on genes provided in components
@@ -89,13 +90,13 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
 
   useEffect(() => {
     const diagram = [];
-    if ('transcript_components' in fusion) {
-      fusion.transcript_components.map(comp => (
+    if ('structural_components' in fusion) {
+      fusion.structural_components.map(comp => (
         diagram.push(comp)
       ));
       setStructure(diagram);
     }
-  }, [transcriptComponents]);
+  }, [structuralComponents]);
 
   const copy = (result: DropResult) => {
     const { source, destination } = result;
@@ -122,7 +123,7 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
     const [newOrder] = sourceClone.splice(source.index, 1);
     sourceClone.splice(destination.index, 0, newOrder);
 
-    setFusion({ ...fusion, ...{ 'transcript_components': sourceClone } });
+    setFusion({ ...fusion, ...{ 'structural_components': sourceClone } });
     setStructure(sourceClone);
   };
 
@@ -217,7 +218,6 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
           hr_name: name,
         };
         saveComponent(items, index, templatedSequenceComponent);
-        console.log(component);
         break;
       case 'linker_sequence':
         const linkerComponent: ClientLinkerComponent = {
@@ -250,7 +250,7 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
     // clear active state, update local state array, update global fusion object
     setEditMode('');
     setStructure(items);
-    setFusion({ ...fusion, ...{ 'transcript_components': items } });
+    setFusion({ ...fusion, ...{ 'structural_components': items } });
   };
 
   const handleCancel = (id: string) => {
@@ -260,11 +260,11 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
     setStructure(items);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (uuid: string) => {
     let items = Array.from(structure);
-    items = items.filter(item => item.component_id !== id);
+    items = items.filter(item => item.component_id !== uuid);
     setStructure(items);
-    setFusion({ ...fusion, ...{ 'transcript_components': items } });
+    setFusion({ ...fusion, ...{ 'structural_components': items } });
   };
 
   const formatType = (str: string) => {
@@ -392,7 +392,7 @@ const Builder: React.FC<Props> = ({ transcriptComponents }) => {
           </Droppable>
           <div className='hr-section'>
             {
-              transcriptComponents.map((comp, index: number) => (
+              structuralComponents.map((comp, index: number) => (
                 <div key={comp.component_id}>{`${index ? '::' : ''}${comp.hr_name}`}</div>
               ))
             }

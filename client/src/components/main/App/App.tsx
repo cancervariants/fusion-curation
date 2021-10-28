@@ -11,7 +11,7 @@ import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext'
 import './App.scss';
 
 const demoData = {
-  'transcript_components': [
+  'structural_components': [
     {
       'component_type': 'transcript_segment',
       'component_name': 'NM_152263.3 TPM3',

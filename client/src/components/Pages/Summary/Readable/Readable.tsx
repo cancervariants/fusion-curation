@@ -1,18 +1,25 @@
+import {
+  ClientGeneComponent, ClientLinkerComponent, ClientTemplatedSequenceComponent,
+  ClientTranscriptSegmentComponent, ClientUnknownGeneComponent, CriticalDomain, GeneDescriptor,
+  RegulatoryElement
+} from '../../../../services/ResponseModels';
 import './Readable.scss';
-import { useState } from 'react';
 
 interface Props {
   // TODO: get types from model
-  genes: any,
-  proteinDomains: any,
-  regulatoryElements: any,
-  transcriptComponents: any,
-  rFramePreserved: any,
-  causativeEvent: any
+  genes: Array<GeneDescriptor>,
+  proteinDomains: Array<CriticalDomain>,
+  regulatoryElements: Array<RegulatoryElement>,
+  structuralComponents: Array<ClientGeneComponent | ClientLinkerComponent
+    | ClientTemplatedSequenceComponent | ClientUnknownGeneComponent
+    | ClientTranscriptSegmentComponent>,
+  rFramePreserved: boolean,
+  causativeEvent: Event,
 }
 
 export const Readable: React.FC<Props> = ({
-  genes, proteinDomains, regulatoryElements, transcriptComponents, rFramePreserved, causativeEvent
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  genes, proteinDomains, regulatoryElements, structuralComponents, rFramePreserved, causativeEvent
 }) => {
 
 
@@ -28,7 +35,7 @@ export const Readable: React.FC<Props> = ({
         <div className="row">
           <span className="left-item">Structure </span>
           <div className="right-item">
-            {transcriptComponents.map((comp, index) =>
+            {structuralComponents.map((comp, index) =>
               // eslint-disable-next-line react/jsx-key
               <span className="right-sub-item">
                 {`${index ? '::' : ''}${comp.hr_name}`}

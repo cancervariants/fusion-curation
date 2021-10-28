@@ -1,23 +1,100 @@
 import './SummaryJSON.scss';
-import { useState } from 'react';
-import { Fusion } from '../../../../services/ResponseModels';
+import { useEffect, useState } from 'react';
+import {
+  // AnyGeneComponent,
+  ClientFusion, Fusion, GeneComponent, LinkerComponent, RegulatoryElement,
+  TemplatedSequenceComponent, TranscriptSegmentComponent, UnknownGeneComponent
+} from '../../../../services/ResponseModels';
+import copy from 'clipboard-copy';
+import { validateFusion } from '../../../../services/main';
 
 interface Props {
   // TODO: get types from model
-  fusion: Fusion;
+  fusion: ClientFusion;
 }
 
 export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
 
   const [isDown, setIsDown] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [printedFusion, setPrintedFusion] = useState('');
+  const [validationErrors, setValidationErrors] = useState([]);
 
-  const formattedJSON = JSON.stringify(fusion, null, 2);
-
-  const copy = require('clipboard-copy');
+  useEffect(() => {
+    // drop client fields
+    const formattedFusion: Fusion = {
+      structural_components: fusion.structural_components?.map(comp => {
+        switch(comp.component_type) {
+          case 'transcript_segment':
+            const txSegment: TranscriptSegmentComponent = {
+              component_type: comp.component_type,
+              transcript: comp.transcript,
+              exon_start: comp.exon_start,
+              exon_start_offset: comp.exon_start_offset,
+              exon_end: comp.exon_end,
+              exon_end_offset: comp.exon_end_offset,
+              gene_descriptor: comp.gene_descriptor,
+              component_genomic_start: comp.component_genomic_start,
+              component_genomic_end: comp.component_genomic_end,
+            };
+            return txSegment;
+          case 'templated_sequence':
+            const templatedSequence: TemplatedSequenceComponent = {
+              component_type: comp.component_type,
+              strand: comp.strand,
+              region: comp.region,
+            };
+            return templatedSequence;
+          case 'linker_sequence':
+            const linkerSequence: LinkerComponent = {
+              component_type: comp.component_type,
+              linker_sequence: comp.linker_sequence
+            };
+            return linkerSequence;
+          case 'gene':
+            const geneComponent: GeneComponent = {
+              component_type: comp.component_type,
+              gene_descriptor: comp.gene_descriptor,
+            };
+            return geneComponent;
+          // case 'any_gene':
+          //   const anyGene: AnyGeneComponent = {
+          //     component_type: comp.component_type
+          //   };
+          //   return anyGene;
+          case 'unknown_gene':
+            const unknownGene: UnknownGeneComponent = {
+              component_type: comp.component_type
+            };
+            return unknownGene;
+        }
+      }),
+      causative_event: fusion.causative_event,
+      regulatory_elements: fusion.regulatory_elements?.map(e => {
+        const element: RegulatoryElement = {
+          type: e.type,
+          gene_descriptor: e.gene_descriptor
+        };
+        return element;
+      }),
+      protein_domains: fusion.protein_domains,
+    };
+    validateFusion(formattedFusion)
+      .then(response => {
+        if (response.warnings?.length > 0) {
+          if (JSON.stringify(response.warnings.sort()) !==
+              JSON.stringify(validationErrors.sort())) {
+            setValidationErrors(response.warnings);
+            return;
+          }
+        } else {
+          setPrintedFusion(JSON.stringify(response.fusion, null, 2));
+        }
+      });
+  }, [fusion]);
 
   const handleCopy = () => {
-    copy(formattedJSON);
+    copy(printedFusion);
     setIsDown(false);
     setIsCopied(true);
   };
@@ -37,7 +114,7 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
         onMouseDown={handleMouseDown}
       >
         <div>
-          {formattedJSON}
+          {printedFusion}
         </div>
       </pre>
     </>

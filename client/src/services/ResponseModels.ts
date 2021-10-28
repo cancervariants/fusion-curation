@@ -23,12 +23,9 @@
  */
 export type CURIE = string;
 /**
- * A character string of residues that represents a biological sequence
- * using the conventional sequence order (5’-to-3’ for nucleic acid sequences,
- * and amino-to-carboxyl for amino acid sequences). IUPAC ambiguity codes
- * are permitted in Sequences.
+ * Define possible statuses of critical domains.
  */
-export type Sequence = string;
+export type DomainStatus = "lost" | "preserved";
 /**
  * A range comparator.
  */
@@ -40,13 +37,16 @@ export type Comparator = "<=" | ">=";
  */
 export type HumanCytoband = string;
 /**
+ * A character string of residues that represents a biological sequence
+ * using the conventional sequence order (5’-to-3’ for nucleic acid sequences,
+ * and amino-to-carboxyl for amino acid sequences). IUPAC ambiguity codes
+ * are permitted in Sequences.
+ */
+export type Sequence = string;
+/**
  * Define possible values for strand
  */
 export type Strand = "+" | "-";
-/**
- * Define possible statuses of critical domains.
- */
-export type DomainStatus = "lost" | "preserved";
 /**
  * Define Event class (causative event)
  */
@@ -73,7 +73,7 @@ export interface AnyGeneComponent {
  * Response model for domain ID autocomplete suggestion endpoint.
  */
 export interface AssociatedDomainResponse {
-  warnings?: string | string[];
+  warnings?: string[];
   gene_id: string;
   suggestions?: [] | [string] | [string, string][];
 }
@@ -97,14 +97,30 @@ export interface ClientComponent {
   shorthand?: string;
 }
 /**
- * Gene component used client-side.
+ * Fusion with client-oriented structural component models. Used in global
+ * FusionContext.
  */
-export interface ClientGeneComponent {
-  component_id: string;
-  component_name: string;
-  hr_name: string;
-  shorthand?: string;
-  component_type?: "gene";
+export interface ClientFusion {
+  r_frame_preserved?: boolean;
+  protein_domains?: CriticalDomain[];
+  structural_components: (
+    | ClientTranscriptSegmentComponent
+    | ClientGeneComponent
+    | ClientAnyGeneComponent
+    | ClientUnknownGeneComponent
+    | ClientTemplatedSequenceComponent
+    | ClientLinkerComponent
+  )[];
+  causative_event?: Event;
+  regulatory_elements?: RegulatoryElement[];
+}
+/**
+ * Define CriticalDomain class
+ */
+export interface CriticalDomain {
+  id: CURIE;
+  name: string;
+  status: DomainStatus;
   gene_descriptor: GeneDescriptor;
 }
 /**
@@ -143,42 +159,22 @@ export interface Gene {
   gene_id: CURIE;
 }
 /**
- * Linker component class used client-side.
+ * TranscriptSegment component class used client-side.
  */
-export interface ClientLinkerComponent {
+export interface ClientTranscriptSegmentComponent {
   component_id: string;
   component_name: string;
   hr_name: string;
   shorthand?: string;
-  component_type?: "linker_sequence";
-  linker_sequence: SequenceDescriptor;
-}
-/**
- * This descriptor is intended to reference VRS Sequence value objects.
- */
-export interface SequenceDescriptor {
-  id: CURIE;
-  type?: "SequenceDescriptor";
-  label?: string;
-  description?: string;
-  xrefs?: CURIE[];
-  alternate_labels?: string[];
-  extensions?: Extension[];
-  sequence_id?: CURIE;
-  sequence?: Sequence;
-  residue_type?: CURIE;
-}
-/**
- * Templated sequence component used client-side.
- */
-export interface ClientTemplatedSequenceComponent {
-  component_id: string;
-  component_name: string;
-  hr_name: string;
-  shorthand?: string;
-  component_type?: "templated_sequence";
-  region: LocationDescriptor;
-  strand: Strand;
+  component_type?: "transcript_segment";
+  transcript: CURIE;
+  exon_start?: number;
+  exon_start_offset?: number;
+  exon_end?: number;
+  exon_end_offset?: number;
+  gene_descriptor: GeneDescriptor;
+  component_genomic_start?: LocationDescriptor;
+  component_genomic_end?: LocationDescriptor;
 }
 /**
  * This descriptor is intended to reference VRS Location value objects.
@@ -273,22 +269,30 @@ export interface CytobandInterval {
   end: HumanCytoband;
 }
 /**
- * TranscriptSegment component class used client-side.
+ * This descriptor is intended to reference VRS Sequence value objects.
  */
-export interface ClientTranscriptSegmentComponent {
+export interface SequenceDescriptor {
+  id: CURIE;
+  type?: "SequenceDescriptor";
+  label?: string;
+  description?: string;
+  xrefs?: CURIE[];
+  alternate_labels?: string[];
+  extensions?: Extension[];
+  sequence_id?: CURIE;
+  sequence?: Sequence;
+  residue_type?: CURIE;
+}
+/**
+ * Gene component used client-side.
+ */
+export interface ClientGeneComponent {
   component_id: string;
   component_name: string;
   hr_name: string;
   shorthand?: string;
-  component_type?: "transcript_segment";
-  transcript: CURIE;
-  exon_start?: number;
-  exon_start_offset?: number;
-  exon_end?: number;
-  exon_end_offset?: number;
+  component_type?: "gene";
   gene_descriptor: GeneDescriptor;
-  component_genomic_start?: LocationDescriptor;
-  component_genomic_end?: LocationDescriptor;
 }
 /**
  * Unknown gene component used client-side.
@@ -299,6 +303,36 @@ export interface ClientUnknownGeneComponent {
   hr_name: string;
   shorthand?: string;
   component_type?: "unknown_gene";
+}
+/**
+ * Templated sequence component used client-side.
+ */
+export interface ClientTemplatedSequenceComponent {
+  component_id: string;
+  component_name: string;
+  hr_name: string;
+  shorthand?: string;
+  component_type?: "templated_sequence";
+  region: LocationDescriptor;
+  strand: Strand;
+}
+/**
+ * Linker component class used client-side.
+ */
+export interface ClientLinkerComponent {
+  component_id: string;
+  component_name: string;
+  hr_name: string;
+  shorthand?: string;
+  component_type?: "linker_sequence";
+  linker_sequence: SequenceDescriptor;
+}
+/**
+ * Define RegulatoryElement class
+ */
+export interface RegulatoryElement {
+  type: RegulatoryElementType;
+  gene_descriptor: GeneDescriptor;
 }
 /**
  * Request model for genomic coordinates retrieval
@@ -326,7 +360,7 @@ export interface ExonCoordsResponse {
   chr?: string;
   start?: number;
   end?: number;
-  warnings?: string | string[];
+  warnings?: string[];
 }
 /**
  * Define Fusion class
@@ -343,15 +377,6 @@ export interface Fusion {
   )[];
   causative_event?: Event;
   regulatory_elements?: RegulatoryElement[];
-}
-/**
- * Define CriticalDomain class
- */
-export interface CriticalDomain {
-  id: CURIE;
-  name: string;
-  status: DomainStatus;
-  gene_descriptor: GeneDescriptor;
 }
 /**
  * Define TranscriptSegment class
@@ -404,31 +429,24 @@ export interface UnknownGeneComponent {
   component_type?: "unknown_gene";
 }
 /**
- * Define RegulatoryElement class
- */
-export interface RegulatoryElement {
-  type: RegulatoryElementType;
-  gene_descriptor: GeneDescriptor;
-}
-/**
  * Response model for fusion validation endpoint.
  */
 export interface FusionValidationResponse {
-  warnings?: string | string[];
+  warnings?: string[];
   fusion?: Fusion;
 }
 /**
  * Response model for gene component construction endoint.
  */
 export interface GeneComponentResponse {
-  warnings?: string | string[];
+  warnings?: string[];
   component?: GeneComponent;
 }
 /**
  * Response model for gene normalization endpoint.
  */
 export interface NormalizeGeneResponse {
-  warnings?: string | string[];
+  warnings?: string[];
   term: string;
   concept_id?: CURIE;
   symbol?: string;
@@ -437,13 +455,13 @@ export interface NormalizeGeneResponse {
  * Abstract Response class for defining API response structures.
  */
 export interface Response {
-  warnings?: string | string[];
+  warnings?: string[];
 }
 /**
  * Response model for sequence ID retrieval endpoint.
  */
 export interface SequenceIDResponse {
-  warnings?: string | string[];
+  warnings?: string[];
   sequence: string;
   sequence_id?: string;
 }
@@ -451,7 +469,7 @@ export interface SequenceIDResponse {
  * Response model for gene autocomplete suggestions endpoint.
  */
 export interface SuggestGeneResponse {
-  warnings?: string | string[];
+  warnings?: string[];
   term: string;
   suggestions?: [] | [string] | [string, string] | [string, string, string] | [string, string, string, string][];
 }
@@ -459,13 +477,13 @@ export interface SuggestGeneResponse {
  * Response model for transcript segment component construction endpoint.
  */
 export interface TemplatedSequenceComponentResponse {
-  warnings?: string | string[];
+  warnings?: string[];
   component?: TemplatedSequenceComponent;
 }
 /**
  * Response model for transcript segment component construction endpoint.
  */
 export interface TxSegmentComponentResponse {
-  warnings?: string | string[];
+  warnings?: string[];
   component?: TranscriptSegmentComponent;
 }

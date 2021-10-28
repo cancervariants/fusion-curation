@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import './Summary.scss';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, Tabs, Tab } from '@material-ui/core/';
 import { Readable } from '../Readable/Readable';
 import { SummaryJSON } from '../JSON/SummaryJSON';
@@ -61,17 +61,17 @@ export const Summary: React.FC<Props> = ({ index }) => {
   let genes = [];
   let proteinDomains = fusion.protein_domains || [];
   let regulatoryElements = fusion.regulatory_elements || [];
-  let transcriptComponents = fusion.transcript_components || [];
+  let structuralComponents = fusion.structural_components || [];
   let rFramePreserved = fusion.r_frame_preserved || null;
   let causativeEvent = fusion.causative_event || 'Unknown';
 
   //TODO: fix this mess. formatting transcript stuff
 
-  // let transcriptGeneComponents = transcriptComponents.filter(obj => {
+  // let transcriptGeneComponents = structuralComponents.filter(obj => {
   //   return obj.component_type === 'gene'
   // })
 
-  // let transcriptOthers = transcriptComponents.map(obj => {
+  // let transcriptOthers = structuralComponents.map(obj => {
   //   if(obj.component_type !== 'gene'){
   //     return obj.component_name
   //   }
@@ -83,7 +83,7 @@ export const Summary: React.FC<Props> = ({ index }) => {
 
   // transcriptGenes = transcriptGenes.join('').toUpperCase();
 
-  // transcriptComponents = [transcriptGenes, ...transcriptOthers]
+  // structuralComponents = [transcriptGenes, ...transcriptOthers]
 
   let regElementGenes = regulatoryElements.map((el) => {
     return (`, ${el.gene_descriptor.label}`);
@@ -114,7 +114,7 @@ export const Summary: React.FC<Props> = ({ index }) => {
                     genes={genes}
                     proteinDomains={proteinDomains}
                     regulatoryElements={regulatoryElements}
-                    transcriptComponents={transcriptComponents}
+                    structuralComponents={structuralComponents}
                     rFramePreserved={rFramePreserved}
                     causativeEvent={causativeEvent}
                   />

@@ -1,6 +1,6 @@
 import {
-  ExonCoordsRequest, ExonCoordsResponse, Fusion, FusionValidationResponse, NormalizeGeneResponse,
-  SequenceIDResponse, AssociatedDomainResponse, SuggestGeneResponse, GeneComponentResponse,
+  Fusion, FusionValidationResponse, NormalizeGeneResponse,
+  AssociatedDomainResponse, SuggestGeneResponse, GeneComponentResponse,
   TxSegmentComponentResponse
 } from './ResponseModels';
 
@@ -49,6 +49,7 @@ export const getTxSegmentComponent = async (
   return responseJson;
 };
 
+// TODO ~85% sure we can remove this
 export const getGeneId = async (symbol: string): Promise<NormalizeGeneResponse> => {
   const response = await fetch(`/lookup/gene?term=${symbol}`);
   const geneResponse = await response.json();
@@ -65,38 +66,6 @@ export const getAssociatedDomains = async (gene_id: string): Promise<AssociatedD
   const response = await fetch(`/complete/domain?gene_id=${gene_id}`);
   const responseJson = await response.json();
   return responseJson;
-};
-
-export const getSequenceId = async (chr: string): Promise<SequenceIDResponse> => {
-  const response = await fetch(`/lookup/sequence_id?input_sequence=GRCh38:${chr}`);
-  const sequenceId = await response.json();
-  return sequenceId;
-};
-
-export const getExon = async (
-  txAc: string, gene: string, startExon: number, endExon: number, startExonOffset: number,
-  endExonOffset: number
-): Promise<ExonCoordsResponse> => {
-  const reqObj: ExonCoordsRequest = {
-    tx_ac: txAc,
-    gene: gene,
-    exon_start: startExon,
-    exon_start_offset: startExonOffset,
-    exon_end: endExon,
-    exon_end_offset: endExonOffset
-  };
-
-  const response = await fetch('/lookup/coords', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(reqObj),
-  });
-
-  const exonResponse = await response.json();
-  return exonResponse;
 };
 
 export const validateFusion = async (fusion: Fusion): Promise<FusionValidationResponse> => {

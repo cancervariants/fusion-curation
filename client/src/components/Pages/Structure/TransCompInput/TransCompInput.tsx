@@ -59,7 +59,7 @@ export const TransCompInput: React.FC<Props> = (
       txAc, transcriptGene, startingExon, endingExon, startingExonOffset, endingExonOffset
     )
       .then(txSegmentResponse => {
-        if (txSegmentResponse.warnings) {
+        if (txSegmentResponse.warnings?.length > 0) {
           const txWarning = `Unable to get exons for ${txAc}`;
           if (txSegmentResponse.warnings.includes(txWarning)) {
             setTranscriptError(txWarning);
@@ -95,7 +95,7 @@ export const TransCompInput: React.FC<Props> = (
   const buildGeneComponent = (term: string) => {
     getGeneComponent(term)
       .then(geneComponentResponse => {
-        if (geneComponentResponse.warnings) {
+        if (geneComponentResponse.warnings?.length > 0) {
           setGeneError('Gene not found');
           return;
         } else {

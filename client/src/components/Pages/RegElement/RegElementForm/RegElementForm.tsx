@@ -87,8 +87,8 @@ const RegElementForm: React.FC = () => {
             value={type}
             onChange={handleTypeChange}
           >
-            <MenuItem value='Enhancer'>Enhancer</MenuItem>
-            <MenuItem value='Promoter'>Promoter</MenuItem>
+            <MenuItem value='enhancer'>Enhancer</MenuItem>
+            <MenuItem value='promoter'>Promoter</MenuItem>
           </Select>
         </FormControl>
       </div>
