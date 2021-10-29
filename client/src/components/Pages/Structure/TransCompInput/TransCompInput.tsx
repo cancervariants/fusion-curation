@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { Card, CardContent, Button, TextField, Select, MenuItem } from '@material-ui/core';
+import {
+  Card, CardContent, Button, TextField, Select, MenuItem, FormLabel, RadioGroup, Radio,
+  FormControlLabel
+} from '@material-ui/core';
 import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
 import {
   getGeneComponent, getTxSegmentComponentECT, getTxSegmentComponentGCT, getTxSegmentComponentGCG,
@@ -51,6 +54,7 @@ export const TransCompInput: React.FC<Props> = (
   const [txGeneError, setTxGeneError] = useState('');
   const [txAc, setTxAc] = useState('');
   const [txGene, setTxGene] = useState('');
+  const [txStrand, setTxStrand] = useState('default');
   const [txChromosome, setTxChromosome] = useState('');
   const [txStartingGenomic, setTxStartingGenomic] = useState('');
   const [txEndingGenomic, setTxEndingGenomic] = useState('');
@@ -62,7 +66,7 @@ export const TransCompInput: React.FC<Props> = (
   const buildTranscriptSegmentComponent = () => {
     switch (txInputType) {
       case 'genomic_coords_gene':
-        getTxSegmentComponentGCG(txGene, txChromosome, txStartingGenomic, txEndingGenomic)
+        getTxSegmentComponentGCG(txGene, txChromosome, txStartingGenomic, txEndingGenomic, txStrand)
           .then(txSegmentResponse => {
             if (txSegmentResponse.warnings?.length > 0) {
               const txWarning = `TODO warning ${txGene}`;
@@ -75,7 +79,7 @@ export const TransCompInput: React.FC<Props> = (
           });
         break;
       case 'genomic_coords_tx':
-        getTxSegmentComponentGCT(txAc, txChromosome, txStartingGenomic, txEndingGenomic)
+        getTxSegmentComponentGCT(txAc, txChromosome, txStartingGenomic, txEndingGenomic, txStrand)
           .then(txSegmentResponse => {
             if (txSegmentResponse.warnings?.length > 0) {
               const txWarning = `TODO warning ${txAc}`;
@@ -117,11 +121,13 @@ export const TransCompInput: React.FC<Props> = (
                 setGeneError={setTxGeneError}
                 style={{ width: 125 }}
               />
+            </div>
+            <div className="mid-inputs">
               <TextField
                 margin="dense"
                 style={{ height: 38, width: 125 }}
-                value={chromosome}
-                onChange={(event) => setChromosome(event.target.value)}
+                value={txChromosome}
+                onChange={(event) => setTxChromosome(event.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     buildTranscriptSegmentComponent();
@@ -129,6 +135,17 @@ export const TransCompInput: React.FC<Props> = (
                 }}
                 label="Chromosome"
               />
+              <FormLabel component="legend">Strand</FormLabel>
+              <RadioGroup
+                aria-label="strand"
+                name="strand"
+                value={txStrand}
+                onChange={(event) => setTxStrand(event.target.value as string)}
+                row
+              >
+                <FormControlLabel value="+" control={<Radio />} label="+" />
+                <FormControlLabel value="-" control={<Radio />} label="-" />
+              </RadioGroup>
             </div>
             <div className="bottom-inputs">
               <TextField
@@ -176,6 +193,8 @@ export const TransCompInput: React.FC<Props> = (
                 error={txError.length > 0}
                 helperText={setTxError}
               />
+            </div>
+            <div className="mid-inputs">
               <TextField
                 margin="dense"
                 style={{ height: 38, width: 125 }}
@@ -188,6 +207,17 @@ export const TransCompInput: React.FC<Props> = (
                 }}
                 label="Chromosome"
               />
+              <FormLabel component="legend">Strand</FormLabel>
+              <RadioGroup
+                aria-label="strand"
+                name="strand"
+                value={txStrand}
+                onChange={(event) => setTxStrand(event.target.value as string)}
+                row
+              >
+                <FormControlLabel value="+" control={<Radio />} label="+" />
+                <FormControlLabel value="-" control={<Radio />} label="-" />
+              </RadioGroup>
             </div>
             <div className="bottom-inputs">
               <TextField

@@ -48,20 +48,20 @@ export const getTxSegmentComponentECT = async (
 };
 
 export const getTxSegmentComponentGCT = async (
-  transcript: string, chromosome: string, start: string, end: string
+  transcript: string, chromosome: string, start: string, end: string, strand: string
 ): Promise<TxSegmentComponentResponse> => {
   const url = `component/tx_segment_gct?transcript=${transcript}`
-    + `&chromosome=${chromosome}&start=${start}&end=${end}`;
+    + `&chromosome=${chromosome}&start=${start}&end=${end}&strand=${strand}`;
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
 };
 
 export const getTxSegmentComponentGCG = async (
-  gene: string, chromosome: string, start: string, end: string
+  gene: string, chromosome: string, start: string, end: string, strand: string
 ): Promise<TxSegmentComponentResponse> => {
   const url = `component/tx_segment_gcg?gene=${gene}`
-    + `&chromosome=${chromosome}&start=${start}&end=${end}`;
+    + `&chromosome=${chromosome}&start=${start}&end=${end}&strand=${strand}`;
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
