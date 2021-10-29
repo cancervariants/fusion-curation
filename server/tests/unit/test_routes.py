@@ -200,7 +200,6 @@ def tpm3_tx_g_component(tpm3_descriptor):
     }
 
 
-
 def test_build_gene_component(testclient, alk_gene_component):
     """Test correct functioning of gene component construction route.
     :param Testclient testclient: client fixture to use to retrieve requests
@@ -246,7 +245,7 @@ def test_build_tx_segment_ect(testclient, ntrk1_tx_component_start):
     assert response_data.get("component") is None
 
     # test handle invalid transcript
-    url="/component/tx_segment_ect?transcript=NM_0012529.3&exon_start=3"
+    url = "/component/tx_segment_ect?transcript=NM_0012529.3&exon_start=3"
     response = testclient.get(url)
     assert response.status_code == 200
     response_data = response.json()
