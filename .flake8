@@ -5,3 +5,5 @@ exclude =
   .git
   __pycache__
   curation/version.py
+per-file-ignores =
+  */tests/*:D403
