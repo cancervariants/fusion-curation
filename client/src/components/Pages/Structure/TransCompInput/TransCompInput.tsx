@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Card, CardContent, Button, TextField } from '@material-ui/core';
+import { Card, CardContent, Button, TextField, Select, MenuItem } from '@material-ui/core';
 import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
 import {
-  getGeneComponent, getTxSegmentComponent, getTemplatedSequenceComponent
+  getGeneComponent, getTxSegmentComponentECT, getTxSegmentComponentGCT, getTxSegmentComponentGCG,
+  getTemplatedSequenceComponent
 } from '../../../../services/main';
 import { LinkerComponent } from '../../../../services/ResponseModels';
 import './TransCompInput.scss';
@@ -45,10 +46,12 @@ export const TransCompInput: React.FC<Props> = (
    * - think about how to handle gene esp if contradicts transcript
    * - long term: enable selection of transcript given gene
    */
-  const [transcriptError, setTranscriptError] = useState('');
-  const [transcriptGeneError, setTranscriptGeneError] = useState('');
+  const [txInputType, setTxInputType] = useState('default');
+  const [txError, setTxError] = useState('');
+  const [txGeneError, setTxGeneError] = useState('');
   const [txAc, setTxAc] = useState('');
-  const [transcriptGene, setTranscriptGene] = useState('');
+  const [txGene, setTxGene] = useState('');
+  const [txChromosome, setTxChromosome] = useState('');
   const [txStartingGenomic, setTxStartingGenomic] = useState('');
   const [txEndingGenomic, setTxEndingGenomic] = useState('');
   const [startingExon, setStartingExon] = useState('');
@@ -57,20 +60,240 @@ export const TransCompInput: React.FC<Props> = (
   const [endingExonOffset, setEndingExonOffset] = useState('');
 
   const buildTranscriptSegmentComponent = () => {
-    getTxSegmentComponent(
-      txAc, transcriptGene, startingExon, endingExon, startingExonOffset, endingExonOffset
-    )
-      .then(txSegmentResponse => {
-        if (txSegmentResponse.warnings?.length > 0) {
-          const txWarning = `Unable to get exons for ${txAc}`;
-          if (txSegmentResponse.warnings.includes(txWarning)) {
-            setTranscriptError(txWarning);
-          }
-          // TODO set gene error
-        } else {
-          handleSave(index, txSegmentResponse.component);
-        }
-      });
+    switch (txInputType) {
+      case 'genomic_coords_gene':
+        getTxSegmentComponentGCG(txGene, txChromosome, txStartingGenomic, txEndingGenomic)
+          .then(txSegmentResponse => {
+            if (txSegmentResponse.warnings?.length > 0) {
+              const txWarning = `TODO warning ${txGene}`;
+              if (txSegmentResponse.warnings.includes(txWarning)) {
+                setTxError(txWarning);
+              }
+            } else {
+              handleSave(index, txSegmentResponse.component);
+            }
+          });
+        break;
+      case 'genomic_coords_tx':
+        getTxSegmentComponentGCT(txAc, txChromosome, txStartingGenomic, txEndingGenomic)
+          .then(txSegmentResponse => {
+            if (txSegmentResponse.warnings?.length > 0) {
+              const txWarning = `TODO warning ${txAc}`;
+              if (txSegmentResponse.warnings.includes(txWarning)) {
+                setTxError(txWarning);
+              }
+            } else {
+              handleSave(index, txSegmentResponse.component);
+            }
+          });
+        break;
+      case 'exon_coords_tx':
+        getTxSegmentComponentECT(
+          txAc, startingExon, endingExon, startingExonOffset, endingExonOffset
+        )
+          .then(txSegmentResponse => {
+            if (txSegmentResponse.warnings?.length > 0) {
+              const txWarning = `Unable to get exons for ${txAc}`;
+              if (txSegmentResponse.warnings.includes(txWarning)) {
+                setTxError(txWarning);
+              }
+            } else {
+              handleSave(index, txSegmentResponse.component);
+            }
+          });
+    }
+  };
+
+  const renderTxOptions = () => {
+    switch (txInputType) {
+      case 'genomic_coords_gene':
+        return (
+          <div>
+            <div className="mid-inputs">
+              <GeneAutocomplete
+                selectedGene={txGene}
+                setSelectedGene={setTxGene}
+                geneError={txGeneError}
+                setGeneError={setTxGeneError}
+                style={{ width: 125 }}
+              />
+              <TextField
+                margin="dense"
+                style={{ height: 38, width: 125 }}
+                value={chromosome}
+                onChange={(event) => setChromosome(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    buildTranscriptSegmentComponent();
+                  }
+                }}
+                label="Chromosome"
+              />
+            </div>
+            <div className="bottom-inputs">
+              <TextField
+                margin="dense"
+                style={{ width: 125 }}
+                label="Starting Position"
+                value={txStartingGenomic}
+                onChange={(event) => setTxStartingGenomic(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    buildTranscriptSegmentComponent();
+                  }
+                }}
+              />
+              <TextField
+                margin="dense"
+                style={{ width: 125 }}
+                label="Ending Position"
+                value={txEndingGenomic}
+                onChange={(event) => setTxEndingGenomic(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    buildTranscriptSegmentComponent();
+                  }
+                }}
+              />
+            </div>
+          </div>
+        );
+      case 'genomic_coords_tx':
+        return (
+          <div>
+            <div className="mid-inputs">
+              <TextField
+                margin="dense"
+                style={{ width: 125 }}
+                label="Transcript"
+                value={txAc}
+                onChange={(event) => setTxAc(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    buildTranscriptSegmentComponent();
+                  }
+                }}
+                error={txError.length > 0}
+                helperText={setTxError}
+              />
+              <TextField
+                margin="dense"
+                style={{ height: 38, width: 125 }}
+                value={txChromosome}
+                onChange={(event) => setTxChromosome(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    buildTranscriptSegmentComponent();
+                  }
+                }}
+                label="Chromosome"
+              />
+            </div>
+            <div className="bottom-inputs">
+              <TextField
+                margin="dense"
+                style={{ width: 125 }}
+                label="Starting Position"
+                value={txStartingGenomic}
+                onChange={(event) => setTxStartingGenomic(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    buildTranscriptSegmentComponent();
+                  }
+                }}
+              />
+              <TextField
+                margin="dense"
+                style={{ width: 125 }}
+                label="Ending Position"
+                value={txEndingGenomic}
+                onChange={(event) => setTxEndingGenomic(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    buildTranscriptSegmentComponent();
+                  }
+                }}
+              />
+            </div>
+          </div>
+        );
+      case 'exon_coords_tx':
+        return (
+          <div>
+            <div className="mid-inputs">
+              <TextField
+                margin="dense"
+                style={{ width: 125 }}
+                label="Transcript"
+                value={txAc}
+                onChange={(event) => setTxAc(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    buildTranscriptSegmentComponent();
+                  }
+                }}
+                error={txError.length > 0}
+                helperText={txError}
+              />
+            </div>
+            <div className="bottom-inputs">
+              <TextField
+                margin="dense"
+                style={{ width: 125 }}
+                label="Starting Exon"
+                value={startingExon}
+                onChange={(event) => setStartingExon(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    buildTranscriptSegmentComponent();
+                  }
+                }}
+              />
+              <TextField
+                margin="dense"
+                style={{ width: 125 }}
+                label="Ending Exon"
+                value={endingExon}
+                onChange={(event) => setEndingExon(event.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    buildTranscriptSegmentComponent();
+                  }
+                }}
+              />
+            </div>
+            {(startingExon !== '' || endingExon !== '') ?
+              <div className="bottom-inputs">
+                <TextField
+                  margin="dense"
+                  style={{ width: 125 }}
+                  label="Starting Offset"
+                  value={startingExonOffset}
+                  onChange={(event) => setStartingExonOffset(event.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      buildTranscriptSegmentComponent();
+                    }
+                  }}
+                />
+                <TextField
+                  margin="dense"
+                  style={{ width: 125 }}
+                  label="Ending Offset"
+                  value={endingExonOffset}
+                  onChange={(event) => setEndingExonOffset(event.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      buildTranscriptSegmentComponent();
+                    }
+                  }}
+                />
+              </div>
+              : null
+            }
+          </div>
+        );
+    }
   };
 
   // Linker Sequence
@@ -125,7 +348,8 @@ export const TransCompInput: React.FC<Props> = (
                           buildTemplatedSequenceComponent();
                         }
                       }}
-                      label="Chromosome"></TextField>
+                      label="Chromosome"
+                    />
                     <TextField
                       margin="dense"
                       style={{ height: 38, width: 125 }}
@@ -137,7 +361,7 @@ export const TransCompInput: React.FC<Props> = (
                           buildTemplatedSequenceComponent();
                         }
                       }}
-                    ></TextField>
+                    />
                   </div>
                   <div className="bottom-inputs">
                     <TextField
@@ -196,97 +420,17 @@ export const TransCompInput: React.FC<Props> = (
               <div className="card-parent">
                 <div className="input-parent">
                   <div className="top-inputs">
-                    <TextField
-                      margin="dense"
-                      style={{ width: 125 }}
-                      label="Transcript"
-                      value={txAc}
-                      onChange={(event) => setTxAc(event.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') {
-                        buildTranscriptSegmentComponent();
-                      }}}
-                      error={transcriptError.length > 0}
-                      helperText={transcriptError}
-                    />
-                    <GeneAutocomplete
-                      selectedGene={transcriptGene}
-                      setSelectedGene={setTranscriptGene}
-                      geneError={transcriptGeneError}
-                      setGeneError={setTranscriptGeneError}
-                      style={{ width: 125 }}
-                    />
+                    <Select
+                      value={txInputType}
+                      onChange={(event) => setTxInputType(event.target.value as string)}
+                    >
+                      <MenuItem value="default" disabled>Select input data</MenuItem>
+                      <MenuItem value="genomic_coords_gene">Genomic coordinates, gene</MenuItem>
+                      <MenuItem value="genomic_coords_tx">Genomic coordinates, transcript</MenuItem>
+                      <MenuItem value="exon_coords_tx">Exon coordinates, transcript</MenuItem>
+                    </Select>
                   </div>
-                  <div className="mid-inputs">
-                    <TextField
-                      margin="dense"
-                      style={{ width: 125 }}
-                      label="Genome Start"
-                      value={txStartingGenomic}
-                      onChange={(event) => setTxStartingGenomic(event.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') {
-                        buildTranscriptSegmentComponent();
-                      }}}
-                    />
-                    <TextField
-                      margin="dense"
-                      style={{ width: 125 }}
-                      label="Genome End"
-                      value={txEndingGenomic}
-                      onChange={(event) => setTxEndingGenomic(event.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') {
-                        buildTranscriptSegmentComponent();
-                      }}}
-                    />
-                  </div>
-                  <div className="bottom-inputs">
-                    <TextField
-                      margin="dense"
-                      style={{ width: 125 }}
-                      label="Starting Exon"
-                      value={startingExon}
-                      onChange={(event) => setStartingExon(event.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') {
-                        buildTranscriptSegmentComponent();
-                      }}}
-                    />
-                    <TextField
-                      margin="dense"
-                      style={{ width: 125 }}
-                      label="Ending Exon"
-                      value={endingExon}
-                      onChange={(event) => setEndingExon(event.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') {
-                        buildTranscriptSegmentComponent();
-                      }}}
-                    />
-                  </div>
-                  {(startingExon !== '' || endingExon !== '') ?
-                    <div className="bottom-inputs">
-                      <TextField
-                        margin="dense"
-                        style={{ width: 125 }}
-                        label="Starting Offset"
-                        value={startingExonOffset}
-                        onChange={(event) => setStartingExonOffset(event.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') {
-                          buildTranscriptSegmentComponent();
-                        } }}
-                      />
-                      <TextField
-                        margin="dense"
-                        style={{ width: 125 }}
-                        label="Ending Offset"
-                        value={endingExonOffset}
-                        onChange={(event) => setEndingExonOffset(event.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            buildTranscriptSegmentComponent();
-                          }
-                        }}
-                      />
-                    </div>
-                    : null
-                  }
+                  {renderTxOptions()}
                 </div>
                 <div className="buttons">
                   <Button
@@ -395,3 +539,102 @@ export const TransCompInput: React.FC<Props> = (
     </>
   );
 };
+
+/*
+
+<div className="input-parent">
+                  <div className="top-inputs">
+                    <TextField
+                      margin="dense"
+                      style={{ width: 125 }}
+                      label="Transcript"
+                      value={txAc}
+                      onChange={(event) => setTxAc(event.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') {
+                        buildTranscriptSegmentComponent();
+                      }}}
+                      error={transcriptError.length > 0}
+                      helperText={transcriptError}
+                    />
+                    <GeneAutocomplete
+                      selectedGene={transcriptGene}
+                      setSelectedGene={setTranscriptGene}
+                      geneError={transcriptGeneError}
+                      setGeneError={setTranscriptGeneError}
+                      style={{ width: 125 }}
+                    />
+                  </div>
+                  <div className="mid-inputs">
+                    <TextField
+                      margin="dense"
+                      style={{ width: 125 }}
+                      label="Genome Start"
+                      value={txStartingGenomic}
+                      onChange={(event) => setTxStartingGenomic(event.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') {
+                        buildTranscriptSegmentComponent();
+                      }}}
+                    />
+                    <TextField
+                      margin="dense"
+                      style={{ width: 125 }}
+                      label="Genome End"
+                      value={txEndingGenomic}
+                      onChange={(event) => setTxEndingGenomic(event.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') {
+                        buildTranscriptSegmentComponent();
+                      }}}
+                    />
+                  </div>
+                  <div className="bottom-inputs">
+                    <TextField
+                      margin="dense"
+                      style={{ width: 125 }}
+                      label="Starting Exon"
+                      value={startingExon}
+                      onChange={(event) => setStartingExon(event.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') {
+                        buildTranscriptSegmentComponent();
+                      }}}
+                    />
+                    <TextField
+                      margin="dense"
+                      style={{ width: 125 }}
+                      label="Ending Exon"
+                      value={endingExon}
+                      onChange={(event) => setEndingExon(event.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') {
+                        buildTranscriptSegmentComponent();
+                      }}}
+                    />
+                  </div>
+                  {(startingExon !== '' || endingExon !== '') ?
+                    <div className="bottom-inputs">
+                      <TextField
+                        margin="dense"
+                        style={{ width: 125 }}
+                        label="Starting Offset"
+                        value={startingExonOffset}
+                        onChange={(event) => setStartingExonOffset(event.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') {
+                          buildTranscriptSegmentComponent();
+                        } }}
+                      />
+                      <TextField
+                        margin="dense"
+                        style={{ width: 125 }}
+                        label="Ending Offset"
+                        value={endingExonOffset}
+                        onChange={(event) => setEndingExonOffset(event.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            buildTranscriptSegmentComponent();
+                          }
+                        }}
+                      />
+                    </div>
+                    : null
+                  }
+                </div>
+
+*/

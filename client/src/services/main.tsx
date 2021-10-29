@@ -22,16 +22,13 @@ export const getTemplatedSequenceComponent = async (
   return responseJson;
 };
 
-export const getTxSegmentComponent = async (
-  transcript: string, gene: string, exonStart: string, exonEnd: string, exonStartOffset: string,
+export const getTxSegmentComponentECT = async (
+  transcript: string, exonStart: string, exonEnd: string, exonStartOffset: string,
   exonEndOffset: string
 ): Promise<TxSegmentComponentResponse> => {
   const params: Array<string> = [`transcript=${transcript}`];
   // add optional params -- previous methods should've already checked that the request as a whole
   // is valid
-  if (gene) {
-    params.push(`gene=${gene}`);
-  }
   if (exonStart !== '') {
     params.push(`exon_start=${exonStart}`);
   }
@@ -44,7 +41,27 @@ export const getTxSegmentComponent = async (
   if (exonEndOffset !== '') {
     params.push(`exon_end_offset=${exonEndOffset}`);
   }
-  const url = 'component/tx_segment_tx_to_g?' + params.join('&');
+  const url = 'component/tx_segment_ect?' + params.join('&');
+  const response = await fetch(url);
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+export const getTxSegmentComponentGCT = async (
+  transcript: string, chromosome: string, start: string, end: string
+): Promise<TxSegmentComponentResponse> => {
+  const url = `component/tx_segment_gct?transcript=${transcript}`
+    + `&chromosome=${chromosome}&start=${start}&end=${end}`;
+  const response = await fetch(url);
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+export const getTxSegmentComponentGCG = async (
+  gene: string, chromosome: string, start: string, end: string
+): Promise<TxSegmentComponentResponse> => {
+  const url = `component/tx_segment_gcg?gene=${gene}`
+    + `&chromosome=${chromosome}&start=${start}&end=${end}`;
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;

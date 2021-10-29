@@ -78,7 +78,7 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
         };
         return element;
       }),
-      protein_domains: fusion.protein_domains.map(domain => {
+      protein_domains: fusion.protein_domains?.map(domain => {
         const newDomain: CriticalDomain = {
           id: domain.id,
           name: domain.name,
