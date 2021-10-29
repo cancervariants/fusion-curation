@@ -118,7 +118,9 @@ async def build_tx_segment_gct(request: Request,
                                transcript: str,
                                chromosome: str,
                                start: int,
-                               end: int) -> TxSegmentComponentResponse:
+                               end: int,
+                               strand: Optional[str] = Query(None)) \
+        -> TxSegmentComponentResponse:
     """Construct Transcript Segment component by providing transcript and genomic
     coordinates (chromosome, start, end positions).
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
@@ -130,12 +132,24 @@ async def build_tx_segment_gct(request: Request,
     :return: Pydantic class with TranscriptSegment component if successful, and
         warnings otherwise.
     """
+    if strand:
+        if strand == '+':
+            strand_n = 1
+        elif strand == '-':
+            strand_n = -1
+        else:
+            warning = f"Received invalid strand value: {strand}"
+            logger.warning(warning)
+            return TxSegmentComponentResponse(warnings=[warning])
+    else:
+        strand_n = None
     tx_segment, warnings = await request.app.state.fusor.transcript_segment_component(
         tx_to_genomic_coords=False,
         transcript=transcript,
         chromosome=chromosome,
         start=start,
-        end=end
+        end=end,
+        strand=strand_n
     )
     return TxSegmentComponentResponse(component=tx_segment, warnings=warnings)
 
@@ -148,7 +162,9 @@ async def build_tx_segment_gcg(request: Request,
                                gene: str,
                                chromosome: str,
                                start: int,
-                               end: int) -> TxSegmentComponentResponse:
+                               end: int,
+                               strand: Optional[str] = Query(None)) \
+        -> TxSegmentComponentResponse:
     """Construct Transcript Segment component by providing gene and genomic
     coordinates (chromosome, start, end positions).
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
@@ -160,10 +176,22 @@ async def build_tx_segment_gcg(request: Request,
     :return: Pydantic class with TranscriptSegment component if successful, and
         warnings otherwise.
     """
+    if strand:
+        if strand == '+':
+            strand_n = 1
+        elif strand == '-':
+            strand_n = -1
+        else:
+            warning = f"Received invalid strand value: {strand}"
+            logger.warning(warning)
+            return TxSegmentComponentResponse(warnings=[warning])
+    else:
+        strand_n = None
     tx_segment, warnings = await request.app.state.fusor.transcript_segment_component(
         tx_to_genomic_coords=False,
         gene=gene,
         chromosome=chromosome,
+        strand=strand_n,
         start=start,
         end=end
     )
