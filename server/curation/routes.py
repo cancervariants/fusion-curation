@@ -77,23 +77,22 @@ def build_gene_component(request: Request, term: str = Query("")) \
     return GeneComponentResponse(component=gene_component, warnings=warnings_l)
 
 
-@app.get("/component/tx_segment_tx_to_g",
-         operation_id="buildTranscriptSegmentComponent",
+@app.get("/component/tx_segment_ect",
+         operation_id="buildTranscriptSegmentComponentECT",
          response_model=TxSegmentComponentResponse,
          response_model_exclude_none=True)
-async def build_tx_to_g_segment_component(request: Request,
-                                          transcript: str,
-                                          gene: Optional[str] = Query(None),
-                                          exon_start: Optional[int] = Query(None),
-                                          exon_start_offset: int = Query(0),
-                                          exon_end: Optional[int] = Query(None),
-                                          exon_end_offset: int = Query(0)) \
+async def build_tx_segment_ect(request: Request,
+                               transcript: str,
+                               exon_start: Optional[int] = Query(None),
+                               exon_start_offset: int = Query(0),
+                               exon_end: Optional[int] = Query(None),
+                               exon_end_offset: int = Query(0)) \
         -> TxSegmentComponentResponse:
-    """Construct Transcript Segment component by providing transcript/exon numbers.
+    """Construct Transcript Segment component by providing transcript and exon
+        coordinates. Either exon_start or exon_end are required.
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param str transcript: transcript accession identifier
-    :param Optional[str] gene: name of gene
     :param Optional[int] exon_start: number of starting exon, 0 by default
     :param int exon_start_offset: offset from starting exon
     :param Optional[int] exon_end: number of ending exon
@@ -103,11 +102,70 @@ async def build_tx_to_g_segment_component(request: Request,
     """
     tx_segment, warnings = await request.app.state.fusor.transcript_segment_component(
         transcript=transcript,
-        gene=gene,
         exon_start=exon_start,
         exon_start_offset=exon_start_offset,
         exon_end=exon_end,
         exon_end_offset=exon_end_offset
+    )
+    return TxSegmentComponentResponse(component=tx_segment, warnings=warnings)
+
+
+@app.get("/component/tx_segment_gct",
+         operation_id="buildTranscriptSegmentComponentGCT",
+         response_model=TxSegmentComponentResponse,
+         response_model_exclude_none=True)
+async def build_tx_segment_gct(request: Request,
+                               transcript: str,
+                               chromosome: str,
+                               start: int,
+                               end: int) -> TxSegmentComponentResponse:
+    """Construct Transcript Segment component by providing transcript and genomic
+    coordinates (chromosome, start, end positions).
+    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+        FUSOR and UTA-associated tools.
+    :param str transcript: transcript accession identifier
+    :param str chromosome: chromosome (TODO how to identify?)
+    :param int start: starting position (TODO assume residue-based?)
+    :param int end: ending position
+    :return: Pydantic class with TranscriptSegment component if successful, and
+        warnings otherwise.
+    """
+    tx_segment, warnings = await request.app.state.fusor.transcript_segment_component(
+        tx_to_genomic_coords=False,
+        transcript=transcript,
+        chromosome=chromosome,
+        start=start,
+        end=end
+    )
+    return TxSegmentComponentResponse(component=tx_segment, warnings=warnings)
+
+
+@app.get("/component/tx_segment_gcg",
+         operation_id="buildTranscriptSegmentComponentGCG",
+         response_model=TxSegmentComponentResponse,
+         response_model_exclude_none=True)
+async def build_tx_segment_gcg(request: Request,
+                               gene: str,
+                               chromosome: str,
+                               start: int,
+                               end: int) -> TxSegmentComponentResponse:
+    """Construct Transcript Segment component by providing gene and genomic
+    coordinates (chromosome, start, end positions).
+    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+        FUSOR and UTA-associated tools.
+    :param str gene: gene (TODO how to identify?)
+    :param str chromosome: chromosome (TODO how to identify?)
+    :param int start: starting position (TODO assume residue-based?)
+    :param int end: ending position
+    :return: Pydantic class with TranscriptSegment component if successful, and
+        warnings otherwise.
+    """
+    tx_segment, warnings = await request.app.state.fusor.transcript_segment_component(
+        tx_to_genomic_coords=False,
+        gene=gene,
+        chromosome=chromosome,
+        start=start,
+        end=end
     )
     return TxSegmentComponentResponse(component=tx_segment, warnings=warnings)
 
