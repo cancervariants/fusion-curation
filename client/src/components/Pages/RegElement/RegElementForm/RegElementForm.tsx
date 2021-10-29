@@ -2,11 +2,14 @@ import { useContext, useState, useEffect } from 'react';
 import { InputLabel, MenuItem, FormControl, Select, Button } from '@material-ui/core/';
 import { makeStyles } from '@material-ui/core/styles';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
+import { GeneContext } from '../../../../global/contexts/GeneContext';
 import { v4 as uuid } from 'uuid';
 import './RegElementForm.scss';
 
-import { getGeneId } from '../../../../services/main';
+import { getAssociatedDomains, getGeneId } from '../../../../services/main';
 import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
+import { GeneDescriptor } from '../../../../services/ResponseModels';
+import { DomainOptionsContext } from '../../../../global/contexts/DomainOptionsContext';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -30,6 +33,9 @@ const RegElementForm: React.FC = () => {
   const classes = useStyles();
 
   const { fusion, setFusion } = useContext(FusionContext);
+  const { globalGenes, setGlobalGenes } = useContext(GeneContext);
+  // Choosable domains based on genes provided in components
+  const { domainOptions, setDomainOptions } = useContext(DomainOptionsContext);
 
   const regElements = fusion.regulatory_elements;
 
@@ -40,6 +46,28 @@ const RegElementForm: React.FC = () => {
   const handleTypeChange = (event) => {
     setType(event.target.value);
   };
+
+  const updateGeneContexts = (geneDescriptor: GeneDescriptor) => {
+    const geneId = geneDescriptor.gene_id;
+    if (!(geneId in globalGenes)) {
+      setGlobalGenes(
+        {
+          ...globalGenes,
+          ...{ [geneId]: geneDescriptor }
+        }
+      );
+      getAssociatedDomains(geneId).then(response => {
+        setDomainOptions(
+          {
+            ...domainOptions,
+            ...{ [`${geneDescriptor.label}(${geneId})`]: response.suggestions }
+          }
+        );
+      });
+    }
+  };
+
+
 
   const handleAdd = () => {
     getGeneId(gene)
