@@ -51,6 +51,7 @@ export interface ColorTheme {
   '--region': Color;
   '--region-light': Color;
   '--any-gene': Color;
+  '--unknown-gene': Color;
   // '--any-gene-light': Color;
   '--gradient-1': Color;
   '--gradient-2': Color;
@@ -76,6 +77,7 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     '--linker': Color.MAGENTA,
     '--linker-light': Color.PALE_MAGENTA,
     '--any-gene': Color.PEACH,
+    '--unknown-gene': Color.GREENISH,
     '--region': Color.PASTEL_PURPLE,
     '--region-light': Color.PALE_PASTEL_PURPLE,
     '--gradient-1': Color.PINKRED,
@@ -98,6 +100,7 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     '--linker': Color.MAGENTA,
     '--linker-light': Color.PALE_MAGENTA,
     '--any-gene': Color.PEACH,
+    '--unknown-gene': Color.GREENISH,
     '--region': Color.PASTEL_PURPLE,
     '--region-light': Color.PALE_PASTEL_PURPLE,
     '--gradient-1': Color.PINKRED,
@@ -120,6 +123,7 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     '--linker': Color.FLICKR,
     '--linker-light': Color.FLICKR,
     '--any-gene': Color.PEACH,  // TODO ?
+    '--unknown-gene': Color.GREENISH,  // TODO ?
     '--region': Color.ULTRA,
     '--region-light': Color.ULTRA,
     '--gradient-1': Color.PURP1,

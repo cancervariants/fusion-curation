@@ -12,8 +12,9 @@ import {
   AnyGeneComponent,
   ClientAnyGeneComponent,
   ClientGeneComponent, ClientLinkerComponent, ClientTemplatedSequenceComponent,
-  ClientTranscriptSegmentComponent, GeneComponent, GeneDescriptor, LinkerComponent,
-  TemplatedSequenceComponent, TranscriptSegmentComponent
+  ClientTranscriptSegmentComponent, ClientUnknownGeneComponent, GeneComponent,
+  GeneDescriptor, LinkerComponent, TemplatedSequenceComponent,
+  TranscriptSegmentComponent, UnknownGeneComponent
 } from '../../../../services/ResponseModels';
 import ButtonTrash from '../../../main/shared/Buttons/ButtonTrash';
 // import { unstable_createMuiStrictModeTheme } from '@material-ui/core';
@@ -128,6 +129,10 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
       handleSave(destination.index, {
         component_type: 'any_gene',
       });
+    } else if (newItem.component_type === 'unknown_gene') {
+      handleSave(destination.index, {
+        'component_type': 'unknown_gene',
+      });
     } else {
       setEditMode(newItem.component_id);
     }
@@ -152,7 +157,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
 
   const handleSave = (
     index: number, component: GeneComponent | LinkerComponent | TranscriptSegmentComponent |
-    TemplatedSequenceComponent | AnyGeneComponent
+      TemplatedSequenceComponent | AnyGeneComponent | UnknownGeneComponent
   ) => {
     // TODO: prevent from sending empty fields (where applicable)
     const items = Array.from(structure);
@@ -260,6 +265,15 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
         };
         saveComponent(items, index, anyGeneComponent);
         break;
+      case 'unknown_gene':
+        const unknownGeneComponent: ClientUnknownGeneComponent = {
+          ...component,
+          component_id: uuid(),
+          component_name: 'UnknownGene',
+          hr_name: 'UnknownGene'
+        };
+        saveComponent(items, index, unknownGeneComponent);
+        break;
     }
   };
 
@@ -319,6 +333,8 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
         return 'Templated Sequence';
       case 'any_gene':
         return 'Any Gene';
+      case 'unknown_gene':
+        return 'Unknown Gene';
     }
   };
 
