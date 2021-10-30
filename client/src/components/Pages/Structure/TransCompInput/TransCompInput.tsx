@@ -8,7 +8,7 @@ import {
   getGeneComponent, getTxSegmentComponentECT, getTxSegmentComponentGCT, getTxSegmentComponentGCG,
   getTemplatedSequenceComponent
 } from '../../../../services/main';
-import { AnyGeneComponent, LinkerComponent } from '../../../../services/ResponseModels';
+import { LinkerComponent } from '../../../../services/ResponseModels';
 import './TransCompInput.scss';
 
 interface Props {
@@ -359,13 +359,6 @@ export const TransCompInput: React.FC<Props> = (
       });
   };
 
-  // TODO remove -- any gene component
-  const buildAnyGeneComponent = () => {
-    const component: AnyGeneComponent = {
-      'component_type': 'any_gene'
-    };
-    handleSave(index, component);
-  };
 
   const renderSwitch = (compType: string) => {
     switch (compType) {
@@ -566,35 +559,6 @@ export const TransCompInput: React.FC<Props> = (
             </CardContent>
           </Card>
         );
-      case 'any_gene':
-        return (
-          <Card>
-            <CardContent>
-              <div className="card-parent">
-                <div className="input-parent">
-                  <div className="buttons">
-                    <Button
-                      style={{ margin: '8px' }}
-                      variant="outlined"
-                      color="secondary"
-                      onClick={() => handleCancel(id)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      style={{ margin: '8px' }}
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => buildAnyGeneComponent()}
-                    >
-                      Save
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        );
     }
   };
 
@@ -606,102 +570,3 @@ export const TransCompInput: React.FC<Props> = (
     </>
   );
 };
-
-/*
-
-<div className="input-parent">
-                  <div className="top-inputs">
-                    <TextField
-                      margin="dense"
-                      style={{ width: 125 }}
-                      label="Transcript"
-                      value={txAc}
-                      onChange={(event) => setTxAc(event.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') {
-                        buildTranscriptSegmentComponent();
-                      }}}
-                      error={transcriptError.length > 0}
-                      helperText={transcriptError}
-                    />
-                    <GeneAutocomplete
-                      selectedGene={transcriptGene}
-                      setSelectedGene={setTranscriptGene}
-                      geneError={transcriptGeneError}
-                      setGeneError={setTranscriptGeneError}
-                      style={{ width: 125 }}
-                    />
-                  </div>
-                  <div className="mid-inputs">
-                    <TextField
-                      margin="dense"
-                      style={{ width: 125 }}
-                      label="Genome Start"
-                      value={txStartingGenomic}
-                      onChange={(event) => setTxStartingGenomic(event.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') {
-                        buildTranscriptSegmentComponent();
-                      }}}
-                    />
-                    <TextField
-                      margin="dense"
-                      style={{ width: 125 }}
-                      label="Genome End"
-                      value={txEndingGenomic}
-                      onChange={(event) => setTxEndingGenomic(event.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') {
-                        buildTranscriptSegmentComponent();
-                      }}}
-                    />
-                  </div>
-                  <div className="bottom-inputs">
-                    <TextField
-                      margin="dense"
-                      style={{ width: 125 }}
-                      label="Starting Exon"
-                      value={startingExon}
-                      onChange={(event) => setStartingExon(event.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') {
-                        buildTranscriptSegmentComponent();
-                      }}}
-                    />
-                    <TextField
-                      margin="dense"
-                      style={{ width: 125 }}
-                      label="Ending Exon"
-                      value={endingExon}
-                      onChange={(event) => setEndingExon(event.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') {
-                        buildTranscriptSegmentComponent();
-                      }}}
-                    />
-                  </div>
-                  {(startingExon !== '' || endingExon !== '') ?
-                    <div className="bottom-inputs">
-                      <TextField
-                        margin="dense"
-                        style={{ width: 125 }}
-                        label="Starting Offset"
-                        value={startingExonOffset}
-                        onChange={(event) => setStartingExonOffset(event.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') {
-                          buildTranscriptSegmentComponent();
-                        } }}
-                      />
-                      <TextField
-                        margin="dense"
-                        style={{ width: 125 }}
-                        label="Ending Offset"
-                        value={endingExonOffset}
-                        onChange={(event) => setEndingExonOffset(event.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            buildTranscriptSegmentComponent();
-                          }
-                        }}
-                      />
-                    </div>
-                    : null
-                  }
-                </div>
-
-*/

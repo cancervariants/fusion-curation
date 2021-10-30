@@ -122,10 +122,15 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     const item = sourceClone[source.index];
     const newItem = Object.assign({}, item);
     newItem.component_id = uuid();
-    console.log(newItem);
     destClone.splice(destination.index, 0, newItem);
     setStructure(destClone);
-    setEditMode(newItem.component_id);
+    if (newItem.component_type === 'any_gene') {
+      handleSave(destination.index, {
+        component_type: 'any_gene',
+      });
+    } else {
+      setEditMode(newItem.component_id);
+    }
   };
 
   const reorder = (result: DropResult) => {
