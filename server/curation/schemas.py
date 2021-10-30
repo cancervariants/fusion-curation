@@ -6,7 +6,7 @@ from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
 from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
 from fusor.models import Fusion, TranscriptSegmentComponent, LinkerComponent, \
     TemplatedSequenceComponent, GeneComponent, UnknownGeneComponent, \
-    AnyGeneComponent
+    AnyGeneComponent, RegulatoryElement
 
 
 ResponseWarnings = Optional[List[StrictStr]]
@@ -55,6 +55,17 @@ class ClientAnyGeneComponent(AnyGeneComponent, ClientComponent):
     """Any gene component used client-side."""
 
     pass
+
+
+class ClientRegulatoryElement(RegulatoryElement):
+    """Regulatory element object used client-side."""
+
+    element_id: str
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
 
 
 class Response(BaseModel, ABC):

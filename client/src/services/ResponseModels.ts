@@ -335,6 +335,14 @@ export interface RegulatoryElement {
   gene_descriptor: GeneDescriptor;
 }
 /**
+ * Regulatory element object used client-side.
+ */
+export interface ClientRegulatoryElement {
+  type: RegulatoryElementType;
+  gene_descriptor: GeneDescriptor;
+  element_id: string;
+}
+/**
  * Request model for genomic coordinates retrieval
  */
 export interface ExonCoordsRequest {

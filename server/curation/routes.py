@@ -8,13 +8,11 @@ from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
 from fusor import FUSOR
 from fusor.models import Strand
 
-
 from curation import APP_ROOT, ServiceWarning, logger
 from curation.version import __version__
 from curation.schemas import GeneComponentResponse, TxSegmentComponentResponse, \
-    TemplatedSequenceComponentResponse
-from curation.schemas import NormalizeGeneResponse, SuggestGeneResponse, \
-    FusionValidationResponse, AssociatedDomainResponse
+    TemplatedSequenceComponentResponse, FusionValidationResponse, \
+    AssociatedDomainResponse, NormalizeGeneResponse, SuggestGeneResponse
 from curation.gene_services import get_gene_id, suggest_genes
 from curation.domain_services import get_possible_domains
 from curation.validation_services import validate_fusion

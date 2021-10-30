@@ -3,13 +3,12 @@ import { InputLabel, MenuItem, FormControl, Select, Button } from '@material-ui/
 import { makeStyles } from '@material-ui/core/styles';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { GeneContext } from '../../../../global/contexts/GeneContext';
+import { DomainOptionsContext } from '../../../../global/contexts/DomainOptionsContext';
 import { v4 as uuid } from 'uuid';
 import './RegElementForm.scss';
-
 import { getAssociatedDomains, getGeneId } from '../../../../services/main';
 import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
-import { GeneDescriptor } from '../../../../services/ResponseModels';
-import { DomainOptionsContext } from '../../../../global/contexts/DomainOptionsContext';
+import { ClientRegulatoryElement, GeneDescriptor } from '../../../../services/ResponseModels';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -67,8 +66,6 @@ const RegElementForm: React.FC = () => {
     }
   };
 
-
-
   const handleAdd = () => {
     getGeneId(gene)
       .then(geneResponse => {
@@ -77,11 +74,9 @@ const RegElementForm: React.FC = () => {
           throw new Error(geneError);
         }
 
-        // eslint-disable-next-line prefer-const
-        let cloneArray = Array.from(regElements);
+        const cloneArray = Array.from(regElements);
 
-        // eslint-disable-next-line prefer-const
-        let newRegElement = {
+        const newRegElement: ClientRegulatoryElement = {
           'type': type,
           'element_id': uuid(),
           'gene_descriptor': {
@@ -91,6 +86,7 @@ const RegElementForm: React.FC = () => {
             'label': geneResponse.term,
           }
         };
+        updateGeneContexts(newRegElement.gene_descriptor);
 
         cloneArray.push(newRegElement);
 

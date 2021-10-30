@@ -43,12 +43,6 @@ export const TransCompInput: React.FC<Props> = (
   };
 
   // Transcript Segment
-  /**
-   * TODO:
-   * - add handling of exon vs genomic position here
-   * - think about how to handle gene esp if contradicts transcript
-   * - long term: enable selection of transcript given gene
-   */
   const [txInputType, setTxInputType] = useState('default');
   const [txError, setTxError] = useState('');
   const [txGeneError, setTxGeneError] = useState('');
