@@ -8,7 +8,7 @@ import {
   getGeneComponent, getTxSegmentComponentECT, getTxSegmentComponentGCT, getTxSegmentComponentGCG,
   getTemplatedSequenceComponent
 } from '../../../../services/main';
-import { LinkerComponent } from '../../../../services/ResponseModels';
+import { AnyGeneComponent, LinkerComponent } from '../../../../services/ResponseModels';
 import './TransCompInput.scss';
 
 interface Props {
@@ -359,6 +359,14 @@ export const TransCompInput: React.FC<Props> = (
       });
   };
 
+  // TODO remove -- any gene component
+  const buildAnyGeneComponent = () => {
+    const component: AnyGeneComponent = {
+      'component_type': 'any_gene'
+    };
+    handleSave(index, component);
+  };
+
   const renderSwitch = (compType: string) => {
     switch (compType) {
       case 'templated_sequence':
@@ -553,6 +561,35 @@ export const TransCompInput: React.FC<Props> = (
                   >
                     Save
                   </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      case 'any_gene':
+        return (
+          <Card>
+            <CardContent>
+              <div className="card-parent">
+                <div className="input-parent">
+                  <div className="buttons">
+                    <Button
+                      style={{ margin: '8px' }}
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => handleCancel(id)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      style={{ margin: '8px' }}
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => buildAnyGeneComponent()}
+                    >
+                      Save
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>

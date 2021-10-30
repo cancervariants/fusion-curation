@@ -9,6 +9,8 @@ import './Builder.scss';
 import { TransCompInput } from '../TransCompInput/TransCompInput';
 import { getAssociatedDomains } from '../../../../services/main';
 import {
+  AnyGeneComponent,
+  ClientAnyGeneComponent,
   ClientGeneComponent, ClientLinkerComponent, ClientTemplatedSequenceComponent,
   ClientTranscriptSegmentComponent, GeneComponent, GeneDescriptor, LinkerComponent,
   TemplatedSequenceComponent, TranscriptSegmentComponent
@@ -75,8 +77,20 @@ const OPTIONS = [
         },
         'type': ''
       }
-    }
+    },
   },
+  {
+    component_name: '',
+    component_type: 'any_gene',
+    component_id: uuid(),
+    hr_name: '',
+  },
+  {
+    component_name: '',
+    component_type: 'unknown_gene',
+    component_id: uuid(),
+    hr_name: ''
+  }
 ];
 
 const Builder: React.FC<Props> = ({ structuralComponents }) => {
@@ -108,6 +122,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     const item = sourceClone[source.index];
     const newItem = Object.assign({}, item);
     newItem.component_id = uuid();
+    console.log(newItem);
     destClone.splice(destination.index, 0, newItem);
     setStructure(destClone);
     setEditMode(newItem.component_id);
@@ -132,7 +147,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
 
   const handleSave = (
     index: number, component: GeneComponent | LinkerComponent | TranscriptSegmentComponent |
-    TemplatedSequenceComponent
+    TemplatedSequenceComponent | AnyGeneComponent
   ) => {
     // TODO: prevent from sending empty fields (where applicable)
     const items = Array.from(structure);
@@ -231,9 +246,17 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
         };
         saveComponent(items, index, linkerComponent);
         break;
+      case 'any_gene':
+        const anyGeneComponent: ClientAnyGeneComponent = {
+          ...component,
+          component_id: uuid(),
+          component_name: 'AnyGene',
+          hr_name: 'AnyGene'
+        };
+        saveComponent(items, index, anyGeneComponent);
+        break;
     }
   };
-
 
   const updateGeneContexts = (geneDescriptor: GeneDescriptor) => {
     const geneId = geneDescriptor.gene_id;
@@ -271,6 +294,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     setStructure(items);
   };
 
+  // TODO: update gene/domain contexts
   const handleDelete = (uuid: string) => {
     let items = Array.from(structure);
     items = items.filter(item => item.component_id !== uuid);
@@ -288,6 +312,8 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
         return 'Linker Sequence';
       case 'templated_sequence':
         return 'Templated Sequence';
+      case 'any_gene':
+        return 'Any Gene';
     }
   };
 
