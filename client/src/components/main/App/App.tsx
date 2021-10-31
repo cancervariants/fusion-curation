@@ -137,6 +137,9 @@ const App = (): React.ReactElement => {
     });
     fusion.regulatory_elements?.forEach(re => {
       remainingGeneIds.push(re.gene_descriptor.gene_id);
+      if (!(re.gene_descriptor.gene_id in globalGenes)) {
+        newGenes[re.gene_descriptor.gene_id] = re.gene_descriptor;
+      }
     });
     const uniqueRemainingGeneIds: Array<string> = remainingGeneIds.filter(
       (geneId, index) => remainingGeneIds.indexOf(geneId) === index
