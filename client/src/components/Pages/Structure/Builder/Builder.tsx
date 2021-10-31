@@ -7,14 +7,13 @@ import { DomainOptionsContext } from '../../../../global/contexts/DomainOptionsC
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import './Builder.scss';
 import { TransCompInput } from '../TransCompInput/TransCompInput';
-import { getAssociatedDomains } from '../../../../services/main';
 import {
   AnyGeneComponent,
   ClientAnyGeneComponent,
   ClientGeneComponent, ClientLinkerComponent, ClientTemplatedSequenceComponent,
   ClientTranscriptSegmentComponent, ClientUnknownGeneComponent, GeneComponent,
-  GeneDescriptor, LinkerComponent, TemplatedSequenceComponent,
-  TranscriptSegmentComponent, UnknownGeneComponent
+  LinkerComponent, TemplatedSequenceComponent, TranscriptSegmentComponent,
+  UnknownGeneComponent
 } from '../../../../services/ResponseModels';
 import ButtonTrash from '../../../main/shared/Buttons/ButtonTrash';
 // import { unstable_createMuiStrictModeTheme } from '@material-ui/core';
@@ -175,7 +174,6 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           component_name: nomenclature,
           hr_name: nomenclature,
         };
-        // updateGeneContexts(descriptor);
         saveComponent(items, index, geneComponent);
         break;
       case 'transcript_segment':
@@ -217,7 +215,6 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           hr_name: `${tx_ac}(${tx_gene}):${hrExon}`,
           shorthand: tx_ac,
         };
-        // updateGeneContexts(tx_descriptor);
         saveComponent(items, index, txComponent);
         break;
       case 'templated_sequence':
@@ -270,26 +267,6 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
         break;
     }
   };
-
-  // const updateGeneContexts = (geneDescriptor: GeneDescriptor) => {
-  //   const geneId = geneDescriptor.gene_id;
-  //   if (!(geneId in globalGenes)) {
-  //     setGlobalGenes(
-  //       {
-  //         ...globalGenes,
-  //         ...{ [geneId]: geneDescriptor }
-  //       }
-  //     );
-  //     getAssociatedDomains(geneId).then(response => {
-  //       setDomainOptions(
-  //         {
-  //           ...domainOptions,
-  //           ...{ [geneId]: response.suggestions }
-  //         }
-  //       );
-  //     });
-  //   }
-  // };
 
   const saveComponent = (items: Array<Object>, index: number, newObj: Object) => {
     items.splice(index, 1, newObj);
