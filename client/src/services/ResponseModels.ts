@@ -97,31 +97,14 @@ export interface ClientComponent {
   shorthand?: string;
 }
 /**
- * Fusion with client-oriented structural component models. Used in global
- * FusionContext.
+ * Define critical domain object used client-side.
  */
-export interface ClientFusion {
-  r_frame_preserved?: boolean;
-  protein_domains?: CriticalDomain[];
-  structural_components: (
-    | ClientTranscriptSegmentComponent
-    | ClientGeneComponent
-    | ClientAnyGeneComponent
-    | ClientUnknownGeneComponent
-    | ClientTemplatedSequenceComponent
-    | ClientLinkerComponent
-  )[];
-  causative_event?: Event;
-  regulatory_elements?: RegulatoryElement[];
-}
-/**
- * Define CriticalDomain class
- */
-export interface CriticalDomain {
+export interface ClientCriticalDomain {
   id: CURIE;
   name: string;
   status: DomainStatus;
   gene_descriptor: GeneDescriptor;
+  domain_id: string;
 }
 /**
  * This descriptor is intended to reference VRS Gene value objects.
@@ -157,6 +140,24 @@ export interface Extension {
 export interface Gene {
   type?: "Gene";
   gene_id: CURIE;
+}
+/**
+ * Fusion with client-oriented structural component models. Used in global
+ * FusionContext.
+ */
+export interface ClientFusion {
+  r_frame_preserved?: boolean;
+  protein_domains: ClientCriticalDomain[];
+  structural_components: (
+    | ClientTranscriptSegmentComponent
+    | ClientGeneComponent
+    | ClientAnyGeneComponent
+    | ClientUnknownGeneComponent
+    | ClientTemplatedSequenceComponent
+    | ClientLinkerComponent
+  )[];
+  causative_event?: Event;
+  regulatory_elements: ClientRegulatoryElement[];
 }
 /**
  * TranscriptSegment component class used client-side.
@@ -328,19 +329,21 @@ export interface ClientLinkerComponent {
   linker_sequence: SequenceDescriptor;
 }
 /**
- * Define RegulatoryElement class
- */
-export interface RegulatoryElement {
-  type: RegulatoryElementType;
-  gene_descriptor: GeneDescriptor;
-}
-/**
  * Regulatory element object used client-side.
  */
 export interface ClientRegulatoryElement {
   type: RegulatoryElementType;
   gene_descriptor: GeneDescriptor;
   element_id: string;
+}
+/**
+ * Define CriticalDomain class
+ */
+export interface CriticalDomain {
+  id: CURIE;
+  name: string;
+  status: DomainStatus;
+  gene_descriptor: GeneDescriptor;
 }
 /**
  * Request model for genomic coordinates retrieval
@@ -436,6 +439,13 @@ export interface LinkerComponent {
  */
 export interface UnknownGeneComponent {
   component_type?: "unknown_gene";
+}
+/**
+ * Define RegulatoryElement class
+ */
+export interface RegulatoryElement {
+  type: RegulatoryElementType;
+  gene_descriptor: GeneDescriptor;
 }
 /**
  * Response model for fusion validation endpoint.

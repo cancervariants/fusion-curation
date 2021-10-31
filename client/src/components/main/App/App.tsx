@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NavTabs from '../Nav/NavTabs';
 import { SuggestionContext } from '../../../global/contexts/SuggestionContext';
 import { FusionContext } from '../../../global/contexts/FusionContext';
 import { GeneContext } from '../../../global/contexts/GeneContext';
 import { DomainOptionsContext } from '../../../global/contexts/DomainOptionsContext';
+import { ClientFusion } from '../../../services/ResponseModels';
+
 import '../../../global/styles/global.scss';
 import { ThemeProvider, Button } from '@material-ui/core';
 import theme from '../../../global/styles/theme';
-
 import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext';
 import './App.scss';
 
-const demoData = {
+const demoData: ClientFusion = {
   'structural_components': [
     {
       'component_type': 'transcript_segment',
@@ -56,35 +57,35 @@ const demoData = {
     },
     {
       'component_type': 'templated_sequence',
-      'component_name': 'chr12:44908821_44908822(+)',
-      'hr_name': 'chr12:44908821_44908822(+)',
-      'component_id': 'fa57c20d-cda5-480a-aa4b-bf0a2a2355c1',
       'region': {
-        'id': 'chr12:44908821-44908822(+)',
+        'id': 'fusor.location_descriptor:12',
         'type': 'LocationDescriptor',
+        'location_id': 'ga4gh:VSL.yV48KeMFxaYYDFEoQ3d4__vav-_qeokW',
         'location': {
           'type': 'SequenceLocation',
-          'sequence_id': 'ga4gh:SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl',
+          'sequence_id': 'sequence.id:12',
           'interval': {
-            'type': 'SequenceLocation',
+            'type': 'SequenceInterval',
             'start': {
               'type': 'Number',
-              'value': '44908821'
+              'value': 44908820
             },
             'end': {
               'type': 'Number',
-              'value': '44908822'
+              'value': 44908822
             }
           }
-        },
-        'label': 'chr12:44908821-44908822(+)'
+        }
       },
-      'strand': '+'
+      'strand': '+',
+      'component_id': 'c187c893-0f88-415e-b247-4adc2558bd5f',
+      'component_name': 'chr12:44908820_44908822(+)',
+      'hr_name': 'chr12:44908820_44908822(+)'
     }
   ],
   'regulatory_elements': [
     {
-      'type': 'Promoter',
+      'type': 'promoter',
       'element_id': '6dbcce67-ea8e-4d11-b63d-38e6321c94e2',
       'gene_descriptor': {
         'id': 'gene:braf',
@@ -96,7 +97,7 @@ const demoData = {
   ],
   'protein_domains': [
     {
-      'status': 'Preserved',
+      'status': 'preserved',
       'name': 'Cystatin domain',
       'id': 'interpro:IPR000010',
       'domain_id': '4f8c295a-1302-41ff-9fab-17807617810a',
@@ -108,15 +109,42 @@ const demoData = {
     }
   ],
   'r_frame_preserved': true,
-  'causative_event': 'Rearrangement'
+  'causative_event': 'rearrangement'
 };
 
 const App = (): React.ReactElement => {
 
   const [suggestions, setSuggestions] = useState<unknown>([]);
-  const [fusion, setFusion] = useState<Object>({});
+  const [fusion, setFusion] = useState<ClientFusion>({} as ClientFusion);
   const [globalGenes, setGlobalGenes] = useState<Object>({});
   const [domainOptions, setDomainOptions] = useState<Object>({});
+
+  // update global genes and domain options context
+  useEffect(() => {
+    const remainingGeneIds: Array<string> = [];
+    fusion.structural_components?.forEach(comp => {
+      switch(comp.component_type) {
+        case 'gene':
+          remainingGeneIds.push(comp.gene_descriptor.gene_id);
+          break;
+        case 'transcript_segment':
+          remainingGeneIds.push(comp.gene_descriptor.gene_id);
+          break;
+      }
+    });
+    fusion.regulatory_elements?.forEach(re => {
+      remainingGeneIds.push(re.gene_descriptor.gene_id);
+    });
+    const uniqueRemainingGeneIds: Array<string> = remainingGeneIds.filter(
+      (geneId, index) => remainingGeneIds.indexOf(geneId) === index
+    );
+    const geneContextCopy = {};
+    uniqueRemainingGeneIds.forEach((geneId: string) => {
+      geneContextCopy[geneId] = globalGenes[geneId];
+    });
+    setGlobalGenes(geneContextCopy);
+    // TODO for each gene, copy domain option over
+  }, [fusion]);
 
   // disable superfluous react_dnd warnings
   window['__react-beautiful-dnd-disable-dev-warnings'] = true;

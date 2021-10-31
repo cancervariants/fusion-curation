@@ -125,6 +125,8 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     newItem.component_id = uuid();
     destClone.splice(destination.index, 0, newItem);
     setStructure(destClone);
+
+    // auto-save components that don't need any additional input
     if (newItem.component_type === 'any_gene') {
       handleSave(destination.index, {
         component_type: 'any_gene',
@@ -218,14 +220,6 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
         updateGeneContexts(tx_descriptor);
         saveComponent(items, index, txComponent);
         break;
-
-        //TODO: nested genomic region (lookup GR based on transcript and vice versa)
-        // getSequenceId(chr).then(sequenceResponse => {
-        //   let [sequence, sequence_id, warnings] = sequenceResponse;
-        // })
-        // });
-
-        break;
       case 'templated_sequence':
         if (
           component.region.location.type !== 'SequenceLocation'
@@ -290,7 +284,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
         setDomainOptions(
           {
             ...domainOptions,
-            ...{ [`${geneDescriptor.label}(${geneId})`]: response.suggestions }
+            ...{ [geneId]: response.suggestions }
           }
         );
       });

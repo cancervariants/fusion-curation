@@ -58,14 +58,12 @@ const DomainForm: React.FC = () => {
       console.error('error');
       return;
     }
-    console.log(gene);
-    const geneId = gene.split(/\(|\)/)[1];
     const newDomain: ClientCriticalDomain = {
       status: status.toLowerCase() as DomainStatus,
       name: domainOptions[gene].find(e => e[0] === domain)[1],
       id: domain,
       domain_id: uuid(),
-      gene_descriptor: globalGenes[geneId]
+      gene_descriptor: globalGenes[gene]
     };
 
     const cloneArray = Array.from(fusion['protein_domains']);
@@ -81,12 +79,12 @@ const DomainForm: React.FC = () => {
     // concatenate default/unselectable option with all selectable genes
     return [
       (<MenuItem key={-1} value="" disabled></MenuItem>)
-    ].concat(Object.keys(domainOptions).map((gene_name: string, index: number) => (
+    ].concat(Object.keys(domainOptions).map((geneId: string, index: number) => (
       <MenuItem
         key={index}
-        value={gene_name}
+        value={geneId}
       >
-        {gene_name}
+        {`${globalGenes[geneId].label}(${geneId})`}
       </MenuItem>
     )));
   };

@@ -4,6 +4,7 @@ import { FusionContext } from '../../../../global/contexts/FusionContext';
 
 import './RegElement.scss';
 import RegElementForm from '../RegElementForm/RegElementForm';
+import { ClientRegulatoryElement } from '../../../../services/ResponseModels';
 
 interface Props {
   index: number
@@ -19,7 +20,7 @@ export const RegElement: React.FC<Props> = ({ index }) => {
   // unmutated selected suggestion
   const initialElements = useRef(regElements);
 
-  const handleRemove = (regEl) => {
+  const handleRemove = (regEl: ClientRegulatoryElement) => {
     //copy regulatory elements array, then remove the element with the relevant ID
     let cloneArray = Array.from(regElements);
     cloneArray = cloneArray.filter((obj) => {
