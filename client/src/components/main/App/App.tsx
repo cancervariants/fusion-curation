@@ -11,6 +11,7 @@ import { ThemeProvider, Button } from '@material-ui/core';
 import theme from '../../../global/styles/theme';
 import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext';
 import './App.scss';
+import { getAssociatedDomains } from '../../../services/main';
 
 const demoData: ClientFusion = {
   'structural_components': [
@@ -121,14 +122,16 @@ const App = (): React.ReactElement => {
 
   // update global genes and domain options context
   useEffect(() => {
+    const newGenes = {};
     const remainingGeneIds: Array<string> = [];
     fusion.structural_components?.forEach(comp => {
-      switch(comp.component_type) {
+      switch (comp.component_type) {
         case 'gene':
-          remainingGeneIds.push(comp.gene_descriptor.gene_id);
-          break;
         case 'transcript_segment':
           remainingGeneIds.push(comp.gene_descriptor.gene_id);
+          if (!(comp.gene_descriptor.gene_id in globalGenes)) {
+            newGenes[comp.gene_descriptor.gene_id] = comp.gene_descriptor;
+          }
           break;
       }
     });
@@ -140,11 +143,28 @@ const App = (): React.ReactElement => {
     );
     const geneContextCopy = {};
     uniqueRemainingGeneIds.forEach((geneId: string) => {
-      geneContextCopy[geneId] = globalGenes[geneId];
+      if (geneId in globalGenes) {
+        geneContextCopy[geneId] = globalGenes[geneId];
+      } else {
+        geneContextCopy[geneId] = newGenes[geneId];
+      }
     });
     setGlobalGenes(geneContextCopy);
-    // TODO for each gene, copy domain option over
   }, [fusion]);
+
+  useEffect(() => {
+    const updatedDomainOptions = {};
+    Object.keys(globalGenes).forEach((geneId: string) => {
+      if (geneId in domainOptions) {
+        updatedDomainOptions[geneId] = domainOptions[geneId];
+      } else {
+        getAssociatedDomains(geneId).then(response => {
+          updatedDomainOptions[geneId] = response.suggestions;
+        });
+      }
+    });
+    setDomainOptions(updatedDomainOptions);
+  }, [globalGenes]);
 
   // disable superfluous react_dnd warnings
   window['__react-beautiful-dnd-disable-dev-warnings'] = true;
