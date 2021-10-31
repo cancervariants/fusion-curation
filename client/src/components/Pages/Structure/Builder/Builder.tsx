@@ -421,7 +421,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           </Droppable>
           <div className='hr-section'>
             {
-              structuralComponents.map((comp, index: number) => (
+              structuralComponents.filter(comp => Boolean(comp)).map((comp, index: number) => (
                 <div key={comp.component_id}>{`${index ? '::' : ''}${comp.hr_name}`}</div>
               ))
             }
