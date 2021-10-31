@@ -232,7 +232,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           return;
         }
         const name = `chr${component.region.location.sequence_id.split(':')[1]}:` +
-          `${component.region.location.interval.start.value}_` +
+          `g.${component.region.location.interval.start.value}_` +
           `${component.region.location.interval.end.value}(${component.strand})`;
         const templatedSequenceComponent: ClientTemplatedSequenceComponent = {
           ...component,
@@ -255,8 +255,8 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
         const anyGeneComponent: ClientAnyGeneComponent = {
           ...component,
           component_id: uuid(),
-          component_name: 'AnyGene',
-          hr_name: 'AnyGene'
+          component_name: '*',
+          hr_name: '*'
         };
         saveComponent(items, index, anyGeneComponent);
         break;
@@ -264,8 +264,8 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
         const unknownGeneComponent: ClientUnknownGeneComponent = {
           ...component,
           component_id: uuid(),
-          component_name: 'UnknownGene',
-          hr_name: 'UnknownGene'
+          component_name: '?',
+          hr_name: '?'
         };
         saveComponent(items, index, unknownGeneComponent);
         break;
