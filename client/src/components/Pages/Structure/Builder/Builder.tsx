@@ -180,9 +180,9 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
         break;
       case 'transcript_segment':
         const { exon_start, exon_start_offset, exon_end, exon_end_offset } = component;
-        const tx_ac = component.transcript;
-        const tx_descriptor = component.gene_descriptor;
-        const tx_gene = tx_descriptor.label;
+        const txAc = component.transcript;
+        const txGeneDescriptor = component.gene_descriptor;
+        const txGeneSymbol = txGeneDescriptor.label;
         let eso: string;
         if (exon_start_offset > 0) {
           eso = `+${exon_start_offset}`;
@@ -210,14 +210,15 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           hrExon = `e[_${exon_end}${eeo}]`;
         }
 
+        const txAcName = txAc.split(':')[1];
+
         const txComponent: ClientTranscriptSegmentComponent = {
           ...component,
           component_id: uuid(),
-          component_name: `${tx_ac} ${tx_gene}`,
-          hr_name: `${tx_ac}(${tx_gene}):${hrExon}`,
-          shorthand: tx_ac,
+          component_name: `${txAcName} ${txGeneSymbol}`,
+          hr_name: `${txAcName}(${txGeneSymbol}):${hrExon}`,
+          shorthand: txAcName,
         };
-        // updateGeneContexts(tx_descriptor);
         saveComponent(items, index, txComponent);
         break;
       case 'templated_sequence':
