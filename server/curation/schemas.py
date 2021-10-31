@@ -6,7 +6,7 @@ from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
 from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
 from fusor.models import Fusion, TranscriptSegmentComponent, LinkerComponent, \
     TemplatedSequenceComponent, GeneComponent, UnknownGeneComponent, \
-    AnyGeneComponent, RegulatoryElement
+    AnyGeneComponent, RegulatoryElement, CriticalDomain
 
 
 ResponseWarnings = Optional[List[StrictStr]]
@@ -61,6 +61,17 @@ class ClientRegulatoryElement(RegulatoryElement):
     """Regulatory element object used client-side."""
 
     element_id: str
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
+
+
+class ClientCriticalDomain(CriticalDomain):
+    """Define critical domain object used client-side."""
+
+    domain_id: str
 
     class Config:
         """Configure class."""
@@ -226,3 +237,5 @@ class ClientFusion(Fusion):
                                       ClientUnknownGeneComponent,
                                       ClientTemplatedSequenceComponent,
                                       ClientLinkerComponent]]
+    regulatory_elements: List[ClientRegulatoryElement]
+    protein_domains: List[ClientCriticalDomain]
