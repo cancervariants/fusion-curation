@@ -203,11 +203,11 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
 
         let hrExon: string;
         if (exon_start && exon_end) {
-          hrExon = `e[${exon_start}${eso}_${exon_end}${eeo}]`;
+          hrExon = `e.${exon_start}${eso}_${exon_end}${eeo}`;
         } else if (exon_start) {
-          hrExon = `e[${exon_start}${eso}_]`;
+          hrExon = `e.${exon_start}${eso}_`;
         } else {
-          hrExon = `e[_${exon_end}${eeo}]`;
+          hrExon = `e._${exon_end}${eeo}`;
         }
 
         const txAcName = txAc.split(':')[1];
