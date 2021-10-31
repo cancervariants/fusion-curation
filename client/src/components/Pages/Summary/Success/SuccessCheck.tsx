@@ -4,9 +4,8 @@ import * as React from 'react';
 import { useColorTheme } from '../../../../global/contexts/Theme/ColorThemeContext';
 
 
-const SvgComponent = (props) => {
+const SvgComponent = (props: Object): React.ReactElement => {
   const { colorTheme } = useColorTheme();
-  console.log(props);
 
   return (
     <svg

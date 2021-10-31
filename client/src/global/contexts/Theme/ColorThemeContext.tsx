@@ -26,4 +26,4 @@ export const ColorThemeProvider: React.FC = ({ children }) => {
   );
 };
 
-export const useColorTheme = () => React.useContext(ColorThemeContext);
+export const useColorTheme = (): Object => React.useContext(ColorThemeContext);
