@@ -68,10 +68,10 @@ export const Questions: React.FC<Props> = ({ index }) => {
           onChange={handleCauseChange}
           className={classes.formControl}
         >
-          <FormControlLabel value='Rearrangement' control={<Radio />} label='Rearrangement' />
-          <FormControlLabel value='Read-through' control={<Radio />} label='Read-through' />
-          <FormControlLabel value='Trans-splicing' control={<Radio />} label='Trans-splicing' />
-          <FormControlLabel value='Unknown' control={<Radio />} label='Unknown' />
+          <FormControlLabel value='rearrangement' control={<Radio />} label='Rearrangement' />
+          <FormControlLabel value='read-through' control={<Radio />} label='Read-through' />
+          <FormControlLabel value='trans-splicing' control={<Radio />} label='Trans-splicing' />
+          <FormControlLabel value='unknown' control={<Radio />} label='Unknown' />
         </RadioGroup>
       </FormControl>
     </div>
