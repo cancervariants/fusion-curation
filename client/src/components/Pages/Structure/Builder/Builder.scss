@@ -45,6 +45,19 @@
 			text-align: center;
 		}
 
+		.button-edit {
+			position: absolute;
+			right: 30px;
+			top: 1px;
+			cursor: pointer;
+		}
+
+		.button-edit-disabled {
+			position: absolute;
+			right: 30px;
+			top: 1px;
+		}
+
 		.button-trash {
 			position: absolute;
 			right: 0;

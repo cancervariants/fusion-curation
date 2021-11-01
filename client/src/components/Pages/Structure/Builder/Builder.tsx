@@ -16,11 +16,18 @@ import {
   UnknownGeneComponent
 } from '../../../../services/ResponseModels';
 import ButtonTrash from '../../../main/shared/Buttons/ButtonTrash';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Delete from '@material-ui/icons/Delete';
 // import { unstable_createMuiStrictModeTheme } from '@material-ui/core';
 
 interface Props {
   structuralComponents
 }
+
+const EDITABLE_COMPONENT_TYPES = [
+  'gene', 'linker_sequence', 'templated_sequence', 'transcript_segment'
+];
 
 // these are the empty object templates the user drags into the array
 // TODO: should be dynamic
@@ -286,7 +293,12 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     setStructure(items);
   };
 
-  // TODO: update gene/domain contexts
+  const handleEdit = (component_id: string) => {
+    // change edit mode
+    // for now, just close whatever's being edited?
+    setEditMode(component_id);
+  };
+
   const handleDelete = (uuid: string) => {
     let items = Array.from(structure);
     items = items.filter(item => item.component_id !== uuid);
@@ -405,12 +417,22 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
                                 <div className="hr-name">
                                   {hr_name}
                                 </div>
-                                <div
+                                {
+                                  EDITABLE_COMPONENT_TYPES.includes(component_type) ?
+                                    <EditIcon
+                                      className="button-edit"
+                                      onClick={() => handleEdit(component_id)}
+                                    />
+                                    :
+                                    <EditIcon
+                                      className="button-edit-disabled"
+                                      color="disabled"
+                                    />
+                                }
+                                <DeleteIcon
                                   className="button-trash"
                                   onClick={() => handleDelete(component_id)}
-                                >
-                                  <ButtonTrash fill="#878799" width="40" height="15" />
-                                </div>
+                                />
                               </div>
                           }
                         </div>

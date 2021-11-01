@@ -14,8 +14,10 @@ export const Domain: React.FC<Props> = () => {
 
   const domains = fusion.protein_domains || [];
 
+  // TODO working stuff related to domain suggestions
   // Don't want to change the suggested domain based on user entries
   // should maybe create a separate context of the unmutated selected suggestion
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const initialDomains = useRef(domains);
 
   const handleRemove = (domain) => {
@@ -31,26 +33,6 @@ export const Domain: React.FC<Props> = () => {
     <div className='domain-tab-container'>
       <div className='left'>
         <div className='blurb-container'>
-          {
-            initialDomains.current.length > 0 ?
-              <div className='blurb'>
-                The
-                {
-                  initialDomains.current.map((domain, index: number) => (
-                    <span
-                      className='bold'
-                      key={index}
-                    >
-                      {domain.gene_descriptor.label} {domain.type}
-                    </span>
-                  ))
-                } protein functional domain appears to be affected.
-              </div>
-              :
-              <div className='blurb'>
-                No protein functional domains found.
-              </div>
-          }
           <div className='sub-blurb'>
             You can add or remove domains.
           </div>
