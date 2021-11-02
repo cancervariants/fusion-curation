@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getGeneSuggestions } from '../../../../services/main';
@@ -15,6 +15,18 @@ export const GeneAutocomplete: React.FC<Props> = (
   { selectedGene, setSelectedGene, geneError, setGeneError, style }
 ) => {
   const [geneOptions, setGeneOptions] = useState([]);
+
+  // set error message
+  // TODO:
+  // * how to handle cases where gene terms are valid but possible completions exceed limit?
+  // * concept IDs?
+  useEffect(() => {
+    if (selectedGene && !geneOptions.includes(selectedGene)) {
+      setGeneError('Unrecognized gene term');
+    } else {
+      setGeneError('');
+    }
+  }, [geneOptions]);
 
   const updateAutocomplete = (term: string) => {
     setGeneError('');
