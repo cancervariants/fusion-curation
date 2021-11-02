@@ -488,7 +488,7 @@ export const TransCompInput: React.FC<Props> = (
                     error={linkerError}
                     helperText={linkerError ? 'Warning: must contain only {A, C, G, T}' : null}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === 'Enter' && sequence !== '' && !linkerError) {
                         buildLinkerComponent();
                       }
                     }}
@@ -503,15 +503,26 @@ export const TransCompInput: React.FC<Props> = (
                   >
                     Cancel
                   </Button>
-                  <Button
-                    style={{ margin: '8px' }}
-                    variant="outlined"
-                    disabled={linkerError}
-                    color="primary"
-                    onClick={buildLinkerComponent}
-                  >
-                    Save
-                  </Button>
+                  {
+                    (sequence !== '' && !linkerError) ?
+                      <Button
+                        style={{ margin: '8px' }}
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => buildLinkerComponent()}
+                      >
+                        Save
+                      </Button>
+                      :
+                      <Button
+                        style={{ margin: '8px' }}
+                        variant="outlined"
+                        color="primary"
+                        disabled
+                      >
+                        Save
+                      </Button>
+                  }
                 </div>
               </div>
             </CardContent>
@@ -540,14 +551,26 @@ export const TransCompInput: React.FC<Props> = (
                   >
                     Cancel
                   </Button>
-                  <Button
-                    style={{ margin: '8px' }}
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => buildGeneComponent(gene)}
-                  >
-                    Save
-                  </Button>
+                  {
+                    (gene !== '') ?
+                      <Button
+                        style={{ margin: '8px' }}
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => buildGeneComponent(gene)}
+                      >
+                        Save
+                      </Button>
+                      :
+                      <Button
+                        style={{ margin: '8px' }}
+                        variant="outlined"
+                        color="primary"
+                        disabled
+                      >
+                        Save
+                      </Button>
+                  }
                 </div>
               </div>
             </CardContent>
