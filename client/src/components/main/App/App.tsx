@@ -1,17 +1,18 @@
+import { ThemeProvider } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import NavTabs from '../Nav/NavTabs';
-import { SuggestionContext } from '../../../global/contexts/SuggestionContext';
+import { DomainOptionsContext } from '../../../global/contexts/DomainOptionsContext';
 import { FusionContext } from '../../../global/contexts/FusionContext';
 import { GeneContext } from '../../../global/contexts/GeneContext';
-import { DomainOptionsContext } from '../../../global/contexts/DomainOptionsContext';
-import { ClientFusion } from '../../../services/ResponseModels';
-
-import '../../../global/styles/global.scss';
-import { ThemeProvider, Button } from '@material-ui/core';
-import theme from '../../../global/styles/theme';
+import { SuggestionContext } from '../../../global/contexts/SuggestionContext';
 import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext';
-import './App.scss';
+import '../../../global/styles/global.scss';
+import theme from '../../../global/styles/theme';
 import { getAssociatedDomains } from '../../../services/main';
+import { ClientFusion } from '../../../services/ResponseModels';
+import NavTabs from '../Nav/NavTabs';
+import ButtonTop from '../shared/Buttons/ButtonTop';
+import './App.scss';
+
 
 const demoData: ClientFusion = {
   'structural_components': [
@@ -195,6 +196,7 @@ const App = (): React.ReactElement => {
     setGlobalGenes(geneContextCopy);
   }, [fusion]);
 
+  // update domain options based on available genes
   useEffect(() => {
     const updatedDomainOptions = {};
     Object.keys(globalGenes).forEach((geneId: string) => {
@@ -214,6 +216,11 @@ const App = (): React.ReactElement => {
 
   const { colorTheme } = useColorTheme();
 
+  const handleClear = () => {
+    setFusion({} as ClientFusion);
+    setGlobalGenes({});
+    setDomainOptions({});
+  };
   const handleDemo = () => setFusion(demoData);
 
   document.title = 'VICC Fusion Curation';
@@ -228,14 +235,21 @@ const App = (): React.ReactElement => {
                 style={{
                   ...colorTheme
                 } as React.CSSProperties}>
-                <div className='demo-button-container'>
-                  <Button
+                <div className='top-button-container'>
+                  <ButtonTop
+                    text='Clear All'
+                    variant='contained'
+                    color='secondary'
+                    onClick={() => handleClear()}
+                  />
+                  <ButtonTop
+                    text='Demo Data'
                     variant='contained'
                     color='secondary'
                     onClick={() => handleDemo()}
-                  >Demo Data</Button>
+                  />
                 </div>
-                <h1 className='title'>Fusion Curation</h1>
+                <h1 className='title'>VICC Fusion Curation Interface</h1>
                 <div className='main-component'>
                   <NavTabs />
                 </div>
