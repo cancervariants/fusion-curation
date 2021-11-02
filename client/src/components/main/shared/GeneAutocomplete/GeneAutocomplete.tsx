@@ -21,15 +21,15 @@ export const GeneAutocomplete: React.FC<Props> = (
   // * how to handle cases where gene terms are valid but possible completions exceed limit?
   // * concept IDs?
   useEffect(() => {
-    if (selectedGene && !geneOptions.includes(selectedGene)) {
-      setGeneError('Unrecognized gene term');
+    if (selectedGene !== '' && !geneOptions.includes(selectedGene)) {
+      setGeneError('Unrecognized term');
     } else {
       setGeneError('');
     }
   }, [geneOptions]);
 
   const updateAutocomplete = (term: string) => {
-    setGeneError('');
+    // setGeneError('');
     getGeneSuggestions(term).then(responseJson => {
       const suggestions = [];
       responseJson.suggestions?.forEach(suggestion => {
@@ -62,6 +62,8 @@ export const GeneAutocomplete: React.FC<Props> = (
             if (event.target.value !== '' && event.target.value !== null) {
               updateAutocomplete(event.target.value);
               setSelectedGene(event.target.value);
+            } else if (event.target.value === '') {
+              setGeneError('');
             }
           }}
           helperText={geneError !== '' ? geneError : null}
