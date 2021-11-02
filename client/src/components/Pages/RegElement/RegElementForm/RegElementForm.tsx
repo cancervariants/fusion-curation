@@ -1,12 +1,12 @@
-import { useContext, useState, useEffect } from 'react';
-import { InputLabel, MenuItem, FormControl, Select, Button } from '@material-ui/core/';
+import { Button, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core/';
 import { makeStyles } from '@material-ui/core/styles';
-import { FusionContext } from '../../../../global/contexts/FusionContext';
+import { useContext, useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
-import './RegElementForm.scss';
+import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { getGeneId } from '../../../../services/main';
-import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
 import { ClientRegulatoryElement } from '../../../../services/ResponseModels';
+import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
+import './RegElementForm.scss';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -19,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const RegElementForm: React.FC = () => {
-
   // TODO: this shouldnt be necessary
   useEffect(() => {
     if (regElements === undefined) {
@@ -30,7 +29,6 @@ const RegElementForm: React.FC = () => {
   const classes = useStyles();
 
   const { fusion, setFusion } = useContext(FusionContext);
-
   const regElements = fusion.regulatory_elements;
 
   const [type, setType] = useState(null);
@@ -40,7 +38,6 @@ const RegElementForm: React.FC = () => {
   const handleTypeChange = (event) => {
     setType(event.target.value);
   };
-
 
   const handleAdd = () => {
     getGeneId(gene)
