@@ -12,11 +12,11 @@ interface Props {
 export const Structure: React.FC<Props> = ({ index }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { fusion, setFusion } = useContext(FusionContext);
-  const [ structuralComponents, setStructuralComponents ] = useState([]);
+  const [structuralComponents, setStructuralComponents] = useState([]);
 
-  useEffect(() => setStructuralComponents(fusion.structural_components || []), [fusion]);
-
-  // const structuralComponents = fusion.structural_components || [];
+  useEffect(() => {
+    setStructuralComponents(fusion.structural_components || []);
+  }, [fusion]);
 
   return (
     <div className="structure-tab-container">

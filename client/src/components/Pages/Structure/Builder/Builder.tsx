@@ -119,6 +119,8 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
         diagram.push(comp)
       ));
       setStructure(diagram);
+    } else {
+      setStructure([]);
     }
   }, [structuralComponents]);
 
