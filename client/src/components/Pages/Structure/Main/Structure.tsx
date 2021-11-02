@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 
 import Builder from '../Builder/Builder';
@@ -12,8 +12,11 @@ interface Props {
 export const Structure: React.FC<Props> = ({ index }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { fusion, setFusion } = useContext(FusionContext);
+  const [ structuralComponents, setStructuralComponents ] = useState([]);
 
-  const structuralComponents = fusion.structural_components || [];
+  useEffect(() => setStructuralComponents(fusion.structural_components || []), [fusion]);
+
+  // const structuralComponents = fusion.structural_components || [];
 
   return (
     <div className="structure-tab-container">
