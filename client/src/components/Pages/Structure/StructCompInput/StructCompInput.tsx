@@ -9,7 +9,8 @@ import {
 } from '../../../../services/main';
 import { LinkerComponent } from '../../../../services/ResponseModels';
 import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
-import './TransCompInput.scss';
+import GeneComponent from '../GeneComponent/GeneComponent';
+import './StructCompInput.scss';
 
 interface Props {
   compType: string,
@@ -21,7 +22,7 @@ interface Props {
 
 // TODO: disappear error onChange
 
-export const StructuralComponentInput: React.FC<Props> = (
+const StructCompInput: React.FC<Props> = (
   { compType, handleCancel, handleSave, index, id }
 ) => {
   // Templated sequence
@@ -337,23 +338,6 @@ export const StructuralComponentInput: React.FC<Props> = (
     handleSave(index, linkerComponent);
   };
 
-  // Gene
-  const [gene, setGene] = useState<string>('');
-  const [geneError, setGeneError] = useState('');
-
-  const buildGeneComponent = (term: string) => {
-    getGeneComponent(term)
-      .then(geneComponentResponse => {
-        if (geneComponentResponse.warnings?.length > 0) {
-          setGeneError('Gene not found');
-          return;
-        } else {
-          handleSave(index, geneComponentResponse.component);
-        }
-      });
-  };
-
-
   const renderSwitch = (compType: string) => {
     switch (compType) {
       case 'templated_sequence':
@@ -519,39 +503,12 @@ export const StructuralComponentInput: React.FC<Props> = (
         );
       case 'gene':
         return (
-          <Card >
-            <CardContent>
-              <div className="card-parent">
-                <div className="input-parent">
-                  <GeneAutocomplete
-                    selectedGene={gene}
-                    setSelectedGene={setGene}
-                    geneError={geneError}
-                    setGeneError={setGeneError}
-                    style={{ width: 125 }}
-                  />
-                </div>
-                <div className="buttons">
-                  <Button
-                    style={{ margin: '8px' }}
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => handleCancel(id)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    style={{ margin: '8px' }}
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => buildGeneComponent(gene)}
-                  >
-                    Save
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <GeneComponent
+            index={index}
+            uuid={id}
+            handleCancel={handleCancel}
+            handleSave={handleSave}
+          />
         );
     }
   };
@@ -564,3 +521,5 @@ export const StructuralComponentInput: React.FC<Props> = (
     </>
   );
 };
+
+export default StructCompInput;

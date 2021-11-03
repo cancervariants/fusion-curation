@@ -13,7 +13,7 @@ import {
   ClientUnknownGeneComponent, GeneComponent, LinkerComponent, TemplatedSequenceComponent,
   TranscriptSegmentComponent, UnknownGeneComponent
 } from '../../../../services/ResponseModels';
-import { StructCompInput } from '../StructCompInput/StructCompInput';
+import StructCompInput from '../StructCompInput/StructCompInput';
 import './Builder.scss';
 // import { unstable_createMuiStrictModeTheme } from '@material-ui/core';
 
