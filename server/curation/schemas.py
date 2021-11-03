@@ -1,5 +1,5 @@
 """Provide schemas for FastAPI responses."""
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union, Literal
 from abc import ABC
 
 from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
@@ -24,7 +24,9 @@ class ClientComponent(BaseModel, ABC):
 class ClientTranscriptSegmentComponent(TranscriptSegmentComponent, ClientComponent):
     """TranscriptSegment component class used client-side."""
 
-    pass
+    input_type: Union[Literal["genomic_coords_gene"],
+                      Literal["genomic_coords_tx"],
+                      Literal["exon_coords_tx"]]
 
 
 class ClientLinkerComponent(LinkerComponent, ClientComponent):

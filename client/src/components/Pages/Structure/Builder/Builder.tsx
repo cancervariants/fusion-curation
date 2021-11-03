@@ -1,24 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect, useContext } from 'react';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import React, { useContext, useEffect, useState } from 'react';
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { v4 as uuid } from 'uuid';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
-import { GeneContext } from '../../../../global/contexts/GeneContext';
-import { DomainOptionsContext } from '../../../../global/contexts/DomainOptionsContext';
-import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
-import './Builder.scss';
-import { TransCompInput } from '../TransCompInput/TransCompInput';
 import {
-  AnyGeneComponent,
-  ClientAnyGeneComponent,
-  ClientGeneComponent, ClientLinkerComponent, ClientTemplatedSequenceComponent,
-  ClientTranscriptSegmentComponent, ClientUnknownGeneComponent, GeneComponent,
-  LinkerComponent, TemplatedSequenceComponent, TranscriptSegmentComponent,
-  UnknownGeneComponent
+  AnyGeneComponent, ClientAnyGeneComponent, ClientComponent, ClientGeneComponent,
+  ClientLinkerComponent, ClientTemplatedSequenceComponent, ClientTranscriptSegmentComponent,
+  ClientUnknownGeneComponent, GeneComponent, LinkerComponent, TemplatedSequenceComponent,
+  TranscriptSegmentComponent, UnknownGeneComponent
 } from '../../../../services/ResponseModels';
-import ButtonTrash from '../../../main/shared/Buttons/ButtonTrash';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Delete from '@material-ui/icons/Delete';
+import GeneCompInput from '../Input/GeneCompInput/GeneCompInput';
+import LinkerCompInput from '../Input/LinkerCompInput/LinkerCompInput';
+import TemplatedSequenceCompInput
+  from '../Input/TemplatedSequenceCompInput/TemplatedSequenceCompInput';
+import TxSegmentCompInput from '../Input/TxSegmentCompInput/TxSegmentCompInput';
+import './Builder.scss';
 // import { unstable_createMuiStrictModeTheme } from '@material-ui/core';
 
 interface Props {
@@ -103,14 +101,10 @@ const OPTIONS = [
 const Builder: React.FC<Props> = ({ structuralComponents }) => {
   // Fusion object constructed throughout app lifecycle
   const { fusion, setFusion } = useContext(FusionContext);
-  // global genes context
-  const { globalGenes, setGlobalGenes } = useContext(GeneContext);
-  // Choosable domains based on genes provided in components
-  const { domainOptions, setDomainOptions } = useContext(DomainOptionsContext);
   // displayed structural elements
   const [structure, setStructure] = useState([]);
-
-  const [editMode, setEditMode] = useState('');
+  // load input interface instead of completed component element for these UUIDs
+  const [editMode, setEditMode] = useState([]);
 
   useEffect(() => {
     const diagram = [];
@@ -124,6 +118,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     }
   }, [structuralComponents]);
 
+  // drop new component into structure
   const copy = (result: DropResult) => {
     const { source, destination } = result;
     const sourceClone = Array.from(OPTIONS);
@@ -136,27 +131,22 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
 
     // auto-save components that don't need any additional input
     if (newItem.component_type === 'any_gene') {
-      handleSave(destination.index, {
+      handleSave(destination.index, newItem.component_id, {
         component_type: 'any_gene',
       });
     } else if (newItem.component_type === 'unknown_gene') {
-      handleSave(destination.index, {
+      handleSave(destination.index, newItem.component_id, {
         'component_type': 'unknown_gene',
       });
     } else {
-      setEditMode(newItem.component_id);
+      const newEditMode = editMode;
+      newEditMode.push(newItem.component_id);
+      setEditMode(newEditMode);
     }
   };
 
   const reorder = (result: DropResult) => {
-    // no dragging until done editing. the isDragDisabled prop is preferable for this,
-    // but it seems to impede seamless dragging even when false.
-    if (editMode !== '') {
-      return;
-    }
-
     const { source, destination } = result;
-
     const sourceClone = Array.from(structure);
     const [newOrder] = sourceClone.splice(source.index, 1);
     sourceClone.splice(destination.index, 0, newOrder);
@@ -165,9 +155,11 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     setStructure(sourceClone);
   };
 
+  // build client-oriented component given complete component (i.e. add uuid, names, etc)
   const handleSave = (
-    index: number, component: GeneComponent | LinkerComponent | TranscriptSegmentComponent |
-      TemplatedSequenceComponent | AnyGeneComponent | UnknownGeneComponent
+    index: number, id: string, component: GeneComponent | LinkerComponent |
+      TranscriptSegmentComponent | TemplatedSequenceComponent | AnyGeneComponent |
+      UnknownGeneComponent
   ) => {
     // TODO: prevent from sending empty fields (where applicable)
     const items = Array.from(structure);
@@ -179,7 +171,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           `${descriptor.label}(${descriptor.gene_id})`;
         const geneComponent: ClientGeneComponent = {
           ...component,
-          component_id: uuid(),
+          component_id: id,
           component_name: nomenclature,
           hr_name: nomenclature,
         };
@@ -221,7 +213,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
 
         const txComponent: ClientTranscriptSegmentComponent = {
           ...component,
-          component_id: uuid(),
+          component_id: id,
           component_name: `${txAcName} ${txGeneSymbol}`,
           hr_name: `${txAcName}(${txGeneSymbol}):${hrExon}`,
           shorthand: txAcName,
@@ -243,7 +235,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           `${component.region.location.interval.end.value}(${component.strand})`;
         const templatedSequenceComponent: ClientTemplatedSequenceComponent = {
           ...component,
-          component_id: uuid(),
+          component_id: id,
           component_name: name,
           hr_name: name,
         };
@@ -252,7 +244,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
       case 'linker_sequence':
         const linkerComponent: ClientLinkerComponent = {
           ...component,
-          component_id: uuid(),
+          component_id: id,
           component_name: component.linker_sequence.sequence,
           hr_name: component.linker_sequence.sequence,
         };
@@ -261,7 +253,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
       case 'any_gene':
         const anyGeneComponent: ClientAnyGeneComponent = {
           ...component,
-          component_id: uuid(),
+          component_id: id,
           component_name: '*',
           hr_name: '*'
         };
@@ -270,7 +262,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
       case 'unknown_gene':
         const unknownGeneComponent: ClientUnknownGeneComponent = {
           ...component,
-          component_id: uuid(),
+          component_id: id,
           component_name: '?',
           hr_name: '?'
         };
@@ -279,26 +271,29 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     }
   };
 
-  const saveComponent = (items: Array<Object>, index: number, newObj: Object) => {
+  // clear active state, update local state array, update global fusion object
+  const saveComponent = (items: Array<ClientComponent>, index: number, newObj: ClientComponent) => {
     items.splice(index, 1, newObj);
-
-    // clear active state, update local state array, update global fusion object
-    setEditMode('');
+    const newEditMode = editMode;
+    newEditMode.splice(newEditMode.indexOf(newObj.component_id), 1);
+    setEditMode(newEditMode);
     setStructure(items);
     setFusion({ ...fusion, ...{ 'structural_components': items } });
   };
 
   const handleCancel = (id: string) => {
-    let items = Array.from(structure);
-    items = items.filter(item => item.component_id !== id);
-    setEditMode('');
+    const items = Array.from(structure).filter(item => item.component_id !== id);
+    const newEditMode = editMode;
+    newEditMode.splice(newEditMode.indexOf(id), 1);
+    setEditMode(newEditMode);
     setStructure(items);
   };
 
+  // turn on edit mode for component
   const handleEdit = (component_id: string) => {
-    // change edit mode
-    // for now, just close whatever's being edited?
-    setEditMode(component_id);
+    const newEditMode = [...editMode];
+    newEditMode.push(component_id);
+    setEditMode(newEditMode);
   };
 
   const handleDelete = (uuid: string) => {
@@ -336,6 +331,21 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     }
   };
 
+  const renderInput = (
+    id: string, index: number, compType: string,
+  ) => {
+    switch (compType) {
+      case 'gene':
+        return (<GeneCompInput {...{ index, id, handleCancel, handleSave }} />);
+      case 'templated_sequence':
+        return (<TemplatedSequenceCompInput {...{ index, id, handleCancel, handleSave }} />);
+      case 'transcript_segment':
+        return (<TxSegmentCompInput {...{ index, id, handleCancel, handleSave }} />);
+      case 'linker_sequence':
+        return (<LinkerCompInput {...{ index, id, handleCancel, handleSave }} />);
+    }
+  };
+
   return (
     <div className='builder'>
       <DragDropContext onDragEnd={onDragEnd}>
@@ -354,8 +364,9 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
                   >
                     {(provided, snapshot) => {
                       // crude way of cancelling when user has an unsaved component
-                      if (snapshot.isDragging && editMode !== '') {
-                        handleCancel(editMode);
+                      // TODO
+                      if (snapshot.isDragging && editMode.length > 0) {
+                        handleCancel(editMode[0]);
                       }
                       return (<React.Fragment>
                         <div
@@ -398,7 +409,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
                 </h2>
                 {structure.map(({ component_id, hr_name, component_type }, index) => {
                   return (
-                    <Draggable key={component_id} draggableId={component_id} index={index}>
+                    <Draggable key={index} draggableId={component_id} index={index}>
                       {(provided, snapshot) => (
                         <div ref={provided.innerRef}
                           className={`block ${component_type}`}
@@ -406,15 +417,8 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
                           {...provided.dragHandleProps}
                         >
                           {
-                            component_id === editMode ?
-                              <TransCompInput
-                                handleSave={handleSave}
-                                handleCancel={handleCancel}
-                                compType={component_type}
-                                index={index}
-                                key={component_id}
-                                id={component_id}
-                              />
+                            editMode.includes(component_id) ?
+                              renderInput(component_id, index, component_type)
                               : <div className="comp-input">
                                 <div className="hr-name">
                                   {hr_name}
@@ -447,9 +451,10 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           </Droppable>
           <div className='hr-section'>
             {
-              structuralComponents.filter(comp => Boolean(comp)).map((comp, index: number) => (
-                <div key={comp.component_id}>{`${index ? '::' : ''}${comp.hr_name}`}</div>
-              ))
+              structuralComponents.filter(comp => Boolean(comp) && comp.hr_name)
+                .map((comp, index: number) => (
+                  <div key={comp.component_id}>{`${index ? '::' : ''}${comp.hr_name}`}</div>
+                ))
             }
           </div>
         </div>

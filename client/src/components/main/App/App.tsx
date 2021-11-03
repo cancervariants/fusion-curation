@@ -166,7 +166,6 @@ const App = (): React.ReactElement => {
     const newGenes = {};
     const remainingGeneIds: Array<string> = [];
     fusion.structural_components?.filter(comp => comp).forEach(comp => {
-      console.log(fusion);
       switch (comp.component_type) {
         case 'gene':
         case 'transcript_segment':
