@@ -1,6 +1,7 @@
 """Initialize FastAPI and provide routes."""
 from typing import Dict, Any
 
+from asyncpg.exceptions import InvalidAuthorizationSpecificationError
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -12,7 +13,7 @@ from curation.schemas import NormalizeGeneResponse, DomainIDResponse, SuggestDom
     ExonCoordsRequest, ExonCoordsResponse, SequenceIDResponse, FusionValidationResponse
 from curation.gene_services import get_gene_id
 from curation.domain_services import get_domain_id, get_domain_matches
-from curation.uta_services import postgres_instance, get_genomic_coords
+from curation.uta_services import PostgresDatabase, get_genomic_coords
 from curation.sequence_services import get_ga4gh_sequence_id
 from curation.validation_services import validate_fusion
 
@@ -33,16 +34,25 @@ app.add_middleware(
 )
 
 
+async def start_db() -> PostgresDatabase:
+    """Start UTA DB and create asyncpg thrad pool.
+
+    :return: UTA DB instance
+    """
+    postgres_instance = PostgresDatabase()
+    await postgres_instance.create_pool()
+    return postgres_instance
+
+
 @app.on_event("startup")
 async def startup():
     """Initialize asyncpg thread pool."""
-    await postgres_instance.create_pool()
-    app.state.db = postgres_instance
+    app.state.db = await start_db()
 
 
 @app.on_event("shutdown")
 async def shutdown():
-    """Clean up thread pool."""
+    """Close asyncpg thread pool."""
     await app.state.db._connection_pool.close()
 
 
@@ -72,7 +82,6 @@ def fetch_domain_id(domain: str = Query("")) -> Dict:
         and relevant warnings
     """
     (domain_id, warnings) = get_domain_id(domain.strip())
-    print(domain_id)
     return {
         "domain": domain,
         "domain_id": domain_id,
@@ -112,15 +121,20 @@ async def get_exon_coords(request: Request, exon_data: ExonCoordsRequest) -> Dic
         expected structure.
     :return: Dict served as JSON containing transcript"s exon information
     """
-    print(exon_data)
     if not exon_data.gene:
         exon_data.gene = ""
 
-    genomic_coords = await get_genomic_coords(request.app.state.db, exon_data.tx_ac,
-                                              exon_data.exon_start,
-                                              exon_data.exon_end,
-                                              exon_data.exon_start_offset,
-                                              exon_data.exon_end_offset, exon_data.gene)
+    try:
+        genomic_coords = await get_genomic_coords(
+            request.app.state.db, exon_data.tx_ac, exon_data.exon_start,
+            exon_data.exon_end, exon_data.exon_start_offset, exon_data.exon_end_offset,
+            exon_data.gene)
+    except InvalidAuthorizationSpecificationError:
+        app.state.db = await start_db()
+        genomic_coords = await get_genomic_coords(
+            request.app.state.db, exon_data.tx_ac, exon_data.exon_start,
+            exon_data.exon_end, exon_data.exon_start_offset, exon_data.exon_end_offset,
+            exon_data.gene)
 
     if genomic_coords:
         genomic_coords["gene_id"] = get_gene_id(genomic_coords["gene"])[0]
