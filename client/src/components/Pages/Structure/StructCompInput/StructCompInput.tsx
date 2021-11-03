@@ -10,6 +10,7 @@ import {
 import { LinkerComponent } from '../../../../services/ResponseModels';
 import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
 import GeneComponentInput from '../GeneComponentInput/GeneComponentInput';
+import LinkerComponentInput from '../LinkerComponentInput/LinkerComponentInput';
 import './StructCompInput.scss';
 
 interface Props {
@@ -321,23 +322,6 @@ const StructCompInput: React.FC<Props> = (
     }
   };
 
-  // Linker Sequence
-  const [sequence, setSequence] = useState('');
-  const linkerError = sequence && sequence.match(/^([aAgGtTcC]+)?$/) === null;
-
-  const buildLinkerComponent = () => {
-    const linkerComponent: LinkerComponent = {
-      component_type: 'linker_sequence',
-      linker_sequence: {
-        id: `fusor.sequence:${sequence}`,
-        type: 'SequenceDescriptor',
-        sequence: sequence,
-        residue_type: 'SO:0000348'
-      }
-    };
-    handleSave(index, linkerComponent);
-  };
-
   const renderSwitch = (compType: string) => {
     switch (compType) {
       case 'templated_sequence':
@@ -460,46 +444,12 @@ const StructCompInput: React.FC<Props> = (
         );
       case 'linker_sequence':
         return (
-          <Card >
-            <CardContent>
-              <div className="card-parent">
-                <div className="input-parent">
-                  <TextField
-                    margin="dense"
-                    label="Sequence"
-                    value={sequence}
-                    onChange={(event) => setSequence(event.target.value.toUpperCase())}
-                    error={linkerError}
-                    helperText={linkerError ? 'Warning: must contain only {A, C, G, T}' : null}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        buildLinkerComponent();
-                      }
-                    }}
-                  ></TextField>
-                </div>
-                <div className="buttons">
-                  <Button
-                    style={{ margin: '8px' }}
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => handleCancel(id)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    style={{ margin: '8px' }}
-                    variant="outlined"
-                    disabled={linkerError}
-                    color="primary"
-                    onClick={buildLinkerComponent}
-                  >
-                    Save
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <LinkerComponentInput
+            index={index}
+            uuid={id}
+            handleCancel={handleCancel}
+            handleSave={handleSave}
+          />
         );
       case 'gene':
         return (
