@@ -1,12 +1,13 @@
 """Test UTA data source."""
 import pytest
-from curation.uta_services import postgres_instance, get_genomic_coords
+from curation.uta_services import PostgresDatabase, get_genomic_coords
 import copy
 
 
 @pytest.fixture(scope='function')
 async def test_db():
     """Create uta test fixture."""
+    postgres_instance = PostgresDatabase()
     await postgres_instance.create_pool()
     return postgres_instance
 
