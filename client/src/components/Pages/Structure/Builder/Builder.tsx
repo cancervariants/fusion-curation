@@ -230,7 +230,8 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           // TODO error
           return;
         }
-        const name = `chr${component.region.location.sequence_id.split(':')[1]}:` +
+        const sequence = component.region.location.sequence_id.split(':')[1];
+        const name = `${sequence}:` +
           `g.${component.region.location.interval.start.value}_` +
           `${component.region.location.interval.end.value}(${component.strand})`;
         const templatedSequenceComponent: ClientTemplatedSequenceComponent = {
