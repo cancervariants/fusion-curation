@@ -10,7 +10,7 @@ interface GeneComponentProps {
   handleSave: CallableFunction
 }
 
-const GeneComponent: React.FC<GeneComponentProps> = (
+const GeneComponentInput: React.FC<GeneComponentProps> = (
   { index, uuid, handleCancel, handleSave }
 ) => {
   const [gene, setGene] = useState<string>('');
@@ -65,4 +65,4 @@ const GeneComponent: React.FC<GeneComponentProps> = (
   );
 };
 
-export default GeneComponent;
+export default GeneComponentInput;

@@ -4,12 +4,12 @@ import {
 } from '@material-ui/core';
 import { useState } from 'react';
 import {
-  getGeneComponent, getTemplatedSequenceComponent, getTxSegmentComponentECT,
+  getTemplatedSequenceComponent, getTxSegmentComponentECT,
   getTxSegmentComponentGCG, getTxSegmentComponentGCT
 } from '../../../../services/main';
 import { LinkerComponent } from '../../../../services/ResponseModels';
 import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
-import GeneComponent from '../GeneComponent/GeneComponent';
+import GeneComponentInput from '../GeneComponentInput/GeneComponentInput';
 import './StructCompInput.scss';
 
 interface Props {
@@ -503,7 +503,7 @@ const StructCompInput: React.FC<Props> = (
         );
       case 'gene':
         return (
-          <GeneComponent
+          <GeneComponentInput
             index={index}
             uuid={id}
             handleCancel={handleCancel}
