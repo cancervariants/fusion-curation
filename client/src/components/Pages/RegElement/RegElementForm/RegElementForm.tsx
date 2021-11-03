@@ -4,7 +4,9 @@ import { useContext, useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { getGeneId } from '../../../../services/main';
-import { ClientRegulatoryElement } from '../../../../services/ResponseModels';
+import {
+  ClientRegulatoryElement, RegulatoryElementType
+} from '../../../../services/ResponseModels';
 import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
 import './RegElementForm.scss';
 
@@ -32,8 +34,9 @@ const RegElementForm: React.FC = () => {
   const regElements = fusion.regulatory_elements;
 
   const [type, setType] = useState('default');
-  const [gene, setGene] = useState('');
-  const [geneError, setGeneError] = useState('');
+  const [gene, setGene] = useState<string>('');
+  const [geneText, setGeneText] = useState<string>('');
+  const [geneError, setGeneError] = useState<boolean>(false);
 
   const handleTypeChange = (event) => {
     setType(event.target.value);
@@ -42,15 +45,19 @@ const RegElementForm: React.FC = () => {
   const handleAdd = () => {
     getGeneId(gene)
       .then(geneResponse => {
-        if (geneResponse.concept_id === null) {
-          setGeneError('Gene ID not found!');
-          throw new Error(geneError);
+        console.log(geneResponse);
+        if (geneResponse.warnings?.length > 0) {
+          const geneWarning = `Lookup of gene term ${gene} failed.`;
+          if (geneResponse.warnings.includes(geneWarning)) {
+            setGeneError(true);
+            setGeneText('Unrecognized term');
+          }
+          throw new Error(geneWarning);
         }
 
         const cloneArray = Array.from(regElements);
-
         const newRegElement: ClientRegulatoryElement = {
-          'type': type,
+          'type': type as RegulatoryElementType,
           'element_id': uuid(),
           'gene_descriptor': {
             'id': `gene:${geneResponse.term}`,
@@ -59,7 +66,6 @@ const RegElementForm: React.FC = () => {
             'label': geneResponse.term,
           }
         };
-
         cloneArray.push(newRegElement);
 
         setFusion({ ...fusion, ...{ 'regulatory_elements': cloneArray } });
@@ -93,6 +99,8 @@ const RegElementForm: React.FC = () => {
         <GeneAutocomplete
           selectedGene={gene}
           setSelectedGene={setGene}
+          geneText={geneText}
+          setGeneText={setGeneText}
           geneError={geneError}
           setGeneError={setGeneError}
           style={{ width: 440 }}

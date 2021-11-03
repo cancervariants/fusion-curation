@@ -7,7 +7,7 @@ import { ClientGeneComponent } from '../../../../../services/ResponseModels';
 import { FusionContext } from '../../../../../global/contexts/FusionContext';
 
 interface GeneComponentInputProps extends StructuralComponentInputProps {
-  prevValues: ClientGeneComponent
+  prevValues?: ClientGeneComponent
 }
 
 const GeneCompInput: React.FC<GeneComponentInputProps> = (

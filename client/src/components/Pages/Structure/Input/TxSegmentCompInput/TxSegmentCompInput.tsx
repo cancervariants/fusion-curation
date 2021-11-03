@@ -16,13 +16,16 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
 
   const [txAc, setTxAc] = useState('');
   const [txAcText, setTxAcText] = useState('');
-  const [txAcError, setTxAcError] = useState(false);
+
   const [txGene, setTxGene] = useState('');
   const [txGeneText, setTxGeneText] = useState('');
   const [txGeneError, setTxGeneError] = useState(false);
+
   const [txStrand, setTxStrand] = useState('default');
+
   const [txChrom, setTxChrom] = useState('');
   const [txChromText, setTxChromText] = useState('');
+
   const [txStartingGenomic, setTxStartingGenomic] = useState('');
   const [txEndingGenomic, setTxEndingGenomic] = useState('');
   const [startingExon, setStartingExon] = useState('');
@@ -50,9 +53,9 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
         getTxSegmentComponentGCT(txAc, txChrom, txStartingGenomic, txEndingGenomic, txStrand)
           .then(txSegmentResponse => {
             if (txSegmentResponse.warnings?.length > 0) {
-              const txWarning = `TODO warning ${txAc}`;
-              if (txSegmentResponse.warnings.includes(txWarning)) {
-                setTxError(txWarning);
+              const chromWarning = `Invalid chromosome: ${txChrom}`;
+              if (txSegmentResponse.warnings.includes(chromWarning)) {
+                setTxChromText('Unrecognized value');
               }
             } else {
               handleSave(index, id, txSegmentResponse.component);
@@ -67,7 +70,7 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
             if (txSegmentResponse.warnings?.length > 0) {
               const txWarning = `Unable to get exons for ${txAc}`;
               if (txSegmentResponse.warnings.includes(txWarning)) {
-                setTxError(txWarning);
+                setTxAcText('Unrecognized value');
               }
             } else {
               handleSave(index, id, txSegmentResponse.component);
@@ -161,16 +164,16 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
                     buildTranscriptSegmentComponent();
                   }
                 }}
-                error={txError.length > 0}
-                helperText={setTxError}
+                error={txAcText !== ''}
+                helperText={txAcText}
               />
             </div>
             <div className="mid-inputs">
               <TextField
                 margin="dense"
                 style={{ height: 38, width: 125 }}
-                value={txChromosome}
-                onChange={(event) => setTxChromosome(event.target.value)}
+                value={txChrom}
+                onChange={(event) => setTxChrom(event.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     buildTranscriptSegmentComponent();
@@ -233,8 +236,8 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
                     buildTranscriptSegmentComponent();
                   }
                 }}
-                error={txError.length > 0}
-                helperText={txError}
+                error={txAcText !== ''}
+                helperText={txAcText}
               />
             </div>
             <div className="bottom-inputs">
