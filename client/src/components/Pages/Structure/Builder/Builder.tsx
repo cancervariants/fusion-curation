@@ -13,7 +13,11 @@ import {
   ClientUnknownGeneComponent, GeneComponent, LinkerComponent, TemplatedSequenceComponent,
   TranscriptSegmentComponent, UnknownGeneComponent
 } from '../../../../services/ResponseModels';
-import StructCompInput from '../StructCompInput/StructCompInput';
+import GeneCompInput from '../Input/GeneCompInput/GeneCompInput';
+import LinkerCompInput from '../Input/LinkerCompInput/LinkerCompInput';
+import TemplatedSequenceCompInput
+  from '../Input/TemplatedSequenceCompInput/TemplatedSequenceCompInput';
+import TxSegmentCompInput from '../Input/TxSegmentCompInput/TxSegmentCompInput';
 import './Builder.scss';
 // import { unstable_createMuiStrictModeTheme } from '@material-ui/core';
 
@@ -108,7 +112,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
   const { domainOptions, setDomainOptions } = useContext(DomainOptionsContext);
   // displayed structural elements
   const [structure, setStructure] = useState([]);
-
+  // load input interface instead of completed component element for these UUIDs
   const [editMode, setEditMode] = useState([]);
 
   useEffect(() => {
@@ -160,6 +164,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     setStructure(sourceClone);
   };
 
+  // build client-oriented component given complete component (i.e. add uuid, names, etc)
   const handleSave = (
     index: number, component: GeneComponent | LinkerComponent | TranscriptSegmentComponent |
       TemplatedSequenceComponent | AnyGeneComponent | UnknownGeneComponent
@@ -274,8 +279,8 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     }
   };
 
+  // clear active state, update local state array, update global fusion object
   const saveComponent = (items: Array<ClientComponent>, index: number, newObj: ClientComponent) => {
-    // clear active state, update local state array, update global fusion object
     items.splice(index, 1, newObj);
     const newEditMode = editMode;
     newEditMode.splice(newEditMode.indexOf(newObj.component_id), 1);
@@ -331,6 +336,21 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
       reorder(result);
     } else {
       copy(result);
+    }
+  };
+
+  const renderInput = (
+    id: string, index: number, compType: string,
+  ) => {
+    switch (compType) {
+      case 'gene':
+        return (<GeneCompInput {...{ index, id, handleCancel, handleSave }} />);
+      case 'templated_sequence':
+        return (<TemplatedSequenceCompInput {...{ index, id, handleCancel, handleSave }} />);
+      case 'transcript_segment':
+        return (<TxSegmentCompInput {...{ index, id, handleCancel, handleSave }} />);
+      case 'linker_sequence':
+        return (<LinkerCompInput {...{ index, id, handleCancel, handleSave }} />);
     }
   };
 
@@ -406,14 +426,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
                         >
                           {
                             editMode.includes(component_id) ?
-                              <StructCompInput
-                                handleSave={handleSave}
-                                handleCancel={handleCancel}
-                                compType={component_type}
-                                index={index}
-                                key={component_id}
-                                id={component_id}
-                              />
+                              renderInput(component_id, index, component_type)
                               : <div className="comp-input">
                                 <div className="hr-name">
                                   {hr_name}

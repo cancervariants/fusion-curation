@@ -176,7 +176,6 @@ export interface ClientTranscriptSegmentComponent {
   gene_descriptor: GeneDescriptor;
   component_genomic_start?: LocationDescriptor;
   component_genomic_end?: LocationDescriptor;
-  input_type: "genomic_coords_gene" | "genomic_coords_tx" | "exon_coords_tx";
 }
 /**
  * This descriptor is intended to reference VRS Location value objects.
