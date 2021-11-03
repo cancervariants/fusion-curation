@@ -20,7 +20,7 @@ const LinkerCompInput: React.FC<StructuralComponentInputProps> = (
         residue_type: 'SO:0000348'
       }
     };
-    handleSave(index, linkerComponent);
+    handleSave(index, id, linkerComponent);
   };
 
   return (

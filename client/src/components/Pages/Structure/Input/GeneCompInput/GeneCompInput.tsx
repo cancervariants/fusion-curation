@@ -17,7 +17,7 @@ const GeneCompInput: React.FC<StructuralComponentInputProps> = (
           setGeneError('Gene not found');
           return;
         } else {
-          handleSave(index, geneComponentResponse.component);
+          handleSave(index, id, geneComponentResponse.component);
         }
       });
   };

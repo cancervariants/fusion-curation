@@ -37,7 +37,7 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
                 setTxError(txWarning);
               }
             } else {
-              handleSave(index, txSegmentResponse.component);
+              handleSave(index, id, txSegmentResponse.component);
             }
           });
         break;
@@ -50,7 +50,7 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
                 setTxError(txWarning);
               }
             } else {
-              handleSave(index, txSegmentResponse.component);
+              handleSave(index, id, txSegmentResponse.component);
             }
           });
         break;
@@ -65,7 +65,7 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
                 setTxError(txWarning);
               }
             } else {
-              handleSave(index, txSegmentResponse.component);
+              handleSave(index, id, txSegmentResponse.component);
             }
           });
     }

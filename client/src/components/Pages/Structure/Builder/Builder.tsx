@@ -4,9 +4,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import React, { useContext, useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { v4 as uuid } from 'uuid';
-import { DomainOptionsContext } from '../../../../global/contexts/DomainOptionsContext';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
-import { GeneContext } from '../../../../global/contexts/GeneContext';
 import {
   AnyGeneComponent, ClientAnyGeneComponent, ClientComponent, ClientGeneComponent,
   ClientLinkerComponent, ClientTemplatedSequenceComponent, ClientTranscriptSegmentComponent,
@@ -24,9 +22,6 @@ import './Builder.scss';
 interface Props {
   structuralComponents
 }
-
-type clientComponent = ClientAnyGeneComponent | ClientGeneComponent | ClientLinkerComponent |
-  ClientTemplatedSequenceComponent | ClientTranscriptSegmentComponent | ClientUnknownGeneComponent
 
 const EDITABLE_COMPONENT_TYPES = [
   'gene', 'linker_sequence', 'templated_sequence', 'transcript_segment'
@@ -106,10 +101,6 @@ const OPTIONS = [
 const Builder: React.FC<Props> = ({ structuralComponents }) => {
   // Fusion object constructed throughout app lifecycle
   const { fusion, setFusion } = useContext(FusionContext);
-  // global genes context
-  const { globalGenes, setGlobalGenes } = useContext(GeneContext);
-  // Choosable domains based on genes provided in components
-  const { domainOptions, setDomainOptions } = useContext(DomainOptionsContext);
   // displayed structural elements
   const [structure, setStructure] = useState([]);
   // load input interface instead of completed component element for these UUIDs
@@ -127,6 +118,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     }
   }, [structuralComponents]);
 
+  // drop new component into structure
   const copy = (result: DropResult) => {
     const { source, destination } = result;
     const sourceClone = Array.from(OPTIONS);
@@ -139,11 +131,11 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
 
     // auto-save components that don't need any additional input
     if (newItem.component_type === 'any_gene') {
-      handleSave(destination.index, {
+      handleSave(destination.index, newItem.component_id, {
         component_type: 'any_gene',
       });
     } else if (newItem.component_type === 'unknown_gene') {
-      handleSave(destination.index, {
+      handleSave(destination.index, newItem.component_id, {
         'component_type': 'unknown_gene',
       });
     } else {
@@ -155,7 +147,6 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
 
   const reorder = (result: DropResult) => {
     const { source, destination } = result;
-
     const sourceClone = Array.from(structure);
     const [newOrder] = sourceClone.splice(source.index, 1);
     sourceClone.splice(destination.index, 0, newOrder);
@@ -166,8 +157,9 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
 
   // build client-oriented component given complete component (i.e. add uuid, names, etc)
   const handleSave = (
-    index: number, component: GeneComponent | LinkerComponent | TranscriptSegmentComponent |
-      TemplatedSequenceComponent | AnyGeneComponent | UnknownGeneComponent
+    index: number, id: string, component: GeneComponent | LinkerComponent |
+      TranscriptSegmentComponent | TemplatedSequenceComponent | AnyGeneComponent |
+      UnknownGeneComponent
   ) => {
     // TODO: prevent from sending empty fields (where applicable)
     const items = Array.from(structure);
@@ -179,7 +171,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           `${descriptor.label}(${descriptor.gene_id})`;
         const geneComponent: ClientGeneComponent = {
           ...component,
-          component_id: uuid(),
+          component_id: id,
           component_name: nomenclature,
           hr_name: nomenclature,
         };
@@ -221,7 +213,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
 
         const txComponent: ClientTranscriptSegmentComponent = {
           ...component,
-          component_id: uuid(),
+          component_id: id,
           component_name: `${txAcName} ${txGeneSymbol}`,
           hr_name: `${txAcName}(${txGeneSymbol}):${hrExon}`,
           shorthand: txAcName,
@@ -243,7 +235,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           `${component.region.location.interval.end.value}(${component.strand})`;
         const templatedSequenceComponent: ClientTemplatedSequenceComponent = {
           ...component,
-          component_id: uuid(),
+          component_id: id,
           component_name: name,
           hr_name: name,
         };
@@ -252,7 +244,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
       case 'linker_sequence':
         const linkerComponent: ClientLinkerComponent = {
           ...component,
-          component_id: uuid(),
+          component_id: id,
           component_name: component.linker_sequence.sequence,
           hr_name: component.linker_sequence.sequence,
         };
@@ -261,7 +253,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
       case 'any_gene':
         const anyGeneComponent: ClientAnyGeneComponent = {
           ...component,
-          component_id: uuid(),
+          component_id: id,
           component_name: '*',
           hr_name: '*'
         };
@@ -270,7 +262,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
       case 'unknown_gene':
         const unknownGeneComponent: ClientUnknownGeneComponent = {
           ...component,
-          component_id: uuid(),
+          component_id: id,
           component_name: '?',
           hr_name: '?'
         };
@@ -299,7 +291,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
 
   // change edit mode
   const handleEdit = (component_id: string) => {
-    const newEditMode = editMode;
+    const newEditMode = [...editMode];
     newEditMode.push(component_id);
     setEditMode(newEditMode);
   };
@@ -417,7 +409,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
                 </h2>
                 {structure.map(({ component_id, hr_name, component_type }, index) => {
                   return (
-                    <Draggable key={component_id} draggableId={component_id} index={index}>
+                    <Draggable key={index} draggableId={component_id} index={index}>
                       {(provided, snapshot) => (
                         <div ref={provided.innerRef}
                           className={`block ${component_type}`}

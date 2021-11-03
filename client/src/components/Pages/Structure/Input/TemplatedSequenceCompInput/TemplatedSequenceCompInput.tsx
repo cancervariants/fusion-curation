@@ -18,7 +18,7 @@ const TemplatedSequenceCompInput: React.FC<StructuralComponentInputProps> = (
           // TODO error handling
           return;
         } else {
-          handleSave(index, templatedSequenceResponse.component);
+          handleSave(index, id, templatedSequenceResponse.component);
         }
       });
   };
