@@ -1,17 +1,11 @@
 import { useState } from 'react';
 import { Card, CardContent, Button } from '@material-ui/core';
-import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
-import { getGeneComponent } from '../../../../services/main';
+import { GeneAutocomplete } from '../../../../main/shared/GeneAutocomplete/GeneAutocomplete';
+import { getGeneComponent } from '../../../../../services/main';
+import { StructuralComponentInputProps } from '../StructCompInputProps';
 
-interface GeneComponentProps {
-  index: number,
-  uuid: string,
-  handleCancel: CallableFunction,
-  handleSave: CallableFunction
-}
-
-const GeneComponentInput: React.FC<GeneComponentProps> = (
-  { index, uuid, handleCancel, handleSave }
+const GeneCompInput: React.FC<StructuralComponentInputProps> = (
+  { index, id, handleCancel, handleSave }
 ) => {
   const [gene, setGene] = useState<string>('');
   const [geneError, setGeneError] = useState('');
@@ -46,7 +40,7 @@ const GeneComponentInput: React.FC<GeneComponentProps> = (
               style={{ margin: '8px' }}
               variant="outlined"
               color="secondary"
-              onClick={() => handleCancel(uuid)}
+              onClick={() => handleCancel(id)}
             >
               Cancel
             </Button>
@@ -65,4 +59,4 @@ const GeneComponentInput: React.FC<GeneComponentProps> = (
   );
 };
 
-export default GeneComponentInput;
+export default GeneCompInput;

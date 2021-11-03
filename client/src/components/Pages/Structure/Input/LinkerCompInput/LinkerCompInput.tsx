@@ -1,16 +1,10 @@
 import { useState } from 'react';
 import { Card, CardContent, Button, TextField } from '@material-ui/core';
-import { LinkerComponent } from '../../../../services/ResponseModels';
+import { LinkerComponent } from '../../../../../services/ResponseModels';
+import { StructuralComponentInputProps } from '../StructCompInputProps';
 
-interface LinkerComponentProps {
-  index: number,
-  uuid: string,
-  handleSave: CallableFunction,
-  handleCancel: CallableFunction
-}
-
-const LinkerComponentInput: React.FC<LinkerComponentProps> = (
-  { index, uuid, handleSave, handleCancel }
+const LinkerCompInput: React.FC<StructuralComponentInputProps> = (
+  { index, id, handleSave, handleCancel }
 ) => {
   // Linker Sequence
   const [sequence, setSequence] = useState('');
@@ -53,7 +47,7 @@ const LinkerComponentInput: React.FC<LinkerComponentProps> = (
               style={{ margin: '8px' }}
               variant="outlined"
               color="secondary"
-              onClick={() => handleCancel(uuid)}
+              onClick={() => handleCancel(id)}
             >
               Cancel
             </Button>
@@ -73,4 +67,4 @@ const LinkerComponentInput: React.FC<LinkerComponentProps> = (
   );
 };
 
-export default LinkerComponentInput;
+export default LinkerCompInput;
