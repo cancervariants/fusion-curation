@@ -20,20 +20,23 @@ class GeneService:
     gene_query_handler = QueryHandler()
 
     aliases_map: Map = {}
-    labels_map: Map = {}
     prev_symbols_map: Map = {}
     symbols_map: Map = {}
 
     # not currently used
+    labels_map: Map = {}
     xrefs_map: Map = {}
     assoc_with_map: Map = {}
 
     def load_mapping(self) -> None:
         """Load mapping files for use in autocomplete."""
         data_dir = APP_ROOT / "data"
-        map_pairs = (("aliases", self.aliases_map), ("assoc_with", self.assoc_with_map),
-                     ("xrefs", self.xrefs_map), ("prev_symbols", self.prev_symbols_map),
-                     ("labels", self.labels_map), ("symbols", self.symbols_map))
+        map_pairs = (("aliases", self.aliases_map),
+                     ("assoc_with", self.assoc_with_map),
+                     ("xrefs", self.xrefs_map),
+                     ("prev_symbols", self.prev_symbols_map),
+                     ("labels", self.labels_map),
+                     ("symbols", self.symbols_map))
         for name, map in map_pairs:
             map_files = list(data_dir.glob(f"gene_{name}_*.tsv"))
             if not map_files:

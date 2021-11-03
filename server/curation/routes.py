@@ -36,12 +36,20 @@ app.add_middleware(
 )
 
 
-@app.on_event("startup")
-async def startup():
-    """Initialize asyncpg connection pool."""
+async def start_fusor() -> FUSOR:
+    """Initialize FUSOR instance and create UTA thread pool.
+
+    :return: FUSOR instance
+    """
     fusor_instance = FUSOR()
     await fusor_instance.uta_tools.uta_db.create_pool()
-    app.state.fusor = fusor_instance
+    return fusor_instance
+
+
+@app.on_event("startup")
+async def startup():
+    """Get FUSOR reference"""
+    app.state.fusor = await start_fusor()
 
 
 @app.on_event("shutdown")
