@@ -17,51 +17,90 @@ const demoData: ClientFusion = {
   'structural_components': [
     {
       'component_type': 'transcript_segment',
-      'component_name': 'NM_152263.3 TPM3',
-      'transcript': 'NM_152263.3',
-      'component_id': '5ebaff7a-a109-40b6-aa00-1af5454a6b4e',
-      'shorthand': 'NM_152263.3',
+      'transcript': 'refseq:NM_152263.3',
       'exon_start': 1,
-      'exon_start_offset': 0,
-      'exon_end': 8,
+      'exon_start_offset': 0, 'exon_end': 8,
       'exon_end_offset': 0,
       'gene_descriptor': {
-        'id': 'gene:TPM3',
-        'gene_id': 'hgnc:12012',
+        'id': 'normalize.gene:TPM3',
         'type': 'GeneDescriptor',
-        'label': 'TPM3'
+        'label': 'TPM3',
+        'gene_id': 'hgnc:12012'
       },
-      'hr_name': 'NM_152263.3(TPM3):e[1_8]'
+      'component_genomic_start': {
+        'id': 'fusor.location_descriptor:NC_000001.11',
+        'type': 'LocationDescriptor',
+        'label': 'NC_000001.11',
+        'location': {
+          'type': 'SequenceLocation',
+          'sequence_id': 'refseq:NC_000001.11',
+          'interval': {
+            'type': 'SequenceInterval',
+            'start': {
+              'type': 'Number',
+              'value': 154192135
+            },
+            'end': {
+              'type': 'Number',
+              'value': 154192136
+            }
+          }
+        }
+      },
+      'component_genomic_end': {
+        'id': 'fusor.location_descriptor:NC_000001.11',
+        'type': 'LocationDescriptor',
+        'label': 'NC_000001.11',
+        'location': {
+          'type': 'SequenceLocation',
+          'sequence_id': 'refseq:NC_000001.11',
+          'interval': {
+            'type': 'SequenceInterval',
+            'start': {
+              'type': 'Number',
+              'value': 154170398
+            },
+            'end': {
+              'type': 'Number',
+              'value': 154170399
+            }
+          }
+        }
+      },
+      'component_id': '63b1ae27-dae7-4e71-ab3f-b43469e9bb94',
+      'component_name': 'refseq:NM_152263.3 TPM3',
+      'hr_name': 'refseq:NM_152263.3(TPM3):e[1_8]',
+      'shorthand': 'refseq:NM_152263.3'
     },
     {
       'component_type': 'gene',
-      'component_name': 'ALK hgnc:427',
-      'component_id': 'e01e79ed-dfb4-4358-befa-474a00bb8417',
-      'hr_name': 'ALK(hgnc:427)',
       'gene_descriptor': {
-        'id': 'gene:ALK',
+        'id': 'normalize.gene:ALK',
         'type': 'GeneDescriptor',
-        'gene_id': 'hgnc:427',
-        'label': 'ALK'
-      }
+        'label': 'ALK',
+        'gene_id': 'hgnc:427'
+      },
+      'component_id': 'f12bc366-e682-414d-866d-6b98ce419967',
+      'component_name': 'ALK(hgnc:427)',
+      'hr_name': 'ALK(hgnc:427)'
     },
     {
       'component_type': 'linker_sequence',
-      'component_name': 'ACGT',
-      'component_id': '66d06a05-5638-44b6-814c-f8cdf3f1624a',
-      'hr_name': 'ACGT',
       'linker_sequence': {
-        'id': 'sequence:ACGT',
+        'id': 'fusor.sequence:ACGT',
         'type': 'SequenceDescriptor',
-        'sequence': 'ACGT'
-      }
+        'sequence': 'ACGT',
+        'residue_type': 'SO:0000348'
+      }, 'component_id': '22544b5b-8118-46b1-8976-b6ef291c41bd',
+      'component_name': 'ACGT',
+      'hr_name': 'ACGT'
     },
     {
       'component_type': 'templated_sequence',
       'region': {
         'id': 'fusor.location_descriptor:12',
         'type': 'LocationDescriptor',
-        'location_id': 'ga4gh:VSL.yV48KeMFxaYYDFEoQ3d4__vav-_qeokW',
+        'location_id': 'ga4gh:VSL.WtBQFD0pXUlW0MrRALT0a_cd8PzYUXEL',
         'location': {
           'type': 'SequenceLocation',
           'sequence_id': 'sequence.id:12',
@@ -69,7 +108,7 @@ const demoData: ClientFusion = {
             'type': 'SequenceInterval',
             'start': {
               'type': 'Number',
-              'value': 44908820
+              'value': 44908819
             },
             'end': {
               'type': 'Number',
@@ -79,33 +118,34 @@ const demoData: ClientFusion = {
         }
       },
       'strand': '+',
-      'component_id': 'c187c893-0f88-415e-b247-4adc2558bd5f',
-      'component_name': 'chr12:44908820_44908822(+)',
-      'hr_name': 'chr12:44908820_44908822(+)'
+      'component_id': '23ad326d-f450-43bc-9d06-74113fc9cb66',
+      'component_name': 'chr12:44908819_44908822(+)',
+      'hr_name': 'chr12:44908819_44908822(+)'
     }
   ],
   'regulatory_elements': [
     {
-      'type': 'promoter',
-      'element_id': '6dbcce67-ea8e-4d11-b63d-38e6321c94e2',
+      'type': 'enhancer',
+      'element_id': '62c81bd0-b013-444e-8de3-12d29d860072',
       'gene_descriptor': {
-        'id': 'gene:braf',
+        'id': 'gene:BRAF',
         'type': 'GeneDescriptor',
         'gene_id': 'hgnc:1097',
-        'label': 'braf'
+        'label': 'BRAF'
       }
     }
   ],
   'protein_domains': [
     {
-      'status': 'preserved',
-      'name': 'Cystatin domain',
-      'id': 'interpro:IPR000010',
-      'domain_id': '4f8c295a-1302-41ff-9fab-17807617810a',
+      'status': 'lost',
+      'name': 'Raf-like Ras-binding',
+      'id': 'interpro:IPR003116',
+      'domain_id': '710c56d3-f740-482e-94e9-dcc408e409a4',
       'gene_descriptor': {
-        'id': 'gene:CST1',
-        'label': 'CST1',
-        'gene_id': 'hgnc:2473'
+        'id': 'gene:BRAF',
+        'type': 'GeneDescriptor',
+        'gene_id': 'hgnc:1097',
+        'label': 'BRAF'
       }
     }
   ],
@@ -137,6 +177,9 @@ const App = (): React.ReactElement => {
     });
     fusion.regulatory_elements?.forEach(re => {
       remainingGeneIds.push(re.gene_descriptor.gene_id);
+      if (!(re.gene_descriptor.gene_id in globalGenes)) {
+        newGenes[re.gene_descriptor.gene_id] = re.gene_descriptor;
+      }
     });
     const uniqueRemainingGeneIds: Array<string> = remainingGeneIds.filter(
       (geneId, index) => remainingGeneIds.indexOf(geneId) === index
@@ -159,7 +202,7 @@ const App = (): React.ReactElement => {
         updatedDomainOptions[geneId] = domainOptions[geneId];
       } else {
         getAssociatedDomains(geneId).then(response => {
-          updatedDomainOptions[geneId] = response.suggestions;
+          updatedDomainOptions[geneId] = response.suggestions || [];
         });
       }
     });
