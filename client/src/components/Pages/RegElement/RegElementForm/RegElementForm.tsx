@@ -31,8 +31,8 @@ const RegElementForm: React.FC = () => {
   const { fusion, setFusion } = useContext(FusionContext);
   const regElements = fusion.regulatory_elements;
 
-  const [type, setType] = useState(null);
-  const [gene, setGene] = useState(null);
+  const [type, setType] = useState('default');
+  const [gene, setGene] = useState('');
   const [geneError, setGeneError] = useState('');
 
   const handleTypeChange = (event) => {
@@ -83,6 +83,7 @@ const RegElementForm: React.FC = () => {
             value={type}
             onChange={handleTypeChange}
           >
+            <MenuItem value='default' disabled></MenuItem>
             <MenuItem value='enhancer'>Enhancer</MenuItem>
             <MenuItem value='promoter'>Promoter</MenuItem>
           </Select>
