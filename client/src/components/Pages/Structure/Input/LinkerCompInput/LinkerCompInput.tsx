@@ -8,7 +8,7 @@ const LinkerCompInput: React.FC<StructuralComponentInputProps> = (
 ) => {
   // Linker Sequence
   const [sequence, setSequence] = useState('');
-  const linkerError = sequence && sequence.match(/^([aAgGtTcC]+)?$/) === null;
+  const linkerError = Boolean(sequence) && sequence.match(/^([aAgGtTcC]+)?$/) === null;
 
   const buildLinkerComponent = () => {
     const linkerComponent: LinkerComponent = {
