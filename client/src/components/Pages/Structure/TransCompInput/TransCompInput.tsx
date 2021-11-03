@@ -44,12 +44,16 @@ export const TransCompInput: React.FC<Props> = (
 
   // Transcript Segment
   const [txInputType, setTxInputType] = useState('default');
-  const [txError, setTxError] = useState('');
-  const [txGeneError, setTxGeneError] = useState('');
+
   const [txAc, setTxAc] = useState('');
+  const [txAcText, setTxAcText] = useState('');
+  const [txAcError, setTxAcError] = useState(false);
   const [txGene, setTxGene] = useState('');
+  const [txGeneText, setTxGeneText] = useState('');
+  const [txGeneError, setTxGeneError] = useState(false);
   const [txStrand, setTxStrand] = useState('default');
-  const [txChromosome, setTxChromosome] = useState('');
+  const [txChrom, setTxChrom] = useState('');
+  const [txChromText, setTxChromText] = useState('');
   const [txStartingGenomic, setTxStartingGenomic] = useState('');
   const [txEndingGenomic, setTxEndingGenomic] = useState('');
   const [startingExon, setStartingExon] = useState('');
@@ -60,20 +64,21 @@ export const TransCompInput: React.FC<Props> = (
   const buildTranscriptSegmentComponent = () => {
     switch (txInputType) {
       case 'genomic_coords_gene':
-        getTxSegmentComponentGCG(txGene, txChromosome, txStartingGenomic, txEndingGenomic, txStrand)
+        getTxSegmentComponentGCG(txGene, txChrom, txStartingGenomic, txEndingGenomic, txStrand)
           .then(txSegmentResponse => {
             if (txSegmentResponse.warnings?.length > 0) {
-              const txWarning = `TODO warning ${txGene}`;
-              if (txSegmentResponse.warnings.includes(txWarning)) {
-                setTxError(txWarning);
+              const chromWarning = `Invalid chromosome: ${txChrom}`;
+              if (txSegmentResponse.warnings.includes(chromWarning)) {
+                setTxChromText('Unrecognized value');
               }
+              // TODO other errors
             } else {
               handleSave(index, txSegmentResponse.component);
             }
           });
         break;
       case 'genomic_coords_tx':
-        getTxSegmentComponentGCT(txAc, txChromosome, txStartingGenomic, txEndingGenomic, txStrand)
+        getTxSegmentComponentGCT(txAc, txChrom, txStartingGenomic, txEndingGenomic, txStrand)
           .then(txSegmentResponse => {
             if (txSegmentResponse.warnings?.length > 0) {
               const txWarning = `TODO warning ${txAc}`;
@@ -111,6 +116,8 @@ export const TransCompInput: React.FC<Props> = (
               <GeneAutocomplete
                 selectedGene={txGene}
                 setSelectedGene={setTxGene}
+                geneText={txGeneText}
+                setGeneText={setTxGeneText}
                 geneError={txGeneError}
                 setGeneError={setTxGeneError}
                 style={{ width: 125 }}
@@ -120,8 +127,9 @@ export const TransCompInput: React.FC<Props> = (
               <TextField
                 margin="dense"
                 style={{ height: 38, width: 125 }}
-                value={txChromosome}
-                onChange={(event) => setTxChromosome(event.target.value)}
+                value={txChrom}
+                onChange={(event) => setTxChrom(event.target.value)}
+                error={txChromText !== ''}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     buildTranscriptSegmentComponent();
@@ -339,13 +347,15 @@ export const TransCompInput: React.FC<Props> = (
 
   // Gene
   const [gene, setGene] = useState<string>('');
-  const [geneError, setGeneError] = useState('');
+  const [geneText, setGeneText] = useState('');
+  const [geneError, setGeneError] = useState(false);
 
   const buildGeneComponent = (term: string) => {
     getGeneComponent(term)
       .then(geneComponentResponse => {
         if (geneComponentResponse.warnings?.length > 0) {
-          setGeneError('Gene not found');
+          setGeneText('Gene lookup failed');
+          setGeneError(true);
           return;
         } else {
           handleSave(index, geneComponentResponse.component);
@@ -537,6 +547,8 @@ export const TransCompInput: React.FC<Props> = (
                   <GeneAutocomplete
                     selectedGene={gene}
                     setSelectedGene={setGene}
+                    geneText={geneText}
+                    setGeneText={setGeneText}
                     geneError={geneError}
                     setGeneError={setGeneError}
                     style={{ width: 125 }}

@@ -6,13 +6,15 @@ import { getGeneSuggestions } from '../../../../services/main';
 interface Props {
   selectedGene: string,
   setSelectedGene: CallableFunction,
-  geneError: string,
+  geneText: string,
+  setGeneText: CallableFunction,
+  geneError: boolean,
   setGeneError: CallableFunction,
   style: Object
 }
 
 export const GeneAutocomplete: React.FC<Props> = (
-  { selectedGene, setSelectedGene, geneError, setGeneError, style }
+  { selectedGene, setSelectedGene, geneText, setGeneText, geneError, setGeneError, style }
 ) => {
   const [geneOptions, setGeneOptions] = useState([]);
 
@@ -22,9 +24,9 @@ export const GeneAutocomplete: React.FC<Props> = (
   // * concept IDs?
   useEffect(() => {
     if (selectedGene !== '' && !geneOptions.includes(selectedGene)) {
-      setGeneError('Unrecognized term');
+      setGeneText('Unrecognized term');
     } else {
-      setGeneError('');
+      setGeneText('');
     }
   }, [geneOptions]);
 
@@ -57,16 +59,17 @@ export const GeneAutocomplete: React.FC<Props> = (
           style={style}
           variant="standard"
           value={selectedGene}
-          error={geneError !== ''}
+          error={geneError}
           onChange={event => {
+            setGeneError(false);
             if (event.target.value !== '' && event.target.value !== null) {
               updateAutocomplete(event.target.value);
               setSelectedGene(event.target.value);
             } else if (event.target.value === '') {
-              setGeneError('');
+              setGeneText('');
             }
           }}
-          helperText={geneError !== '' ? geneError : null}
+          helperText={geneText !== '' ? geneText : null}
         />
       }
     />
