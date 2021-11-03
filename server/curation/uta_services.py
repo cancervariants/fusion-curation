@@ -162,9 +162,6 @@ class PostgresDatabase():
         )
 
 
-postgres_instance = PostgresDatabase()
-
-
 async def get_genomic_coords(db: PostgresDatabase, tx_ac: str, start_exon: int, end_exon: int,
                              start_exon_offset: int = 0, end_exon_offset: int = 0,
                              gene: str = None) -> Optional[Dict]:
@@ -239,7 +236,7 @@ async def get_tx_exons(db: PostgresDatabase, tx_ac: str) -> Optional[List[str]]:
     query = (
         f"""
         SELECT cds_se_i
-        FROM {postgres_instance.schema}._cds_exons_fp_v
+        FROM {db.schema}._cds_exons_fp_v
         WHERE tx_ac = '{tx_ac}';
         """
     )
