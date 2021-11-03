@@ -289,7 +289,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     setStructure(items);
   };
 
-  // change edit mode
+  // turn on edit mode for component
   const handleEdit = (component_id: string) => {
     const newEditMode = [...editMode];
     newEditMode.push(component_id);

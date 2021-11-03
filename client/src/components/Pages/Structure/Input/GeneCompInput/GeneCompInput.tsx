@@ -1,14 +1,33 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Card, CardContent, Button } from '@material-ui/core';
 import { GeneAutocomplete } from '../../../../main/shared/GeneAutocomplete/GeneAutocomplete';
 import { getGeneComponent } from '../../../../../services/main';
 import { StructuralComponentInputProps } from '../StructCompInputProps';
+import { ClientGeneComponent } from '../../../../../services/ResponseModels';
+import { FusionContext } from '../../../../../global/contexts/FusionContext';
 
-const GeneCompInput: React.FC<StructuralComponentInputProps> = (
+interface GeneComponentInputProps extends StructuralComponentInputProps {
+  prevValues: ClientGeneComponent
+}
+
+const GeneCompInput: React.FC<GeneComponentInputProps> = (
   { index, id, handleCancel, handleSave }
 ) => {
   const [gene, setGene] = useState<string>('');
-  const [geneError, setGeneError] = useState('');
+  const [geneError, setGeneError] = useState<string>('');
+
+  // Fusion object constructed throughout app lifecycle
+  const { fusion, setFusion } = useContext(FusionContext);
+  useEffect(() => {
+    const prevValues = fusion.structural_components?.filter(comp => comp.component_id === id)[0];
+    if (prevValues) {
+      const fusionCopy = Object.assign({}, fusion);
+      fusionCopy.structural_components.splice(fusion.structural_components.indexOf(prevValues), 1);
+      setFusion(fusionCopy);
+      const prevInput = prevValues.gene_descriptor.id.split(':')[1];
+      setGene(prevInput);
+    }
+  }, []);
 
   const buildGeneComponent = (term: string) => {
     getGeneComponent(term)
