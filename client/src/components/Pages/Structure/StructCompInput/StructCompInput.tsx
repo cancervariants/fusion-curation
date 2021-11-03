@@ -1,14 +1,14 @@
+import {
+  Button, Card, CardContent, FormControlLabel, FormLabel, MenuItem, Radio, RadioGroup, Select,
+  TextField
+} from '@material-ui/core';
 import { useState } from 'react';
 import {
-  Card, CardContent, Button, TextField, Select, MenuItem, FormLabel, RadioGroup, Radio,
-  FormControlLabel
-} from '@material-ui/core';
-import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
-import {
-  getGeneComponent, getTxSegmentComponentECT, getTxSegmentComponentGCT, getTxSegmentComponentGCG,
-  getTemplatedSequenceComponent
+  getGeneComponent, getTemplatedSequenceComponent, getTxSegmentComponentECT,
+  getTxSegmentComponentGCG, getTxSegmentComponentGCT
 } from '../../../../services/main';
 import { LinkerComponent } from '../../../../services/ResponseModels';
+import { GeneAutocomplete } from '../../../main/shared/GeneAutocomplete/GeneAutocomplete';
 import './TransCompInput.scss';
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
 
 // TODO: disappear error onChange
 
-export const TransCompInput: React.FC<Props> = (
+export const StructuralComponentInput: React.FC<Props> = (
   { compType, handleCancel, handleSave, index, id }
 ) => {
   // Templated sequence
