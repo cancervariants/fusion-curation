@@ -1,16 +1,13 @@
-import './SummaryJSON.scss';
-import { useEffect, useState } from 'react';
-import {
-  AnyGeneComponent,
-  // AnyGeneComponent,
-  ClientFusion, CriticalDomain, Fusion, GeneComponent, LinkerComponent, RegulatoryElement,
-  TemplatedSequenceComponent, TranscriptSegmentComponent, UnknownGeneComponent
-} from '../../../../services/ResponseModels';
 import copy from 'clipboard-copy';
+import { useEffect, useState } from 'react';
 import { validateFusion } from '../../../../services/main';
+import {
+  AnyGeneComponent, ClientFusion, CriticalDomain, Fusion, GeneComponent, LinkerComponent,
+  RegulatoryElement, TemplatedSequenceComponent, TranscriptSegmentComponent, UnknownGeneComponent
+} from '../../../../services/ResponseModels';
+import './SummaryJSON.scss';
 
 interface Props {
-  // TODO: get types from model
   fusion: ClientFusion;
 }
 
@@ -91,11 +88,10 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
     validateFusion(formattedFusion)
       .then(response => {
         if (response.warnings?.length > 0) {
-          if (JSON.stringify(response.warnings.sort()) !==
-            JSON.stringify(validationErrors.sort())) {
-            setValidationErrors(response.warnings);
-            return;
-          }
+          // if (JSON.stringify(response.warnings.sort()) !==
+          //   JSON.stringify(validationErrors.sort())) {
+          setValidationErrors(response.warnings);
+          // }
         } else {
           setPrintedFusion(JSON.stringify(response.fusion, null, 2));
         }
@@ -114,18 +110,33 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
 
   return (
     <>
-      <div className="headline">
-        <span className="copy-message">{isCopied ? 'Copied to Clipboard!' : 'Click to Copy'}</span>
-      </div>
-      <pre
-        className={`${isDown ? 'clicking' : ''} summary-json-container`}
-        onClick={handleCopy}
-        onMouseDown={handleMouseDown}
-      >
-        <div>
-          {printedFusion}
-        </div>
-      </pre>
+      {
+        validationErrors.length > 0 ?
+          <div className="summary-json-container summary-json-container-error">
+            {
+              fusion.structural_components?.length > 2 ?
+                <>{JSON.stringify(validationErrors)}</>
+                : <>Must provide at least 2 structural components</>
+            }
+          </div>
+          :
+          <>
+            <div className="headline">
+              <span className="copy-message">
+                {isCopied ? 'Copied to Clipboard!' : 'Click to Copy'}
+              </span>
+            </div>
+            <pre
+              className={`${isDown ? 'clicking' : ''} summary-json-container`}
+              onClick={handleCopy}
+              onMouseDown={handleMouseDown}
+            >
+              <div>
+                {printedFusion}
+              </div>
+            </pre>
+          </>
+      }
     </>
   );
 };
