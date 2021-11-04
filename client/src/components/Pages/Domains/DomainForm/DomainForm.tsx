@@ -72,7 +72,7 @@ const DomainForm: React.FC = () => {
 
     setGene('');
     setDomain('');
-    setStatus('');
+    setStatus('default');
   };
 
   const renderGeneOptions = () => {
