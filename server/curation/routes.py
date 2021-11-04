@@ -123,8 +123,8 @@ async def build_tx_segment_ect(request: Request,
 async def build_tx_segment_gct(request: Request,
                                transcript: str,
                                chromosome: str,
-                               start: int,
-                               end: int,
+                               start: Optional[int] = Query(None),
+                               end: Optional[int] = Query(None),
                                strand: Optional[str] = Query(None)) \
         -> TxSegmentComponentResponse:
     """Construct Transcript Segment component by providing transcript and genomic
@@ -167,8 +167,8 @@ async def build_tx_segment_gct(request: Request,
 async def build_tx_segment_gcg(request: Request,
                                gene: str,
                                chromosome: str,
-                               start: int,
-                               end: int,
+                               start: Optional[int] = Query(None),
+                               end: Optional[int] = Query(None),
                                strand: Optional[str] = Query(None)) \
         -> TxSegmentComponentResponse:
     """Construct Transcript Segment component by providing gene and genomic
