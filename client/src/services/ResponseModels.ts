@@ -465,6 +465,15 @@ export interface GeneComponentResponse {
   component?: GeneComponent;
 }
 /**
+ * Response model for MANE transcript retrieval endpoint.
+ */
+export interface GetTranscriptsResponse {
+  warnings?: string[];
+  transcripts?: {
+    [k: string]: string | number;
+  }[];
+}
+/**
  * Response model for gene normalization endpoint.
  */
 export interface NormalizeGeneResponse {

@@ -2,7 +2,8 @@ import {
   Fusion, FusionValidationResponse, NormalizeGeneResponse,
   AssociatedDomainResponse, SuggestGeneResponse, GeneComponentResponse,
   TxSegmentComponentResponse,
-  TemplatedSequenceComponentResponse
+  TemplatedSequenceComponentResponse,
+  GetTranscriptsResponse
 } from './ResponseModels';
 
 export const getGeneComponent = async (term: string): Promise<GeneComponentResponse> => {
@@ -96,4 +97,10 @@ export const validateFusion = async (fusion: Fusion): Promise<FusionValidationRe
   });
   const fusionResponse = await response.json();
   return fusionResponse;
+};
+
+export const getTranscripts = async (term: string): Promise<GetTranscriptsResponse> => {
+  const response = await fetch(`/utilities/get_transcripts?term=${term}`);
+  const transcriptResponse = await response.json();
+  return transcriptResponse;
 };

@@ -229,7 +229,7 @@ class FusionValidationResponse(Response):
         extra = Extra.forbid
 
 
-class MANETranscriptsResponse(Response):
+class GetTranscriptsResponse(Response):
     """Response model for MANE transcript retrieval endpoint."""
 
     transcripts: Optional[List[Dict[StrictStr, Union[StrictStr, StrictInt]]]]

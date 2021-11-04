@@ -14,7 +14,7 @@ from curation.version import __version__
 from curation.schemas import GeneComponentResponse, TxSegmentComponentResponse, \
     TemplatedSequenceComponentResponse, FusionValidationResponse, \
     AssociatedDomainResponse, NormalizeGeneResponse, SuggestGeneResponse, \
-    MANETranscriptsResponse
+    GetTranscriptsResponse
 from curation.gene_services import GeneService
 from curation.domain_services import DomainService
 from curation.validation_services import validate_fusion
@@ -337,7 +337,7 @@ def validate_object(proposed_fusion: Dict) -> Dict:
 
 @app.get("/utilities/getmane",
          operation_id="getMANETranscripts",
-         response_model=MANETranscriptsResponse,
+         response_model=GetTranscriptsResponse,
          response_model_exclude_none=True)
 def get_mane_transcripts(request: Request, term: str) -> Dict:
     """
