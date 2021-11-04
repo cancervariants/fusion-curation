@@ -1,5 +1,5 @@
 """Provide schemas for FastAPI responses."""
-from typing import List, Optional, Tuple, Union, Literal
+from typing import List, Optional, Tuple, Union, Literal, Dict
 from abc import ABC
 
 from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
@@ -221,6 +221,7 @@ class FusionValidationResponse(Response):
     """Response model for fusion validation endpoint."""
 
     fusion: Optional[Fusion]
+    warnings: Optional[List[Dict]]
 
     class Config:
         """Configure class."""
