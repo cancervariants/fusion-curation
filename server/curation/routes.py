@@ -335,7 +335,7 @@ def validate_object(proposed_fusion: Dict) -> Dict:
     return validate_fusion(proposed_fusion)
 
 
-@app.get("/utilities/getmane",
+@app.get("/utilities/get_transcripts",
          operation_id="getMANETranscripts",
          response_model=GetTranscriptsResponse,
          response_model_exclude_none=True)
@@ -348,9 +348,9 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
     """
     normalized = request.app.state.fusor.gene_normalizer.normalize(term)
     if normalized.match_type == MatchType.NO_MATCH:
-        return {"warnings": f"Unable to normalize {term}"}
+        return {"warnings": [f"Unable to normalize {term}"]}
     elif not normalized.gene_descriptor.gene_id.lower().startswith('hgnc'):
-        return {"warnings": f"Unable to retrieve HGNC symbol for {term}"}
+        return {"warnings": [f"Unable to retrieve HGNC symbol for {term}"]}
     symbol = normalized.gene_descriptor.label
     transcripts = (request.app.state
                    .fusor
@@ -359,7 +359,7 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
                    .get_gene_mane_data(symbol))
 
     if not transcripts:
-        return {"warnings": f"Unable to retrieve matching transcripts for {term}"}
+        return {"warnings": [f"Unable to retrieve matching transcripts for {term}"]}
     else:
         return {"transcripts": transcripts}
 
