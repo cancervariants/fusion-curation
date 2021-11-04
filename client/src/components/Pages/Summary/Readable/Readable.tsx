@@ -4,6 +4,8 @@ import {
   RegulatoryElement
 } from '../../../../services/ResponseModels';
 import './Readable.scss';
+import React from 'react';
+
 
 interface Props {
   // TODO: get types from model
@@ -37,7 +39,7 @@ export const Readable: React.FC<Props> = ({
           <div className="right-item">
             {structuralComponents.map((comp, index) =>
               // eslint-disable-next-line react/jsx-key
-              <span className="right-sub-item">
+              <span className="right-sub-item" key={index}>
                 {`${index ? '::' : ''}${comp.hr_name}`}
               </span>)}
           </div>
