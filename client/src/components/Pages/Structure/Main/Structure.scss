@@ -26,6 +26,10 @@
       margin: 0 0 10px 0;
     }
 
+    .error-banner {
+      color: red;
+    }
+
     .gene {
       background-color: var(--gene);
       width: 320px;
@@ -50,10 +54,7 @@
       width: 60px;
       text-align: center;
     }
-
   }
-
-
 }
 
 .summary-title {
@@ -62,9 +63,6 @@
     font-size: x-large;
   }
 }
-
-
-
 
 // .structure-summary {
 //   padding: 5px;

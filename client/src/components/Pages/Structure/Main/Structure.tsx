@@ -21,7 +21,14 @@ export const Structure: React.FC<Props> = ({ index }) => {
     <div className="structure-tab-container">
       <div className="structure-summary">
         <h3>Structure Overview</h3>
-        <h5>Drag and rearrange components to build the chimeric transcript.</h5>
+        <h5>
+          Drag and rearrange components to build the chimeric transcript.
+          {
+            structuralComponents.length < 2 ?
+              <span className="error-banner"> Must provide at least 2 components.</span>
+              : null
+          }
+        </h5>
       </div>
       <Builder structuralComponents={structuralComponents} />
     </div>
