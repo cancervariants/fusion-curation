@@ -106,7 +106,12 @@ const RegElementForm: React.FC = () => {
         />
       </div>
       <div className='regel-add-button '>
-        <Button variant='outlined' color='primary' onClick={() => handleAdd()}>
+        <Button
+          variant='outlined'
+          color='primary'
+          onClick={() => handleAdd()}
+          disabled={type === 'default' && gene === ''}
+        >
           Add
         </Button>
       </div>
