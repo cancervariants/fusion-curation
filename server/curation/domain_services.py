@@ -60,8 +60,3 @@ class DomainService():
             logger.warning(f"Unable to retrieve associated domains for {gene_id}")
             raise ServiceWarning
         return list(set(domains))
-
-
-domain_service = DomainService()
-domain_service.load_mapping()
-get_possible_domains = domain_service.get_possible_domains

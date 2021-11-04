@@ -229,6 +229,17 @@ class FusionValidationResponse(Response):
         extra = Extra.forbid
 
 
+class MANETranscriptsResponse(Response):
+    """Response model for MANE transcript retrieval endpoint."""
+
+    transcripts: Optional[List[Dict[StrictStr, Union[StrictStr, StrictInt]]]]
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
+
+
 class ClientFusion(Fusion):
     """Fusion with client-oriented structural component models. Used in global
     FusionContext.

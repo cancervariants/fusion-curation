@@ -7,14 +7,16 @@ from fastapi.staticfiles import StaticFiles
 from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
 from fusor import FUSOR
 from fusor.models import Strand
+from gene.schemas import MatchType
 
 from curation import APP_ROOT, ServiceWarning, logger
 from curation.version import __version__
 from curation.schemas import GeneComponentResponse, TxSegmentComponentResponse, \
     TemplatedSequenceComponentResponse, FusionValidationResponse, \
-    AssociatedDomainResponse, NormalizeGeneResponse, SuggestGeneResponse
-from curation.gene_services import get_gene_id, suggest_genes
-from curation.domain_services import get_possible_domains
+    AssociatedDomainResponse, NormalizeGeneResponse, SuggestGeneResponse, \
+    MANETranscriptsResponse
+from curation.gene_services import GeneService
+from curation.domain_services import DomainService
 from curation.validation_services import validate_fusion
 
 
@@ -44,10 +46,32 @@ async def start_fusor() -> FUSOR:
     return fusor_instance
 
 
+def get_gene_services() -> GeneService:
+    """Initialize gene services instance. Retrieve and load mappings.
+
+    :return: GeneService instance
+    """
+    gene_services = GeneService()
+    gene_services.load_mapping()
+    return gene_services
+
+
+def get_domain_services() -> DomainService:
+    """Initialize domain services instance. Retrieve and load mappings.
+
+    :return: DomainService instance
+    """
+    domain_service = DomainService()
+    domain_service.load_mapping()
+    return domain_service
+
+
 @app.on_event("startup")
 async def startup():
     """Get FUSOR reference"""
     app.state.fusor = await start_fusor()
+    app.state.genes = get_gene_services()
+    app.state.domains = get_domain_services()
 
 
 @app.on_event("shutdown")
@@ -238,8 +262,10 @@ def build_templated_sequence_component(request: Request, start: int, end: int,
          operation_id="normalizeGene",
          response_model=NormalizeGeneResponse,
          response_model_exclude_none=True)
-def normalize_gene(term: str = Query("")) -> ResponseDict:
+def normalize_gene(request: Request, term: str = Query("")) -> ResponseDict:
     """Normalize gene term provided by user.
+    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+        FUSOR and UTA-associated tools.
     :param str term: gene symbol/alias/name/etc
     :return: JSON response with normalized ID if successful and warnings otherwise
     """
@@ -247,7 +273,10 @@ def normalize_gene(term: str = Query("")) -> ResponseDict:
         "term": term,
     }
     try:
-        concept_id, symbol = get_gene_id(term.strip())
+        concept_id, symbol = app.state.genes.get_normalized_gene(
+            term.strip(),
+            request.app.state.fusor.gene_normalizer
+        )
         response["concept_id"] = concept_id
         response["symbol"] = symbol
     except ServiceWarning as e:
@@ -267,7 +296,7 @@ def suggest_gene(term: str = Query('')) -> ResponseDict:
     """
     response: ResponseDict = {'term': term}
     try:
-        possible_matches = suggest_genes(term)
+        possible_matches = app.state.genes.suggest_genes(term)
         response["suggestions"] = possible_matches
     except ServiceWarning as e:
         response["warnings"] = [str(e)]
@@ -286,7 +315,7 @@ def get_domain_suggestions(gene_id: str = Query("")) -> ResponseDict:
     """
     response: Dict[str, Any] = {"gene_id": gene_id}
     try:
-        possible_matches = get_possible_domains(gene_id)
+        possible_matches = app.state.domains.get_possible_domains(gene_id)
         response["suggestions"] = possible_matches
     except ServiceWarning:
         response["warnings"] = [f"No associated domains for {gene_id}"]
@@ -304,6 +333,35 @@ def validate_object(proposed_fusion: Dict) -> Dict:
         Object + a list of Warnings if not.
     """
     return validate_fusion(proposed_fusion)
+
+
+@app.get("/utilities/getmane",
+         operation_id="getMANETranscripts",
+         response_model=MANETranscriptsResponse,
+         response_model_exclude_none=True)
+def get_mane_transcripts(request: Request, term: str) -> Dict:
+    """
+    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+        FUSOR and UTA-associated tools.
+    :param str term:
+    :return:
+    """
+    normalized = request.app.state.fusor.gene_normalizer.normalize(term)
+    if normalized.match_type == MatchType.NO_MATCH:
+        return {"warnings": f"Unable to normalize {term}"}
+    elif not normalized.gene_descriptor.gene_id.lower().startswith('hgnc'):
+        return {"warnings": f"Unable to retrieve HGNC symbol for {term}"}
+    symbol = normalized.gene_descriptor.label
+    transcripts = (request.app.state
+                   .fusor
+                   .uta_tools
+                   .mane_transcript_mappings
+                   .get_gene_mane_data(symbol))
+
+    if not transcripts:
+        return {"warnings": f"Unable to retrieve matching transcripts for {term}"}
+    else:
+        return {"transcripts": transcripts}
 
 
 app.mount("/", StaticFiles(html=True, directory=APP_ROOT / "build"))

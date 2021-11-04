@@ -16,9 +16,6 @@ Map = Dict[str, Tuple[str, str, str]]
 class GeneService:
     """Provide gene ID resolution and term autocorrect suggestions."""
 
-    # set Gene Normalization settings via env variables -- see Gene Normalization README
-    gene_query_handler = QueryHandler()
-
     aliases_map: Map = {}
     prev_symbols_map: Map = {}
     symbols_map: Map = {}
@@ -51,13 +48,15 @@ class GeneService:
                 for term_lower, term, normalized_id, normalized_label in reader:
                     map[term_lower] = (term, normalized_id, normalized_label)
 
-    def get_normalized_gene(self, term: str) -> Tuple[CURIE, str]:
+    @staticmethod
+    def get_normalized_gene(term: str, normalizer: QueryHandler) -> Tuple[CURIE, str]:
         """Get normalized ID given gene symbol/label/alias.
         :param str term: user-entered gene term
+        :param QueryHandler normalizer:  gene normalizer instance
         :returns: concept ID, str, if successful
         :raises ServiceWarning: if lookup fails
         """
-        response = self.gene_query_handler.normalize(term)
+        response = normalizer.normalize(term)
         if response.match_type != MatchType.NO_MATCH:
             if not response.gene_descriptor or not response.gene_descriptor.gene_id:
                 msg = f"Unexpected null property in normalized response for `{term}`"
@@ -107,9 +106,3 @@ class GeneService:
             raise ServiceWarning(warn)
         else:
             return suggestions
-
-
-gene_service = GeneService()
-gene_service.load_mapping()
-get_gene_id = gene_service.get_normalized_gene
-suggest_genes = gene_service.suggest_genes
