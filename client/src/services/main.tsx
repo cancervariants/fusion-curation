@@ -67,7 +67,6 @@ export const getTxSegmentComponentGCG = async (
   return responseJson;
 };
 
-// TODO ~85% sure we can remove this
 export const getGeneId = async (symbol: string): Promise<NormalizeGeneResponse> => {
   const response = await fetch(`/lookup/gene?term=${symbol}`);
   const geneResponse = await response.json();
