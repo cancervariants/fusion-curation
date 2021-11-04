@@ -3,11 +3,7 @@ import { FusionContext } from '../../../../global/contexts/FusionContext';
 import Builder from '../Builder/Builder';
 import './Structure.scss';
 
-interface Props {
-  index: number
-}
-
-export const Structure: React.FC<Props> = () => {
+export const Structure: React.FC = () => {
   const fusion = useContext(FusionContext).fusion;
   const [structuralComponents, setStructuralComponents] = useState([]);
 
