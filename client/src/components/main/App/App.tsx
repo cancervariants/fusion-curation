@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
+import UtilitiesNavTabs from '../../../components/Utilities/UtilitiesNavTabs/UtilitiesNavTabs';
 import { DomainOptionsContext } from '../../../global/contexts/DomainOptionsContext';
 import { FusionContext } from '../../../global/contexts/FusionContext';
 import { GeneContext } from '../../../global/contexts/GeneContext';
@@ -12,7 +13,6 @@ import { ClientFusion } from '../../../services/ResponseModels';
 import NavTabs from '../Nav/NavTabs';
 import ButtonTop from '../shared/Buttons/ButtonTop';
 import './App.scss';
-import UtilitiesNavTabs from '../../Utilities/UtilitiesNavTabs';
 
 
 const demoData: ClientFusion = {

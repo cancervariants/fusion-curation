@@ -6,7 +6,7 @@ import { AppBar, Tabs, Tab } from '@material-ui/core';
 
 // Styles
 import './UtilitiesNavTabs.scss';
-import { useColorTheme } from '../../global/contexts/Theme/ColorThemeContext';
+import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -14,7 +14,6 @@ interface TabPanelProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
 }
-
 
 const TabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
@@ -59,7 +58,6 @@ const LinkTab = (props: LinkTabProps) => {
 };
 
 const UtilitiesNavTabs = (): React.ReactElement => {
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -87,9 +85,7 @@ const UtilitiesNavTabs = (): React.ReactElement => {
     },
   }));
 
-
   const { colorTheme } = useColorTheme();
-
   const classes = useStyles();
   const [value, setValue] = React.useState(0); // current visible tab
 
