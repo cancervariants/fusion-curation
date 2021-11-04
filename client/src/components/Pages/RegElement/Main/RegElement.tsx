@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext } from 'react';
 import Close from '../../Domains/Main/Close';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 
@@ -18,7 +18,8 @@ export const RegElement: React.FC<Props> = ({ index }) => {
 
   // Don't want to change the suggested element. should maybe create a separate context of the
   // unmutated selected suggestion
-  const initialElements = useRef(regElements);
+  // TODO -- working
+  // const initialElements = useRef(regElements);
 
   const handleRemove = (regEl: ClientRegulatoryElement) => {
     //copy regulatory elements array, then remove the element with the relevant ID

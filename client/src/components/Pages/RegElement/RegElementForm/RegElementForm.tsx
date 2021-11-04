@@ -45,7 +45,6 @@ const RegElementForm: React.FC = () => {
   const handleAdd = () => {
     getGeneId(gene)
       .then(geneResponse => {
-        console.log(geneResponse);
         if (geneResponse.warnings?.length > 0) {
           const geneWarning = `Lookup of gene term ${gene} failed.`;
           if (geneResponse.warnings.includes(geneWarning)) {
