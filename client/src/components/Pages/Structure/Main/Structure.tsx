@@ -10,7 +10,7 @@ interface Props {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const Structure: React.FC<Props> = ({ index }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const fusion = useContext(FusionContext);
+  const fusion = useContext(FusionContext).fusion;
   const [structuralComponents, setStructuralComponents] = useState([]);
 
   useEffect(() => {
