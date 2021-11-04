@@ -69,7 +69,7 @@ const RegElementForm: React.FC = () => {
 
         setFusion({ ...fusion, ...{ 'regulatory_elements': cloneArray } });
         setGene('');
-        setType(null);
+        setType('default');
       })
       .catch((error) => {
         console.error(error);

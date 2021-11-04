@@ -19,6 +19,7 @@ export enum Color {
   GREENISH = '#94EB94',
   PINKRED = '#FE6B8B',
   ORANGE = '#FF8E53',
+  PURPLEY = '#564787',
   //new pallette stuff
   FLICKR = '#F72585',
   BYZ = '#B5179E',
@@ -55,6 +56,7 @@ export interface ColorTheme {
   // '--any-gene-light': Color;
   '--gradient-1': Color;
   '--gradient-2': Color;
+  '--gradient-3': Color;
 }
 
 export type ColorThemeType = 'two' | 'light' | 'dark';
@@ -81,7 +83,8 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     '--region': Color.PASTEL_PURPLE,
     '--region-light': Color.PALE_PASTEL_PURPLE,
     '--gradient-1': Color.PINKRED,
-    '--gradient-2': Color.ORANGE
+    '--gradient-2': Color.ORANGE,
+    '--gradient-3': Color.PURPLEY
   },
   dark: {
     '--primary': Color.SEAFOAM,
@@ -104,7 +107,8 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     '--region': Color.PASTEL_PURPLE,
     '--region-light': Color.PALE_PASTEL_PURPLE,
     '--gradient-1': Color.PINKRED,
-    '--gradient-2': Color.ORANGE
+    '--gradient-2': Color.ORANGE,
+    '--gradient-3': Color.PURPLEY
   },
   two: {
     '--primary': Color.DODGER,
@@ -127,6 +131,7 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     '--region': Color.ULTRA,
     '--region-light': Color.ULTRA,
     '--gradient-1': Color.PURP1,
-    '--gradient-2': Color.ULTRA
+    '--gradient-2': Color.ULTRA,
+    '--gradient-3': Color.PURPLEY
   }
 };

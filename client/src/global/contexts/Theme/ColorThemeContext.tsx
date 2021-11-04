@@ -14,7 +14,6 @@ export const ColorThemeContext = React.createContext<ColorThemeContextProps>({
 
 export const ColorThemeProvider: React.FC = ({ children }) => {
   const [currentColorTheme, setCurrentColorTheme] = React.useState<ColorThemeType>('light');
-
   return (
     <ColorThemeContext.Provider value={{
       colorThemeType: currentColorTheme,

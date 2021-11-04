@@ -12,6 +12,7 @@ import { ClientFusion } from '../../../services/ResponseModels';
 import NavTabs from '../Nav/NavTabs';
 import ButtonTop from '../shared/Buttons/ButtonTop';
 import './App.scss';
+import UtilitiesNavTabs from '../../Utilities/UtilitiesNavTabs';
 
 
 const demoData: ClientFusion = {
@@ -160,6 +161,7 @@ const App = (): React.ReactElement => {
   const [fusion, setFusion] = useState<ClientFusion>({} as ClientFusion);
   const [globalGenes, setGlobalGenes] = useState<Object>({});
   const [domainOptions, setDomainOptions] = useState<Object>({});
+  const [showMain, setShowMain] = useState<boolean>(true);
 
   // update global genes and domain options context
   useEffect(() => {
@@ -227,37 +229,56 @@ const App = (): React.ReactElement => {
 
   return (
     <ThemeProvider theme={theme}>
-      <GeneContext.Provider value={{ globalGenes, setGlobalGenes }}>
-        <DomainOptionsContext.Provider value={{ domainOptions, setDomainOptions }}>
-          <SuggestionContext.Provider value={[suggestions, setSuggestions]}>
-            <FusionContext.Provider value={{ fusion, setFusion }}>
-              <div className='App'
-                style={{
-                  ...colorTheme
-                } as React.CSSProperties}>
-                <div className='top-button-container'>
-                  <ButtonTop
-                    text='Clear All'
-                    variant='contained'
-                    color='secondary'
-                    onClick={() => handleClear()}
-                  />
-                  <ButtonTop
-                    text='Demo Data'
-                    variant='contained'
-                    color='secondary'
-                    onClick={() => handleDemo()}
-                  />
-                </div>
-                <h1 className='title'>VICC Fusion Curation Interface</h1>
-                <div className='main-component'>
-                  <NavTabs />
-                </div>
-              </div>
-            </FusionContext.Provider>
-          </SuggestionContext.Provider>
-        </DomainOptionsContext.Provider>
-      </GeneContext.Provider>
+      <div className='App'
+        style={{
+          ...colorTheme
+        } as React.CSSProperties}>
+        <div className='top-button-container'>
+          {
+            showMain ?
+              <>
+                <ButtonTop
+                  text='Clear Data'
+                  variant='contained'
+                  color='secondary'
+                  onClick={() => handleClear()}
+                />
+                <ButtonTop
+                  text='Demo Data'
+                  variant='contained'
+                  color='secondary'
+                  onClick={() => handleDemo()}
+                />
+              </>
+              : null
+          }
+          <ButtonTop
+            text={showMain ? 'go to utilities' : 'go to curation'}
+            variant='contained'
+            color='secondary'
+            onClick={() => setShowMain(!showMain)}
+          />
+        </div>
+        <h1 className='title'>VICC Fusion Curation {showMain ? 'Interface' : 'Utilities'}</h1>
+        <div className='main-component'>
+          {
+            showMain ?
+              (
+                <GeneContext.Provider value={{ globalGenes, setGlobalGenes }}>
+                  <DomainOptionsContext.Provider value={{ domainOptions, setDomainOptions }}>
+                    <SuggestionContext.Provider value={[suggestions, setSuggestions]}>
+                      <FusionContext.Provider value={{ fusion, setFusion }}>
+                        <NavTabs />
+                      </FusionContext.Provider>
+                    </SuggestionContext.Provider>
+                  </DomainOptionsContext.Provider>
+                </GeneContext.Provider>
+              )
+              :
+              <UtilitiesNavTabs />
+          }
+        </div>
+      </div>
     </ThemeProvider>
   );
 };

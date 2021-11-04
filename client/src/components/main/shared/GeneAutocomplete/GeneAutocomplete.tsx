@@ -51,6 +51,7 @@ export const GeneAutocomplete: React.FC<Props> = (
       options={geneOptions}
       getOptionLabel={(option) => option}
       onChange={(event, value) => setSelectedGene(value)}
+      value={selectedGene}
       renderInput={(params) =>
         <TextField
           {...params}

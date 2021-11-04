@@ -58,9 +58,9 @@ export const RegElement: React.FC<Props> = ({ index }) => {
             You can add or remove regulatory elements.
           </div>
 
-          {regElements.map(regEl => (
+          {regElements.map((regEl, index) => (
             // eslint-disable-next-line react/jsx-key
-            <div className='regel'>
+            <div className='regel' key={index}>
               <div>{regEl.gene_descriptor.label.toUpperCase()} {regEl.type}</div>
               <div className='close-button-reg' onClick={() => handleRemove(regEl)}>
                 <Close />
