@@ -54,7 +54,7 @@ const LinkerCompInput: React.FC<StructuralComponentInputProps> = (
             <Button
               style={{ margin: '8px' }}
               variant="outlined"
-              disabled={linkerError}
+              disabled={linkerError || (sequence === '')}
               color="primary"
               onClick={buildLinkerComponent}
             >

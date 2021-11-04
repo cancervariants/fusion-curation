@@ -11,5 +11,5 @@ export interface StructuralComponentInputProps {
     TranscriptSegmentComponent | TemplatedSequenceComponent | AnyGeneComponent |
     UnknownGeneComponent) => void;
   handleCancel: (id: string) => void;
-  prevValues?: Object
+  prevValues?: Object,
 }

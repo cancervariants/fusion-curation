@@ -6,8 +6,8 @@ import { getTemplatedSequenceComponent } from '../../../../../services/main';
 const TemplatedSequenceCompInput: React.FC<StructuralComponentInputProps> = (
   { index, id, handleCancel, handleSave }
 ) => {
-  const [strand, setStrand] = useState('');
   const [chromosome, setChromosome] = useState('');
+  const [strand, setStrand] = useState('');
   const [startPosition, setStartPosition] = useState('');
   const [endPosition, setEndPosition] = useState('');
 
@@ -95,6 +95,9 @@ const TemplatedSequenceCompInput: React.FC<StructuralComponentInputProps> = (
               style={{ margin: '8px' }}
               variant="outlined"
               color="primary"
+              disabled={
+                chromosome === '' || strand === '' || (startPosition === '' && endPosition === '')
+              }
               onClick={() => buildTemplatedSequenceComponent()}
             >
               Save

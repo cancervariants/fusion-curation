@@ -28,6 +28,7 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
 
   const [txStartingGenomic, setTxStartingGenomic] = useState('');
   const [txEndingGenomic, setTxEndingGenomic] = useState('');
+
   const [startingExon, setStartingExon] = useState('');
   const [endingExon, setEndingExon] = useState('');
   const [startingExonOffset, setStartingExonOffset] = useState('');
@@ -300,6 +301,19 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
     }
   };
 
+  const disableAdd = (): boolean => {
+    switch(txInputType) {
+      case 'genomic_coords_gene':
+        return (txGene === '' || txChrom === '' || txStrand === 'default' ||
+          (txStartingGenomic === '' && txEndingGenomic === ''));
+      case 'genomic_coords_tx':
+        return (txAc === '' || txChrom === '' || txStrand === 'default' ||
+          (txStartingGenomic === '' && txEndingGenomic === ''));
+      case 'exon_coords_tx':
+        return (txAc === '' || (startingExon === '' && endingExon === ''));
+    }
+  };
+
   return (
     <Card >
       <CardContent>
@@ -327,8 +341,12 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
             >
               Cancel
             </Button>
-            <Button style={{ margin: '8px' }} variant="outlined" color="primary"
+            <Button
+              style={{ margin: '8px' }}
+              variant="outlined"
+              color="primary"
               onClick={buildTranscriptSegmentComponent}
+              disabled={disableAdd()}
             >Save</Button>
           </div>
         </div>

@@ -72,6 +72,7 @@ const GeneCompInput: React.FC<GeneComponentInputProps> = (
               variant="outlined"
               color="primary"
               onClick={() => buildGeneComponent(gene)}
+              disabled={gene === ''}
             >
               Save
             </Button>
