@@ -14,7 +14,7 @@ from curation.version import __version__
 from curation.schemas import GeneComponentResponse, TxSegmentComponentResponse, \
     TemplatedSequenceComponentResponse, FusionValidationResponse, \
     AssociatedDomainResponse, NormalizeGeneResponse, SuggestGeneResponse, \
-    GetTranscriptsResponse
+    GetTranscriptsResponse, ServiceInfoResponse
 from curation.gene_services import GeneService
 from curation.domain_services import DomainService
 from curation.validation_services import validate_fusion
@@ -362,6 +362,14 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
         return {"warnings": [f"Unable to retrieve matching transcripts for {term}"]}
     else:
         return {"transcripts": transcripts}
+
+
+@app.get("/service_info",
+         operation_id="serviceInfo",
+         response_model=ServiceInfoResponse)
+def get_service_info() -> Dict:
+    """Return service info."""
+    return {"version": __version__}
 
 
 app.mount("/", StaticFiles(html=True, directory=APP_ROOT / "build"))

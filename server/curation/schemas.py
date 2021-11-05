@@ -240,6 +240,17 @@ class GetTranscriptsResponse(Response):
         extra = Extra.forbid
 
 
+class ServiceInfoResponse(Response):
+    """Response model for service_info endpoint."""
+
+    version: StrictStr
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
+
+
 class ClientFusion(Fusion):
     """Fusion with client-oriented structural component models. Used in global
     FusionContext.

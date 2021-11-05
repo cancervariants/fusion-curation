@@ -497,6 +497,13 @@ export interface SequenceIDResponse {
   sequence_id?: string;
 }
 /**
+ * Response model for service_info endpoint.
+ */
+export interface ServiceInfoResponse {
+  warnings?: string[];
+  version: string;
+}
+/**
  * Response model for gene autocomplete suggestions endpoint.
  */
 export interface SuggestGeneResponse {

@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@material-ui/core';
+import { Dialog, DialogTitle, ThemeProvider, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import UtilitiesNavTabs from '../../../components/Utilities/UtilitiesNavTabs/UtilitiesNavTabs';
 import { DomainOptionsContext } from '../../../global/contexts/DomainOptionsContext';
@@ -8,8 +8,8 @@ import { SuggestionContext } from '../../../global/contexts/SuggestionContext';
 import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext';
 import '../../../global/styles/global.scss';
 import theme from '../../../global/styles/theme';
-import { getAssociatedDomains } from '../../../services/main';
-import { ClientFusion } from '../../../services/ResponseModels';
+import { getAssociatedDomains, getInfo } from '../../../services/main';
+import { ClientFusion, ServiceInfoResponse } from '../../../services/ResponseModels';
 import NavTabs from '../Nav/NavTabs';
 import ButtonTop from '../shared/Buttons/ButtonTop';
 import './App.scss';
@@ -162,6 +162,8 @@ const App = (): React.ReactElement => {
   const [globalGenes, setGlobalGenes] = useState<Object>({});
   const [domainOptions, setDomainOptions] = useState<Object>({});
   const [showMain, setShowMain] = useState<boolean>(true);
+  const [serviceInfo, setServiceInfo] = useState({});
+  const [showServiceInfo, setShowServiceInfo] = useState(false);
 
   // update global genes and domain options context
   useEffect(() => {
@@ -223,7 +225,16 @@ const App = (): React.ReactElement => {
     setGlobalGenes({});
     setDomainOptions({});
   };
+
   const handleDemo = () => setFusion(demoData);
+
+  const showInfo = () => {
+    getInfo()
+      .then(infoResponse => {
+        setServiceInfo(infoResponse);
+      });
+    setShowServiceInfo(true);
+  };
 
   document.title = 'VICC Fusion Curation';
 
@@ -238,13 +249,13 @@ const App = (): React.ReactElement => {
             showMain ?
               <>
                 <ButtonTop
-                  text='Clear Data'
+                  text='Clear'
                   variant='contained'
                   color='secondary'
                   onClick={() => handleClear()}
                 />
                 <ButtonTop
-                  text='Demo Data'
+                  text='Demo'
                   variant='contained'
                   color='secondary'
                   onClick={() => handleDemo()}
@@ -253,10 +264,16 @@ const App = (): React.ReactElement => {
               : null
           }
           <ButtonTop
-            text={showMain ? 'go to utilities' : 'go to curation'}
+            text={showMain ? 'utilities' : 'curation'}
             variant='contained'
             color='secondary'
             onClick={() => setShowMain(!showMain)}
+          />
+          <ButtonTop
+            text='info'
+            variant='contained'
+            color='secondary'
+            onClick={() => showInfo()}
           />
         </div>
         <h1 className='title'>VICC Fusion Curation {showMain ? 'Interface' : 'Utilities'}</h1>
@@ -279,6 +296,20 @@ const App = (): React.ReactElement => {
           }
         </div>
       </div>
+      <Dialog
+        aria-labelledby="simple-dialog-title"
+        open={showServiceInfo}
+        onClose={() => setShowServiceInfo(false)}
+      >
+        <DialogTitle id="simple-dialog-title">Service Info</DialogTitle>
+        <Typography className='service-info'>
+          {
+            'version' in serviceInfo ?
+              `Fusion Curation v${serviceInfo.version}`
+              : 'version lookup failed'
+          }
+        </Typography>
+      </Dialog>
     </ThemeProvider>
   );
 };

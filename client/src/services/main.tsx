@@ -3,7 +3,8 @@ import {
   AssociatedDomainResponse, SuggestGeneResponse, GeneComponentResponse,
   TxSegmentComponentResponse,
   TemplatedSequenceComponentResponse,
-  GetTranscriptsResponse
+  GetTranscriptsResponse,
+  ServiceInfoResponse
 } from './ResponseModels';
 
 export const getGeneComponent = async (term: string): Promise<GeneComponentResponse> => {
@@ -103,4 +104,10 @@ export const getTranscripts = async (term: string): Promise<GetTranscriptsRespon
   const response = await fetch(`/utilities/get_transcripts?term=${term}`);
   const transcriptResponse = await response.json();
   return transcriptResponse;
+};
+
+export const getInfo = async (): Promise<ServiceInfoResponse> => {
+  const response = await fetch('/service_info');
+  const responseJson = await response.json();
+  return responseJson;
 };
