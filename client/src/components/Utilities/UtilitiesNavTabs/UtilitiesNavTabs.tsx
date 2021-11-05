@@ -104,15 +104,11 @@ const UtilitiesNavTabs = (): React.ReactElement => {
           className={classes.enabledtabs}
         >
           <LinkTab label="Get MANE Transcripts" {...a11yProps(0)} />
-          <LinkTab label="Convert Coordinates" {...a11yProps(1)} />
         </Tabs>
       </AppBar>
       <div className="tab-panel">
         <TabPanel value={value} index={0}>
           <GetTranscripts />
-        </TabPanel>
-        <TabPanel value={value} index={1}>
-          <></>
         </TabPanel>
       </div>
     </div>
