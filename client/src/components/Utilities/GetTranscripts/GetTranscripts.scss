@@ -8,7 +8,7 @@
     .right {
       display: flex;
       flex-direction: column;
-      width: 50%;
+      width: 60%;
       align-items: center;
       justify-content: center;
       }
@@ -46,13 +46,15 @@
       padding-bottom: 40px;
     }
 
-    .transcripts-response-container {
+    .tx-response-container {
         overflow-y: scroll;
         overflow-x: hidden;
         text-overflow: clip;
+        padding-bottom:1px;
+        width: 100%;
     }
 
     .tx-accordion {
-        width: 80%;
+        width: 90%;
     }
   }

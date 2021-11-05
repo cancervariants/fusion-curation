@@ -38,7 +38,7 @@ export const GetTranscripts: React.FC = () => {
       return (
         <div>
           <Container className='tx-accordion'>
-            <Accordion>
+            <Accordion defaultExpanded>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 className='tx-accordion-top'
