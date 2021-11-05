@@ -340,11 +340,11 @@ def validate_object(proposed_fusion: Dict) -> Dict:
          response_model=GetTranscriptsResponse,
          response_model_exclude_none=True)
 def get_mane_transcripts(request: Request, term: str) -> Dict:
-    """
+    """Get MANE transcripts for gene term.
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
-    :param str term:
-    :return:
+    :param str term: gene term provided by user
+    :return: Dict containing transcripts if lookup succeeds, or warnings upon failure
     """
     normalized = request.app.state.fusor.gene_normalizer.normalize(term)
     if normalized.match_type == MatchType.NO_MATCH:
