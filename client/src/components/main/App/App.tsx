@@ -162,7 +162,7 @@ const App = (): React.ReactElement => {
   const [globalGenes, setGlobalGenes] = useState<Object>({});
   const [domainOptions, setDomainOptions] = useState<Object>({});
   const [showMain, setShowMain] = useState<boolean>(true);
-  const [serviceInfo, setServiceInfo] = useState({});
+  const [serviceInfo, setServiceInfo] = useState({} as ServiceInfoResponse);
   const [showServiceInfo, setShowServiceInfo] = useState(false);
 
   // update global genes and domain options context
