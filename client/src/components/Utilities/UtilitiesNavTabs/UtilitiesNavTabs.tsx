@@ -1,10 +1,7 @@
 import React from 'react';
-
-// MUI Stuff
+import { GetTranscripts } from '../GetTranscripts/GetTranscripts';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { AppBar, Tabs, Tab } from '@material-ui/core';
-
-// Styles
 import './UtilitiesNavTabs.scss';
 import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext';
 
@@ -112,7 +109,7 @@ const UtilitiesNavTabs = (): React.ReactElement => {
       </AppBar>
       <div className="tab-panel">
         <TabPanel value={value} index={0}>
-          <></>
+          <GetTranscripts />
         </TabPanel>
         <TabPanel value={value} index={1}>
           <></>
