@@ -27,11 +27,13 @@ logger.handlers = []
 logging.getLogger("boto3").setLevel(logging.INFO)
 logging.getLogger("botocore").setLevel(logging.INFO)
 logging.getLogger("nose").setLevel(logging.INFO)
+logging.getLogger("python_jsonschema_objects.classbuilder").setLevel(logging.INFO)
 
 if "FUSION_EB_PROD" in environ:
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
     logger.addHandler(ch)
+    environ["UTA_DB_PROD"] = "TRUE"
 else:
     logging.getLogger("urllib3").setLevel(logging.INFO)
 
