@@ -1,5 +1,7 @@
-import { Dialog, DialogTitle, Typography } from '@material-ui/core';
-import { useEffect, useState } from 'react';
+import {
+  Dialog, DialogTitle, Divider, Link, List, ListItem, ListItemText, Typography
+} from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
 import { getInfo } from '../../../services/main';
 import { ServiceInfoResponse } from '../../../services/ResponseModels';
 import './ServiceInfo.scss';
@@ -22,16 +24,56 @@ const ServiceInfo = ({ show, setShow }) => {
       open={show}
       onClose={() => setShow(false)}
     >
-      <DialogTitle id="simple-dialog-title">Service Info</DialogTitle>
-      <Typography className='service-info'>
-        {
-          'version' in serviceInfo ?
-            `Fusion Curation v${serviceInfo.version}`
-            : 'version lookup failed'
-        }
-      </Typography>
-    </Dialog>
+      <DialogTitle id="simple-dialog-title">            {
+        'version' in serviceInfo ?
+          `Fusion Curation v${serviceInfo.version}`
+          : 'version lookup failed'
+      }
+      </DialogTitle>
+      <Divider />
+      <List className='service-info'>
+        <ListItem
+          button
+          component='a'
+          href='https://cancervariants.org/projects/fusions'
+          target='_blank'
+          rel='noopener'
+        >
+          <ListItemText>
+            Project Homepage
+          </ListItemText>
+        </ListItem>
+        <ListItem
+          button
+          component='a'
+          href='https://github.com/cancervariants/fusion-curation/'
+          target='_blank'
+          rel='noopener'
+        >
+          <ListItemText>
+            Code Repository
+          </ListItemText>
+        </ListItem>
+      </List>
+    </Dialog >
   );
 };
 
+
+/*
+
+      <Typography >
+      </Typography>
+      <Typography>
+        <Link href='https://cancervariants.org/projects/fusions/'>
+          Project Homepage
+        </Link>
+      </Typography>
+      <Typography>
+        <Link href='https://github.com/cancervariants/fusion-curation/'>
+          Code Repository
+        </Link>
+      </Typography>
+
+*/
 export default ServiceInfo;
