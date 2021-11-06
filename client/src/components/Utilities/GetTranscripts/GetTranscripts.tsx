@@ -47,7 +47,6 @@ export const GetTranscripts: React.FC = () => {
               </AccordionSummary>
               <AccordionDetails className='tx-accordion-details'>
                 <Typography>
-                  <b>Symbol:</b> {transcripts[0].symbol} <br />
                   <b>Name:</b> {transcripts[0].name} <br />
                   <b>NCBI ID:</b> ncbigene:{transcripts[0]['#NCBI_GeneID'].split(':')[1]} <br />
                   <b>Ensembl ID:</b> {transcripts[0].Ensembl_Gene} <br />

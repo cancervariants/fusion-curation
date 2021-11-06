@@ -1,4 +1,4 @@
-import { Dialog, DialogTitle, ThemeProvider, Typography } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import UtilitiesNavTabs from '../../../components/Utilities/UtilitiesNavTabs/UtilitiesNavTabs';
 import { DomainOptionsContext } from '../../../global/contexts/DomainOptionsContext';
@@ -8,9 +8,10 @@ import { SuggestionContext } from '../../../global/contexts/SuggestionContext';
 import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext';
 import '../../../global/styles/global.scss';
 import theme from '../../../global/styles/theme';
-import { getAssociatedDomains, getInfo } from '../../../services/main';
-import { ClientFusion, ServiceInfoResponse } from '../../../services/ResponseModels';
+import { getAssociatedDomains } from '../../../services/main';
+import { ClientFusion } from '../../../services/ResponseModels';
 import NavTabs from '../Nav/NavTabs';
+import ServiceInfo from '../ServiceInfo/ServiceInfo';
 import ButtonTop from '../shared/Buttons/ButtonTop';
 import './App.scss';
 
@@ -162,7 +163,6 @@ const App = (): React.ReactElement => {
   const [globalGenes, setGlobalGenes] = useState<Object>({});
   const [domainOptions, setDomainOptions] = useState<Object>({});
   const [showMain, setShowMain] = useState<boolean>(true);
-  const [serviceInfo, setServiceInfo] = useState({} as ServiceInfoResponse);
   const [showServiceInfo, setShowServiceInfo] = useState(false);
 
   // update global genes and domain options context
@@ -228,20 +228,12 @@ const App = (): React.ReactElement => {
 
   const handleDemo = () => setFusion(demoData);
 
-  const showInfo = () => {
-    getInfo()
-      .then(infoResponse => {
-        setServiceInfo(infoResponse);
-      });
-    setShowServiceInfo(true);
-  };
-
   document.title = 'VICC Fusion Curation';
 
   return (
     <ThemeProvider theme={theme}>
       <div
-        className={showMain ? 'App' : 'app-utils'}
+        className={showMain ? 'app-main' : 'app-utils'}
         style={{
           ...colorTheme
         } as React.CSSProperties}>
@@ -274,7 +266,7 @@ const App = (): React.ReactElement => {
             text='info'
             variant='contained'
             color='secondary'
-            onClick={() => showInfo()}
+            onClick={() => setShowServiceInfo(true)}
           />
         </div>
         <h1 className='title'>VICC Fusion Curation {showMain ? 'Interface' : 'Utilities'}</h1>
@@ -297,20 +289,7 @@ const App = (): React.ReactElement => {
           }
         </div>
       </div>
-      <Dialog
-        aria-labelledby="simple-dialog-title"
-        open={showServiceInfo}
-        onClose={() => setShowServiceInfo(false)}
-      >
-        <DialogTitle id="simple-dialog-title">Service Info</DialogTitle>
-        <Typography className='service-info'>
-          {
-            'version' in serviceInfo ?
-              `Fusion Curation v${serviceInfo.version}`
-              : 'version lookup failed'
-          }
-        </Typography>
-      </Dialog>
+      <ServiceInfo show={showServiceInfo} setShow={setShowServiceInfo} />
     </ThemeProvider>
   );
 };
