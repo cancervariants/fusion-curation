@@ -240,7 +240,8 @@ const App = (): React.ReactElement => {
 
   return (
     <ThemeProvider theme={theme}>
-      <div className='App'
+      <div
+        className={showMain ? 'App' : 'app-utils'}
         style={{
           ...colorTheme
         } as React.CSSProperties}>
