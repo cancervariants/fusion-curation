@@ -1,5 +1,5 @@
 import {
-  Dialog, DialogTitle, Divider, Link, List, ListItem, ListItemText, Typography
+  Dialog, DialogTitle, Divider, List, ListItem, ListItemText
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { getInfo } from '../../../services/main';
