@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@material-ui/core';
+import { Menu, MenuItem, ThemeProvider } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import UtilitiesNavTabs from '../../../components/Utilities/UtilitiesNavTabs/UtilitiesNavTabs';
 import { DomainOptionsContext } from '../../../global/contexts/DomainOptionsContext';
@@ -164,6 +164,7 @@ const App = (): React.ReactElement => {
   const [domainOptions, setDomainOptions] = useState<Object>({});
   const [showMain, setShowMain] = useState<boolean>(true);
   const [showServiceInfo, setShowServiceInfo] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   // update global genes and domain options context
   useEffect(() => {
@@ -221,12 +222,26 @@ const App = (): React.ReactElement => {
   const { colorTheme } = useColorTheme();
 
   const handleClear = () => {
+    setAnchorEl(null);
     setFusion({} as ClientFusion);
     setGlobalGenes({});
     setDomainOptions({});
   };
 
-  const handleDemo = () => setFusion(demoData);
+  const handleDemo = () => {
+    setAnchorEl(null);
+    setFusion(demoData);
+  };
+
+  const handleShowMainClick = () => {
+    setAnchorEl(null);
+    setShowMain(!showMain);
+  };
+
+  const handleServiceInfo = () => {
+    setAnchorEl(null);
+    setShowServiceInfo(true);
+  };
 
   document.title = 'VICC Fusion Curation';
 
@@ -237,37 +252,34 @@ const App = (): React.ReactElement => {
         style={{
           ...colorTheme
         } as React.CSSProperties}>
-        <div className='top-button-container'>
-          {
-            showMain ?
-              <>
-                <ButtonTop
-                  text='Clear'
-                  variant='contained'
-                  color='secondary'
-                  onClick={() => handleClear()}
-                />
-                <ButtonTop
-                  text='Demo'
-                  variant='contained'
-                  color='secondary'
-                  onClick={() => handleDemo()}
-                />
-              </>
-              : null
-          }
+        <div className='menu-container'>
           <ButtonTop
-            text={showMain ? 'utilities' : 'curation'}
+            text='Menu'
             variant='contained'
             color='secondary'
-            onClick={() => setShowMain(!showMain)}
+            onClick={(event) => setAnchorEl(event.currentTarget)}
           />
-          <ButtonTop
-            text='info'
-            variant='contained'
-            color='secondary'
-            onClick={() => setShowServiceInfo(true)}
-          />
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={() => setAnchorEl(null)}
+          >
+            {
+              showMain ?
+                (
+                  <>
+                    <MenuItem onClick={() => handleClear()}>Clear Entered Data</MenuItem>
+                    <MenuItem onClick={() => handleDemo()}>Use Demo Data</MenuItem>
+                    <MenuItem onClick={() => handleShowMainClick()}>Show Utilities</MenuItem>
+                  </>
+                )
+                :
+                <MenuItem onClick={() => handleShowMainClick()}>Show Curation</MenuItem>
+            }
+            <MenuItem onClick={() => handleServiceInfo()}>Service Info</MenuItem>
+          </Menu>
         </div>
         <h1 className='title'>VICC Fusion Curation {showMain ? 'Interface' : 'Utilities'}</h1>
         <div className='main-component'>
