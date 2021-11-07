@@ -73,8 +73,10 @@ def get_uniprot_refs() -> UniprotRefs:
                 if uniprot_id in uniprot_ids:
                     continue
                 norm_response = q.normalize(uniprot_id)
-                norm_id = norm_response["gene_descriptor"]["gene"]["gene_id"]
-                norm_label = norm_response["gene_descriptor"]["label"]
+                assert norm_response.gene_descriptor and \
+                    norm_response.gene_descriptor.gene
+                norm_id = norm_response.gene_descriptor.gene.gene_id
+                norm_label = norm_response.gene_descriptor.label
                 uniprot_ids[uniprot_id] = (norm_id, norm_label)
         if not last_evaluated_key:
             break
@@ -152,10 +154,10 @@ def build_gene_domain_maps(interpro_types: Set[str] = {"Domain"},
             if not normed_values:
                 continue
 
-            gene_id, gene_label = normed_values
-            line_tuple = (gene_id, gene_label, row[1], row[2])
+            gene_id, _ = normed_values
+            line_tuple = (gene_id, row[1], row[2], row[4], row[5])
             if line_tuple not in unique_maps:
-                line_str = f"{gene_id}\t{gene_label}\t{row[1]}\t{row[2]}\n"
+                line_str = "\t".join(line_tuple) + "\n"
                 outfile.write(line_str)
                 unique_maps.add(line_tuple)
     outfile.close()
