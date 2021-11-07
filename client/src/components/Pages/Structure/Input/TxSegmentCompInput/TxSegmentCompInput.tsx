@@ -2,7 +2,8 @@ import {
   Card, CardContent, Button, TextField, MenuItem, FormLabel, Select, RadioGroup,
   FormControlLabel, Radio
 } from '@material-ui/core';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { FusionContext } from '../../../../../global/contexts/FusionContext';
 import {
   getTxSegmentComponentECT, getTxSegmentComponentGCG, getTxSegmentComponentGCT
 } from '../../../../../services/main';
@@ -34,6 +35,53 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
   const [startingExonOffset, setStartingExonOffset] = useState('');
   const [endingExonOffset, setEndingExonOffset] = useState('');
 
+  const { fusion, setFusion } = useContext(FusionContext);
+  useEffect(() => {
+    const prevValues = fusion.structural_components?.filter(comp => comp.component_id === id)[0];
+    if (prevValues) {
+      const fusionCopy = Object.assign({}, fusion);
+      fusionCopy.structural_components.splice(fusion.structural_components.indexOf(prevValues), 1);
+      setFusion(fusionCopy);
+      setTxInputType(prevValues.input_type);
+      switch(prevValues.input_type) {
+        case 'genomic_coords_gene':
+          setTxGene(prevValues.gene_descriptor.id.split(':')[1]);
+          setTxChrom(
+            prevValues.component_genomic_start.id.split(':')[1] ||
+            prevValues.component_genomic_end.id.split(':')[1]
+          );
+          // setTxStrand();  // TODO ???
+          setTxStartingGenomic(
+            prevValues.component_genomic_start?.location.interval.end.value || ''
+          );
+          setTxEndingGenomic(
+            prevValues.component_genomic_end?.location.interval.end.value || ''
+          );
+          break;
+        case 'genomic_coords_tx':
+          setTxAc(prevValues.transcript.split(':')[1]);
+          setTxChrom(
+            prevValues.component_genomic_start.id.split(':')[1] ||
+            prevValues.component_genomic_end.id.split(':')[1]
+          );
+          // setTxStrand();  // TODO ???
+          setTxStartingGenomic(
+            prevValues.component_genomic_start?.location.interval.end.value || ''
+          );
+          setTxEndingGenomic(
+            prevValues.component_genomic_end?.location.interval.end.value || ''
+          );
+          break;
+        case 'exon_coords_tx':
+          setTxAc(prevValues.transcript.split(':')[1]);
+          setStartingExon(prevValues.exon_start || '');
+          setStartingExonOffset(prevValues.exon_start_offset || '');
+          setEndingExon(prevValues.exon_end || '');
+          setEndingExonOffset(prevValues.exon_end_offset || '');
+      }
+    }
+  }, []);
+
   const buildTranscriptSegmentComponent = () => {
     switch (txInputType) {
       case 'genomic_coords_gene':
@@ -46,7 +94,7 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
               }
               // TODO other errors
             } else {
-              handleSave(index, id, txSegmentResponse.component);
+              handleSave(index, id, txSegmentResponse.component, txInputType);
             }
           });
         break;
@@ -59,7 +107,7 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
                 setTxChromText('Unrecognized value');
               }
             } else {
-              handleSave(index, id, txSegmentResponse.component);
+              handleSave(index, id, txSegmentResponse.component, txInputType);
             }
           });
         break;
@@ -74,7 +122,7 @@ const TxSegmentCompInput: React.FC<StructuralComponentInputProps> = (
                 setTxAcText('Unrecognized value');
               }
             } else {
-              handleSave(index, id, txSegmentResponse.component);
+              handleSave(index, id, txSegmentResponse.component, txInputType);
             }
           });
     }

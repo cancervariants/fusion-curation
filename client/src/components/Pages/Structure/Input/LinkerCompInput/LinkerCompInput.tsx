@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Card, CardContent, Button, TextField } from '@material-ui/core';
+import { Button, Card, CardContent, TextField } from '@material-ui/core';
+import { useContext, useEffect, useState } from 'react';
+import { FusionContext } from '../../../../../global/contexts/FusionContext';
 import { LinkerComponent } from '../../../../../services/ResponseModels';
 import { StructuralComponentInputProps } from '../StructCompInputProps';
 
@@ -9,6 +10,18 @@ const LinkerCompInput: React.FC<StructuralComponentInputProps> = (
   // Linker Sequence
   const [sequence, setSequence] = useState('');
   const linkerError = Boolean(sequence) && sequence.match(/^([aAgGtTcC]+)?$/) === null;
+
+  const { fusion, setFusion } = useContext(FusionContext);
+  useEffect(() => {
+    const prevValues = fusion.structural_components?.filter(comp => comp.component_id === id)[0];
+    if (prevValues) {
+      const fusionCopy = Object.assign({}, fusion);
+      fusionCopy.structural_components.splice(fusion.structural_components.indexOf(prevValues), 1);
+      setFusion(fusionCopy);
+      const prevInput = prevValues.linker_sequence.sequence;
+      setSequence(prevInput);
+    }
+  }, []);
 
   const buildLinkerComponent = () => {
     const linkerComponent: LinkerComponent = {

@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Card, CardContent, Button, TextField } from '@material-ui/core';
 import { StructuralComponentInputProps } from '../StructCompInputProps';
 import { getTemplatedSequenceComponent } from '../../../../../services/main';
+import { FusionContext } from '../../../../../global/contexts/FusionContext';
 
 const TemplatedSequenceCompInput: React.FC<StructuralComponentInputProps> = (
   { index, id, handleCancel, handleSave }
@@ -10,6 +11,20 @@ const TemplatedSequenceCompInput: React.FC<StructuralComponentInputProps> = (
   const [strand, setStrand] = useState('');
   const [startPosition, setStartPosition] = useState('');
   const [endPosition, setEndPosition] = useState('');
+
+  const { fusion, setFusion } = useContext(FusionContext);
+  useEffect(() => {
+    const prevValues = fusion.structural_components?.filter(comp => comp.component_id === id)[0];
+    if (prevValues) {
+      const fusionCopy = Object.assign({}, fusion);
+      fusionCopy.structural_components.splice(fusion.structural_components.indexOf(prevValues), 1);
+      setFusion(fusionCopy);
+      setChromosome(prevValues.region.id.split(':')[1]);
+      setStrand(prevValues.strand);
+      setStartPosition(prevValues.region.location.interval.start.value);
+      setEndPosition(prevValues.region.location.interval.end.value);
+    }
+  }, []);
 
   const buildTemplatedSequenceComponent = () => {
     getTemplatedSequenceComponent(chromosome, strand, startPosition, endPosition)

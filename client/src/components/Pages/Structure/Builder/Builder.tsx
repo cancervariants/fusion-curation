@@ -159,7 +159,8 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
   const handleSave = (
     index: number, id: string, component: GeneComponent | LinkerComponent |
       TranscriptSegmentComponent | TemplatedSequenceComponent | AnyGeneComponent |
-      UnknownGeneComponent
+      UnknownGeneComponent,
+    txInputType?: 'genomic_coords_gene' | 'genomic_coords_tx' | 'exon_coords_tx'
   ) => {
     // TODO: prevent from sending empty fields (where applicable)
     const items = Array.from(structure);
@@ -217,6 +218,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           component_name: `${txAcName} ${txGeneSymbol}`,
           hr_name: `${txAcName}(${txGeneSymbol}):${hrExon}`,
           shorthand: txAcName,
+          input_type: txInputType,
         };
         saveComponent(items, index, txComponent);
         break;
