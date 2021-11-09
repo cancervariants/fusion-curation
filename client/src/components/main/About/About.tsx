@@ -29,11 +29,12 @@ const About: React.FC<AboutProps> = ({ show, setShow }) => {
       open={show}
       onClose={() => setShow(false)}
     >
-      <DialogTitle id="simple-dialog-title">            {
-        'version' in serviceInfo ?
-          `Fusion Curation v${serviceInfo.version}`
-          : 'version lookup failed'
-      }
+      <DialogTitle id="simple-dialog-title">
+        {
+          'version' in serviceInfo ?
+            `Fusion Curation v${serviceInfo.version}`
+            : 'version lookup failed'
+        }
       </DialogTitle>
       <Divider />
       <List className='service-info'>
