@@ -4,9 +4,9 @@ import {
 import React, { useEffect, useState } from 'react';
 import { getInfo } from '../../../services/main';
 import { ServiceInfoResponse } from '../../../services/ResponseModels';
-import './ServiceInfo.scss';
+import './About.scss';
 
-const ServiceInfo = ({ show, setShow }) => {
+const About = ({ show, setShow }) => {
   const [serviceInfo, setServiceInfo] = useState({} as ServiceInfoResponse);
 
   useEffect(() => {
@@ -59,21 +59,4 @@ const ServiceInfo = ({ show, setShow }) => {
   );
 };
 
-
-/*
-
-      <Typography >
-      </Typography>
-      <Typography>
-        <Link href='https://cancervariants.org/projects/fusions/'>
-          Project Homepage
-        </Link>
-      </Typography>
-      <Typography>
-        <Link href='https://github.com/cancervariants/fusion-curation/'>
-          Code Repository
-        </Link>
-      </Typography>
-
-*/
-export default ServiceInfo;
+export default About;

@@ -11,7 +11,7 @@ import theme from '../../../global/styles/theme';
 import { getAssociatedDomains } from '../../../services/main';
 import { ClientFusion } from '../../../services/ResponseModels';
 import NavTabs from '../Nav/NavTabs';
-import ServiceInfo from '../ServiceInfo/ServiceInfo';
+import About from '../About/About';
 import ButtonTop from '../shared/Buttons/ButtonTop';
 import './App.scss';
 
@@ -269,16 +269,16 @@ const App = (): React.ReactElement => {
             {
               showMain ?
                 (
-                  <>
+                  <div>
                     <MenuItem onClick={() => handleClear()}>Clear Entered Data</MenuItem>
                     <MenuItem onClick={() => handleDemo()}>Use Demo Data</MenuItem>
-                    <MenuItem onClick={() => handleShowMainClick()}>Show Utilities</MenuItem>
-                  </>
+                    <MenuItem onClick={() => handleShowMainClick()}>Utilities</MenuItem>
+                  </div>
                 )
                 :
-                <MenuItem onClick={() => handleShowMainClick()}>Show Curation</MenuItem>
+                <MenuItem onClick={() => handleShowMainClick()}>Return to Curation</MenuItem>
             }
-            <MenuItem onClick={() => handleServiceInfo()}>Service Info</MenuItem>
+            <MenuItem onClick={() => handleServiceInfo()}>About</MenuItem>
           </Menu>
         </div>
         <h1 className='title'>VICC Fusion Curation {showMain ? 'Interface' : 'Utilities'}</h1>
@@ -301,7 +301,7 @@ const App = (): React.ReactElement => {
           }
         </div>
       </div>
-      <ServiceInfo show={showServiceInfo} setShow={setShowServiceInfo} />
+      <About show={showServiceInfo} setShow={setShowServiceInfo} />
     </ThemeProvider>
   );
 };
