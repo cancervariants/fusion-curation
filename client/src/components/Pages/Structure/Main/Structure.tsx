@@ -1,15 +1,10 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import Builder from '../Builder/Builder';
 import './Structure.scss';
 
 export const Structure: React.FC = () => {
   const fusion = useContext(FusionContext).fusion;
-  const [structuralComponents, setStructuralComponents] = useState([]);
-
-  useEffect(() => {
-    setStructuralComponents(fusion.structural_components || []);
-  }, [fusion]);
 
   return (
     <div className="structure-tab-container">
@@ -18,13 +13,13 @@ export const Structure: React.FC = () => {
         <h5>
           Drag and rearrange components to build the chimeric transcript.
           {
-            structuralComponents.length < 2 ?
-              <span className="error-banner"> Must provide at least 2 components.</span>
-              : null
+            fusion.structural_components?.length >= 2 ?
+              null
+              : <span className="error-banner"> Must provide at least 2 components.</span>
           }
         </h5>
       </div>
-      <Builder structuralComponents={structuralComponents} />
+      <Builder />
     </div>
   );
 };

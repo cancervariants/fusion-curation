@@ -6,7 +6,7 @@ import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautif
 import { v4 as uuid } from 'uuid';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import {
-  AnyGeneComponent, ClientAnyGeneComponent, ClientComponent, ClientGeneComponent,
+  AnyGeneComponent, ClientAnyGeneComponent, ClientGeneComponent,
   ClientLinkerComponent, ClientTemplatedSequenceComponent, ClientTranscriptSegmentComponent,
   ClientUnknownGeneComponent, GeneComponent, LinkerComponent, TemplatedSequenceComponent,
   TranscriptSegmentComponent, UnknownGeneComponent
@@ -19,9 +19,8 @@ import TxSegmentCompInput from '../Input/TxSegmentCompInput/TxSegmentCompInput';
 import './Builder.scss';
 // import { unstable_createMuiStrictModeTheme } from '@material-ui/core';
 
-interface Props {
-  structuralComponents
-}
+type ClientComponentUnion = ClientAnyGeneComponent | ClientGeneComponent | ClientLinkerComponent |
+  ClientTemplatedSequenceComponent | ClientTranscriptSegmentComponent | ClientUnknownGeneComponent;
 
 const EDITABLE_COMPONENT_TYPES = [
   'gene', 'linker_sequence', 'templated_sequence', 'transcript_segment'
@@ -60,7 +59,6 @@ const OPTIONS = [
     'component_name': '',
     'component_type': 'linker_sequence',
     'component_id': uuid(),
-    // need an example linker structure
   },
   {
     'component_name': '',
@@ -98,7 +96,7 @@ const OPTIONS = [
   }
 ];
 
-const Builder: React.FC<Props> = ({ structuralComponents }) => {
+const Builder: React.FC = () => {
   // Fusion object constructed throughout app lifecycle
   const { fusion, setFusion } = useContext(FusionContext);
   // displayed structural elements
@@ -107,16 +105,12 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
   const [editMode, setEditMode] = useState([]);
 
   useEffect(() => {
-    const diagram = [];
     if ('structural_components' in fusion) {
-      fusion.structural_components.map(comp => (
-        diagram.push(comp)
-      ));
-      setStructure(diagram);
+      setStructure(Array.from(fusion.structural_components));
     } else {
       setStructure([]);
     }
-  }, [structuralComponents]);
+  }, [fusion]);
 
   // drop new component into structure
   const copy = (result: DropResult) => {
@@ -136,7 +130,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
       });
     } else if (newItem.component_type === 'unknown_gene') {
       handleSave(destination.index, newItem.component_id, {
-        'component_type': 'unknown_gene',
+        component_type: 'unknown_gene',
       });
     } else {
       const newEditMode = editMode;
@@ -148,11 +142,9 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
   const reorder = (result: DropResult) => {
     const { source, destination } = result;
     const sourceClone = Array.from(structure);
-    const [newOrder] = sourceClone.splice(source.index, 1);
-    sourceClone.splice(destination.index, 0, newOrder);
-
+    const [movedComponent] = sourceClone.splice(source.index, 1);
+    sourceClone.splice(destination.index, 0, movedComponent);
     setFusion({ ...fusion, ...{ 'structural_components': sourceClone } });
-    setStructure(sourceClone);
   };
 
   // build client-oriented component given complete component (i.e. add uuid, names, etc)
@@ -163,7 +155,6 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
     txInputType?: 'genomic_coords_gene' | 'genomic_coords_tx' | 'exon_coords_tx'
   ) => {
     // TODO: prevent from sending empty fields (where applicable)
-    const items = Array.from(structure);
 
     switch (component.component_type) {
       case 'gene':
@@ -176,7 +167,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           component_name: nomenclature,
           hr_name: nomenclature,
         };
-        saveComponent(items, index, geneComponent);
+        saveComponent(index, geneComponent);
         break;
       case 'transcript_segment':
         const { exon_start, exon_start_offset, exon_end, exon_end_offset } = component;
@@ -220,7 +211,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           shorthand: txAcName,
           input_type: txInputType,
         };
-        saveComponent(items, index, txComponent);
+        saveComponent(index, txComponent);
         break;
       case 'templated_sequence':
         if (
@@ -242,7 +233,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           component_name: name,
           hr_name: name,
         };
-        saveComponent(items, index, templatedSequenceComponent);
+        saveComponent(index, templatedSequenceComponent);
         break;
       case 'linker_sequence':
         const linkerComponent: ClientLinkerComponent = {
@@ -251,7 +242,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           component_name: component.linker_sequence.sequence,
           hr_name: component.linker_sequence.sequence,
         };
-        saveComponent(items, index, linkerComponent);
+        saveComponent(index, linkerComponent);
         break;
       case 'any_gene':
         const anyGeneComponent: ClientAnyGeneComponent = {
@@ -260,7 +251,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           component_name: '*',
           hr_name: '*'
         };
-        saveComponent(items, index, anyGeneComponent);
+        saveComponent(index, anyGeneComponent);
         break;
       case 'unknown_gene':
         const unknownGeneComponent: ClientUnknownGeneComponent = {
@@ -269,18 +260,21 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           component_name: '?',
           hr_name: '?'
         };
-        saveComponent(items, index, unknownGeneComponent);
+        saveComponent(index, unknownGeneComponent);
         break;
     }
   };
 
   // clear active state, update local state array, update global fusion object
-  const saveComponent = (items: Array<ClientComponent>, index: number, newObj: ClientComponent) => {
-    items.splice(index, 1, newObj);
-    const newEditMode = editMode;
+  const saveComponent = (index: number, newObj: ClientComponentUnion) => {
+    const items = Array.from(structure);
+    const spliceLength = ['unknown_gene', 'any_gene'].includes(newObj.component_type) ? 0 : 1;
+    items.splice(index, spliceLength, newObj);
+
+    const newEditMode = [...editMode];
     newEditMode.splice(newEditMode.indexOf(newObj.component_id), 1);
     setEditMode(newEditMode);
-    setStructure(items);
+
     setFusion({ ...fusion, ...{ 'structural_components': items } });
   };
 
@@ -302,7 +296,6 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
   const handleDelete = (uuid: string) => {
     let items = Array.from(structure);
     items = items.filter(item => item.component_id !== uuid);
-    setStructure(items);
     setFusion({ ...fusion, ...{ 'structural_components': items } });
   };
 
@@ -325,8 +318,7 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
-    // dropped outside the list
-    if (!destination) return;
+    if (!destination) return; // dropped outside the list
     if (destination.droppableId === source.droppableId) {
       reorder(result);
     } else {
@@ -454,10 +446,11 @@ const Builder: React.FC<Props> = ({ structuralComponents }) => {
           </Droppable>
           <div className='hr-section'>
             {
-              structuralComponents.filter(comp => Boolean(comp) && comp.hr_name)
-                .map((comp, index: number) => (
-                  <div key={comp.component_id}>{`${index ? '::' : ''}${comp.hr_name}`}</div>
-                ))
+              fusion.structural_components?.filter(
+                (comp: ClientComponentUnion) => Boolean(comp) && comp.hr_name
+              ).map((comp: ClientComponentUnion, index: number) => (
+                <div key={comp.component_id}>{`${index ? '::' : ''}${comp.hr_name}`}</div>
+              ))
             }
           </div>
         </div>
