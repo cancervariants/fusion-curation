@@ -111,9 +111,10 @@ const Builder: React.FC = () => {
       setStructure([]);
     }
   }, [fusion]);
+  console.log(structure);
 
   // drop new component into structure
-  const copy = (result: DropResult) => {
+  const createNew = (result: DropResult) => {
     const { source, destination } = result;
     const sourceClone = Array.from(OPTIONS);
     const destClone = Array.from(structure);
@@ -268,7 +269,7 @@ const Builder: React.FC = () => {
   // clear active state, update local state array, update global fusion object
   const saveComponent = (index: number, newObj: ClientComponentUnion) => {
     const items = Array.from(structure);
-    const spliceLength = ['unknown_gene', 'any_gene'].includes(newObj.component_type) ? 0 : 1;
+    const spliceLength = EDITABLE_COMPONENT_TYPES.includes(newObj.component_type) ? 1 : 0;
     items.splice(index, spliceLength, newObj);
 
     const newEditMode = [...editMode];
@@ -322,7 +323,7 @@ const Builder: React.FC = () => {
     if (destination.droppableId === source.droppableId) {
       reorder(result);
     } else {
-      copy(result);
+      createNew(result);
     }
   };
 
@@ -397,7 +398,7 @@ const Builder: React.FC = () => {
         </Droppable>
         <div className='right-side'>
           <Droppable droppableId='structure'>
-            {(provided) => (
+            {(provided, snapshot) => (
               <div className='block-container' {...provided.droppableProps} ref={provided.innerRef}>
                 <h2 className={`${structure.length === 0 ? 'instruction' : 'hidden'}`}>
                   Drag components here
