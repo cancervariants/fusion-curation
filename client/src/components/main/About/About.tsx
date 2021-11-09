@@ -6,7 +6,12 @@ import { getInfo } from '../../../services/main';
 import { ServiceInfoResponse } from '../../../services/ResponseModels';
 import './About.scss';
 
-const About = ({ show, setShow }) => {
+interface AboutProps {
+  show: boolean,
+  setShow: CallableFunction,
+}
+
+const About: React.FC<AboutProps> = ({ show, setShow }) => {
   const [serviceInfo, setServiceInfo] = useState({} as ServiceInfoResponse);
 
   useEffect(() => {
