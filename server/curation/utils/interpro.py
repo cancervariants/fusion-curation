@@ -7,6 +7,7 @@ from datetime import datetime
 from timeit import default_timer as timer
 import os
 import shutil
+import xml.etree.ElementTree as ET
 
 from gene.query import QueryHandler
 
@@ -15,6 +16,9 @@ from curation.utils import ftp_download
 
 # uniprot concept id -> (normalized ID, normalized label)
 UniprotRefs = Dict[str, Tuple[str, str]]
+
+# (uniprot accession id, ncbi gene id) -> refseq NP_ accession
+UniprotAcRefs = Dict[Tuple[str, str], str]
 
 
 def download_protein2ipr(output_dir: Path) -> None:
@@ -73,11 +77,9 @@ def get_uniprot_refs() -> UniprotRefs:
                 if uniprot_id in uniprot_ids:
                     continue
                 norm_response = q.normalize(uniprot_id)
-                assert norm_response.gene_descriptor and \
-                    norm_response.gene_descriptor.gene
-                norm_id = norm_response.gene_descriptor.gene.gene_id
-                norm_label = norm_response.gene_descriptor.label
-                uniprot_ids[uniprot_id] = (norm_id, norm_label)
+                norm_id = norm_response.gene_descriptor.gene.gene_id  # type: ignore
+                norm_label = norm_response.gene_descriptor.label  # type: ignore
+                uniprot_ids[uniprot_id] = (norm_id, norm_label)  # type: ignore
         if not last_evaluated_key:
             break
 
@@ -95,8 +97,81 @@ def get_uniprot_refs() -> UniprotRefs:
     return uniprot_ids
 
 
+def download_uniprot_sprot(output_dir: Path) -> Path:
+    """Retrieve UniProtKB data.
+    :param Path output_dir: directory to save UniProtKB data in.
+    """
+    logger.info("Retrieving UniProtKB data.")
+
+    gz_file_path = output_dir / "uniprot_sprot.xml.gz"
+    with open(gz_file_path, "w") as fp:
+        def writefile(data):
+            fp.write(data)
+            ftp_download("ftp.uniprot.org",
+                         "pub/databases/uniprot/current_release/knowledgebase/complete/",  # noqa: E501
+                         "protein2ipr.dat.gz", writefile)
+    today = datetime.strftime(datetime.today(), "%Y%m%d")
+    outfile_path = output_dir / f"uniprot_sprot_{today}.dat"
+    with open(outfile_path, "wb") as f_out, gzip.open(gz_file_path, "rb") as f_in:
+        shutil.copyfileobj(f_in, f_out)
+    os.remove(gz_file_path)
+    assert outfile_path.exists()
+
+    logger.info("Successfully retrieved UniProtKB data.")
+    return outfile_path
+
+
+def get_protein_accessions(
+    relevant_proteins: Set[str], uniprot_sprot_path: Optional[Path]
+) -> Dict[Tuple[str, str], str]:
+    """Scan uniprot_sprot.xml and extract RefSeq protein accession identifiers for
+    relevant Uniprot accessions.
+    :param Set[str] relevant_proteins: captured Uniprot accessions, for proteins coded
+        by human genes and containing InterPro functional domains
+    :param Optional[Path] uniprot_sprot_path: path to local uniprot_sprot.xml file.
+    :return: Dict where keys are tuple containing Uniprot accession ID and NCBI gene ID,
+        and values are known RefSeq protein accessions
+    """
+    start = timer()
+    if not uniprot_sprot_path:
+        uniprot_sprot_path = download_uniprot_sprot(APP_ROOT / "data")
+    parser = ET.iterparse(uniprot_sprot_path, ("start", "end"))
+    accessions_map = {}
+    cur_ac = ""
+    cur_refseq_ac = ""
+    cur_gene_id = ""
+    for _, node in parser:
+        if node.tag == "{http://uniprot.org/uniprot}accession":
+            cur_refseq_ac = ""
+            cur_gene_id = ""
+            tmp_ac = node.text
+            if tmp_ac in relevant_proteins:
+                cur_ac = tmp_ac.lower()
+            else:
+                cur_ac = ""
+        elif cur_ac and (node.tag == "{http://uniprot.org/uniprot}dbReference"):
+            node_type = node.get("type")
+            if node_type == "RefSeq":
+                tmp_refseq_id = node.get("id")
+                if tmp_refseq_id.startswith("NP_"):
+                    cur_refseq_ac = tmp_refseq_id
+            elif node_type == "HGNC":
+                cur_gene_id = node.get("id").lower()
+
+        if all([cur_ac, cur_refseq_ac, cur_gene_id]) and \
+                (cur_ac, cur_gene_id) not in accessions_map:
+            accessions_map[(cur_ac, cur_gene_id)] = cur_refseq_ac
+
+    stop = timer()
+    msg = f"Retrieved accession values in {(stop - start):.5f} seconds."
+    logger.info(msg)
+    print(msg)
+    return accessions_map
+
+
 def build_gene_domain_maps(interpro_types: Set[str] = {"Domain"},
                            protein_ipr_path: Optional[Path] = None,
+                           uniprot_sprot_path: Optional[Path] = None,
                            uniprot_refs_path: Optional[Path] = None,
                            output_dir: Path = APP_ROOT / "data") -> None:
     """Produce the gene-to-domain lookup table at out_path using the Interpro-Uniprot
@@ -109,10 +184,10 @@ def build_gene_domain_maps(interpro_types: Set[str] = {"Domain"},
     :param Path output_dir: location to save output file within. Defaults to app data
         directory.
     """
-    start = timer()
+    start_time = timer()
     today = datetime.strftime(datetime.today(), "%Y%m%d")
 
-    # get relevant Interpro names/IDs
+    # get relevant Interpro IDs
     interpro_data_bin = []
 
     def get_interpro_data(data):
@@ -138,32 +213,51 @@ def build_gene_domain_maps(interpro_types: Set[str] = {"Domain"},
                 uniprot_refs[row[0]] = (row[1], row[2])
 
     if not protein_ipr_path:
-        download_protein2ipr(APP_ROOT / "data")
-        protein_ipr_path = APP_ROOT / "data" / f"protein2ipr_{today}.dat"
+        download_protein2ipr(output_dir)
+        protein_ipr_path = output_dir / f"protein2ipr_{today}.dat"
     protein_ipr = open(protein_ipr_path, "r")
     protein_ipr_reader = csv.reader(protein_ipr, delimiter="\t")
 
     # associate InterPro domains to genes via Uniprot references
-    unique_maps = set()
-    outfile_path = output_dir / f"domain_lookup_{today}.tsv"
-    outfile = open(outfile_path, "w")
+    pre_domain_path = output_dir / f"pre_domain_lookup_{today}.tsv"
+    pre_domain_file = open(pre_domain_path, "w")
+    interpro_uniprot = {}
     for row in protein_ipr_reader:
-        if row[1] in domain_ids:
-            uniprot_id = f"uniprot:{row[0]}"
-            normed_values = uniprot_refs.get(uniprot_id.lower())
+        domain_id = row[1]
+        if domain_id in domain_ids:
+            uniprot_ac = row[0].lower()
+            normed_values = uniprot_refs.get(f"uniprot:{uniprot_ac}")
             if not normed_values:
                 continue
 
-            gene_id, _ = normed_values
-            line_tuple = (gene_id, row[1], row[2], row[4], row[5])
-            if line_tuple not in unique_maps:
-                line_str = "\t".join(line_tuple) + "\n"
-                outfile.write(line_str)
-                unique_maps.add(line_tuple)
-    outfile.close()
+            gene_id, gene_label = normed_values
+            domain_name = row[2]
+            start = row[4]
+            end = row[5]
+            key = (uniprot_ac, gene_id)
+            if key not in interpro_uniprot:
+                interpro_uniprot[key] = (gene_label, domain_id, domain_name, start, end)
+                line = "\t".join((gene_id, gene_label, domain_id, domain_name,
+                                  uniprot_ac, start, end)) + "\n"
+                pre_domain_file.write(line)
     protein_ipr.close()
+    pre_domain_file.close()  # DEBUG REMOVE TODO
 
-    stop = timer()
-    msg = f"Wrote gene-domain table in {(stop - start):.5f} seconds."
+    # get refseq accessions for uniprot proteins
+    uniprot_acs = {k[0] for k in interpro_uniprot.keys()}
+    prot_acs = get_protein_accessions(uniprot_acs, uniprot_sprot_path)
+
+    outfile_path = output_dir / f"domain_lookup_{today}.tsv"
+    outfile = open(outfile_path, "w")
+    for k, v in interpro_uniprot.items():
+        if k in uniprot_acs:
+            refseq_ac = prot_acs[k]
+            items = list(k) + list(v) + [refseq_ac]
+            line = "\t".join(items) + "\n"
+            outfile.write(line)
+    outfile.close()
+
+    stop_time = timer()
+    msg = f"Wrote gene-domain table in {(stop_time - start_time):.5f} seconds."
     logger.info(msg)
     print(msg)
