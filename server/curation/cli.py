@@ -5,6 +5,7 @@ from pathlib import Path
 import uvicorn
 import click
 
+from curation.utils import DEFAULT_INTERPRO_TYPES
 from curation.utils.interpro import build_gene_domain_maps
 from curation.utils.gene import GeneSuggestionBuilder
 
@@ -34,7 +35,7 @@ Possible values: {"active_site", "binding_site", "conserved_site", "domain", "fa
 
 
 @utils.command()
-@click.option("--types", "-t", help=types_help, default="domain")
+@click.option("--types", "-t", help=types_help, default=DEFAULT_INTERPRO_TYPES)
 @click.option("--protein2ipr", "-p",
               help="Path to InterPro-Uniprot protein2ipr.dat file",
               default=None)
@@ -42,7 +43,7 @@ Possible values: {"active_site", "binding_site", "conserved_site", "domain", "fa
               help="Path to generated uniprot_refs_YYYYMMDD.tsv file",
               default=None)
 @click.option("--uniprot", "-u",
-              help="Path to uniprot_sprot.xml",
+              help="Path to uniprot_sprot_YYYYMMDD.xml",
               default=None)
 def build_domains(types: str, protein2ipr: Optional[str], refs: Optional[str],
                   uniprot: Optional[str]) -> None:
