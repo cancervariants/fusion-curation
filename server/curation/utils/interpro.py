@@ -45,7 +45,7 @@ def download_protein2ipr(output_dir: Path) -> None:
     os.remove(gz_file_path)
     assert outfile_path.exists()
 
-    logger.info("Successfully retrieved Uniprot mapping data for Interpro")
+    logger.info("Successfully retrieved UniProt mapping data for Interpro")
 
 
 def get_uniprot_refs() -> UniprotRefs:
@@ -109,11 +109,9 @@ def download_uniprot_sprot(output_dir: Path) -> Path:
 
     gz_file_path = output_dir / "uniprot_sprot.xml.gz"
     with open(gz_file_path, "w") as fp:
-        def writefile(data):
-            fp.write(data)
-            ftp_download("ftp.uniprot.org",
-                         "pub/databases/uniprot/current_release/knowledgebase/complete/",  # noqa: E501
-                         "protein2ipr.dat.gz", writefile)
+        ftp_download("ftp.uniprot.org",
+                     "pub/databases/uniprot/current_release/knowledgebase/complete/",
+                     "uniprot_sprot.xml.gz", lambda data: fp.write(data))
     today = datetime.strftime(datetime.today(), DATE_FMT)
     outfile_path = output_dir / f"uniprot_sprot_{today}.dat"
     with open(outfile_path, "wb") as f_out, gzip.open(gz_file_path, "rb") as f_in:
@@ -128,14 +126,15 @@ def download_uniprot_sprot(output_dir: Path) -> Path:
 def get_interpro_uniprot_rels(
         protein_ipr_path: Optional[Path], output_dir: Path, domain_ids: Set[str],
         uniprot_refs: Dict) -> Dict[str, Tuple[str, str, str, str, str]]:
-    """Process InterPro to UniProtKB relations.
+    """Process InterPro to UniProtKB relations, using UniProt references to connect
+    genes with domains
+
     :param Optional[path] protein_ipr_path: path to protein2ipr_YYYYMMDD.dat if given
     :param Path output_dir: Path to save output data in
     :param Set[str] domain_ids: InterPro domain IDs to use
     :param Dict uniprot_refs: UniProt references from gene normalizer DB
     :return: Dict mapping Uniprot accession ID to collected domain data,
     """
-    # associate InterPro domains to genes via Uniprot references
     if not protein_ipr_path:
         download_protein2ipr(output_dir)
         today = datetime.strftime(datetime.today(), DATE_FMT)
@@ -157,8 +156,11 @@ def get_interpro_uniprot_rels(
             start = row[4]
             end = row[5]
             key = (uniprot_ac, gene_id)
+            value = (gene_label, domain_id, domain_name, start, end)
             if key not in interpro_uniprot:
-                interpro_uniprot[key] = (gene_label, domain_id, domain_name, start, end)
+                interpro_uniprot[key] = [value]
+            else:
+                interpro_uniprot[key].append(value)
     protein_ipr.close()
     msg = f"Extracted {len(interpro_uniprot)} UniProt-InterPro references"
     click.echo(msg)
@@ -239,6 +241,7 @@ def build_gene_domain_maps(interpro_types: Set[str],
         interpro_data_bin.append(data)
     ftp_download("ftp.ebi.ac.uk", "pub/databases/interpro", "entry.list",
                  get_interpro_data)
+    # load interpro IDs directly to memory -- no need to save to file
     interpro_data_tsv = "".join([d.decode("UTF-8")
                                  for d in interpro_data_bin]).split("\n")
     interpro_types = {t.lower() for t in interpro_types}
@@ -263,19 +266,20 @@ def build_gene_domain_maps(interpro_types: Set[str],
 
     # get refseq accessions for uniprot proteins
     uniprot_acs = {k[0] for k in interpro_uniprot.keys()}
-    prot_acs = get_protein_accessions(uniprot_acs, uniprot_sprot_path)  # ???
+    prot_acs = get_protein_accessions(uniprot_acs, uniprot_sprot_path)
 
     outfile_path = output_dir / f"domain_lookup_{today}.tsv"
     outfile = open(outfile_path, "w")
-    for k, v in interpro_uniprot.items():
-        if k[0] in uniprot_acs:
-            refseq_ac = prot_acs.get((k[0], k[1]))
-            if not refseq_ac:
-                logger.warning(f"Unable to lookup refseq ac for {k}, {v}")
-                continue
-            items = list(k) + list(v) + [refseq_ac]
-            line = "\t".join(items) + "\n"
-            outfile.write(line)
+    for k, v_list in interpro_uniprot.items():
+        for v in v_list:
+            if k[0] in uniprot_acs:
+                refseq_ac = prot_acs.get((k[0], k[1]))
+                if not refseq_ac:
+                    logger.warning(f"Unable to lookup refseq ac for {k}, {v}")
+                    continue
+                items = [k[1]] + list(v) + [refseq_ac]
+                line = "\t".join(items) + "\n"
+                outfile.write(line)
     outfile.close()
 
     stop_time = timer()

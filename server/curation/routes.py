@@ -4,7 +4,7 @@ from typing import Dict, Any, Union, List, Tuple, Optional
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
+from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 from fusor import FUSOR
 from fusor.models import Strand
 from gene.schemas import MatchType
@@ -320,6 +320,27 @@ def get_domain_suggestions(gene_id: str = Query("")) -> ResponseDict:
     except ServiceWarning:
         response["warnings"] = [f"No associated domains for {gene_id}"]
     return response
+
+
+# @app.get("/lookup/domain",
+#          operation_id="getDomain",
+#          response_model=GetDomainResponse,
+#          response_model_exclude_none=True)
+# def get_domain(gene_id: str, domain_id: str) -> ResponseDict:
+#     """Get constructed FunctionalDomain object given a gene and domain ID.
+#     :param str gene_id: normalized gene id
+#     :param str domain_id: InterPro domain ID
+#     :return: JSON response with a constructed domain if lookup succeeds, and
+#         warnings otherwise
+#     """
+#     response: Dict[str, Any] = {"gene_id": gene_id, "domain_id": domain_id}
+#     try:
+#         response["domain"] = app.state.domains.get_domain_object(gene_id, domain_id)
+#     except ServiceWarning:
+#         response["warnings"] = [
+#             f"Unable to retrieve functional domain {domain_id} on gene {gene_id}"
+#         ]
+#     return response
 
 
 @app.post("/lookup/validate",

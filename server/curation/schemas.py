@@ -3,10 +3,10 @@ from typing import List, Optional, Tuple, Union, Literal, Dict
 from abc import ABC
 
 from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
-from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
+from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 from fusor.models import Fusion, TranscriptSegmentComponent, LinkerComponent, \
     TemplatedSequenceComponent, GeneComponent, UnknownGeneComponent, \
-    AnyGeneComponent, RegulatoryElement, CriticalDomain
+    AnyGeneComponent, RegulatoryElement, FunctionalDomain
 
 
 ResponseWarnings = Optional[List[StrictStr]]
@@ -70,8 +70,8 @@ class ClientRegulatoryElement(RegulatoryElement):
         extra = Extra.forbid
 
 
-class ClientCriticalDomain(CriticalDomain):
-    """Define critical domain object used client-side."""
+class ClientFunctionalDomain(FunctionalDomain):
+    """Define functional domain object used client-side."""
 
     domain_id: str
 
@@ -146,11 +146,21 @@ class SuggestGeneResponse(Response):
         extra = Extra.forbid
 
 
+class DomainParams(BaseModel):
+    """Fields for individual domain suggestion entries"""
+
+    interpro_id: CURIE
+    domain_name: StrictStr
+    start: int
+    end: int
+    refseq_ac: CURIE
+
+
 class AssociatedDomainResponse(Response):
     """Response model for domain ID autocomplete suggestion endpoint."""
 
     gene_id: StrictStr
-    suggestions: Optional[List[Tuple[str, str]]]
+    suggestions: Optional[List[DomainParams]]
 
     class Config:
         """Configure class."""
@@ -263,4 +273,4 @@ class ClientFusion(Fusion):
                                       ClientTemplatedSequenceComponent,
                                       ClientLinkerComponent]]
     regulatory_elements: List[ClientRegulatoryElement]
-    protein_domains: List[ClientCriticalDomain]
+    functional_domains: List[ClientFunctionalDomain]
