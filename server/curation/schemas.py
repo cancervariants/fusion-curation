@@ -153,7 +153,13 @@ class DomainParams(BaseModel):
     domain_name: StrictStr
     start: int
     end: int
-    refseq_ac: CURIE
+    refseq_ac: StrictStr
+
+
+class GetDomainResponse(Response):
+    """Response model for functional domain constructor endpoint."""
+
+    domain: Optional[FunctionalDomain]
 
 
 class AssociatedDomainResponse(Response):

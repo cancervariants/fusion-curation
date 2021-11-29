@@ -53,7 +53,7 @@ class DomainService():
                     "domain_name": row[3],
                     "start": int(row[4]),
                     "end": int(row[5]),
-                    "refseq_ac": f"refseq:{row[6]}"
+                    "refseq_ac": f"{row[6]}"
                 }
                 if gene_id in self.domains:
                     self.domains[gene_id].append(domain_data)

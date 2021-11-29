@@ -77,13 +77,15 @@ export interface AssociatedDomainResponse {
   gene_id: string;
   suggestions?: DomainParams[];
 }
+/**
+ * Fields for individual domain suggestion entries
+ */
 export interface DomainParams {
-  gene_id: CURIE;
   interpro_id: CURIE;
   domain_name: string;
   start: number;
   end: number;
-  refseq_ac: CURIE;
+  refseq_ac: string;
 }
 /**
  * Any gene component used client-side.
@@ -462,6 +464,13 @@ export interface FusionValidationResponse {
 export interface GeneComponentResponse {
   warnings?: string[];
   component?: GeneComponent;
+}
+/**
+ * Response model for functional domain constructor endpoint.
+ */
+export interface GetDomainResponse {
+  warnings?: string[];
+  domain?: FunctionalDomain;
 }
 /**
  * Response model for MANE transcript retrieval endpoint.
