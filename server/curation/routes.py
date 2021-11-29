@@ -330,7 +330,17 @@ def get_domain_suggestions(gene_id: str = Query("")) -> ResponseDict:
          response_model_exclude_none=True)
 def get_domain(status: DomainStatus, name: str, domain_id: str, gene_id: str,
                sequence_id: str, start: int, end: int) -> ResponseDict:
-    """TODO FILL IN"""
+    """Construct complete functional domain object given constitutive parameters.
+
+    :param DomainStatus status: status of domain
+    :param str name: domain name (should match InterPro entry but not validated here)
+    :param str domain_id: InterPro ID (expected to be formatted as a CURIE)
+    :param str gene_id: normalized gene ID (expected to be formatted as a CURIE)
+    :param str sequence_id: associated protein sequence ID (expected to be refseq-style,
+        but not validated, and namespace shouldn't be included)
+    :param int start: the domain's protein start position
+    :param int end: the domain's protein end position
+    """
     response: ResponseDict = {}
     try:
         domain, warnings = app.state.fusor.functional_domain(
