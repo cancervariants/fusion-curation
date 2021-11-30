@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { getGeneSuggestions } from '../../../../services/main';
+import { getGeneId, getGeneSuggestions } from '../../../../services/main';
 
 interface Props {
   selectedGene: string,
@@ -18,30 +18,41 @@ export const GeneAutocomplete: React.FC<Props> = (
 ) => {
   const [geneOptions, setGeneOptions] = useState([]);
 
-  // set error message
-  // TODO:
-  // * how to handle cases where gene terms are valid but possible completions exceed limit?
-  // * concept IDs?
-  useEffect(() => {
-    if (selectedGene !== '' && !geneOptions.includes(selectedGene)) {
-      setGeneText('Unrecognized term');
-    } else {
-      setGeneText('');
-    }
-  }, [geneOptions]);
-
   const updateAutocomplete = (term: string) => {
-    // setGeneError('');
     getGeneSuggestions(term).then(responseJson => {
-      const suggestions = [];
-      responseJson.suggestions?.forEach(suggestion => {
-        if (suggestion[0] === '') {
-          suggestions.push(suggestion[2]);
+      if (responseJson.warnings || (responseJson.suggestions.length === 0)) {
+        getGeneId(term).then(geneResponseJson => {
+          if (geneResponseJson.warnings) {
+            setGeneError(true);
+            setGeneText('Unrecognized term');
+          } else {
+            setGeneError(false);
+            setGeneText('');
+          }
+        });
+      } else {
+        const suggestions = [];
+        responseJson.suggestions?.forEach(suggestion => {
+          if (suggestion[0] === '') {
+            suggestions.push(suggestion[2]);
+          } else {
+            suggestions.push(suggestion[0]);
+          }
+        });
+        setGeneOptions(suggestions);
+
+        const termLower = term.toLowerCase();
+        const index = suggestions.findIndex((element: string) => {
+          return element.toLowerCase() === termLower;
+        });
+        if (index === -1) {
+          setGeneError(true);
+          setGeneText('Unrecognized term');
         } else {
-          suggestions.push(suggestion[0]);
+          setGeneError(false);
+          setGeneText('');
         }
-      });
-      setGeneOptions(suggestions);
+      }
     });
   };
 
@@ -62,7 +73,6 @@ export const GeneAutocomplete: React.FC<Props> = (
           value={selectedGene}
           error={geneError}
           onChange={event => {
-            setGeneError(false);
             if (event.target.value !== '' && event.target.value !== null) {
               updateAutocomplete(event.target.value);
               setSelectedGene(event.target.value);
