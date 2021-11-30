@@ -17,6 +17,7 @@ export const Domain: React.FC<Props> = () => {
   // TODO working stuff related to domain suggestions
   // Don't want to change the suggested domain based on user entries
   // should maybe create a separate context of the unmutated selected suggestion
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const initialDomains = useRef(domains);
 
