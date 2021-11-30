@@ -138,18 +138,37 @@ const demoData: ClientFusion = {
       }
     }
   ],
-  'protein_domains': [
+  'functional_domains': [
     {
-      'status': 'lost',
-      'name': 'Raf-like Ras-binding',
       'id': 'interpro:IPR003116',
-      'domain_id': '710c56d3-f740-482e-94e9-dcc408e409a4',
+      'name': 'Raf-like Ras-binding',
+      'status': 'lost',
       'gene_descriptor': {
-        'id': 'gene:BRAF',
+        'id': 'normalize.gene:hgnc%3A1097',
         'type': 'GeneDescriptor',
-        'gene_id': 'hgnc:1097',
-        'label': 'BRAF'
-      }
+        'label': 'BRAF',
+        'gene_id': 'hgnc:1097'
+      },
+      'location_descriptor': {
+        'id': 'fusor.location_descriptor:NP_004324.2',
+        'type': 'LocationDescriptor',
+        'location': {
+          'type': 'SequenceLocation',
+          'sequence_id': 'refseq:NP_004324.2',
+          'interval': {
+            'type': 'SequenceInterval',
+            'start': {
+              'type': 'Number',
+              'value': 157
+            },
+            'end': {
+              'type': 'Number',
+              'value': 225
+            }
+          }
+        }
+      },
+      'domain_id': '23ad326d-f450-43aa-9d06-74113fc9cb66'
     }
   ],
   'r_frame_preserved': true,
