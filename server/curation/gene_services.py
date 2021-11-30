@@ -101,7 +101,10 @@ class GeneService:
 
         n = len(suggestions)
         if n > MAX_SUGGESTIONS:
-            warn = f"Got {n} possible matches for {query} (exceeds {MAX_SUGGESTIONS})"
+            warn = (
+                f"Exceeds max matches: "
+                f"Got {n} possible matches for {query} (limit: {MAX_SUGGESTIONS})"
+            )
             logger.warning(warn)
             raise ServiceWarning(warn)
         else:

@@ -150,6 +150,6 @@ def test_get_matching_genes():
 
     assert suggest_genes('sdflk') == []
 
-    match = r"Got \d* possible matches for b \(exceeds 50\)"
+    match = r"Exceeds max matches: Got \d* possible matches for b \(limit: 50\)"
     with pytest.raises(ServiceWarning, match=match):
         suggest_genes('b')
