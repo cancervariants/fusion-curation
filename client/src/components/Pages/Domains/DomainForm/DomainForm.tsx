@@ -6,11 +6,10 @@ import { DomainOptionsContext } from '../../../../global/contexts/DomainOptionsC
 import { GeneContext } from '../../../../global/contexts/GeneContext';
 import { v4 as uuid } from 'uuid';
 import './DomainForm.scss';
-import { CriticalDomain, DomainStatus } from '../../../../services/ResponseModels';
-
-interface ClientCriticalDomain extends CriticalDomain {
-  domain_id: string,
-}
+import {
+  ClientFunctionalDomain, DomainParams, DomainStatus
+} from '../../../../services/ResponseModels';
+import { getFunctionalDomain } from '../../../../services/main';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -25,8 +24,8 @@ const useStyles = makeStyles((theme) => ({
 const DomainForm: React.FC = () => {
   // // TODO: shouldn't be necessary
   useEffect(() => {
-    if (fusion.protein_domains === undefined) {
-      setFusion({ ...fusion, ...{ 'protein_domains': [] } });
+    if (fusion.functional_domains === undefined) {
+      setFusion({ ...fusion, ...{ 'functional_domains': [] } });
     }
   }, []);
 
@@ -54,25 +53,27 @@ const DomainForm: React.FC = () => {
   };
 
   const handleAdd = () => {
-    if (!(status === 'Lost' || status === 'Preserved')) {
-      console.error('error');
-      return;
-    }
-    const newDomain: ClientCriticalDomain = {
-      status: status.toLowerCase() as DomainStatus,
-      name: domainOptions[gene].find(e => e[0] === domain)[1],
-      id: domain,
-      domain_id: uuid(),
-      gene_descriptor: globalGenes[gene]
-    };
+    const domainParams = domainOptions[gene].find(
+      (domainOption: DomainParams) => domainOption.interpro_id == domain
+    );
+    getFunctionalDomain(domainParams, status as DomainStatus, gene).then(
+      (response) => {
+        console.log(response);
+        if (response.domain) {
+          const newDomain: ClientFunctionalDomain = {
+            domain_id: uuid(),
+            ...response.domain
+          };
+          const cloneArray = Array.from(fusion['functional_domains']);
+          cloneArray.push(newDomain);
+          setFusion({ ...fusion, ...{ 'functional_domains': cloneArray } });
 
-    const cloneArray = Array.from(fusion['protein_domains']);
-    cloneArray.push(newDomain);
-    setFusion({ ...fusion, ...{ 'protein_domains': cloneArray } });
-
-    setGene('');
-    setDomain('');
-    setStatus('default');
+          setStatus('default');
+          setDomain('');
+          setGene('');
+        }
+      }
+    );
   };
 
   const renderGeneOptions = () => {
@@ -94,13 +95,17 @@ const DomainForm: React.FC = () => {
       <MenuItem key={-1} value="" disabled></MenuItem>
     )];
     if (domainOptions[gene]) {
-      return domainOptionMenuItems.concat(
-        domainOptions[gene].map((domain: Array<string>, index: number) => (
-          <MenuItem key={index} value={domain[0]}>
-            {domain[1]}
-          </MenuItem>
-        ))
-      );
+      const uniqueInterproIds: Set<string> = new Set();
+      domainOptions[gene].forEach((domain: DomainParams, index: number) => {
+        if (!(uniqueInterproIds.has(domain.interpro_id))) {
+          uniqueInterproIds.add(domain.interpro_id);
+          domainOptionMenuItems.push((
+            <MenuItem key={index} value={domain.interpro_id}>
+              {domain.domain_name}
+            </MenuItem>
+          ));
+        }
+      });
     }
     return domainOptionMenuItems;
   };
@@ -145,8 +150,8 @@ const DomainForm: React.FC = () => {
             disabled={domain === ''}
           >
             <MenuItem value='default' disabled></MenuItem>
-            <MenuItem value='Lost'>Lost</MenuItem>
-            <MenuItem value='Preserved'>Preserved</MenuItem>
+            <MenuItem value='lost'>Lost</MenuItem>
+            <MenuItem value='preserved'>Preserved</MenuItem>
           </Select>
         </FormControl>
       </div>

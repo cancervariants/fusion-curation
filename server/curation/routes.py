@@ -4,9 +4,10 @@ from typing import Dict, Any, Union, List, Tuple, Optional
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
+from pydantic import ValidationError
+from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 from fusor import FUSOR
-from fusor.models import Strand
+from fusor.models import Strand, FunctionalDomain, DomainStatus
 from gene.schemas import MatchType
 
 from curation import APP_ROOT, ServiceWarning, logger
@@ -14,7 +15,7 @@ from curation.version import __version__
 from curation.schemas import GeneComponentResponse, TxSegmentComponentResponse, \
     TemplatedSequenceComponentResponse, FusionValidationResponse, \
     AssociatedDomainResponse, NormalizeGeneResponse, SuggestGeneResponse, \
-    GetTranscriptsResponse, ServiceInfoResponse
+    GetTranscriptsResponse, ServiceInfoResponse, GetDomainResponse
 from curation.gene_services import GeneService
 from curation.domain_services import DomainService
 from curation.validation_services import validate_fusion
@@ -83,7 +84,8 @@ async def shutdown():
 ResponseDict = Dict[str, Union[str,
                                CURIE,
                                List[str],
-                               List[Tuple[str, str, str, str]]]]
+                               List[Tuple[str, str, str, str]],
+                               FunctionalDomain]]
 Warnings = List[str]
 
 
@@ -319,6 +321,37 @@ def get_domain_suggestions(gene_id: str = Query("")) -> ResponseDict:
         response["suggestions"] = possible_matches
     except ServiceWarning:
         response["warnings"] = [f"No associated domains for {gene_id}"]
+    return response
+
+
+@app.get("/lookup/domain",
+         operation_id="getDomain",
+         response_model=GetDomainResponse,
+         response_model_exclude_none=True)
+def get_domain(status: DomainStatus, name: str, domain_id: str, gene_id: str,
+               sequence_id: str, start: int, end: int) -> ResponseDict:
+    """Construct complete functional domain object given constitutive parameters.
+
+    :param DomainStatus status: status of domain
+    :param str name: domain name (should match InterPro entry but not validated here)
+    :param str domain_id: InterPro ID (expected to be formatted as a CURIE)
+    :param str gene_id: normalized gene ID (expected to be formatted as a CURIE)
+    :param str sequence_id: associated protein sequence ID (expected to be refseq-style,
+        but not validated, and namespace shouldn't be included)
+    :param int start: the domain's protein start position
+    :param int end: the domain's protein end position
+    """
+    response: ResponseDict = {}
+    try:
+        domain, warnings = app.state.fusor.functional_domain(
+            status, name, domain_id, gene_id, sequence_id, start, end
+        )
+        if warnings:
+            response["warnings"] = [warnings]
+        else:
+            response["domain"] = domain
+    except ValidationError as e:
+        response["warnings"] = [f"Unable to construct Functional Domain: {e}"]
     return response
 
 

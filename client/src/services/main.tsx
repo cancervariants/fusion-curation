@@ -1,10 +1,8 @@
 import {
-  Fusion, FusionValidationResponse, NormalizeGeneResponse,
-  AssociatedDomainResponse, SuggestGeneResponse, GeneComponentResponse,
-  TxSegmentComponentResponse,
-  TemplatedSequenceComponentResponse,
-  GetTranscriptsResponse,
-  ServiceInfoResponse
+  Fusion, FusionValidationResponse, NormalizeGeneResponse, AssociatedDomainResponse,
+  SuggestGeneResponse, GeneComponentResponse, TxSegmentComponentResponse,
+  TemplatedSequenceComponentResponse, GetTranscriptsResponse, ServiceInfoResponse,
+  GetDomainResponse, DomainParams, DomainStatus
 } from './ResponseModels';
 
 export const getGeneComponent = async (term: string): Promise<GeneComponentResponse> => {
@@ -83,6 +81,17 @@ export const getGeneSuggestions = async (term: string): Promise<SuggestGeneRespo
 
 export const getAssociatedDomains = async (gene_id: string): Promise<AssociatedDomainResponse> => {
   const response = await fetch(`/complete/domain?gene_id=${gene_id}`);
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+export const getFunctionalDomain = async (
+  domain: DomainParams, domainStatus: DomainStatus, geneId: string
+): Promise<GetDomainResponse> => {
+  const url = `/lookup/domain?status=${domainStatus}&name=${domain.domain_name}` +
+    `&domain_id=${domain.interpro_id}&gene_id=${geneId}` +
+    `&sequence_id=${domain.refseq_ac}&start=${domain.start}&end=${domain.end}`;
+  const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
 };

@@ -4,7 +4,7 @@ import csv
 
 from gene.query import QueryHandler
 from gene.schemas import MatchType
-from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
+from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 
 from curation import logger, ServiceWarning, MAX_SUGGESTIONS, APP_ROOT
 

@@ -23,7 +23,7 @@
  */
 export type CURIE = string;
 /**
- * Define possible statuses of critical domains.
+ * Define possible statuses of functional domains.
  */
 export type DomainStatus = "lost" | "preserved";
 /**
@@ -37,16 +37,16 @@ export type Comparator = "<=" | ">=";
  */
 export type HumanCytoband = string;
 /**
+ * Define possible values for strand
+ */
+export type Strand = "+" | "-";
+/**
  * A character string of residues that represents a biological sequence
  * using the conventional sequence order (5’-to-3’ for nucleic acid sequences,
  * and amino-to-carboxyl for amino acid sequences). IUPAC ambiguity codes
  * are permitted in Sequences.
  */
 export type Sequence = string;
-/**
- * Define possible values for strand
- */
-export type Strand = "+" | "-";
 /**
  * Define Event class (causative event)
  */
@@ -75,7 +75,17 @@ export interface AnyGeneComponent {
 export interface AssociatedDomainResponse {
   warnings?: string[];
   gene_id: string;
-  suggestions?: [] | [string] | [string, string][];
+  suggestions?: DomainParams[];
+}
+/**
+ * Fields for individual domain suggestion entries
+ */
+export interface DomainParams {
+  interpro_id: CURIE;
+  domain_name: string;
+  start: number;
+  end: number;
+  refseq_ac: string;
 }
 /**
  * Any gene component used client-side.
@@ -97,13 +107,14 @@ export interface ClientComponent {
   shorthand?: string;
 }
 /**
- * Define critical domain object used client-side.
+ * Define functional domain object used client-side.
  */
-export interface ClientCriticalDomain {
+export interface ClientFunctionalDomain {
   id: CURIE;
   name: string;
   status: DomainStatus;
   gene_descriptor: GeneDescriptor;
+  location_descriptor: LocationDescriptor;
   domain_id: string;
 }
 /**
@@ -142,43 +153,6 @@ export interface Gene {
   gene_id: CURIE;
 }
 /**
- * Fusion with client-oriented structural component models. Used in global
- * FusionContext.
- */
-export interface ClientFusion {
-  r_frame_preserved?: boolean;
-  protein_domains: ClientCriticalDomain[];
-  structural_components: (
-    | ClientTranscriptSegmentComponent
-    | ClientGeneComponent
-    | ClientAnyGeneComponent
-    | ClientUnknownGeneComponent
-    | ClientTemplatedSequenceComponent
-    | ClientLinkerComponent
-  )[];
-  causative_event?: Event;
-  regulatory_elements: ClientRegulatoryElement[];
-}
-/**
- * TranscriptSegment component class used client-side.
- */
-export interface ClientTranscriptSegmentComponent {
-  component_id: string;
-  component_name: string;
-  hr_name: string;
-  shorthand?: string;
-  component_type?: "transcript_segment";
-  transcript: CURIE;
-  exon_start?: number;
-  exon_start_offset?: number;
-  exon_end?: number;
-  exon_end_offset?: number;
-  gene_descriptor: GeneDescriptor;
-  component_genomic_start?: LocationDescriptor;
-  component_genomic_end?: LocationDescriptor;
-  input_type: "genomic_coords_gene" | "genomic_coords_tx" | "exon_coords_tx";
-}
-/**
  * This descriptor is intended to reference VRS Location value objects.
  */
 export interface LocationDescriptor {
@@ -191,7 +165,6 @@ export interface LocationDescriptor {
   extensions?: Extension[];
   location_id?: CURIE;
   location?: SequenceLocation | ChromosomeLocation;
-  sequence_descriptor?: SequenceDescriptor;
 }
 /**
  * A Location defined by an interval on a referenced Sequence.
@@ -200,7 +173,7 @@ export interface SequenceLocation {
   _id?: CURIE;
   type?: "SequenceLocation";
   sequence_id: CURIE;
-  interval: SequenceInterval | SimpleInterval;
+  interval: SequenceInterval;
 }
 /**
  * A SequenceInterval represents a span of sequence. Positions are always
@@ -243,16 +216,6 @@ export interface DefiniteRange {
   max: number;
 }
 /**
- * DEPRECATED: A SimpleInterval represents a span of sequence.
- * Positions are always represented by contiguous spans using interbase
- * coordinates. This class is deprecated. Use SequenceInterval instead.
- */
-export interface SimpleInterval {
-  type?: "SimpleInterval";
-  start: number;
-  end: number;
-}
-/**
  * A Location on a chromosome defined by a species and chromosome name.
  */
 export interface ChromosomeLocation {
@@ -271,19 +234,41 @@ export interface CytobandInterval {
   end: HumanCytoband;
 }
 /**
- * This descriptor is intended to reference VRS Sequence value objects.
+ * Fusion with client-oriented structural component models. Used in global
+ * FusionContext.
  */
-export interface SequenceDescriptor {
-  id: CURIE;
-  type?: "SequenceDescriptor";
-  label?: string;
-  description?: string;
-  xrefs?: CURIE[];
-  alternate_labels?: string[];
-  extensions?: Extension[];
-  sequence_id?: CURIE;
-  sequence?: Sequence;
-  residue_type?: CURIE;
+export interface ClientFusion {
+  r_frame_preserved?: boolean;
+  functional_domains: ClientFunctionalDomain[];
+  structural_components: (
+    | ClientTranscriptSegmentComponent
+    | ClientGeneComponent
+    | ClientAnyGeneComponent
+    | ClientUnknownGeneComponent
+    | ClientTemplatedSequenceComponent
+    | ClientLinkerComponent
+  )[];
+  causative_event?: Event;
+  regulatory_elements: ClientRegulatoryElement[];
+}
+/**
+ * TranscriptSegment component class used client-side.
+ */
+export interface ClientTranscriptSegmentComponent {
+  component_id: string;
+  component_name: string;
+  hr_name: string;
+  shorthand?: string;
+  component_type?: "transcript_segment";
+  transcript: CURIE;
+  exon_start?: number;
+  exon_start_offset?: number;
+  exon_end?: number;
+  exon_end_offset?: number;
+  gene_descriptor: GeneDescriptor;
+  component_genomic_start?: LocationDescriptor;
+  component_genomic_end?: LocationDescriptor;
+  input_type: "genomic_coords_gene" | "genomic_coords_tx" | "exon_coords_tx";
 }
 /**
  * Gene component used client-side.
@@ -330,21 +315,27 @@ export interface ClientLinkerComponent {
   linker_sequence: SequenceDescriptor;
 }
 /**
+ * This descriptor is intended to reference VRS Sequence value objects.
+ */
+export interface SequenceDescriptor {
+  id: CURIE;
+  type?: "SequenceDescriptor";
+  label?: string;
+  description?: string;
+  xrefs?: CURIE[];
+  alternate_labels?: string[];
+  extensions?: Extension[];
+  sequence_id?: CURIE;
+  sequence?: Sequence;
+  residue_type?: CURIE;
+}
+/**
  * Regulatory element object used client-side.
  */
 export interface ClientRegulatoryElement {
   type: RegulatoryElementType;
   gene_descriptor: GeneDescriptor;
   element_id: string;
-}
-/**
- * Define CriticalDomain class
- */
-export interface CriticalDomain {
-  id: CURIE;
-  name: string;
-  status: DomainStatus;
-  gene_descriptor: GeneDescriptor;
 }
 /**
  * Request model for genomic coordinates retrieval
@@ -375,11 +366,21 @@ export interface ExonCoordsResponse {
   warnings?: string[];
 }
 /**
+ * Define FunctionalDomain class
+ */
+export interface FunctionalDomain {
+  id: CURIE;
+  name: string;
+  status: DomainStatus;
+  gene_descriptor: GeneDescriptor;
+  location_descriptor: LocationDescriptor;
+}
+/**
  * Define Fusion class
  */
 export interface Fusion {
   r_frame_preserved?: boolean;
-  protein_domains?: CriticalDomain[];
+  functional_domains?: FunctionalDomain[];
   structural_components: (
     | TranscriptSegmentComponent
     | GeneComponent
@@ -463,6 +464,13 @@ export interface FusionValidationResponse {
 export interface GeneComponentResponse {
   warnings?: string[];
   component?: GeneComponent;
+}
+/**
+ * Response model for functional domain constructor endpoint.
+ */
+export interface GetDomainResponse {
+  warnings?: string[];
+  domain?: FunctionalDomain;
 }
 /**
  * Response model for MANE transcript retrieval endpoint.

@@ -18,3 +18,7 @@ def ftp_download(domain: str, path: str, fname: str, callback) -> None:
     except ftplib.all_errors as e:
         logger.error(f"FTP download failed: {e}")
         raise Exception(e)
+
+
+# default interpro entry types to try to gather for domains
+DEFAULT_INTERPRO_TYPES = "Active_site,Binding_site,Conserved_site,Domain,Family"

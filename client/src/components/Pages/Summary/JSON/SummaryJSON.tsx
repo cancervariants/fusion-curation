@@ -2,8 +2,9 @@ import copy from 'clipboard-copy';
 import { useEffect, useState } from 'react';
 import { validateFusion } from '../../../../services/main';
 import {
-  AnyGeneComponent, ClientFusion, CriticalDomain, Fusion, GeneComponent, LinkerComponent,
-  RegulatoryElement, TemplatedSequenceComponent, TranscriptSegmentComponent, UnknownGeneComponent
+  AnyGeneComponent, ClientFunctionalDomain, ClientFusion, Fusion, GeneComponent,
+  LinkerComponent, RegulatoryElement, TemplatedSequenceComponent, TranscriptSegmentComponent,
+  UnknownGeneComponent
 } from '../../../../services/ResponseModels';
 import './SummaryJSON.scss';
 
@@ -75,16 +76,17 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
         };
         return element;
       }),
-      protein_domains: fusion.protein_domains?.map(domain => {
-        const newDomain: CriticalDomain = {
+      functional_domains: fusion.functional_domains?.map((domain: ClientFunctionalDomain) => (
+        {
           id: domain.id,
           name: domain.name,
           status: domain.status,
-          gene_descriptor: domain.gene_descriptor
-        };
-        return newDomain;
-      }),
+          gene_descriptor: domain.gene_descriptor,
+          location_descriptor: domain.location_descriptor,
+        }
+      ))
     };
+    console.log(formattedFusion);
     validateFusion(formattedFusion)
       .then(response => {
         if (response.warnings?.length > 0) {

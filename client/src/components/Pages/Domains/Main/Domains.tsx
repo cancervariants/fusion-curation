@@ -12,7 +12,7 @@ interface Props {
 export const Domain: React.FC<Props> = () => {
   const { fusion, setFusion } = useContext(FusionContext);
 
-  const domains = fusion.protein_domains || [];
+  const domains = fusion.functional_domains || [];
 
   // TODO working stuff related to domain suggestions
   // Don't want to change the suggested domain based on user entries
@@ -22,11 +22,11 @@ export const Domain: React.FC<Props> = () => {
 
   const handleRemove = (domain) => {
     //copy domain array, then remove the domain with the relevant ID
-    let cloneArray = Array.from(fusion.protein_domains);
+    let cloneArray = Array.from(fusion.functional_domains);
     cloneArray = cloneArray.filter((obj) => {
       return obj['domain_id'] !== domain['domain_id'];
     });
-    setFusion({ ...fusion, ...{ 'protein_domains': cloneArray || [] } });
+    setFusion({ ...fusion, ...{ 'functional_domains': cloneArray || [] } });
   };
 
   return (
