@@ -1,7 +1,7 @@
 import {
   ClientGeneComponent, ClientLinkerComponent, ClientTemplatedSequenceComponent,
-  ClientTranscriptSegmentComponent, ClientUnknownGeneComponent, CriticalDomain, GeneDescriptor,
-  RegulatoryElement
+  ClientTranscriptSegmentComponent, ClientUnknownGeneComponent, FunctionalDomain,
+  GeneDescriptor, RegulatoryElement
 } from '../../../../services/ResponseModels';
 import './Readable.scss';
 import React from 'react';
@@ -10,7 +10,7 @@ import React from 'react';
 interface Props {
   // TODO: get types from model
   genes: Array<GeneDescriptor>,
-  proteinDomains: Array<CriticalDomain>,
+  proteinDomains: Array<FunctionalDomain>,
   regulatoryElements: Array<RegulatoryElement>,
   structuralComponents: Array<ClientGeneComponent | ClientLinkerComponent
     | ClientTemplatedSequenceComponent | ClientUnknownGeneComponent
@@ -20,8 +20,8 @@ interface Props {
 }
 
 export const Readable: React.FC<Props> = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  genes, proteinDomains, regulatoryElements, structuralComponents, rFramePreserved, causativeEvent
+  // genes,
+  proteinDomains, regulatoryElements, structuralComponents, rFramePreserved, causativeEvent
 }) => {
 
 
