@@ -1,5 +1,5 @@
 import {
-  Accordion, AccordionSummary, Typography, Card
+  Accordion, AccordionSummary, Typography
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { BaseComponentProps } from '../StructCompInputProps';

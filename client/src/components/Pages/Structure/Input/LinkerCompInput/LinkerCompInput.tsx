@@ -1,82 +1,92 @@
-import { Button, Card, CardContent, TextField } from '@material-ui/core';
-import { useContext, useEffect, useState } from 'react';
-import { FusionContext } from '../../../../../global/contexts/FusionContext';
-import { LinkerComponent } from '../../../../../services/ResponseModels';
+import {
+  Accordion, AccordionSummary, Typography, TextField, AccordionDetails
+} from '@material-ui/core';
+import { useEffect, useState } from 'react';
+import { ClientLinkerComponent } from '../../../../../services/ResponseModels';
 import { StructuralComponentInputProps } from '../StructCompInputProps';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import DeleteIcon from '@material-ui/icons/Delete';
+import DoneIcon from '@material-ui/icons/Done';
+import ClearIcon from '@material-ui/icons/Clear';
+import { red, green } from '@material-ui/core/colors';
 
-const LinkerCompInput: React.FC<StructuralComponentInputProps> = (
-  { index, id, handleSave, handleCancel }
+interface LinkerComponentInputProps extends StructuralComponentInputProps {
+  component: ClientLinkerComponent;
+}
+
+const LinkerCompInput: React.FC<LinkerComponentInputProps> = (
+  { component, index, handleSave, handleDelete }
 ) => {
   // Linker Sequence
-  const [sequence, setSequence] = useState('');
+  const [sequence, setSequence] = useState<string>(component.linker_sequence?.sequence || '');
   const linkerError = Boolean(sequence) && sequence.match(/^([aAgGtTcC]+)?$/) === null;
+  const [expanded, setExpanded] = useState<boolean>(linkerError);
 
-  const { fusion, setFusion } = useContext(FusionContext);
   useEffect(() => {
-    const prevValues = fusion.structural_components?.filter(comp => comp.component_id === id)[0];
-    if (prevValues) {
-      const fusionCopy = Object.assign({}, fusion);
-      fusionCopy.structural_components.splice(fusion.structural_components.indexOf(prevValues), 1);
-      setFusion(fusionCopy);
-      const prevInput = prevValues.linker_sequence.sequence;
-      setSequence(prevInput);
-    }
-  }, []);
+    if (!linkerError) buildLinkerComponent();
+  }, [sequence]);
 
   const buildLinkerComponent = () => {
-    const linkerComponent: LinkerComponent = {
-      component_type: 'linker_sequence',
+    const linkerComponent: ClientLinkerComponent = {
+      ...component,
       linker_sequence: {
         id: `fusor.sequence:${sequence}`,
         type: 'SequenceDescriptor',
         sequence: sequence,
         residue_type: 'SO:0000348'
-      }
+      },
+      component_name: sequence,
+      hr_name: sequence,
     };
-    handleSave(index, id, linkerComponent);
+    handleSave(index, linkerComponent);
   };
 
   return (
-    <Card >
-      <CardContent>
-        <div className="card-parent">
-          <div className="input-parent">
-            <TextField
-              margin="dense"
-              label="Sequence"
-              value={sequence}
-              onChange={(event) => setSequence(event.target.value.toUpperCase())}
-              error={linkerError}
-              helperText={linkerError ? 'Warning: must contain only {A, C, G, T}' : null}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  buildLinkerComponent();
-                }
-              }}
-            ></TextField>
-          </div>
-          <div className="buttons">
-            <Button
-              style={{ margin: '8px' }}
-              variant="outlined"
-              color="secondary"
-              onClick={() => handleCancel(id)}
-            >
-              Cancel
-            </Button>
-            <Button
-              style={{ margin: '8px' }}
-              variant="outlined"
-              disabled={linkerError || (sequence === '')}
-              color="primary"
-              onClick={buildLinkerComponent}
-            >
-              Save
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <Accordion
+      defaultExpanded={!linkerError}
+      expanded={expanded}
+      onChange={() => setExpanded(!expanded)}
+    >
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography>
+          {
+            sequence ?
+              sequence :
+              '<incomplete>'
+          }
+        </Typography>
+        {
+          (!linkerError && sequence) ?
+            <DoneIcon className='input-correct' style={{ color: green[500] }} /> :
+            <ClearIcon className='input-incorrect' style={{ color: red[500] }} />
+        }
+        <DeleteIcon
+          onClick={(event) => {
+            event.stopPropagation();
+            handleDelete(component.component_id);
+          }
+          }
+          onFocus={(event) => event.stopPropagation()}
+        />
+      </AccordionSummary>
+      <AccordionDetails>
+        <TextField
+          margin="dense"
+          label="Sequence"
+          value={sequence}
+          onChange={(event) => setSequence(event.target.value.toUpperCase())}
+          error={linkerError}
+          helperText={
+            linkerError ? 'Only {A, C, G, T} permitted' : null
+          }
+          onKeyDown={(e) => {
+            if ((e.key === 'Enter') && (!linkerError)) {
+              setExpanded(false);
+            }
+          }}
+        />
+      </AccordionDetails>
+    </Accordion>
   );
 };
 

@@ -10,11 +10,15 @@ interface Props {
   setGeneText: CallableFunction,
   geneError: boolean,
   setGeneError: CallableFunction,
+  onKeyDown?: CallableFunction,
   style: Object
 }
 
 export const GeneAutocomplete: React.FC<Props> = (
-  { selectedGene, setSelectedGene, geneText, setGeneText, geneError, setGeneError, style }
+  {
+    selectedGene, setSelectedGene, geneText, setGeneText, geneError, setGeneError, style,
+    onKeyDown
+  }
 ) => {
   const [geneOptions, setGeneOptions] = useState([]);
 
@@ -80,6 +84,11 @@ export const GeneAutocomplete: React.FC<Props> = (
               setGeneText('');
             }
           }}
+          onKeyDown={
+            onKeyDown ?
+              (e) => onKeyDown(e) :
+              null
+          }
           helperText={geneText !== '' ? geneText : null}
         />
       }
