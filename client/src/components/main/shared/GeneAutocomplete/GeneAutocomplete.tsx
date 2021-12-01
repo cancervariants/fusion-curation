@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, KeyboardEvent } from 'react';
 import { TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getGeneId, getGeneSuggestions } from '../../../../services/main';
 
 interface Props {
-  selectedGene: string,
-  setSelectedGene: CallableFunction,
-  geneText: string,
-  setGeneText: CallableFunction,
-  geneError: boolean,
-  setGeneError: CallableFunction,
-  onKeyDown?: CallableFunction,
-  style: Object
+  selectedGene: string;
+  setSelectedGene: CallableFunction;
+  geneText: string;
+  setGeneText: CallableFunction;
+  geneError: boolean;
+  setGeneError: CallableFunction;
+  onKeyDown?: (e: KeyboardEvent) => void;
+  style: Object;
 }
 
 export const GeneAutocomplete: React.FC<Props> = (

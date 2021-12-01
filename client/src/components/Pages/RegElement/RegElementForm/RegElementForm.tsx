@@ -1,6 +1,6 @@
 import { Button, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core/';
 import { makeStyles } from '@material-ui/core/styles';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { getGeneId } from '../../../../services/main';
@@ -21,13 +21,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const RegElementForm: React.FC = () => {
-  // TODO: this shouldnt be necessary
-  useEffect(() => {
-    if (regElements === undefined) {
-      setFusion({ ...fusion, ...{ 'regulatory_elements': [] } });
-    }
-  }, []);
-
   const classes = useStyles();
 
   const { fusion, setFusion } = useContext(FusionContext);
@@ -38,8 +31,16 @@ const RegElementForm: React.FC = () => {
   const [geneText, setGeneText] = useState<string>('');
   const [geneError, setGeneError] = useState<boolean>(false);
 
+  const inputComplete = (type !== 'default') && (gene !== '') && (geneText === '');
+
   const handleTypeChange = (event) => {
     setType(event.target.value);
+  };
+
+  const handleEnterKey = (e: KeyboardEvent) => {
+    if ((e.key == 'Enter') && inputComplete) {
+      handleAdd();
+    }
   };
 
   const handleAdd = () => {
@@ -56,13 +57,13 @@ const RegElementForm: React.FC = () => {
 
         const cloneArray = Array.from(regElements);
         const newRegElement: ClientRegulatoryElement = {
-          'type': type as RegulatoryElementType,
-          'element_id': uuid(),
-          'gene_descriptor': {
-            'id': `gene:${geneResponse.term}`,
-            'type': 'GeneDescriptor',
-            'gene_id': geneResponse.concept_id,
-            'label': geneResponse.term,
+          type: type as RegulatoryElementType,
+          element_id: uuid(),
+          gene_descriptor: {
+            id: `gene:${geneResponse.term}`,
+            type: 'GeneDescriptor',
+            gene_id: geneResponse.concept_id,
+            label: geneResponse.term,
           }
         };
         cloneArray.push(newRegElement);
@@ -102,6 +103,7 @@ const RegElementForm: React.FC = () => {
           setGeneText={setGeneText}
           geneError={geneError}
           setGeneError={setGeneError}
+          onKeyDown={handleEnterKey}
           style={{ width: 440 }}
         />
       </div>
@@ -110,7 +112,7 @@ const RegElementForm: React.FC = () => {
           variant='outlined'
           color='primary'
           onClick={() => handleAdd()}
-          disabled={type === 'default' && gene === ''}
+          disabled={!inputComplete}
         >
           Add
         </Button>
