@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { v4 as uuid } from 'uuid';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
@@ -21,8 +21,8 @@ const EDITABLE_COMPONENT_TYPES = [
 ];
 
 // these are the empty object templates the user drags into the array
-// TODO: should be dynamic
-const OPTIONS = [
+// TODO: should be dynamic (?)
+const COMPONENT_TEMPLATE = [
   {
     component_type: 'gene',
     component_name: '',
@@ -106,7 +106,7 @@ const Builder: React.FC = () => {
   // drop new component into structure
   const createNew = (result: DropResult) => {
     const { source, destination } = result;
-    const sourceClone = Array.from(OPTIONS);
+    const sourceClone = Array.from(COMPONENT_TEMPLATE);
     const destClone = Array.from(fusion.structural_components);
     const item = sourceClone[source.index];
     const newItem = Object.assign({}, item);
@@ -145,21 +145,13 @@ const Builder: React.FC = () => {
     setFusion({ ...fusion, ...{ 'structural_components': items } });
   };
 
-  const formatType = (str: string) => {
-    switch (str) {
-      case 'gene':
-        return 'Gene';
-      case 'transcript_segment':
-        return 'Transcript Segment';
-      case 'linker_sequence':
-        return 'Linker Sequence';
-      case 'templated_sequence':
-        return 'Templated Sequence';
-      case 'any_gene':
-        return 'Any Gene';
-      case 'unknown_gene':
-        return 'Unknown Gene';
-    }
+  const formatType = {
+    gene: 'Gene',
+    transcript_segment: 'Transcript Segment',
+    linker_sequence: 'Linker Sequence',
+    templated_sequence: 'Templated Sequence',
+    any_gene: 'Any Gene',
+    unknown_gene: 'Unknown Gene'
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -202,7 +194,7 @@ const Builder: React.FC = () => {
               ref={provided.innerRef}
             >
               <div className='options-container'>
-                {OPTIONS.map(({ component_id, component_type }, index) => (
+                {COMPONENT_TEMPLATE.map(({ component_id, component_type }, index) => (
                   <Draggable
                     key={component_id}
                     draggableId={component_id}
@@ -222,7 +214,7 @@ const Builder: React.FC = () => {
                               : 'translate(0px, 0px)',
                           }}
                         >
-                          {formatType(component_type)}
+                          {formatType[component_type]}
                         </div>
                         {snapshot.isDragging && (
                           <div
@@ -230,7 +222,7 @@ const Builder: React.FC = () => {
                             key={component_id}
                             className={`option-item clone ${component_type}`}
                           >
-                            {formatType(component_type)}
+                            {formatType[component_type]}
                           </div>
                         )}
                       </React.Fragment>);
