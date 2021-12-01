@@ -175,10 +175,16 @@ const demoData: ClientFusion = {
   'causative_event': 'rearrangement'
 };
 
+const defaultFusion: ClientFusion = {
+  structural_components: [],
+  functional_domains: [],
+  regulatory_elements: [],
+};
+
 const App = (): React.ReactElement => {
 
   const [suggestions, setSuggestions] = useState<unknown>([]);
-  const [fusion, setFusion] = useState<ClientFusion>({} as ClientFusion);
+  const [fusion, setFusion] = useState<ClientFusion>(defaultFusion);
   const [globalGenes, setGlobalGenes] = useState<Object>({});
   const [domainOptions, setDomainOptions] = useState<Object>({});
   const [showMain, setShowMain] = useState<boolean>(true);
