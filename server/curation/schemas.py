@@ -6,7 +6,7 @@ from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
 from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 from fusor.models import Fusion, TranscriptSegmentComponent, LinkerComponent, \
     TemplatedSequenceComponent, GeneComponent, UnknownGeneComponent, \
-    AnyGeneComponent, RegulatoryElement, FunctionalDomain
+    AnyGeneComponent, RegulatoryElement, FunctionalDomain, Strand
 
 
 ResponseWarnings = Optional[List[StrictStr]]
@@ -27,6 +27,12 @@ class ClientTranscriptSegmentComponent(TranscriptSegmentComponent, ClientCompone
     input_type: Union[Literal["genomic_coords_gene"],
                       Literal["genomic_coords_tx"],
                       Literal["exon_coords_tx"]]
+    input_tx: Optional[str]
+    input_strand: Optional[Strand]
+    input_gene: Optional[str]
+    input_chr: Optional[str]
+    input_genomic_start: Optional[str]
+    input_genomic_end: Optional[str]
 
 
 class ClientLinkerComponent(LinkerComponent, ClientComponent):
@@ -38,7 +44,9 @@ class ClientLinkerComponent(LinkerComponent, ClientComponent):
 class ClientTemplatedSequenceComponent(TemplatedSequenceComponent, ClientComponent):
     """Templated sequence component used client-side."""
 
-    pass
+    input_chromosome: Optional[str]
+    input_start: Optional[str]
+    input_end: Optional[str]
 
 
 class ClientGeneComponent(GeneComponent, ClientComponent):

@@ -269,6 +269,12 @@ export interface ClientTranscriptSegmentComponent {
   component_genomic_start?: LocationDescriptor;
   component_genomic_end?: LocationDescriptor;
   input_type: "genomic_coords_gene" | "genomic_coords_tx" | "exon_coords_tx";
+  input_tx?: string;
+  input_strand?: Strand;
+  input_gene?: string;
+  input_chr?: string;
+  input_genomic_start?: string;
+  input_genomic_end?: string;
 }
 /**
  * Gene component used client-side.
@@ -302,6 +308,9 @@ export interface ClientTemplatedSequenceComponent {
   component_type?: "templated_sequence";
   region: LocationDescriptor;
   strand: Strand;
+  input_chromosome?: string;
+  input_start?: string;
+  input_end?: string;
 }
 /**
  * Linker component class used client-side.
