@@ -1,6 +1,7 @@
 import React, { useState, useEffect, KeyboardEvent } from 'react';
 import {
-  TextField, Accordion, AccordionDetails, AccordionSummary, Typography
+  TextField, Accordion, AccordionDetails, AccordionSummary, Typography,
+  RadioGroup, FormLabel, FormControlLabel, Radio
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -10,7 +11,7 @@ import { red, green } from '@material-ui/core/colors';
 import { StructuralComponentInputProps } from '../StructCompInputProps';
 import { getTemplatedSequenceComponent } from '../../../../../services/main';
 import {
-  ClientTemplatedSequenceComponent, Number, SequenceLocation
+  ClientTemplatedSequenceComponent, Number as VrsNumber, SequenceLocation
 } from '../../../../../services/ResponseModels';
 
 interface TemplatedSequenceComponentInputProps extends StructuralComponentInputProps {
@@ -55,13 +56,10 @@ const TemplatedSequenceCompInput: React.FC<TemplatedSequenceComponentInputProps>
           return;
         } else {
           setInputError('');
-          // update hr_name, component_name
           const location = templatedSequenceResponse.component.region.location as SequenceLocation;
           const sequence = location.sequence_id.split(':')[1];
-          // eslint-disable-next-line @typescript-eslint/ban-types
-          const start = location.interval.start as Number;
-          // eslint-disable-next-line @typescript-eslint/ban-types
-          const end = location.interval.end as Number;
+          const start = location.interval.start as VrsNumber;
+          const end = location.interval.end as VrsNumber;
           const name = `${sequence}:g.${start.value}_${end.value}(${strand})`;
 
           const templatedSequenceComponent: ClientTemplatedSequenceComponent = {
@@ -118,14 +116,17 @@ const TemplatedSequenceCompInput: React.FC<TemplatedSequenceComponentInputProps>
                 onChange={(event) => setChromosome(event.target.value)}
                 onKeyDown={handleEnterKey}
               />
-              <TextField
-                margin="dense"
-                style={{ height: 38, width: 125 }}
-                label="Strand"
+              <FormLabel component="legend">Strand</FormLabel>
+              <RadioGroup
+                aria-label="strand"
+                name="strand"
                 value={strand}
-                onChange={(event) => setStrand(event.target.value)}
-                onKeyDown={handleEnterKey}
-              />
+                onChange={(event) => setStrand(event.target.value as string)}
+                row
+              >
+                <FormControlLabel value="+" control={<Radio />} label="+" />
+                <FormControlLabel value="-" control={<Radio />} label="-" />
+              </RadioGroup>
             </div>
             <div className="bottom-inputs">
               <TextField
