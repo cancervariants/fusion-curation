@@ -2,8 +2,18 @@ import {
   Fusion, FusionValidationResponse, NormalizeGeneResponse, AssociatedDomainResponse,
   SuggestGeneResponse, GeneComponentResponse, TxSegmentComponentResponse,
   TemplatedSequenceComponentResponse, GetTranscriptsResponse, ServiceInfoResponse,
-  GetDomainResponse, DomainParams, DomainStatus
+  GetDomainResponse, DomainParams, DomainStatus, GeneComponent, TranscriptSegmentComponent,
+  AnyGeneComponent, ClientAnyGeneComponent, ClientGeneComponent, ClientLinkerComponent,
+  ClientTemplatedSequenceComponent, ClientTranscriptSegmentComponent, ClientUnknownGeneComponent,
+  LinkerComponent, TemplatedSequenceComponent, UnknownGeneComponent
 } from './ResponseModels';
+
+export type ClientComponentUnion = ClientAnyGeneComponent | ClientGeneComponent |
+  ClientLinkerComponent | ClientTemplatedSequenceComponent | ClientTranscriptSegmentComponent |
+  ClientUnknownGeneComponent;
+
+export type ComponentUnion = AnyGeneComponent | GeneComponent | LinkerComponent |
+  UnknownGeneComponent | TemplatedSequenceComponent | TranscriptSegmentComponent;
 
 export const getGeneComponent = async (term: string): Promise<GeneComponentResponse> => {
   const response = await fetch(`component/gene?term=${term}`);
