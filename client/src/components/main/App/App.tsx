@@ -230,12 +230,14 @@ const App = (): React.ReactElement => {
   useEffect(() => {
     const updatedDomainOptions = {};
     Object.keys(globalGenes).forEach((geneId: string) => {
-      if (geneId in domainOptions) {
-        updatedDomainOptions[geneId] = domainOptions[geneId];
-      } else {
-        getAssociatedDomains(geneId).then(response => {
-          updatedDomainOptions[geneId] = response.suggestions || [];
-        });
+      if (geneId) {
+        if (geneId in domainOptions) {
+          updatedDomainOptions[geneId] = domainOptions[geneId];
+        } else {
+          getAssociatedDomains(geneId).then(response => {
+            updatedDomainOptions[geneId] = response.suggestions || [];
+          });
+        }
       }
     });
     setDomainOptions(updatedDomainOptions);
