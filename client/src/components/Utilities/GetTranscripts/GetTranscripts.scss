@@ -10,7 +10,7 @@
       flex-direction: column;
       width: 60%;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       }
 
     .left {
@@ -50,11 +50,13 @@
         overflow-y: scroll;
         overflow-x: hidden;
         text-overflow: clip;
-        padding-bottom:1px;
+        padding-top: 20px;
+        padding-bottom: 20px;
         width: 100%;
     }
 
     .tx-accordion {
         width: 90%;
+        padding-bottom: 1px;
     }
   }
