@@ -381,18 +381,17 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
     """
     normalized = request.app.state.fusor.gene_normalizer.normalize(term)
     if normalized.match_type == MatchType.NO_MATCH:
-        return {"warnings": [f"Unable to normalize {term}"]}
+        return {"warnings": [f"Normalization error: {term}"]}
     elif not normalized.gene_descriptor.gene_id.lower().startswith('hgnc'):
-        return {"warnings": [f"Unable to retrieve HGNC symbol for {term}"]}
+        return {"warnings": [f"No HGNC symbol: {term}"]}
     symbol = normalized.gene_descriptor.label
     transcripts = (request.app.state
                    .fusor
                    .uta_tools
                    .mane_transcript_mappings
                    .get_gene_mane_data(symbol))
-
     if not transcripts:
-        return {"warnings": [f"Unable to retrieve matching transcripts for {term}"]}
+        return {"warnings": [f"No matching transcripts: {term}"]}
     else:
         return {"transcripts": transcripts}
 
