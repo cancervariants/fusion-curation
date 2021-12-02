@@ -1,8 +1,8 @@
 import {
-  Accordion, AccordionDetails, AccordionSummary, Box, Button, Container, Typography
+  Accordion, AccordionDetails, AccordionSummary, Box, Container, Typography
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getTranscripts } from '../../../services/main';
 import { GeneAutocomplete } from '../../main/shared/GeneAutocomplete/GeneAutocomplete';
 
@@ -11,10 +11,15 @@ import './GetTranscripts.scss';
 export const GetTranscripts: React.FC = () => {
   const [gene, setGene] = useState('');
   const [geneText, setGeneText] = useState('');
-  const [geneError, setGeneError] = useState(false);
 
   const [transcripts, setTranscripts] = useState([]);
   const [transcriptWarnings, setTranscriptWarnings] = useState([]);
+
+  useEffect(() => {
+    if ((gene !== '') && (!geneText)) {
+      handleGet();
+    }
+  }, [gene]);
 
   const handleGet = () => {
     getTranscripts(gene)
@@ -100,7 +105,7 @@ export const GetTranscripts: React.FC = () => {
       <div className='left'>
         <div className='blurb-container'>
           <div className='blurb'>
-            Select a gene:
+            Enter a gene:
           </div>
           <div>
             <GeneAutocomplete
@@ -108,18 +113,9 @@ export const GetTranscripts: React.FC = () => {
               setSelectedGene={setGene}
               geneText={geneText}
               setGeneText={setGeneText}
-              geneError={geneError}
-              setGeneError={setGeneError}
               style={{ width: 200 }}
+              onKeyDown={() => handleGet()}
             />
-            <Button
-              variant='outlined'
-              color='primary'
-              onClick={() => handleGet()}
-              disabled={gene === ''}
-            >
-              Go
-            </Button>
           </div>
         </div>
       </div>

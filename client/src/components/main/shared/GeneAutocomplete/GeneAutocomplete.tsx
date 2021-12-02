@@ -1,4 +1,4 @@
-import React, { useState, KeyboardEvent } from 'react';
+import React, { useState, KeyboardEvent, useEffect } from 'react';
 import { TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getGeneId, getGeneSuggestions } from '../../../../services/main';
@@ -8,65 +8,73 @@ interface Props {
   setSelectedGene: CallableFunction;
   geneText: string;
   setGeneText: CallableFunction;
-  geneError: boolean;
-  setGeneError: CallableFunction;
   onKeyDown?: (e: KeyboardEvent) => void;
   style: Object;
 }
 
 export const GeneAutocomplete: React.FC<Props> = (
   {
-    selectedGene, setSelectedGene, geneText, setGeneText, geneError, setGeneError, style,
+    selectedGene, setSelectedGene, geneText, setGeneText, style,
     onKeyDown
   }
 ) => {
   const [geneOptions, setGeneOptions] = useState([]);
 
-  const updateAutocomplete = (term: string) => {
-    getGeneSuggestions(term).then(responseJson => {
-      if (responseJson.warnings || (responseJson.suggestions.length === 0)) {
-        getGeneId(term).then(geneResponseJson => {
-          if (geneResponseJson.warnings) {
-            setGeneError(true);
-            setGeneText('Unrecognized term');
-          } else {
-            setGeneError(false);
-            setGeneText('');
-          }
-        });
-      } else {
-        const suggestions = [];
-        responseJson.suggestions?.forEach(suggestion => {
-          if (suggestion[0] === '') {
-            suggestions.push(suggestion[2]);
-          } else {
-            suggestions.push(suggestion[0]);
-          }
-        });
-        setGeneOptions(suggestions);
+  useEffect(() => {
+    if (selectedGene === '') {
+      setGeneText('');
+    } else {
+      getGeneSuggestions(selectedGene).then(suggestResponseJson => {
 
-        const termLower = term.toLowerCase();
-        const index = suggestions.findIndex((element: string) => {
-          return element.toLowerCase() === termLower;
-        });
-        if (index === -1) {
-          setGeneError(true);
+        if (suggestResponseJson.warnings) {
+          // if max matches exceeded, check for exact match
+          if (suggestResponseJson.warnings[0].startsWith('Exceeds max matches')) {
+            getGeneId(selectedGene).then(geneResponseJson => {
+              if (geneResponseJson.warnings) {
+                setGeneText('Unrecognized term');
+              } else {
+                setGeneText('');
+              }
+            });
+          }
+        } else if (suggestResponseJson.suggestions?.length === 0) {
           setGeneText('Unrecognized term');
         } else {
-          setGeneError(false);
-          setGeneText('');
+          const suggestions = [];
+          suggestResponseJson.suggestions?.forEach(suggestion => {
+            if (suggestion[0] === '') {
+              suggestions.push(suggestion[2]);
+            } else {
+              suggestions.push(suggestion[0]);
+            }
+          });
+          console.log(suggestions);
+          setGeneOptions(suggestions);
+
+          const termLower = selectedGene.toLowerCase();
+          const index = suggestions.findIndex((element: string) => {
+            return element.toLowerCase() === termLower;
+          });
+          if (index === -1) {
+            setGeneText('Unrecognized term');
+          } else {
+            setGeneText('');
+          }
         }
-      }
-    });
-  };
+      });
+    }
+  }, [selectedGene]);
 
   return (
     <Autocomplete
       freeSolo
       options={geneOptions}
       getOptionLabel={(option) => option}
-      onChange={(event, value) => setSelectedGene(value)}
+      onChange={(event, value) => {
+        setSelectedGene(value);
+      }}
       value={selectedGene}
+      disableClearable
       renderInput={(params) =>
         <TextField
           {...params}
@@ -75,14 +83,9 @@ export const GeneAutocomplete: React.FC<Props> = (
           style={style}
           variant="standard"
           value={selectedGene}
-          error={geneError}
+          error={geneText !== ''}
           onChange={event => {
-            if (event.target.value !== '' && event.target.value !== null) {
-              updateAutocomplete(event.target.value);
-              setSelectedGene(event.target.value);
-            } else if (event.target.value === '') {
-              setGeneText('');
-            }
+            setSelectedGene(event.target.value);
           }}
           onKeyDown={
             onKeyDown ?

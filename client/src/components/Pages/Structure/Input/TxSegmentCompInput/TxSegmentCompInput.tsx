@@ -31,7 +31,6 @@ const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
 
   const [txGene, setTxGene] = useState(component.input_gene || '');
   const [txGeneText, setTxGeneText] = useState('');
-  const [txGeneError, setTxGeneError] = useState(false);
 
   const [txStrand, setTxStrand] = useState(component.input_strand || 'default');
 
@@ -62,7 +61,7 @@ const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
     )
   );
 
-  const inputSuccessful = inputComplete && !txGeneError && (txChromText === '') &&
+  const inputSuccessful = inputComplete && (txGeneText === '') && (txChromText === '') &&
     (txAcText === '');
 
   const [expanded, setExpanded] = useState<boolean>(!inputSuccessful);
@@ -205,8 +204,6 @@ const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
                 setSelectedGene={setTxGene}
                 geneText={txGeneText}
                 setGeneText={setTxGeneText}
-                geneError={txGeneError}
-                setGeneError={setTxGeneError}
                 style={{ width: 125 }}
                 onKeyDown={handleEnterKey}
               />

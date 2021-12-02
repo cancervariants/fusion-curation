@@ -1,6 +1,6 @@
 import { Button, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core/';
 import { makeStyles } from '@material-ui/core/styles';
-import { useContext, useState } from 'react';
+import { useContext, useState, KeyboardEvent } from 'react';
 import { v4 as uuid } from 'uuid';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
 import { getGeneId } from '../../../../services/main';
@@ -29,7 +29,6 @@ const RegElementForm: React.FC = () => {
   const [type, setType] = useState('default');
   const [gene, setGene] = useState<string>('');
   const [geneText, setGeneText] = useState<string>('');
-  const [geneError, setGeneError] = useState<boolean>(false);
 
   const inputComplete = (type !== 'default') && (gene !== '') && (geneText === '');
 
@@ -49,7 +48,6 @@ const RegElementForm: React.FC = () => {
         if (geneResponse.warnings?.length > 0) {
           const geneWarning = `Lookup of gene term ${gene} failed.`;
           if (geneResponse.warnings.includes(geneWarning)) {
-            setGeneError(true);
             setGeneText('Unrecognized term');
           }
           throw new Error(geneWarning);
@@ -101,8 +99,6 @@ const RegElementForm: React.FC = () => {
           setSelectedGene={setGene}
           geneText={geneText}
           setGeneText={setGeneText}
-          geneError={geneError}
-          setGeneError={setGeneError}
           onKeyDown={handleEnterKey}
           style={{ width: 440 }}
         />

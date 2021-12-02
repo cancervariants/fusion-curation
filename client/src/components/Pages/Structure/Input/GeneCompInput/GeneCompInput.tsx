@@ -4,7 +4,7 @@ import { StructuralComponentInputProps } from '../StructCompInputProps';
 import { GeneAutocomplete } from '../../../../main/shared/GeneAutocomplete/GeneAutocomplete';
 import { getGeneComponent } from '../../../../../services/main';
 import {
-  AccordionDetails, Accordion, AccordionSummary, Typography
+  AccordionDetails, Accordion, AccordionSummary, Typography, Tooltip
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -21,22 +21,17 @@ const GeneCompInput: React.FC<GeneComponentInputProps> = (
 ) => {
   const [gene, setGene] = useState<string>(component.gene_descriptor?.label || '');
   const [geneText, setGeneText] = useState<string>('');
-  const [geneError, setGeneError] = useState<boolean>(false);
-  const [expanded, setExpanded] = useState<boolean>(!gene || geneError);
+  const [expanded, setExpanded] = useState<boolean>(!gene || (geneText !== ''));
 
   useEffect(() => {
-    if (gene && (!geneText) && (!geneError)) {
-      buildGeneComponent();
-    }
-  }, [gene, geneText, geneError]);
+    if (gene && (!geneText)) buildGeneComponent();
+  }, [gene, geneText]);
 
   const buildGeneComponent = () => {
     getGeneComponent(gene)
       .then(geneComponentResponse => {
         if (geneComponentResponse.warnings?.length > 0) {
           setGeneText('Gene not found');
-          setGeneError(true);
-          return;
         } else {
           const descr = geneComponentResponse.component.gene_descriptor;
           const nomenclature = `${descr.label}(${descr.gene_id})`;
@@ -53,7 +48,7 @@ const GeneCompInput: React.FC<GeneComponentInputProps> = (
 
   return (
     <Accordion
-      defaultExpanded={!gene || geneError}
+      defaultExpanded={!gene || (geneText !== '')}
       expanded={expanded}
       onChange={() => setExpanded(!expanded)}
     >
@@ -66,18 +61,23 @@ const GeneCompInput: React.FC<GeneComponentInputProps> = (
           }
         </Typography>
         {
-          (gene) && (!geneError) && (!geneText) ?
-            <DoneIcon className='input-correct' style={{ color: green[500] }} /> :
-            <ClearIcon className='input-incorrect' style={{ color: red[500] }} />
+          (gene) && (!geneText) ?
+            <Tooltip title="Validation successful">
+              <DoneIcon className='input-correct' style={{ color: green[500] }} />
+            </Tooltip> :
+            <Tooltip title="Invalid component">
+              <ClearIcon className='input-incorrect' style={{ color: red[500] }} />
+            </Tooltip>
         }
-        <DeleteIcon
-          onClick={(event) => {
-            event.stopPropagation();
-            handleDelete(component.component_id);
-          }
-          }
-          onFocus={(event) => event.stopPropagation()}
-        />
+        <Tooltip title="Delete component">
+          <DeleteIcon
+            onClick={(event) => {
+              event.stopPropagation();
+              handleDelete(component.component_id);
+            }}
+            onFocus={(event) => event.stopPropagation()}
+          />
+        </Tooltip>
       </AccordionSummary>
       <AccordionDetails>
         <div className="card-parent">
@@ -87,10 +87,8 @@ const GeneCompInput: React.FC<GeneComponentInputProps> = (
               setSelectedGene={setGene}
               geneText={geneText}
               setGeneText={setGeneText}
-              geneError={geneError}
-              setGeneError={setGeneError}
               onKeyDown={(e) => {
-                if ((e.key === 'Enter') && gene && !geneError) {
+                if ((e.key === 'Enter') && gene && !geneText) {
                   setExpanded(false);
                 }
               }}
