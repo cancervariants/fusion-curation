@@ -36,6 +36,7 @@ export const GetTranscripts: React.FC = () => {
 
   const renderTranscripts = () => {
     if (transcriptWarnings.length > 0) {
+      // TODO more error handling here
       return (
         <Box>{JSON.stringify(transcriptWarnings, null, 2)}</Box>
       );
@@ -114,7 +115,6 @@ export const GetTranscripts: React.FC = () => {
               geneText={geneText}
               setGeneText={setGeneText}
               style={{ width: 200 }}
-              onKeyDown={() => handleGet()}
             />
           </div>
         </div>

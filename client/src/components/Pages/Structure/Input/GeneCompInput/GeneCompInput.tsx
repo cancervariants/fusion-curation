@@ -87,11 +87,6 @@ const GeneCompInput: React.FC<GeneComponentInputProps> = (
               setSelectedGene={setGene}
               geneText={geneText}
               setGeneText={setGeneText}
-              onKeyDown={(e) => {
-                if ((e.key === 'Enter') && gene && !geneText) {
-                  setExpanded(false);
-                }
-              }}
               style={{ width: 125 }}
             />
           </div>

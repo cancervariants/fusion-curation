@@ -99,7 +99,6 @@ const RegElementForm: React.FC = () => {
           setSelectedGene={setGene}
           geneText={geneText}
           setGeneText={setGeneText}
-          onKeyDown={handleEnterKey}
           style={{ width: 440 }}
         />
       </div>

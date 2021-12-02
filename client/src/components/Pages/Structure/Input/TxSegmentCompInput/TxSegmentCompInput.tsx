@@ -205,7 +205,6 @@ const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
                 geneText={txGeneText}
                 setGeneText={setTxGeneText}
                 style={{ width: 125 }}
-                onKeyDown={handleEnterKey}
               />
             </div>
             <div className="mid-inputs">
