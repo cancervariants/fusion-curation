@@ -19,31 +19,52 @@ const useStyles = makeStyles((theme) => ({
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const OtherAttribs: React.FC<Props> = ({ index }) => {
 
+  const classes = useStyles();
+
   const { fusion, setFusion } = useContext(FusionContext);
 
   //TODO: do a useref here or something
 
-  let preserved;
-  if (fusion.r_frame_preserved !== undefined) {
-    preserved = fusion.r_frame_preserved ? 'Yes' : 'No';
-  } else {
-    preserved = null;
-  }
-  const [rFramePreserved, setRFramePreserved] = useState(preserved);
-  const [causativeEvent, setCausativeEvent] = useState(fusion.causative_event);
+  const assignRadioValue = (value: boolean) => {
+    if (value) {
+      return 'yes';
+    } else {
+      return 'no';
+    }
+  };
 
-  const classes = useStyles();
+  const [rFramePreserved, setRFramePreserved] = useState(
+    fusion.r_frame_preserved !== undefined ?
+      assignRadioValue(fusion.r_frame_preserved) :
+      'unspecified'
+  );
+  const [causativeEvent, setCausativeEvent] = useState(
+    fusion.causative_event !== undefined ? fusion.causative_event : 'unspecified'
+  );
 
   const handleRFrameChange = (event) => {
-    // eslint-disable-next-line prefer-const
-    let preserved = (event.target.value === 'Yes');
-    setRFramePreserved(event.target.value);
-    setFusion({ ...fusion, ...{ 'r_frame_preserved': preserved } });
+    const value = event.target.value;
+    if (value === 'yes') {
+      setRFramePreserved('yes');
+      setFusion({...fusion, r_frame_preserved: true});
+    } else if (value === 'no') {
+      setRFramePreserved('no');
+      setFusion({...fusion, r_frame_preserved: false});
+    } else {
+      setRFramePreserved('unspecified');
+      setFusion({...fusion, r_frame_preserved: undefined });
+    }
   };
 
   const handleCauseChange = (event) => {
-    setCausativeEvent(event.target.value);
-    setFusion({ ...fusion, ...{ 'causative_event': event.target.value } });
+    const value = event.target.value;
+    if (value !== 'unspecified') {
+      setCausativeEvent(value);
+      setFusion({...fusion, causative_event: value });
+    } else {
+      setCausativeEvent('unspecified');
+      setFusion({...fusion, causative_event: undefined });
+    }
   };
 
   return (
