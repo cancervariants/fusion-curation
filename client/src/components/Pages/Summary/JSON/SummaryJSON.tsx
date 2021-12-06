@@ -69,6 +69,7 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
         }
       }),
       causative_event: fusion.causative_event,
+      r_frame_preserved: fusion.r_frame_preserved,
       regulatory_elements: fusion.regulatory_elements?.map(e => {
         const element: RegulatoryElement = {
           type: e.type,
