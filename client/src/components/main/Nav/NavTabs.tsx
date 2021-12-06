@@ -5,7 +5,7 @@ import { Structure } from '../../Pages/Structure/Main/Structure';
 import { RegElement } from '../../Pages/RegElement/Main/RegElement';
 import { Summary } from '../../Pages/Summary/Main/Summary';
 import { Domain } from '../../Pages/Domains/Main/Domains';
-import { Questions } from '../../Pages/Questions/Questions';
+import { OtherAttribs } from '../../Pages/OtherAttribs/OtherAttribs';
 
 // MUI Stuff
 import { makeStyles, Theme } from '@material-ui/core/styles';
@@ -124,7 +124,7 @@ export default function NavTabs(): React.ReactElement {
           <LinkTab label="Structure" href="/drafts" {...a11yProps(0)} />
           <LinkTab label="Regulatory Element" href="/trash" {...a11yProps(1)} />
           <LinkTab label="Domains" href="/spam" {...a11yProps(2)} />
-          <LinkTab label="Questions" href="/spam" {...a11yProps(3)} />
+          <LinkTab label="Other Attributes" href="/spam" {...a11yProps(3)} />
           <LinkTab label="Summary" href="/spam" {...a11yProps(4)} />
         </Tabs>
       </AppBar>
@@ -142,7 +142,7 @@ export default function NavTabs(): React.ReactElement {
           <Domain index={1} />
         </TabPanel>
         <TabPanel value={value} index={3}>
-          <Questions index={1} />
+          <OtherAttribs index={1} />
         </TabPanel>
         <TabPanel value={value} index={4}>
           <Summary index={1} />

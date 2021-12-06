@@ -1,4 +1,4 @@
-import './Questions.scss';
+import './OtherAttribs.scss';
 import { FusionContext } from '../../../global/contexts/FusionContext';
 import React, { useContext, useState } from 'react';
 import { FormControl, FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const Questions: React.FC<Props> = ({ index }) => {
+export const OtherAttribs: React.FC<Props> = ({ index }) => {
 
   const { fusion, setFusion } = useContext(FusionContext);
 
@@ -47,18 +47,19 @@ export const Questions: React.FC<Props> = ({ index }) => {
   };
 
   return (
-    <div className='questions-tab-container'>
+    <div className='other-attribs-tab-container'>
       <FormControl component='fieldset'>
-        <h3>Is the reading frame predicted to be preserved?</h3>
+        <h3>Must the reading frame be preserved?</h3>
         <RadioGroup
-          aria-label='Is the reading frame predicted to be preserved?'
+          aria-label='Must the reading frame be preserved?'
           name='controlled-radio-buttons-group'
           value={rFramePreserved}
           onChange={handleRFrameChange}
           className={classes.formControl}
         >
-          <FormControlLabel value='Yes' control={<Radio />} label='Yes' />
-          <FormControlLabel value='No' control={<Radio />} label='No' />
+          <FormControlLabel value='yes' control={<Radio />} label='Yes' />
+          <FormControlLabel value='no' control={<Radio />} label='No' />
+          <FormControlLabel value='unspecified' control={<Radio />} label='Unspecified' />
         </RadioGroup>
         <h3>What is the causative event?</h3>
         <RadioGroup
@@ -69,9 +70,9 @@ export const Questions: React.FC<Props> = ({ index }) => {
           className={classes.formControl}
         >
           <FormControlLabel value='rearrangement' control={<Radio />} label='Rearrangement' />
-          <FormControlLabel value='read-through' control={<Radio />} label='Read-through' />
           <FormControlLabel value='trans-splicing' control={<Radio />} label='Trans-splicing' />
-          <FormControlLabel value='unknown' control={<Radio />} label='Unknown' />
+          <FormControlLabel value='read-through' control={<Radio />} label='Read-through' />
+          <FormControlLabel value='unspecified' control={<Radio />} label='Unspecified' />
         </RadioGroup>
       </FormControl>
     </div>
