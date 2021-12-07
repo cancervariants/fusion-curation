@@ -250,7 +250,7 @@ const App = (): React.ReactElement => {
 
   const handleClear = () => {
     setAnchorEl(null);
-    setFusion({} as ClientFusion);
+    setFusion(defaultFusion as ClientFusion);
     setGlobalGenes({});
     setDomainOptions({});
   };
