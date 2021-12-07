@@ -7,6 +7,7 @@ from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 from fusor.models import Fusion, TranscriptSegmentComponent, LinkerComponent, \
     TemplatedSequenceComponent, GeneComponent, UnknownGeneComponent, \
     AnyGeneComponent, RegulatoryElement, FunctionalDomain, Strand
+from uta_tools.schemas import GenomicData
 
 
 ResponseWarnings = Optional[List[StrictStr]]
@@ -94,16 +95,16 @@ class Response(BaseModel, ABC):
 
     warnings: ResponseWarnings
 
+    class Config:
+        """Configure class"""
+
+        extra = Extra.forbid
+
 
 class GeneComponentResponse(Response):
     """Response model for gene component construction endoint."""
 
     component: Optional[GeneComponent]
-
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
 
 
 class TxSegmentComponentResponse(Response):
@@ -111,21 +112,11 @@ class TxSegmentComponentResponse(Response):
 
     component: Optional[TranscriptSegmentComponent]
 
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
-
 
 class TemplatedSequenceComponentResponse(Response):
     """Response model for transcript segment component construction endpoint."""
 
     component: Optional[TemplatedSequenceComponent]
-
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
 
 
 class NormalizeGeneResponse(Response):
@@ -135,11 +126,6 @@ class NormalizeGeneResponse(Response):
     concept_id: Optional[CURIE]
     symbol: Optional[StrictStr]
 
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
-
 
 class SuggestGeneResponse(Response):
     """Response model for gene autocomplete suggestions endpoint."""
@@ -147,11 +133,6 @@ class SuggestGeneResponse(Response):
     term: StrictStr
     # complete term, normalized ID, normalized label, item type
     suggestions: Optional[List[Tuple[str, str, str, str]]]
-
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
 
 
 class DomainParams(BaseModel):
@@ -175,11 +156,6 @@ class AssociatedDomainResponse(Response):
 
     gene_id: StrictStr
     suggestions: Optional[List[DomainParams]]
-
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
 
 
 class ExonCoordsRequest(BaseModel):
@@ -207,26 +183,10 @@ class ExonCoordsRequest(BaseModel):
         return v
 
 
-class ExonCoordsResponse(BaseModel):
+class ExonCoordsResponse(Response):
     """Response model for genomic coordinates retrieval"""
 
-    tx_ac: Optional[StrictStr]
-    gene: Optional[StrictStr]
-    gene_id: Optional[StrictStr]
-    exon_start: Optional[StrictInt]
-    exon_start_offset: Optional[StrictInt]
-    exon_end: Optional[StrictInt]
-    exon_end_offset: Optional[StrictInt]
-    sequence_id: Optional[CURIE]
-    chr: Optional[StrictStr]
-    start: Optional[StrictInt]
-    end: Optional[StrictInt]
-    warnings: ResponseWarnings
-
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
+    coordinates_data: GenomicData
 
 
 class SequenceIDResponse(Response):
@@ -235,22 +195,12 @@ class SequenceIDResponse(Response):
     sequence: StrictStr
     sequence_id: StrictStr = ""
 
-    class Config:
-        """Configure class."""
 
-        extra = Extra.forbid
-
-
-class FusionValidationResponse(Response):
+class FusionValidationResponse(BaseModel):
     """Response model for fusion validation endpoint."""
 
     fusion: Optional[Fusion]
     warnings: Optional[List[Dict]]
-
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
 
 
 class GetTranscriptsResponse(Response):
@@ -258,21 +208,11 @@ class GetTranscriptsResponse(Response):
 
     transcripts: Optional[List[Dict[StrictStr, Union[StrictStr, StrictInt]]]]
 
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
-
 
 class ServiceInfoResponse(Response):
     """Response model for service_info endpoint."""
 
     version: StrictStr
-
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
 
 
 class ClientFusion(Fusion):
