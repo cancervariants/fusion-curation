@@ -17,7 +17,7 @@ def serve(port: int) -> None:
     \f
     :param int port: port to serve at (default: 5000)
     """
-    uvicorn.run("curation.routes:app", port=port, reload=True)
+    uvicorn.run("curation.main:app", port=port, reload=True)
 
 
 @click.group()

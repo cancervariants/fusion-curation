@@ -12,6 +12,11 @@ from uta_tools.schemas import GenomicData
 
 ResponseWarnings = Optional[List[StrictStr]]
 
+ResponseDict = Dict[
+    str, Union[str, CURIE, List[str], List[Tuple[str, str, str, str]], FunctionalDomain]
+]
+Warnings = List[str]
+
 
 class ClientComponent(BaseModel, ABC):
     """Abstract class to provide identification properties used by client."""
@@ -183,10 +188,10 @@ class ExonCoordsRequest(BaseModel):
         return v
 
 
-class ExonCoordsResponse(Response):
+class CoordsUtilsResponse(Response):
     """Response model for genomic coordinates retrieval"""
 
-    coordinates_data: GenomicData
+    coordinates_data: Optional[GenomicData]
 
 
 class SequenceIDResponse(Response):
