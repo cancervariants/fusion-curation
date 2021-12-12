@@ -13,9 +13,7 @@ def validate_fusion(fusion: Dict) -> Dict[str, Any]:
     :return: Dict containing Fusion object adhering to object model, or None +
         warnings if validation errors are raised
     """
-    response: Dict[str, Any] = {
-        "warnings": []
-    }
+    response: Dict[str, Any] = {"warnings": []}
     try:
         response["fusion"] = Fusion(**fusion).dict(exclude_none=True)
     except ValidationError as e:

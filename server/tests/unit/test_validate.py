@@ -14,8 +14,8 @@ def test_validate():
                 "gene_descriptor": {
                     "id": "curation:NTRK1",
                     "label": "NTRK1",
-                    "gene_id": "hgnc:8031"
-                }
+                    "gene_id": "hgnc:8031",
+                },
             }
         ],
         "structural_components": [
@@ -30,7 +30,7 @@ def test_validate():
                     "id": "gene:TPM3",
                     "gene_id": "hgnc:12012",
                     "type": "GeneDescriptor",
-                    "label": "TPM3"
+                    "label": "TPM3",
                 },
                 "component_genomic_region": {
                     "id": "refseq:NM_152263.3_exon1-exon8",
@@ -39,18 +39,12 @@ def test_validate():
                         "sequence_id": "ga4gh:SQ.ijXOSP3XSsuLWZhXQ7_TJ5JXu4RJO6VT",  # noqa: E501
                         "type": "SequenceLocation",
                         "interval": {
-                            "start": {
-                                "type": "Number",
-                                "value": 154192135
-                            },
-                            "end": {
-                                "type": "Number",
-                                "value": 154170399
-                            },
-                            "type": "SequenceInterval"
-                        }
-                    }
-                }
+                            "start": {"type": "Number", "value": 154192135},
+                            "end": {"type": "Number", "value": 154170399},
+                            "type": "SequenceInterval",
+                        },
+                    },
+                },
             },
             {
                 "component_type": "gene",
@@ -58,9 +52,9 @@ def test_validate():
                     "id": "gene:ALK",
                     "type": "GeneDescriptor",
                     "gene_id": "hgnc:427",
-                    "label": "ALK"
-                }
-            }
+                    "label": "ALK",
+                },
+            },
         ],
         "regulatory_elements": [
             {
@@ -69,65 +63,77 @@ def test_validate():
                     "id": "gene:BRAF",
                     "type": "GeneDescriptor",
                     "gene_id": "hgnc:1097",
-                    "label": "BRAF"
-                }
+                    "label": "BRAF",
+                },
             }
         ],
-        "causative_event": 'rearrangement'
+        "causative_event": "rearrangement",
     }
     response = validate_fusion(fusion)
 
     # check no warnings
-    assert response['warnings'] == []
+    assert response["warnings"] == []
 
-    fusion = response['fusion']
+    fusion = response["fusion"]
 
     # spot check some values
-    assert fusion['protein_domains'][0]['gene_descriptor']['gene_id'] == 'hgnc:8031'  # noqa: E501
-    assert fusion['r_frame_preserved']
-    assert fusion['structural_components'][0]['exon_end'] == 8
-    assert fusion['structural_components'][0]['gene_descriptor']['label'] == 'TPM3'  # noqa: E501
-    assert fusion['structural_components'][0]['component_genomic_region']['location']['type'] == 'SequenceLocation'  # noqa: E501
-    assert fusion['structural_components'][1]['component_type'] == 'gene'
-    assert fusion['regulatory_elements'][0]['type'] == 'promoter'
-    assert fusion['regulatory_elements'][0]['gene_descriptor']['gene_id'] == 'hgnc:1097'  # noqa: E501
-    assert fusion['causative_event'] == 'rearrangement'
+    assert (
+        fusion["protein_domains"][0]["gene_descriptor"]["gene_id"] == "hgnc:8031"
+    )  # noqa: E501
+    assert fusion["r_frame_preserved"]
+    assert fusion["structural_components"][0]["exon_end"] == 8
+    assert (
+        fusion["structural_components"][0]["gene_descriptor"]["label"] == "TPM3"
+    )  # noqa: E501
+    assert (
+        fusion["structural_components"][0]["component_genomic_region"]["location"][
+            "type"
+        ]
+        == "SequenceLocation"
+    )  # noqa: E501
+    assert fusion["structural_components"][1]["component_type"] == "gene"
+    assert fusion["regulatory_elements"][0]["type"] == "promoter"
+    assert (
+        fusion["regulatory_elements"][0]["gene_descriptor"]["gene_id"] == "hgnc:1097"
+    )  # noqa: E501
+    assert fusion["causative_event"] == "rearrangement"
 
     # empty fusion should fail
     response = validate_fusion({})
-    assert response['warnings'] == [[{
-        'loc': ('structural_components',),
-        'msg': 'field required',
-        'type': 'value_error.missing'
-    }]]
-    assert response['fusion'] == {}
-
-    # should get specific warnings for various fields
-    fusion = {
-        'r_frame_preserved': 98,
-        'structural_components': [
-            {
-                'component_type': 'gene',
-                'gene_descriptor': {
-                    'id': 'gene:BRAF',
-                    'gene_id': 'hgnc:1097'
-                }
-            }
-        ]
-    }
-    response = validate_fusion(fusion)
-    assert response['warnings'] == [
+    assert response["warnings"] == [
         [
             {
-                'loc': ('r_frame_preserved',),
-                'msg': 'value is not a valid boolean',
-                'type': 'value_error.strictbool'
-            },
-            {
-                'loc': ('structural_components',),
-                'msg': 'Fusion must contain at least 2 transcript components.',
-                'type': 'value_error'
+                "loc": ("structural_components",),
+                "msg": "field required",
+                "type": "value_error.missing",
             }
         ]
     ]
-    assert response['fusion'] == {}
+    assert response["fusion"] == {}
+
+    # should get specific warnings for various fields
+    fusion = {
+        "r_frame_preserved": 98,
+        "structural_components": [
+            {
+                "component_type": "gene",
+                "gene_descriptor": {"id": "gene:BRAF", "gene_id": "hgnc:1097"},
+            }
+        ],
+    }
+    response = validate_fusion(fusion)
+    assert response["warnings"] == [
+        [
+            {
+                "loc": ("r_frame_preserved",),
+                "msg": "value is not a valid boolean",
+                "type": "value_error.strictbool",
+            },
+            {
+                "loc": ("structural_components",),
+                "msg": "Fusion must contain at least 2 transcript components.",
+                "type": "value_error",
+            },
+        ]
+    ]
+    assert response["fusion"] == {}

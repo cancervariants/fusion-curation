@@ -17,9 +17,9 @@ def get_strand(input: str) -> int:
     :return: correctly-formatted strand
     :raises InvalidInputException: if strand arg is invalid
     """
-    if input == '+':
+    if input == "+":
         return 1
-    elif input == '-':
+    elif input == "-":
         return -1
     else:
         raise InvalidInputException

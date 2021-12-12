@@ -42,7 +42,7 @@ class GeneSuggestionBuilder:
         to normalized gene data
         :param outfile_path Path: path to save mapping at
         """
-        with open(outfile_path, 'w') as fp:
+        with open(outfile_path, "w") as fp:
             for key, normed in mapping.items():
                 fp.write(f"{key}\t{normed[0]}\t{normed[1]}\t{normed[2]}\n")
 
@@ -61,8 +61,11 @@ class GeneSuggestionBuilder:
         self.symbol_map[norm_symbol.lower()] = ("", norm_id, norm_symbol)
 
         for prev_symbol in record.get("previous_symbols", []):
-            self.prev_symbol_map[prev_symbol.lower()] = (prev_symbol, norm_id,
-                                                         norm_symbol)
+            self.prev_symbol_map[prev_symbol.lower()] = (
+                prev_symbol,
+                norm_id,
+                norm_symbol,
+            )
 
         for assoc_with in record.get("associated_with", []):
             self.assoc_with_map[assoc_with.lower()] = (assoc_with, norm_id, norm_symbol)
@@ -74,7 +77,7 @@ class GeneSuggestionBuilder:
         for alias in record.get("aliases", []):
             self.alias_map[alias.lower()] = (alias, norm_id, norm_symbol)
 
-    def build_gene_suggest_maps(self, output_dir: Path = APP_ROOT / 'data') -> None:
+    def build_gene_suggest_maps(self, output_dir: Path = APP_ROOT / "data") -> None:
         """Construct gene autocomplete suggestion mappings.
         Scan existing gene_concepts table and gather all possible terms that can be
         used to look up normalized concepts. Then, link them with their associated
@@ -105,14 +108,15 @@ class GeneSuggestionBuilder:
                 break
 
         today = dt.strftime(dt.today(), "%Y%m%d")
-        for (map, name) in ((self.xrefs_map, "xrefs"),
-                            (self.symbol_map, "symbols"),
-                            (self.label_map, "labels"),
-                            (self.prev_symbol_map, "prev_symbols"),
-                            (self.alias_map, "aliases"),
-                            (self.assoc_with_map, "assoc_with")):
-            self.write_map_to_file(map,
-                                   output_dir / f"gene_{name}_suggest_{today}.tsv")
+        for (map, name) in (
+            (self.xrefs_map, "xrefs"),
+            (self.symbol_map, "symbols"),
+            (self.label_map, "labels"),
+            (self.prev_symbol_map, "prev_symbols"),
+            (self.alias_map, "aliases"),
+            (self.assoc_with_map, "assoc_with"),
+        ):
+            self.write_map_to_file(map, output_dir / f"gene_{name}_suggest_{today}.tsv")
 
         stop = timer()
         msg = f"Built gene suggestions table in {(stop - start):.5f} seconds."

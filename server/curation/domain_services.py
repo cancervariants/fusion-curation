@@ -12,7 +12,7 @@ from pathlib import Path
 from curation import APP_ROOT, logger, ServiceWarning
 
 
-class DomainService():
+class DomainService:
     """Handler class providing requisite services for functional domain lookup."""
 
     domains: Dict[str, List[Dict]] = {}
@@ -53,7 +53,7 @@ class DomainService():
                     "domain_name": row[3],
                     "start": int(row[4]),
                     "end": int(row[5]),
-                    "refseq_ac": f"{row[6]}"
+                    "refseq_ac": f"{row[6]}",
                 }
                 if gene_id in self.domains:
                     self.domains[gene_id].append(domain_data)

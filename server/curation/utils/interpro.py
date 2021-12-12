@@ -33,10 +33,13 @@ def download_protein2ipr(output_dir: Path) -> None:
 
     gz_file_path = output_dir / "protein2ipr.dat.gz"
     with open(gz_file_path, "w") as fp:
+
         def writefile(data):
             fp.write(data)
-        ftp_download("ftp.ebi.ac.uk", "pub/databases/interpro", "protein2ipr.dat.gz",
-                     writefile)
+
+        ftp_download(
+            "ftp.ebi.ac.uk", "pub/databases/interpro", "protein2ipr.dat.gz", writefile
+        )
 
     today = datetime.strftime(datetime.today(), DATE_FMT)
     outfile_path = output_dir / f"protein2ipr_{today}.dat"
@@ -109,9 +112,12 @@ def download_uniprot_sprot(output_dir: Path) -> Path:
 
     gz_file_path = output_dir / "uniprot_sprot.xml.gz"
     with open(gz_file_path, "w") as fp:
-        ftp_download("ftp.uniprot.org",
-                     "pub/databases/uniprot/current_release/knowledgebase/complete/",
-                     "uniprot_sprot.xml.gz", lambda data: fp.write(data))
+        ftp_download(
+            "ftp.uniprot.org",
+            "pub/databases/uniprot/current_release/knowledgebase/complete/",
+            "uniprot_sprot.xml.gz",
+            lambda data: fp.write(data),
+        )
     today = datetime.strftime(datetime.today(), DATE_FMT)
     outfile_path = output_dir / f"uniprot_sprot_{today}.dat"
     with open(outfile_path, "wb") as f_out, gzip.open(gz_file_path, "rb") as f_in:
@@ -124,8 +130,11 @@ def download_uniprot_sprot(output_dir: Path) -> Path:
 
 
 def get_interpro_uniprot_rels(
-        protein_ipr_path: Optional[Path], output_dir: Path, domain_ids: Set[str],
-        uniprot_refs: Dict) -> Dict[str, Tuple[str, str, str, str, str]]:
+    protein_ipr_path: Optional[Path],
+    output_dir: Path,
+    domain_ids: Set[str],
+    uniprot_refs: Dict,
+) -> Dict[str, Tuple[str, str, str, str, str]]:
     """Process InterPro to UniProtKB relations, using UniProt references to connect
     genes with domains
 
@@ -191,8 +200,11 @@ def get_protein_accessions(
             cur_refseq_ac = ""
             cur_gene_id = ""
             cur_ac = ""
-        elif (node.tag == "{http://uniprot.org/uniprot}accession") and (not cur_ac) \
-                and node.text:
+        elif (
+            (node.tag == "{http://uniprot.org/uniprot}accession")
+            and (not cur_ac)
+            and node.text
+        ):
             tmp_ac = node.text
             if tmp_ac in relevant_proteins:
                 cur_ac = tmp_ac
@@ -205,8 +217,10 @@ def get_protein_accessions(
             elif node_type == "HGNC":
                 cur_gene_id = node.get("id").lower()
 
-        if all([cur_ac, cur_refseq_ac, cur_gene_id]) and \
-                (cur_ac, cur_gene_id) not in accessions_map:
+        if (
+            all([cur_ac, cur_refseq_ac, cur_gene_id])
+            and (cur_ac, cur_gene_id) not in accessions_map
+        ):
             accessions_map[(cur_ac, cur_gene_id)] = cur_refseq_ac
 
     stop = timer()
@@ -216,11 +230,13 @@ def get_protein_accessions(
     return accessions_map
 
 
-def build_gene_domain_maps(interpro_types: Set[str],
-                           protein_ipr_path: Optional[Path] = None,
-                           uniprot_sprot_path: Optional[Path] = None,
-                           uniprot_refs_path: Optional[Path] = None,
-                           output_dir: Path = APP_ROOT / "data") -> None:
+def build_gene_domain_maps(
+    interpro_types: Set[str],
+    protein_ipr_path: Optional[Path] = None,
+    uniprot_sprot_path: Optional[Path] = None,
+    uniprot_refs_path: Optional[Path] = None,
+    output_dir: Path = APP_ROOT / "data",
+) -> None:
     """Produce the gene-to-domain lookup table at out_path using the Interpro-Uniprot
     translation table, the Interpro names table, and the VICC Gene Normalizer.
 
@@ -239,16 +255,20 @@ def build_gene_domain_maps(interpro_types: Set[str],
 
     def get_interpro_data(data):
         interpro_data_bin.append(data)
-    ftp_download("ftp.ebi.ac.uk", "pub/databases/interpro", "entry.list",
-                 get_interpro_data)
+
+    ftp_download(
+        "ftp.ebi.ac.uk", "pub/databases/interpro", "entry.list", get_interpro_data
+    )
     # load interpro IDs directly to memory -- no need to save to file
-    interpro_data_tsv = "".join([d.decode("UTF-8")
-                                 for d in interpro_data_bin]).split("\n")
+    interpro_data_tsv = "".join([d.decode("UTF-8") for d in interpro_data_bin]).split(
+        "\n"
+    )
     interpro_types = {t.lower() for t in interpro_types}
     interpro_reader = csv.reader(interpro_data_tsv, delimiter="\t")
     interpro_reader.__next__()  # skip header
-    domain_ids = set([row[0] for row in interpro_reader
-                      if row and row[1].lower() in interpro_types])
+    domain_ids = set(
+        [row[0] for row in interpro_reader if row and row[1].lower() in interpro_types]
+    )
 
     # get Uniprot to gene references
     if not uniprot_refs_path:
@@ -261,8 +281,9 @@ def build_gene_domain_maps(interpro_types: Set[str],
                 uniprot_refs[row[0]] = (row[1], row[2])
 
     # associate InterPro domains to genes via Uniprot references
-    interpro_uniprot = get_interpro_uniprot_rels(protein_ipr_path, output_dir,
-                                                 domain_ids, uniprot_refs)
+    interpro_uniprot = get_interpro_uniprot_rels(
+        protein_ipr_path, output_dir, domain_ids, uniprot_refs
+    )
 
     # get refseq accessions for uniprot proteins
     uniprot_acs = {k[0] for k in interpro_uniprot.keys()}

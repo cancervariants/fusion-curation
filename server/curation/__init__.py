@@ -16,8 +16,7 @@ else:
 
 # set up logging
 logging.basicConfig(
-    filename=LOG_FN,
-    format="[%(asctime)s] - %(name)s - %(levelname)s : %(message)s"
+    filename=LOG_FN, format="[%(asctime)s] - %(name)s - %(levelname)s : %(message)s"
 )
 logger = logging.getLogger("fusion_backend")
 logger.setLevel(logging.DEBUG)

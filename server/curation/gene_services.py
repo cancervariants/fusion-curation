@@ -28,12 +28,14 @@ class GeneService:
     def load_mapping(self) -> None:
         """Load mapping files for use in autocomplete."""
         data_dir = APP_ROOT / "data"
-        map_pairs = (("aliases", self.aliases_map),
-                     ("assoc_with", self.assoc_with_map),
-                     ("xrefs", self.xrefs_map),
-                     ("prev_symbols", self.prev_symbols_map),
-                     ("labels", self.labels_map),
-                     ("symbols", self.symbols_map))
+        map_pairs = (
+            ("aliases", self.aliases_map),
+            ("assoc_with", self.assoc_with_map),
+            ("xrefs", self.xrefs_map),
+            ("prev_symbols", self.prev_symbols_map),
+            ("labels", self.labels_map),
+            ("symbols", self.symbols_map),
+        )
         for name, map in map_pairs:
             map_files = list(data_dir.glob(f"gene_{name}_*.tsv"))
             if not map_files:
@@ -90,12 +92,21 @@ class GeneService:
         """
         # tentatively, just search terms
         q_lower = query.lower()
-        symbols = [(v[0], v[1], v[2], "symbol") for t, v in self.symbols_map.items()
-                   if t.startswith(q_lower)]
-        aliases = [(v[0], v[1], v[2], "alias") for t, v in self.aliases_map.items()
-                   if t.startswith(q_lower)]
-        prev_symbols = [(v[0], v[1], v[2], "prev_symbol") for t, v
-                        in self.prev_symbols_map.items() if t.startswith(q_lower)]
+        symbols = [
+            (v[0], v[1], v[2], "symbol")
+            for t, v in self.symbols_map.items()
+            if t.startswith(q_lower)
+        ]
+        aliases = [
+            (v[0], v[1], v[2], "alias")
+            for t, v in self.aliases_map.items()
+            if t.startswith(q_lower)
+        ]
+        prev_symbols = [
+            (v[0], v[1], v[2], "prev_symbol")
+            for t, v in self.prev_symbols_map.items()
+            if t.startswith(q_lower)
+        ]
 
         suggestions = symbols + aliases + prev_symbols  # type: ignore
 

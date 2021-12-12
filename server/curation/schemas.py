@@ -4,9 +4,18 @@ from abc import ABC
 
 from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
 from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
-from fusor.models import Fusion, TranscriptSegmentComponent, LinkerComponent, \
-    TemplatedSequenceComponent, GeneComponent, UnknownGeneComponent, \
-    AnyGeneComponent, RegulatoryElement, FunctionalDomain, Strand
+from fusor.models import (
+    Fusion,
+    TranscriptSegmentComponent,
+    LinkerComponent,
+    TemplatedSequenceComponent,
+    GeneComponent,
+    UnknownGeneComponent,
+    AnyGeneComponent,
+    RegulatoryElement,
+    FunctionalDomain,
+    Strand,
+)
 from uta_tools.schemas import GenomicData
 
 
@@ -30,9 +39,11 @@ class ClientComponent(BaseModel, ABC):
 class ClientTranscriptSegmentComponent(TranscriptSegmentComponent, ClientComponent):
     """TranscriptSegment component class used client-side."""
 
-    input_type: Union[Literal["genomic_coords_gene"],
-                      Literal["genomic_coords_tx"],
-                      Literal["exon_coords_tx"]]
+    input_type: Union[
+        Literal["genomic_coords_gene"],
+        Literal["genomic_coords_tx"],
+        Literal["exon_coords_tx"],
+    ]
     input_tx: Optional[str]
     input_strand: Optional[Strand]
     input_gene: Optional[str]
@@ -225,11 +236,15 @@ class ClientFusion(Fusion):
     FusionContext.
     """
 
-    structural_components: List[Union[ClientTranscriptSegmentComponent,
-                                      ClientGeneComponent,
-                                      ClientAnyGeneComponent,
-                                      ClientUnknownGeneComponent,
-                                      ClientTemplatedSequenceComponent,
-                                      ClientLinkerComponent]]
+    structural_components: List[
+        Union[
+            ClientTranscriptSegmentComponent,
+            ClientGeneComponent,
+            ClientAnyGeneComponent,
+            ClientUnknownGeneComponent,
+            ClientTemplatedSequenceComponent,
+            ClientLinkerComponent,
+        ]
+    ]
     regulatory_elements: List[ClientRegulatoryElement]
     functional_domains: List[ClientFunctionalDomain]
