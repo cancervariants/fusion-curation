@@ -38,7 +38,9 @@ const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
   const [txChromText, setTxChromText] = useState('');
 
   const [txStartingGenomic, setTxStartingGenomic] = useState(component.input_genomic_start || '');
+  const [txStartingGenomicText, setTxStartingGenomicText] = useState('');
   const [txEndingGenomic, setTxEndingGenomic] = useState(component.input_genomic_end || '');
+  const [txEndingGenomicText, setTxEndingGenomicText] = useState('');
 
   const [startingExon, setStartingExon] = useState(component.exon_start || '');
   const [endingExon, setEndingExon] = useState(component.exon_end || '');
@@ -148,10 +150,19 @@ const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
         getTxSegmentComponentGCT(txAc, txChrom, txStartingGenomic, txEndingGenomic, txStrand)
           .then(txSegmentResponse => {
             if (txSegmentResponse.warnings?.length > 0) {
+              // TODO more warnings
               const chromWarning = `Invalid chromosome: ${txChrom}`;
               if (txSegmentResponse.warnings.includes(chromWarning)) {
                 setTxChromText('Unrecognized value');
               }
+              const startWarning = `Unable to find a result for chromosome ${txChrom} where ` +
+                `genomic coordinate ${txStartingGenomic} is mapped between an exon's start ` +
+                `and end coordinates + on the ${txStrand === '+' ? 'positive' : 'negative'}`;
+              if (txSegmentResponse.warnings.includes(startWarning)) {
+                // TODO set starting warning
+              }
+              // TODO set ending warning
+              // also TODO make sure to unset where needed
             } else {
               const inputParams = {
                 input_type: txInputType,
