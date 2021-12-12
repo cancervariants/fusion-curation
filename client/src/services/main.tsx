@@ -5,7 +5,7 @@ import {
   GetDomainResponse, DomainParams, DomainStatus, GeneComponent, TranscriptSegmentComponent,
   AnyGeneComponent, ClientAnyGeneComponent, ClientGeneComponent, ClientLinkerComponent,
   ClientTemplatedSequenceComponent, ClientTranscriptSegmentComponent, ClientUnknownGeneComponent,
-  LinkerComponent, TemplatedSequenceComponent, UnknownGeneComponent
+  LinkerComponent, TemplatedSequenceComponent, UnknownGeneComponent, CoordsUtilsResponse
 } from './ResponseModels';
 
 export type ClientComponentUnion = ClientAnyGeneComponent | ClientGeneComponent |
@@ -60,8 +60,13 @@ export const getTxSegmentComponentECT = async (
 export const getTxSegmentComponentGCT = async (
   transcript: string, chromosome: string, start: string, end: string, strand: string
 ): Promise<TxSegmentComponentResponse> => {
-  const url = `component/tx_segment_gct?transcript=${transcript}`
-    + `&chromosome=${chromosome}&start=${start}&end=${end}&strand=${strand}`;
+  const params: Array<string> = [
+    `transcript=${transcript}`, `chromosome=${chromosome}`,
+    `strand=${strand === '+' ? '%2B' : '-'}`
+  ];
+  if (start !== '') params.push(`start=${start}`);
+  if (end !== '') params.push(`end=${end}`);
+  const url = 'component/tx_segment_gct?' + params.join('&');
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
@@ -70,8 +75,12 @@ export const getTxSegmentComponentGCT = async (
 export const getTxSegmentComponentGCG = async (
   gene: string, chromosome: string, start: string, end: string, strand: string
 ): Promise<TxSegmentComponentResponse> => {
-  const url = `component/tx_segment_gcg?gene=${gene}`
-    + `&chromosome=${chromosome}&start=${start}&end=${end}&strand=${strand}`;
+  const params: Array<string> = [
+    `gene=${gene}`, `chromosome=${chromosome}`, `strand=${strand === '+' ? '%2B' : '-'}`
+  ];
+  if (start !== '') params.push(`start=${start}`);
+  if (end !== '') params.push(`end=${end}`);
+  const url = 'component/tx_segment_gcg?' + params.join('&');
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
@@ -123,6 +132,41 @@ export const getTranscripts = async (term: string): Promise<GetTranscriptsRespon
   const response = await fetch(`/utilities/get_transcripts?term=${term}`);
   const transcriptResponse = await response.json();
   return transcriptResponse;
+};
+
+export const getExonCoords = async (
+  chromosome: string, start: string, end: string, strand: string, gene?: string, txAc?: string
+): Promise<CoordsUtilsResponse> => {
+  const argsArray = [
+    `chromosome=${chromosome}`,
+    `strand=${strand}`,
+    gene !== '' ? `gene=${gene}` : '',
+    txAc !== '' ? `transcript=${txAc}` : '',
+    start !== '' ? `start=${start}` : '',
+    end !== '' ? `end=${end}` : '',
+  ];
+  const args = argsArray.filter(a => a !== '').join('&');
+  const response = await fetch (`/utilities/get_exon?${args}`);
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+export const getGenomicCoords = async (
+  gene: string, txAc: string, exonStart: string, exonEnd: string, exonStartOffset: string,
+  exonEndOffset: string
+): Promise<CoordsUtilsResponse> => {
+  const argsArray = [
+    gene !== '' ? `gene=${gene}` : '',
+    txAc !== '' ? `transcript=${txAc}` : '',
+    exonStart !== '' ? `exon_start=${exonStart}` : '',
+    exonEnd !== '' ? `exon_end=${exonEnd}` : '',
+    exonStartOffset !== '' ? `exon_start_offset=${exonStartOffset}` : '',
+    exonEndOffset !== '' ? `exon_end_offset=${exonEndOffset}` : '',
+  ];
+  const args = argsArray.filter(a => a !== '').join('&');
+  const response = await fetch (`/utilities/get_genomic?${args}`);
+  const responseJson = await response.json();
+  return responseJson;
 };
 
 export const getInfo = async (): Promise<ServiceInfoResponse> => {

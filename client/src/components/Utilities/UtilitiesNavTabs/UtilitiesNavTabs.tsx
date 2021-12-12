@@ -4,6 +4,7 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import { AppBar, Tabs, Tab } from '@material-ui/core';
 import './UtilitiesNavTabs.scss';
 import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext';
+import GetCoordinates from '../GetCoordinates/GetCoordinates';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -104,11 +105,19 @@ const UtilitiesNavTabs = (): React.ReactElement => {
           className={classes.enabledtabs}
         >
           <LinkTab label="Get MANE Transcripts" {...a11yProps(0)} />
+          <LinkTab label="Convert Coordinates" {...a11yProps(1)} />
+          <LinkTab label="Get Sequence ID" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
       <div className="tab-panel">
         <TabPanel value={value} index={0}>
           <GetTranscripts />
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <GetCoordinates />
+        </TabPanel>
+        <TabPanel value={value} index={2}>
+          <>todo</>
         </TabPanel>
       </div>
     </div>

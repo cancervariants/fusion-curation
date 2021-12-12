@@ -347,6 +347,28 @@ export interface ClientRegulatoryElement {
   element_id: string;
 }
 /**
+ * Response model for genomic coordinates retrieval
+ */
+export interface CoordsUtilsResponse {
+  warnings?: string[];
+  coordinates_data?: GenomicData;
+}
+/**
+ * Model containing genomic and transcript exon data.
+ */
+export interface GenomicData {
+  gene: string;
+  chr: string;
+  start?: number;
+  end?: number;
+  exon_start?: number;
+  exon_start_offset?: number;
+  exon_end?: number;
+  exon_end_offset?: number;
+  transcript: string;
+  strand: number;
+}
+/**
  * Request model for genomic coordinates retrieval
  */
 export interface ExonCoordsRequest {
@@ -356,23 +378,6 @@ export interface ExonCoordsRequest {
   exon_start_offset?: number;
   exon_end?: number;
   exon_end_offset?: number;
-}
-/**
- * Response model for genomic coordinates retrieval
- */
-export interface ExonCoordsResponse {
-  tx_ac?: string;
-  gene?: string;
-  gene_id?: string;
-  exon_start?: number;
-  exon_start_offset?: number;
-  exon_end?: number;
-  exon_end_offset?: number;
-  sequence_id?: CURIE;
-  chr?: string;
-  start?: number;
-  end?: number;
-  warnings?: string[];
 }
 /**
  * Define FunctionalDomain class
@@ -462,10 +467,10 @@ export interface RegulatoryElement {
  * Response model for fusion validation endpoint.
  */
 export interface FusionValidationResponse {
+  fusion?: Fusion;
   warnings?: {
     [k: string]: unknown;
   }[];
-  fusion?: Fusion;
 }
 /**
  * Response model for gene component construction endoint.

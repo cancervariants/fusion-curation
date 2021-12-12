@@ -1,5 +1,6 @@
 import {
-  Accordion, AccordionDetails, AccordionSummary, Box, Container, Typography
+  Accordion, AccordionDetails, AccordionSummary, Box, Container, Paper, Table, TableContainer,
+  Typography, TableBody, TableRow, TableCell,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React, { useEffect, useState } from 'react';
@@ -18,6 +19,8 @@ export const GetTranscripts: React.FC = () => {
   useEffect(() => {
     if ((gene !== '') && (!geneText)) {
       handleGet();
+    } else if (gene == '') {
+      setTranscriptWarnings([]);
     }
   }, [gene]);
 
@@ -63,6 +66,16 @@ export const GetTranscripts: React.FC = () => {
           </Container>
           {
             transcripts.map((transcript, index) => {
+              const resultData = {
+                'RefSeq Protein': transcript.RefSeq_nuc,
+                'RefSeq Nucleotide': transcript.RefSeq_prot,
+                'Ensembl Nucleotide': transcript.Ensembl_nuc,
+                'Ensembl Protein': transcript.Ensembl_prot,
+                'Chromosome': transcript.GRCh38_chr,
+                'Start': transcript.chr_start,
+                'End': transcript.chr_end,
+                'Strand': transcript.chr_strand,
+              };
               return (
                 <Container
                   key={index}
@@ -78,16 +91,24 @@ export const GetTranscripts: React.FC = () => {
                     <AccordionDetails
                       className='tx-accordion-details'
                     >
-                      <Typography>
-                        <b>RefSeq Nucleotide: </b>{transcript.RefSeq_nuc} <br />
-                        <b>RefSeq Protein: </b>{transcript.RefSeq_prot} <br />
-                        <b>Ensembl Nucleotide: </b>{transcript.Ensembl_nuc} <br />
-                        <b>Ensembl Protein: </b>{transcript.Ensembl_prot} <br />
-                        <b>Chromosome: </b>{transcript.GRCh38_chr} <br />
-                        <b>Start: </b>{transcript.chr_start} <br />
-                        <b>End: </b>{transcript.chr_end} <br />
-                        <b>Strand: </b>{transcript.chr_strand} <br />
-                      </Typography>
+                      <TableContainer component={Paper}>
+                        <Table aria-label="transcript-info-table" size="small">
+                          <TableBody>
+                            {
+                              Object.entries(resultData).map(([name, value], index) => (
+                                <TableRow key={index}>
+                                  <TableCell align='left'>
+                                    <b>{name}</b>
+                                  </TableCell>
+                                  <TableCell align='left'>
+                                    {value}
+                                  </TableCell>
+                                </TableRow>
+                              ))
+                            }
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
                     </AccordionDetails>
                   </Accordion>
                 </Container>
