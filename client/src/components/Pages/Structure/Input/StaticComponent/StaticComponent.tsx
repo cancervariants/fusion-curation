@@ -1,27 +1,13 @@
-import {
-  Accordion, AccordionSummary, Typography
-} from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { BaseComponentProps } from '../StructCompInputProps';
+import CompInputAccordion from '../CompInputAccordion';
 
 const StaticComponent: React.FC<BaseComponentProps> = (
   { component, handleDelete }
-) => (
-  <Accordion>
-    <AccordionSummary expandIcon={null}>
-      <Typography>
-        {component.hr_name}
-      </Typography>
-      <DeleteIcon
-        onClick={(event) => {
-          event.stopPropagation();
-          handleDelete(component.component_id);
-        }
-        }
-        onFocus={(event) => event.stopPropagation()}
-      />
-    </AccordionSummary>
-  </Accordion>
-);
+) => CompInputAccordion({
+  expanded: false,
+  component,
+  handleDelete,
+  validated: true
+});
 
 export default StaticComponent;

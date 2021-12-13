@@ -1,12 +1,6 @@
 import {
-  TextField, MenuItem, FormLabel, Select, RadioGroup,
-  FormControlLabel, Radio, Accordion, AccordionDetails, AccordionSummary, Typography
+  TextField, MenuItem, FormLabel, Select, RadioGroup, FormControlLabel, Radio,
 } from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import DeleteIcon from '@material-ui/icons/Delete';
-import DoneIcon from '@material-ui/icons/Done';
-import ClearIcon from '@material-ui/icons/Clear';
-import { red, green } from '@material-ui/core/colors';
 import {
   ClientTranscriptSegmentComponent, TranscriptSegmentComponent, TxSegmentComponentResponse
 } from '../../../../../services/ResponseModels';
@@ -16,6 +10,7 @@ import {
 } from '../../../../../services/main';
 import { GeneAutocomplete } from '../../../../main/shared/GeneAutocomplete/GeneAutocomplete';
 import { StructuralComponentInputProps } from '../StructCompInputProps';
+import CompInputAccordion from '../CompInputAccordion';
 
 interface TxSegmentComponentInputProps extends StructuralComponentInputProps {
   component: ClientTranscriptSegmentComponent;
@@ -63,10 +58,10 @@ const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
     )
   );
 
-  const inputSuccessful = inputComplete && (txGeneText === '') && (txChromText === '') &&
+  const validated = inputComplete && (txGeneText === '') && (txChromText === '') &&
     (txAcText === '');
 
-  const [expanded, setExpanded] = useState<boolean>(!inputSuccessful);
+  const [expanded, setExpanded] = useState<boolean>(!validated);
 
   useEffect(() => {
     if (inputComplete) {
@@ -199,7 +194,7 @@ const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
   };
 
   const handleEnterKey = (e: KeyboardEvent) => {
-    if ((e.key == 'Enter') && inputSuccessful) {
+    if ((e.key == 'Enter') && validated) {
       setExpanded(false);
     }
   };
@@ -376,54 +371,26 @@ const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
     }
   };
 
-  return (
-    <Accordion
-      defaultExpanded={!inputSuccessful}
-      expanded={expanded}
-      onChange={() => setExpanded(!expanded)}
-    >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography>
-          {
-            component.hr_name ?
-              component.hr_name :
-              '<incomplete>'
-          }
-        </Typography>
-        {
-          inputSuccessful ?
-            <DoneIcon className='input-correct' style={{ color: green[500] }} /> :
-            <ClearIcon className='input-incorrect' style={{ color: red[500] }} />
-        }
-        <DeleteIcon
-          onClick={(event) => {
-            event.stopPropagation();
-            handleDelete(component.component_id);
-          }
-          }
-          onFocus={(event) => event.stopPropagation()}
-        />
-      </AccordionSummary>
-      <AccordionDetails>
-        <div className="card-parent">
-          <div className="input-parent">
-            <div className="top-inputs">
-              <Select
-                value={txInputType}
-                onChange={(event) => setTxInputType(event.target.value as string)}
-              >
-                <MenuItem value="default" disabled>Select input data</MenuItem>
-                <MenuItem value="genomic_coords_gene">Genomic coordinates, gene</MenuItem>
-                <MenuItem value="genomic_coords_tx">Genomic coordinates, transcript</MenuItem>
-                <MenuItem value="exon_coords_tx">Exon coordinates, transcript</MenuItem>
-              </Select>
-            </div>
-            {renderTxOptions()}
-          </div>
-        </div>
-      </AccordionDetails>
-    </Accordion>
+  const inputElements = (
+    <>
+      <div className="top-inputs">
+        <Select
+          value={txInputType}
+          onChange={(event) => setTxInputType(event.target.value as string)}
+        >
+          <MenuItem value="default" disabled>Select input data</MenuItem>
+          <MenuItem value="genomic_coords_gene">Genomic coordinates, gene</MenuItem>
+          <MenuItem value="genomic_coords_tx">Genomic coordinates, transcript</MenuItem>
+          <MenuItem value="exon_coords_tx">Exon coordinates, transcript</MenuItem>
+        </Select>
+      </div>
+      {renderTxOptions()}
+    </>
   );
+
+  return CompInputAccordion({
+    expanded, setExpanded, component, handleDelete, inputElements, validated
+  });
 };
 
 export default TxSegmentCompInput;

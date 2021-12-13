@@ -1,18 +1,13 @@
 import React, { useState, useEffect, KeyboardEvent } from 'react';
 import {
-  TextField, Accordion, AccordionDetails, AccordionSummary, Typography,
-  RadioGroup, FormLabel, FormControlLabel, Radio
+  TextField, RadioGroup, FormLabel, FormControlLabel, Radio
 } from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import DeleteIcon from '@material-ui/icons/Delete';
-import DoneIcon from '@material-ui/icons/Done';
-import ClearIcon from '@material-ui/icons/Clear';
-import { red, green } from '@material-ui/core/colors';
 import { StructuralComponentInputProps } from '../StructCompInputProps';
 import { getTemplatedSequenceComponent } from '../../../../../services/main';
 import {
   ClientTemplatedSequenceComponent, Number as VrsNumber, SequenceLocation
 } from '../../../../../services/ResponseModels';
+import CompInputAccordion from '../CompInputAccordion';
 
 interface TemplatedSequenceComponentInputProps extends StructuralComponentInputProps {
   component: ClientTemplatedSequenceComponent;
@@ -30,9 +25,9 @@ const TemplatedSequenceCompInput: React.FC<TemplatedSequenceComponentInputProps>
   const inputComplete = (
     (chromosome !== '') && (strand !== '') && (startPosition !== '') && (endPosition !== '')
   );
-  const inputSuccessful = inputComplete && (inputError === '');
+  const validated = inputComplete && (inputError === '');
 
-  const [expanded, setExpanded] = useState<boolean>(!inputSuccessful);
+  const [expanded, setExpanded] = useState<boolean>(!validated);
 
   useEffect(() => {
     if (inputComplete) {
@@ -42,7 +37,7 @@ const TemplatedSequenceCompInput: React.FC<TemplatedSequenceComponentInputProps>
   );
 
   const handleEnterKey = (e: KeyboardEvent) => {
-    if ((e.key == 'Enter') && inputSuccessful) {
+    if ((e.key == 'Enter') && validated) {
       setExpanded(false);
     }
   };
@@ -76,81 +71,53 @@ const TemplatedSequenceCompInput: React.FC<TemplatedSequenceComponentInputProps>
       });
   };
 
-  return (
-    <Accordion
-      defaultExpanded={!inputSuccessful}
-      expanded={expanded}
-      onChange={() => setExpanded(!expanded)}
-    >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography>
-          {
-            component.hr_name ?
-              component.hr_name :
-              '<incomplete>'
-          }
-        </Typography>
-        {
-          inputSuccessful ?
-            <DoneIcon className='input-correct' style={{ color: green[500] }} /> :
-            <ClearIcon className='input-incorrect' style={{ color: red[500] }} />
-        }
-        <DeleteIcon
-          onClick={(event) => {
-            event.stopPropagation();
-            handleDelete(component.component_id);
-          }
-          }
-          onFocus={(event) => event.stopPropagation()}
+  const inputElements = (
+    <>
+      <div className="top-inputs">
+        <TextField
+          margin="dense"
+          style={{ height: 38, width: 125 }}
+          label="Chromosome"
+          value={chromosome}
+          onChange={(event) => setChromosome(event.target.value)}
+          onKeyDown={handleEnterKey}
         />
-      </AccordionSummary>
-      <AccordionDetails>
-        <div className="card-parent">
-          <div className="input-parent">
-            <div className="top-inputs">
-              <TextField
-                margin="dense"
-                style={{ height: 38, width: 125 }}
-                label="Chromosome"
-                value={chromosome}
-                onChange={(event) => setChromosome(event.target.value)}
-                onKeyDown={handleEnterKey}
-              />
-              <FormLabel component="legend">Strand</FormLabel>
-              <RadioGroup
-                aria-label="strand"
-                name="strand"
-                value={strand}
-                onChange={(event) => setStrand(event.target.value as string)}
-                row
-              >
-                <FormControlLabel value="+" control={<Radio />} label="+" />
-                <FormControlLabel value="-" control={<Radio />} label="-" />
-              </RadioGroup>
-            </div>
-            <div className="bottom-inputs">
-              <TextField
-                margin="dense"
-                style={{ height: 38, width: 125 }}
-                label="Start Position"
-                value={startPosition}
-                onChange={(event) => setStartPosition(event.target.value)}
-                onKeyDown={handleEnterKey}
-              />
-              <TextField
-                margin="dense"
-                style={{ height: 38, width: 125 }}
-                label="End Position"
-                value={endPosition}
-                onChange={(event) => setEndPosition(event.target.value)}
-                onKeyDown={handleEnterKey}
-              />
-            </div>
-          </div>
-        </div>
-      </AccordionDetails>
-    </Accordion>
+        <FormLabel component="legend">Strand</FormLabel>
+        <RadioGroup
+          aria-label="strand"
+          name="strand"
+          value={strand}
+          onChange={(event) => setStrand(event.target.value as string)}
+          row
+        >
+          <FormControlLabel value="+" control={<Radio />} label="+" />
+          <FormControlLabel value="-" control={<Radio />} label="-" />
+        </RadioGroup>
+      </div>
+      <div className="bottom-inputs">
+        <TextField
+          margin="dense"
+          style={{ height: 38, width: 125 }}
+          label="Start Position"
+          value={startPosition}
+          onChange={(event) => setStartPosition(event.target.value)}
+          onKeyDown={handleEnterKey}
+        />
+        <TextField
+          margin="dense"
+          style={{ height: 38, width: 125 }}
+          label="End Position"
+          value={endPosition}
+          onChange={(event) => setEndPosition(event.target.value)}
+          onKeyDown={handleEnterKey}
+        />
+      </div>
+    </>
   );
+
+  return CompInputAccordion({
+    expanded, setExpanded, component, handleDelete, inputElements, validated
+  });
 };
 
 export default TemplatedSequenceCompInput;

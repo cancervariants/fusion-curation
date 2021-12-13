@@ -3,14 +3,7 @@ import { ClientGeneComponent } from '../../../../../services/ResponseModels';
 import { StructuralComponentInputProps } from '../StructCompInputProps';
 import { GeneAutocomplete } from '../../../../main/shared/GeneAutocomplete/GeneAutocomplete';
 import { getGeneComponent } from '../../../../../services/main';
-import {
-  AccordionDetails, Accordion, AccordionSummary, Typography, Tooltip
-} from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import DeleteIcon from '@material-ui/icons/Delete';
-import DoneIcon from '@material-ui/icons/Done';
-import ClearIcon from '@material-ui/icons/Clear';
-import { red, green } from '@material-ui/core/colors';
+import CompInputAccordion from '../CompInputAccordion';
 
 interface GeneComponentInputProps extends StructuralComponentInputProps {
   component: ClientGeneComponent;
@@ -21,10 +14,11 @@ const GeneCompInput: React.FC<GeneComponentInputProps> = (
 ) => {
   const [gene, setGene] = useState<string>(component.gene_descriptor?.label || '');
   const [geneText, setGeneText] = useState<string>('');
-  const [expanded, setExpanded] = useState<boolean>(!gene || (geneText !== ''));
+  const validated = (gene !== '') && (geneText == '');
+  const [expanded, setExpanded] = useState<boolean>(!validated);
 
   useEffect(() => {
-    if (gene && (!geneText)) buildGeneComponent();
+    if (validated) buildGeneComponent();
   }, [gene, geneText]);
 
   const buildGeneComponent = () => {
@@ -46,54 +40,19 @@ const GeneCompInput: React.FC<GeneComponentInputProps> = (
       });
   };
 
-  return (
-    <Accordion
-      defaultExpanded={!gene || (geneText !== '')}
-      expanded={expanded}
-      onChange={() => setExpanded(!expanded)}
-    >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography>
-          {
-            component.hr_name ?
-              component.hr_name :
-              '<incomplete>'
-          }
-        </Typography>
-        {
-          (gene) && (!geneText) ?
-            <Tooltip title="Validation successful">
-              <DoneIcon className='input-correct' style={{ color: green[500] }} />
-            </Tooltip> :
-            <Tooltip title="Invalid component">
-              <ClearIcon className='input-incorrect' style={{ color: red[500] }} />
-            </Tooltip>
-        }
-        <Tooltip title="Delete component">
-          <DeleteIcon
-            onClick={(event) => {
-              event.stopPropagation();
-              handleDelete(component.component_id);
-            }}
-            onFocus={(event) => event.stopPropagation()}
-          />
-        </Tooltip>
-      </AccordionSummary>
-      <AccordionDetails>
-        <div className="card-parent">
-          <div className="input-parent">
-            <GeneAutocomplete
-              selectedGene={gene}
-              setSelectedGene={setGene}
-              geneText={geneText}
-              setGeneText={setGeneText}
-              style={{ width: 125 }}
-            />
-          </div>
-        </div>
-      </AccordionDetails>
-    </Accordion>
+  const inputElements = (
+    <GeneAutocomplete
+      selectedGene={gene}
+      setSelectedGene={setGene}
+      geneText={geneText}
+      setGeneText={setGeneText}
+      style={{ width: 125 }}
+    />
   );
+
+  return CompInputAccordion({
+    expanded, setExpanded, component, handleDelete, inputElements, validated
+  });
 };
 
 export default GeneCompInput;

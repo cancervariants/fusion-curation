@@ -1,14 +1,8 @@
-import {
-  Accordion, AccordionSummary, Typography, TextField, AccordionDetails
-} from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import { ClientLinkerComponent } from '../../../../../services/ResponseModels';
 import { StructuralComponentInputProps } from '../StructCompInputProps';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import DeleteIcon from '@material-ui/icons/Delete';
-import DoneIcon from '@material-ui/icons/Done';
-import ClearIcon from '@material-ui/icons/Clear';
-import { red, green } from '@material-ui/core/colors';
+import CompInputAccordion from '../CompInputAccordion';
 
 interface LinkerComponentInputProps extends StructuralComponentInputProps {
   component: ClientLinkerComponent;
@@ -17,13 +11,14 @@ interface LinkerComponentInputProps extends StructuralComponentInputProps {
 const LinkerCompInput: React.FC<LinkerComponentInputProps> = (
   { component, index, handleSave, handleDelete }
 ) => {
-  // Linker Sequence
+  // bases
   const [sequence, setSequence] = useState<string>(component.linker_sequence?.sequence || '');
   const linkerError = Boolean(sequence) && sequence.match(/^([aAgGtTcC]+)?$/) === null;
-  const [expanded, setExpanded] = useState<boolean>(linkerError);
+  const validated = Boolean(sequence && (!linkerError));
+  const [expanded, setExpanded] = useState<boolean>(!validated);
 
   useEffect(() => {
-    if (!linkerError) buildLinkerComponent();
+    if (validated) buildLinkerComponent();
   }, [sequence]);
 
   const buildLinkerComponent = () => {
@@ -41,53 +36,27 @@ const LinkerCompInput: React.FC<LinkerComponentInputProps> = (
     handleSave(index, linkerComponent);
   };
 
-  return (
-    <Accordion
-      defaultExpanded={!linkerError}
-      expanded={expanded}
-      onChange={() => setExpanded(!expanded)}
-    >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography>
-          {
-            sequence ?
-              sequence :
-              '<incomplete>'
-          }
-        </Typography>
-        {
-          (!linkerError && sequence) ?
-            <DoneIcon className='input-correct' style={{ color: green[500] }} /> :
-            <ClearIcon className='input-incorrect' style={{ color: red[500] }} />
+  const inputElements = (
+    <TextField
+      margin="dense"
+      label="Sequence"
+      value={sequence}
+      onChange={(event) => setSequence(event.target.value.toUpperCase())}
+      error={linkerError}
+      helperText={
+        linkerError ? 'Only {A, C, G, T} permitted' : null
+      }
+      onKeyDown={(e) => {
+        if ((e.key === 'Enter') && (!linkerError)) {
+          setExpanded(false);
         }
-        <DeleteIcon
-          onClick={(event) => {
-            event.stopPropagation();
-            handleDelete(component.component_id);
-          }
-          }
-          onFocus={(event) => event.stopPropagation()}
-        />
-      </AccordionSummary>
-      <AccordionDetails>
-        <TextField
-          margin="dense"
-          label="Sequence"
-          value={sequence}
-          onChange={(event) => setSequence(event.target.value.toUpperCase())}
-          error={linkerError}
-          helperText={
-            linkerError ? 'Only {A, C, G, T} permitted' : null
-          }
-          onKeyDown={(e) => {
-            if ((e.key === 'Enter') && (!linkerError)) {
-              setExpanded(false);
-            }
-          }}
-        />
-      </AccordionDetails>
-    </Accordion>
+      }}
+    />
   );
+
+  return CompInputAccordion({
+    expanded, setExpanded, component, handleDelete, inputElements, validated
+  });
 };
 
 export default LinkerCompInput;
