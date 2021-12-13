@@ -116,7 +116,7 @@ export const getFunctionalDomain = async (
 };
 
 export const validateFusion = async (fusion: Fusion): Promise<FusionValidationResponse> => {
-  const response = await fetch('/lookup/validate', {
+  const response = await fetch('/validate', {
     method: 'POST',
     headers: {
       Accept: 'application/json',
