@@ -1,5 +1,5 @@
 """Provide routes for app utility endpoints"""
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 from fastapi import APIRouter, Request
 from gene import schemas as GeneSchemas
@@ -135,30 +135,28 @@ async def get_exon_coords(
     :param Optional[str] transcript: transcript accession ID
     :return: response with exon coordinates if successful, or warnings if failed
     """
+    warnings: List[str] = []
     if start is None and end is None:
-        warning = "Must provide start and/or end coordinates"
-        logger.warning(warning)
-        return CoordsUtilsResponse(warnings=[warning])
-
+        warnings.append("Must provide start and/or end coordinates")
     if transcript is None and gene is None:
-        warning = "Must provide gene and/or transcript"
-        logger.warning(warning)
-        return CoordsUtilsResponse(warnings=[warning])
-
+        warnings.append("Must provide gene and/or transcript")
     if strand is not None:
         try:
             strand_validated = get_strand(strand)
         except InvalidInputException:
-            warning = f"Received invalid strand value: {strand}"
-            logger.warning(warning)
-            return CoordsUtilsResponse(warnings=[warning])
+            warnings.append(f"Received invalid strand value: {strand}")
     else:
         strand_validated = strand
+    if warnings:
+        for warning in warnings:
+            logger.warning(warning)
+        return CoordsUtilsResponse(warnings=warnings)
+
     response = await request.app.state.fusor.uta_tools.genomic_to_transcript_exon_coordinates(  # noqa: E501
-        chromosome=chromosome,
+        chromosome,
         start=start,
         end=end,
-        strand=strand_validated,
+        strand=strand_validated,  # type: ignore
         transcript=transcript,
         gene=gene,
     )
