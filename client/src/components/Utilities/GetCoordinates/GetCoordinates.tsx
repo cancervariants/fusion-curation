@@ -10,28 +10,30 @@ import './GetCoordinates.scss';
 import { GenomicData } from '../../../services/ResponseModels';
 
 const GetCoordinates: React.FC = () => {
-  const [inputType, setInputType] = useState('default');
+  const [inputType, setInputType] = useState<string>('default');
 
-  const [txAc, setTxAc] = useState('');
-  const [txAcText, setTxAcText] = useState('');
+  const [txAc, setTxAc] = useState<string>('');
+  const [txAcText, setTxAcText] = useState<string>('');
 
-  const [gene, setGene] = useState('');
-  const [geneText, setGeneText] = useState('');
+  const [gene, setGene] = useState<string>('');
+  const [geneText, setGeneText] = useState<string>('');
 
-  const [strand, setStrand] = useState('default');
+  const [strand, setStrand] = useState<string>('default');
 
-  const [chromosome, setChromosome] = useState('');
-  const [chromosomeText, setChromosomeText] = useState('');
+  const [chromosome, setChromosome] = useState<string>('');
+  const [chromosomeText, setChromosomeText] = useState<string>('');
 
-  const [start, setStart] = useState('');
-  const [startText, setStartText] = useState('');
-  const [end, setEnd] = useState('');
-  const [endText, setEndText] = useState('');
+  const [start, setStart] = useState<string>('');
+  const [startText, setStartText] = useState<string>('');
+  const [end, setEnd] = useState<string>('');
+  const [endText, setEndText] = useState<string>('');
 
-  const [exonStart, setExonStart] = useState('');
-  const [exonEnd, setExonEnd] = useState('');
-  const [exonStartOffset, setExonStartOffset] = useState('');
-  const [exonEndOffset, setExonEndOffset] = useState('');
+  const [exonStart, setExonStart] = useState<string>('');
+  const [exonStartText, setExonStartText] = useState<string>('');
+  const [exonEnd, setExonEnd] = useState<string>('');
+  const [exonEndText, setExonEndText] = useState<string>('');
+  const [exonStartOffset, setExonStartOffset] = useState<string>('');
+  const [exonEndOffset, setExonEndOffset] = useState<string>('');
 
   const [results, setResults] = useState<GenomicData | null>(null);
 
@@ -51,9 +53,8 @@ const GetCoordinates: React.FC = () => {
     )
   );
 
-  const inputSuccessful = inputComplete && (geneText === '') && (chromosomeText === '') &&
-    (txAcText === '');
-
+  const inputValid = inputComplete && !txAcText && !geneText && !chromosomeText &&
+    !startText && !endText && !exonStartText && !exonEndText;
 
   useEffect(() => {
     if (inputComplete) {
@@ -332,7 +333,7 @@ const GetCoordinates: React.FC = () => {
       <div className='right'>
         <div className='coords-response-container'>
           {
-            inputSuccessful && results ?
+            inputValid && results ?
               renderResults() :
               (<></>)
           }
