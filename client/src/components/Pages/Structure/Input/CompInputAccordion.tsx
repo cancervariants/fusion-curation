@@ -22,12 +22,12 @@ const CompInputAccordion: React.FC<CompInputAccordionProps> = ({
   <Accordion
     defaultExpanded={!validated}
     expanded={expanded}
-    onChange={() => setExpanded(!expanded)}
+    onChange={() => setExpanded ? setExpanded(!expanded) : null}
     className="comp-input-accordion"
   >
     <AccordionSummary expandIcon={
       inputElements ?
-        (<EditIcon />) :
+        (<EditIcon className="edit-icon" style={{ fontSize: 23 }}/>) :
         null
     }>
       <div className="comp-bar">
@@ -44,18 +44,20 @@ const CompInputAccordion: React.FC<CompInputAccordionProps> = ({
           {
             component.hr_name ?
               component.hr_name :
-              '<incomplete>'
+              null
           }
         </Typography>
-        <Tooltip title="Delete component">
-          <DeleteIcon
-            onClick={(event) => {
-              event.stopPropagation();
-              handleDelete(component.component_id);
-            }}
-            onFocus={(event) => event.stopPropagation()}
-          />
-        </Tooltip>
+        <div>
+          <Tooltip title="Delete component">
+            <DeleteIcon
+              onClick={(event) => {
+                event.stopPropagation();
+                handleDelete(component.component_id);
+              }}
+              onFocus={(event) => event.stopPropagation()}
+            />
+          </Tooltip>
+        </div>
       </div>
     </AccordionSummary>
     <AccordionDetails>
