@@ -46,13 +46,16 @@ export const OtherAttribs: React.FC<Props> = ({ index }) => {
     const value = event.target.value;
     if (value === 'yes') {
       setRFramePreserved('yes');
-      setFusion({...fusion, r_frame_preserved: true});
+      setFusion({...fusion, r_frame_preserved: 'true'});
     } else if (value === 'no') {
       setRFramePreserved('no');
-      setFusion({...fusion, r_frame_preserved: false});
+      setFusion({...fusion, r_frame_preserved: 'false'});
+    } else if (value === 'not applicable') {
+      setRFramePreserved('not_applicable');
+      setFusion({...fusion, r_frame_preserved: 'not_applicable'});
     } else {
       setRFramePreserved('unspecified');
-      setFusion({...fusion, r_frame_preserved: undefined });
+      setFusion({...fusion, r_frame_preserved: 'undefined' });
     }
   };
 
