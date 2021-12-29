@@ -139,7 +139,7 @@ export const getExonCoords = async (
 ): Promise<CoordsUtilsResponse> => {
   const argsArray = [
     `chromosome=${chromosome}`,
-    `strand=${strand}`,
+    `strand=${strand === '+' ? '%2B' : '-'}`,
     gene !== '' ? `gene=${gene}` : '',
     txAc !== '' ? `transcript=${txAc}` : '',
     start !== '' ? `start=${start}` : '',
