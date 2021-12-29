@@ -1,13 +1,13 @@
 import {
   Select, MenuItem, TextField, RadioGroup, FormControlLabel, Radio, FormLabel, Table, TableRow,
-  TableCell, Card
+  TableCell, Card, Typography
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { GeneAutocomplete } from '../../main/shared/GeneAutocomplete/GeneAutocomplete';
 import { getGenomicCoords, getExonCoords } from '../../../services/main';
 
 import './GetCoordinates.scss';
-import { GenomicData } from '../../../services/ResponseModels';
+import { CoordsUtilsResponse, GenomicData } from '../../../services/ResponseModels';
 
 const GetCoordinates: React.FC = () => {
   const [inputType, setInputType] = useState<string>('default');
@@ -36,6 +36,7 @@ const GetCoordinates: React.FC = () => {
   const [exonEndOffset, setExonEndOffset] = useState<string>('');
 
   const [results, setResults] = useState<GenomicData | null>(null);
+  const [error, setError] = useState<string>('');
 
   // programming horror
   const inputComplete = (
@@ -65,37 +66,46 @@ const GetCoordinates: React.FC = () => {
     exonEndOffset
   ]);
 
+  const clearWarnings = () => {
+    setTxAcText('');
+    setGeneText('');
+    setChromosomeText('');
+    setStartText('');
+    setEndText('');
+    setExonStartText('');
+    setExonEndText('');
+  };
+
+  const handleResponse = (coordsResponse: CoordsUtilsResponse) => {
+    if (coordsResponse.warnings) {
+      setResults(null);
+      clearWarnings();
+      coordsResponse.warnings.forEach(warning => {
+        console.log(warning);
+        if (warning.startsWith('Found more than one accession')) {
+          setChromosomeText('Complete ID required');
+        } else if (warning.startsWith('Invalid chromosome')) {
+          setChromosomeText('Invalid entry');
+        } else if (warning == 'Must find exactly one row for genomic data, but found: 0') {
+          setError('Unable to resolve coordinates lookup given provided parameters');
+        }
+      });
+    } else {
+      clearWarnings();
+      setResults(coordsResponse.coordinates_data);
+    }
+  };
+
   const fetchResults = () => {
     if (inputType == 'exon_coords_tx') {
       getGenomicCoords(gene, txAc, exonStart, exonEnd, exonStartOffset, exonEndOffset)
-        .then(coordsResponse => {
-          if (coordsResponse.warnings) {
-            // handle warnings TODO
-          } else {
-            // clear warnings TODO
-            setResults(coordsResponse.coordinates_data);
-          }
-        });
+        .then(coordsResponse => handleResponse(coordsResponse));
     } else if (inputType == 'genomic_coords_gene') {
       getExonCoords(chromosome, start, end, strand, gene)
-        .then(coordsResponse => {
-          if (coordsResponse.warnings) {
-            // handle warnings TODO
-          } else {
-            // clear warnings TODO
-            setResults(coordsResponse.coordinates_data);
-          }
-        });
+        .then(coordsResponse => handleResponse(coordsResponse));
     } else if (inputType == 'genomic_coords_tx') {
-      getExonCoords(chromosome, start, end, strand, null, txAc)
-        .then(coordsResponse => {
-          if (coordsResponse.warnings) {
-            // handle warnings TODO
-          } else {
-            // clear warnings TODO
-            setResults(coordsResponse.coordinates_data);
-          }
-        });
+      getExonCoords(chromosome, start, end, strand, '', txAc)
+        .then(coordsResponse => handleResponse(coordsResponse));
     }
   };
 
@@ -107,57 +117,65 @@ const GetCoordinates: React.FC = () => {
   );
 
   const renderResults = () => {
-    return (
-      <Card className="coords-card">
-        <Table>
-          {renderRow('Gene', results.gene)}
-          {renderRow('Chromosome', results.chr)}
-          {
-            results.start ?
-              renderRow('Genomic start', results.start) :
-              null
-          }
-          {
-            results.end ?
-              renderRow('Genomic end', results.end) :
-              null
-          }
-          {
-            results.strand ?
-              renderRow('Strand', results.strand === 1 ? '+' : '-') :
-              null
-          }
-          {renderRow('Transcript', results.transcript)}
-          {
-            results.exon_start ?
-              renderRow('Exon start', results.exon_start) :
-              null
-          }
-          {
-            results.exon_start_offset ?
-              renderRow('Exon start offset', results.exon_start_offset) :
-              null
-          }
-          {
-            results.exon_end ?
-              renderRow('Exon end', results.exon_end) :
-              null
-          }
-          {
-            results.exon_end_offset ?
-              renderRow('Exon end offset', results.exon_end_offset) :
-              null
-          }
-        </Table>
-      </Card>
-    );
+    if (inputValid) {
+      if (results) {
+        return (
+          <Card className="coords-card">
+            <Table>
+              {renderRow('Gene', results.gene)}
+              {renderRow('Chromosome', results.chr)}
+              {
+                results.start ?
+                  renderRow('Genomic start', results.start) :
+                  null
+              }
+              {
+                results.end ?
+                  renderRow('Genomic end', results.end) :
+                  null
+              }
+              {
+                results.strand ?
+                  renderRow('Strand', results.strand === 1 ? '+' : '-') :
+                  null
+              }
+              {renderRow('Transcript', results.transcript)}
+              {
+                results.exon_start ?
+                  renderRow('Exon start', results.exon_start) :
+                  null
+              }
+              {
+                results.exon_start_offset ?
+                  renderRow('Exon start offset', results.exon_start_offset) :
+                  null
+              }
+              {
+                results.exon_end ?
+                  renderRow('Exon end', results.exon_end) :
+                  null
+              }
+              {
+                results.exon_end_offset ?
+                  renderRow('Exon end offset', results.exon_end_offset) :
+                  null
+              }
+            </Table>
+          </Card>
+        );
+      } else if (error) {
+        return (
+          <Typography>{error}</Typography>
+        );
+      }
+    }
   };
 
   const renderInputOptions = () => {
     switch (inputType) {
       case 'genomic_coords_gene':
         return (
-          <div>
+          <div className='genomic-coords-gene'>
             <div className="mid-inputs">
               <GeneAutocomplete
                 selectedGene={gene}
@@ -174,6 +192,7 @@ const GetCoordinates: React.FC = () => {
                 value={chromosome}
                 onChange={(event) => setChromosome(event.target.value)}
                 error={chromosomeText !== ''}
+                helperText={chromosomeText ? chromosomeText : null}
                 label="Chromosome"
               />
               <FormLabel component="legend">Strand</FormLabel>
@@ -208,7 +227,7 @@ const GetCoordinates: React.FC = () => {
         );
       case 'genomic_coords_tx':
         return (
-          <div>
+          <div className='genomic-coords-tx'>
             <div className="mid-inputs">
               <TextField
                 margin="dense"
@@ -226,6 +245,8 @@ const GetCoordinates: React.FC = () => {
                 style={{ height: 38, width: 125 }}
                 value={chromosome}
                 onChange={(event) => setChromosome(event.target.value)}
+                error={chromosomeText !== ''}
+                helperText={chromosomeText ? chromosomeText : null}
                 label="Chromosome"
               />
               <FormLabel component="legend">Strand</FormLabel>
@@ -260,8 +281,8 @@ const GetCoordinates: React.FC = () => {
         );
       case 'exon_coords_tx':
         return (
-          <div>
-            <div className="mid-inputs">
+          <div className='exon-coords-tx'>
+            <div className="top-inputs">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -272,24 +293,17 @@ const GetCoordinates: React.FC = () => {
                 helperText={txAcText}
               />
             </div>
-            <div className="bottom-inputs">
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Starting Exon"
-                value={exonStart}
-                onChange={(event) => setExonStart(event.target.value)}
-              />
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Ending Exon"
-                value={exonEnd}
-                onChange={(event) => setExonEnd(event.target.value)}
-              />
-            </div>
-            {(exonStart !== '' || exonEnd !== '') ?
-              <div className="bottom-inputs">
+            <div className="mid-inputs">
+              <div>
+                <TextField
+                  margin="dense"
+                  style={{ width: 125 }}
+                  label="Starting Exon"
+                  value={exonStart}
+                  onChange={(event) => setExonStart(event.target.value)}
+                />
+              </div>
+              <div>
                 <TextField
                   margin="dense"
                   style={{ width: 125 }}
@@ -297,16 +311,24 @@ const GetCoordinates: React.FC = () => {
                   value={exonStartOffset}
                   onChange={(event) => setExonStartOffset(event.target.value)}
                 />
-                <TextField
-                  margin="dense"
-                  style={{ width: 125 }}
-                  label="Ending Offset"
-                  value={exonEndOffset}
-                  onChange={(event) => setExonEndOffset(event.target.value)}
-                />
               </div>
-              : null
-            }
+            </div>
+            <div className="bottom-inputs">
+              <TextField
+                margin="dense"
+                style={{ width: 125 }}
+                label="Ending Exon"
+                value={exonEnd}
+                onChange={(event) => setExonEnd(event.target.value)}
+              />
+              <TextField
+                margin="dense"
+                style={{ width: 125 }}
+                label="Ending Offset"
+                value={exonEndOffset}
+                onChange={(event) => setExonEndOffset(event.target.value)}
+              />
+            </div>
           </div>
         );
     }
@@ -315,8 +337,8 @@ const GetCoordinates: React.FC = () => {
   return (
     <div className='get-coordinates-tab-container'>
       <div className='left'>
-        <div className='blurb-container'>
-          <div className='blurb'>
+        <div className='input-selector'>
+          <div className='input-selector-child'>
             <Select
               value={inputType}
               onChange={(event) => setInputType(event.target.value as string)}
@@ -326,16 +348,17 @@ const GetCoordinates: React.FC = () => {
               <MenuItem value="genomic_coords_tx">Genomic coordinates, transcript</MenuItem>
               <MenuItem value="exon_coords_tx">Exon coordinates, transcript</MenuItem>
             </Select>
-            {renderInputOptions()}
           </div>
+        </div>
+        <div className='input-params'>
+          {renderInputOptions()}
         </div>
       </div>
       <div className='right'>
         <div className='coords-response-container'>
           {
-            inputValid && results ?
-              renderResults() :
-              (<></>)
+            // inputValid && results ?
+            renderResults()
           }
         </div>
       </div>
