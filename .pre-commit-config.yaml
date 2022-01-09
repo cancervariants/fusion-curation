@@ -11,6 +11,7 @@ repos:
     rev: 19.3b0
     hooks:
     -   id: black
+        args: [--diff, --check]
 -   repo: https://github.com/pre-commit/mirrors-eslint
     rev: 'v7.30.0'
     hooks:
