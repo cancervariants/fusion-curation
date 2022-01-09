@@ -11,12 +11,12 @@ from curation.version import __version__
 from curation.schemas import ServiceInfoResponse
 from curation.gene_services import GeneService
 from curation.domain_services import DomainService
-from curation.routers import utilities, components, lookup, complete, validate
+from curation.routers import utilities, constructors, lookup, complete, validate
 
 
 app = FastAPI(version=__version__)
 app.include_router(utilities.router)
-app.include_router(components.router)
+app.include_router(constructors.router)
 app.include_router(lookup.router)
 app.include_router(complete.router)
 app.include_router(validate.router)

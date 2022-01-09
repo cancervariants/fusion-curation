@@ -16,7 +16,7 @@ export type ComponentUnion = AnyGeneComponent | GeneComponent | LinkerComponent 
   UnknownGeneComponent | TemplatedSequenceComponent | TranscriptSegmentComponent;
 
 export const getGeneComponent = async (term: string): Promise<GeneComponentResponse> => {
-  const response = await fetch(`component/gene?term=${term}`);
+  const response = await fetch(`construct/component/gene?term=${term}`);
   const responseJson = await response.json();
   return responseJson;
 };
@@ -25,7 +25,7 @@ export const getTemplatedSequenceComponent = async (
   chr: string, strand: string, start: string, end: string
 ): Promise<TemplatedSequenceComponentResponse> => {
   const response = await fetch(
-    `component/templated_sequence?sequence_id=${chr}&start=${start}&end=${end}` +
+    `construct/component/templated_sequence?sequence_id=${chr}&start=${start}&end=${end}` +
     `&strand=${strand === '+' ? '%2B' : '-'}`
   );
   const responseJson = await response.json();
@@ -66,7 +66,7 @@ export const getTxSegmentComponentGCT = async (
   ];
   if (start !== '') params.push(`start=${start}`);
   if (end !== '') params.push(`end=${end}`);
-  const url = 'component/tx_segment_gct?' + params.join('&');
+  const url = 'construct/component/tx_segment_gct?' + params.join('&');
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
@@ -80,7 +80,7 @@ export const getTxSegmentComponentGCG = async (
   ];
   if (start !== '') params.push(`start=${start}`);
   if (end !== '') params.push(`end=${end}`);
-  const url = 'component/tx_segment_gcg?' + params.join('&');
+  const url = 'construct/component/tx_segment_gcg?' + params.join('&');
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
@@ -107,7 +107,7 @@ export const getAssociatedDomains = async (gene_id: string): Promise<AssociatedD
 export const getFunctionalDomain = async (
   domain: DomainParams, domainStatus: DomainStatus, geneId: string
 ): Promise<GetDomainResponse> => {
-  const url = `/lookup/domain?status=${domainStatus}&name=${domain.domain_name}` +
+  const url = `/construct/domain?status=${domainStatus}&name=${domain.domain_name}` +
     `&domain_id=${domain.interpro_id}&gene_id=${geneId}` +
     `&sequence_id=${domain.refseq_ac}&start=${domain.start}&end=${domain.end}`;
   const response = await fetch(url);

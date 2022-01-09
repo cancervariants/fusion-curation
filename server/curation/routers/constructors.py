@@ -2,13 +2,16 @@
 from typing import Optional
 
 from fastapi import Query, Request, APIRouter
-from fusor.models import Strand
+from pydantic import ValidationError
+from fusor.models import Strand, DomainStatus
 
 from curation import logger
 from curation.schemas import (
     GeneComponentResponse,
     TxSegmentComponentResponse,
     TemplatedSequenceComponentResponse,
+    GetDomainResponse,
+    ResponseDict,
 )
 from curation.sequence_services import get_strand, InvalidInputException
 
@@ -16,7 +19,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/component/gene",
+    "/construct/component/gene",
     operation_id="buildGeneComponent",
     response_model=GeneComponentResponse,
     response_model_exclude_none=True,
@@ -39,7 +42,7 @@ def build_gene_component(
 
 
 @router.get(
-    "/component/tx_segment_ect",
+    "/construct/component/tx_segment_ect",
     operation_id="buildTranscriptSegmentComponentECT",
     response_model=TxSegmentComponentResponse,
     response_model_exclude_none=True,
@@ -75,7 +78,7 @@ async def build_tx_segment_ect(
 
 
 @router.get(
-    "/component/tx_segment_gct",
+    "/construct/component/tx_segment_gct",
     operation_id="buildTranscriptSegmentComponentGCT",
     response_model=TxSegmentComponentResponse,
     response_model_exclude_none=True,
@@ -120,7 +123,7 @@ async def build_tx_segment_gct(
 
 
 @router.get(
-    "/component/tx_segment_gcg",
+    "/construct/component/tx_segment_gcg",
     operation_id="buildTranscriptSegmentComponentGCG",
     response_model=TxSegmentComponentResponse,
     response_model_exclude_none=True,
@@ -165,7 +168,7 @@ async def build_tx_segment_gcg(
 
 
 @router.get(
-    "/component/templated_sequence",
+    "/construct/component/templated_sequence",
     operation_id="buildTemplatedSequenceComponent",
     response_model=TemplatedSequenceComponentResponse,
     response_model_exclude_none=True,
@@ -197,3 +200,46 @@ def build_templated_sequence_component(
         add_location_id=True,
     )
     return TemplatedSequenceComponentResponse(component=component, warnings=[])
+
+
+@router.get(
+    "/construct/domain",
+    operation_id="getDomain",
+    response_model=GetDomainResponse,
+    response_model_exclude_none=True,
+)
+def get_domain(
+    request: Request,
+    status: DomainStatus,
+    name: str,
+    domain_id: str,
+    gene_id: str,
+    sequence_id: str,
+    start: int,
+    end: int,
+) -> ResponseDict:
+    """Construct complete functional domain object given constitutive parameters.
+
+    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+        FUSOR and UTA-associated tools.
+    :param DomainStatus status: status of domain
+    :param str name: domain name (should match InterPro entry but not validated here)
+    :param str domain_id: InterPro ID (expected to be formatted as a CURIE)
+    :param str gene_id: normalized gene ID (expected to be formatted as a CURIE)
+    :param str sequence_id: associated protein sequence ID (expected to be refseq-style,
+        but not validated, and namespace shouldn't be included)
+    :param int start: the domain's protein start position
+    :param int end: the domain's protein end position
+    """
+    response: ResponseDict = {}
+    try:
+        domain, warnings = request.app.state.fusor.functional_domain(
+            status, name, domain_id, gene_id, sequence_id, start, end
+        )
+        if warnings:
+            response["warnings"] = [warnings]
+        else:
+            response["domain"] = domain
+    except ValidationError as e:
+        response["warnings"] = [f"Unable to construct Functional Domain: {e}"]
+    return response
