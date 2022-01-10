@@ -84,10 +84,24 @@ const GetCoordinates: React.FC = () => {
         console.log(warning);
         if (warning.startsWith('Found more than one accession')) {
           setChromosomeText('Complete ID required');
+        } else if (warning.startsWith('Unable to get exons for')) {
+          setTxAcText('Unrecognized transcript');
         } else if (warning.startsWith('Invalid chromosome')) {
-          setChromosomeText('Invalid entry');
+          setChromosomeText('Unrecognized value');
         } else if (warning == 'Must find exactly one row for genomic data, but found: 0') {
           setError('Unable to resolve coordinates lookup given provided parameters');
+        } else if (warning.startsWith('Exon ')) {
+          const exonPattern = /Exon (\d*) does not exist on (.*)/;
+          const match = exonPattern.exec(warning);
+          if (match) {
+            console.log(exonStart);
+            console.log(match[1]);
+            if (exonStart === match[1]) {
+              setExonStartText('Out of range');
+            } else if (exonEnd === match[1]) {
+              setExonEndText('Out of range');
+            }
+          }
         }
       });
     } else {
@@ -175,8 +189,8 @@ const GetCoordinates: React.FC = () => {
     switch (inputType) {
       case 'genomic_coords_gene':
         return (
-          <div className='genomic-coords-gene'>
-            <div className="mid-inputs">
+          <>
+            <div className="inputs fields-pair">
               <GeneAutocomplete
                 selectedGene={gene}
                 setSelectedGene={setGene}
@@ -184,8 +198,6 @@ const GetCoordinates: React.FC = () => {
                 setGeneText={setGeneText}
                 style={{ width: 125 }}
               />
-            </div>
-            <div className="mid-inputs">
               <TextField
                 margin="dense"
                 style={{ height: 38, width: 125 }}
@@ -195,19 +207,23 @@ const GetCoordinates: React.FC = () => {
                 helperText={chromosomeText ? chromosomeText : null}
                 label="Chromosome"
               />
-              <FormLabel component="legend">Strand</FormLabel>
-              <RadioGroup
-                aria-label="strand"
-                name="strand"
-                value={strand}
-                onChange={(event) => setStrand(event.target.value as string)}
-                row
-              >
-                <FormControlLabel value="+" control={<Radio />} label="+" />
-                <FormControlLabel value="-" control={<Radio />} label="-" />
-              </RadioGroup>
             </div>
-            <div className="bottom-inputs">
+            <div className="inputs">
+              <div className="strand">
+                <FormLabel component="legend" className="strand-label">Strand</FormLabel>
+                <RadioGroup
+                  aria-label="strand"
+                  name="strand"
+                  value={strand}
+                  onChange={(event) => setStrand(event.target.value as string)}
+                  row
+                >
+                  <FormControlLabel value="+" control={<Radio />} label="+" />
+                  <FormControlLabel value="-" control={<Radio />} label="-" />
+                </RadioGroup>
+              </div>
+            </div>
+            <div className="inputs fields-pair">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -223,12 +239,12 @@ const GetCoordinates: React.FC = () => {
                 onChange={(event) => setEnd(event.target.value)}
               />
             </div>
-          </div>
+          </>
         );
       case 'genomic_coords_tx':
         return (
-          <div className='genomic-coords-tx'>
-            <div className="mid-inputs">
+          <>
+            <div className="inputs fields-pair">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -238,8 +254,6 @@ const GetCoordinates: React.FC = () => {
                 error={txAcText !== ''}
                 helperText={txAcText}
               />
-            </div>
-            <div className="mid-inputs">
               <TextField
                 margin="dense"
                 style={{ height: 38, width: 125 }}
@@ -249,19 +263,23 @@ const GetCoordinates: React.FC = () => {
                 helperText={chromosomeText ? chromosomeText : null}
                 label="Chromosome"
               />
-              <FormLabel component="legend">Strand</FormLabel>
-              <RadioGroup
-                aria-label="strand"
-                name="strand"
-                value={strand}
-                onChange={(event) => setStrand(event.target.value as string)}
-                row
-              >
-                <FormControlLabel value="+" control={<Radio />} label="+" />
-                <FormControlLabel value="-" control={<Radio />} label="-" />
-              </RadioGroup>
             </div>
-            <div className="bottom-inputs">
+            <div className="inputs">
+              <div className="strand">
+                <FormLabel component="legend" className="strand-label">Strand</FormLabel>
+                <RadioGroup
+                  aria-label="strand"
+                  name="strand"
+                  value={strand}
+                  onChange={(event) => setStrand(event.target.value as string)}
+                  row
+                >
+                  <FormControlLabel value="+" control={<Radio />} label="+" />
+                  <FormControlLabel value="-" control={<Radio />} label="-" />
+                </RadioGroup>
+              </div>
+            </div>
+            <div className="inputs fields-pair">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -277,12 +295,12 @@ const GetCoordinates: React.FC = () => {
                 onChange={(event) => setEnd(event.target.value)}
               />
             </div>
-          </div>
+          </>
         );
       case 'exon_coords_tx':
         return (
-          <div className='exon-coords-tx'>
-            <div className="top-inputs">
+          <>
+            <div className="inputs">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -293,33 +311,33 @@ const GetCoordinates: React.FC = () => {
                 helperText={txAcText}
               />
             </div>
-            <div className="mid-inputs">
-              <div>
-                <TextField
-                  margin="dense"
-                  style={{ width: 125 }}
-                  label="Starting Exon"
-                  value={exonStart}
-                  onChange={(event) => setExonStart(event.target.value)}
-                />
-              </div>
-              <div>
-                <TextField
-                  margin="dense"
-                  style={{ width: 125 }}
-                  label="Starting Offset"
-                  value={exonStartOffset}
-                  onChange={(event) => setExonStartOffset(event.target.value)}
-                />
-              </div>
+            <div className="inputs fields-pair">
+              <TextField
+                margin="dense"
+                style={{ width: 125 }}
+                label="Starting Exon"
+                value={exonStart}
+                onChange={(event) => setExonStart(event.target.value)}
+                error={exonStart && (exonStartText !== '')}
+                helperText={exonStart ? exonStartText : ''}
+              />
+              <TextField
+                margin="dense"
+                style={{ width: 125 }}
+                label="Starting Offset"
+                value={exonStartOffset}
+                onChange={(event) => setExonStartOffset(event.target.value)}
+              />
             </div>
-            <div className="bottom-inputs">
+            <div className="inputs fields-pair">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
                 label="Ending Exon"
                 value={exonEnd}
                 onChange={(event) => setExonEnd(event.target.value)}
+                error={exonEnd && (exonEndText !== '')}
+                helperText={exonEnd ? exonEndText : ''}
               />
               <TextField
                 margin="dense"
@@ -329,7 +347,7 @@ const GetCoordinates: React.FC = () => {
                 onChange={(event) => setExonEndOffset(event.target.value)}
               />
             </div>
-          </div>
+          </>
         );
     }
   };
