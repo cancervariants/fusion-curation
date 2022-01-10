@@ -203,8 +203,8 @@ const GetCoordinates: React.FC = () => {
                 style={{ height: 38, width: 125 }}
                 value={chromosome}
                 onChange={(event) => setChromosome(event.target.value)}
-                error={chromosomeText !== ''}
-                helperText={chromosomeText ? chromosomeText : null}
+                error={chromosome && (chromosomeText !== '')}
+                helperText={chromosome && chromosomeText ? chromosomeText : null}
                 label="Chromosome"
               />
             </div>
@@ -259,8 +259,8 @@ const GetCoordinates: React.FC = () => {
                 style={{ height: 38, width: 125 }}
                 value={chromosome}
                 onChange={(event) => setChromosome(event.target.value)}
-                error={chromosomeText !== ''}
-                helperText={chromosomeText ? chromosomeText : null}
+                error={chromosome && (chromosomeText !== '')}
+                helperText={chromosome && chromosomeText ? chromosomeText : null}
                 label="Chromosome"
               />
             </div>
