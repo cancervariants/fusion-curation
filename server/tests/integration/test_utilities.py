@@ -30,16 +30,23 @@ async def check_response(
     data_callback(response_json, expected_response)
 
 
-def check_coords_response(response_json: Dict, expected_response: Dict):
+def check_coords_response(response: Dict, expected_response: Dict):
     """Provide to check_response to test specific response params"""
-    assert ("coordinates_data" in response_json) == (
-        "coordinates_data" in expected_response
-    )
-    if ("coordinates_data" not in response_json) and (
+    assert ("coordinates_data" in response) == ("coordinates_data" in expected_response)
+    if ("coordinates_data" not in response) and (
         "coordinates_data" not in expected_response
     ):
         return
-    assert response_json["coordinates_data"] == expected_response["coordinates_data"]
+    assert response["coordinates_data"] == expected_response["coordinates_data"]
+
+
+def check_sequence_id_response(response: Dict, expected_response: Dict):
+    """Provide to check_response to test specific response params"""
+    assert response["sequence"] == expected_response["sequence"]
+    if response.get("ga4gh_sequence_id") or expected_response.get("ga4gh_sequence_id"):
+        assert response["ga4gh_sequence_id"] == expected_response["ga4gh_sequence_id"]
+    if response.get("aliases") or expected_response.get("aliases"):
+        assert set(response["aliases"]) == set(expected_response["aliases"])
 
 
 @pytest.mark.asyncio
@@ -83,4 +90,64 @@ async def test_get_exon_coords(async_client: AsyncClient):
             }
         },
         check_coords_response,
+    )
+
+
+@pytest.mark.asyncio
+async def test_get_sequence_id(async_client: AsyncClient):
+    """Test sequence ID lookup utility endpoint"""
+    await check_response(
+        async_client,
+        "/utilities/get_sequence_id?sequence_id=NC_000001.11",
+        {
+            "sequence": "NC_000001.11",
+            "ga4gh_sequence_id": "ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+            "aliases": [
+                "GRCh38.p6:chr1",
+                "GRCh38:chr1",
+                "GRCh38.p2:1",
+                "GRCh38.p10:1",
+                "MD5:6aef897c3d6ff0c78aff06ac189178dd",
+                "GRCh38.p4:chr1",
+                "GRCh38.p10:chr1",
+                "GRCh38.p7:1",
+                "GRCh38.p8:chr1",
+                "sha512t24u:Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+                "GRCh38.p3:1",
+                "GRCh38.p8:1",
+                "GRCh38.p2:chr1",
+                "GRCh38.p12:1",
+                "GRCh38.p5:1",
+                "GRCh38.p1:chr1",
+                "GRCh38.p11:1",
+                "GRCh38.p12:chr1",
+                "GRCh38.p6:1",
+                "SEGUID:FCUd6VJ6uikS/VWLbhGdVmj2rOA",
+                "GRCh38.p9:chr1",
+                "GRCh38.p1:1",
+                "NCBI:NC_000001.11",
+                "GRCh38.p11:chr1",
+                "VMC:GS_Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+                "refseq:NC_000001.11",
+                "GRCh38.p9:1",
+                "GRCh38:1",
+                "ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+                "SHA1:14251de9527aba2912fd558b6e119d5668f6ace0",
+                "GRCh38.p5:chr1",
+                "GRCh38.p7:chr1",
+                "GRCh38.p3:chr1",
+                "GRCh38.p4:1",
+            ],
+        },
+        check_sequence_id_response,
+    )
+
+    await check_response(
+        async_client,
+        "/utilities/get_sequence_id?sequence_id=NP_001278445.11",
+        {
+            "sequence_id": "NP_001278445.11",
+            "warnings": "Identifier NP_001278445.11 could not be retrieved",
+        },
+        check_sequence_id_response,
     )

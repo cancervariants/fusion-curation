@@ -209,7 +209,8 @@ class SequenceIDResponse(Response):
     """Response model for sequence ID retrieval endpoint."""
 
     sequence: StrictStr
-    sequence_id: StrictStr = ""
+    ga4gh_sequence_id: Optional[StrictStr] = ""
+    aliases: Optional[List[StrictStr]]
 
 
 class FusionValidationResponse(BaseModel):

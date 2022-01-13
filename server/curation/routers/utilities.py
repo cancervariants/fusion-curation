@@ -1,11 +1,15 @@
 """Provide routes for app utility endpoints"""
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Any
 
 from fastapi import APIRouter, Request
 from gene import schemas as GeneSchemas
 
 from curation import logger
-from curation.schemas import GetTranscriptsResponse, CoordsUtilsResponse
+from curation.schemas import (
+    GetTranscriptsResponse,
+    CoordsUtilsResponse,
+    SequenceIDResponse,
+)
 from curation.sequence_services import get_strand, InvalidInputException
 
 
@@ -75,13 +79,21 @@ async def get_genome_coords(
         warning = "Must provide gene and/or transcript"
         warnings.append(warning)
     if (exon_start is not None) and (exon_end is not None) and (exon_end < exon_start):
-        warning = f"exon_end {exon_end} must be >= exon_start {exon_start}"
+        warning = (
+            f"Invalid order: exon_end {exon_end} must be >= exon_start {exon_start}"
+        )
         warnings.append(warning)
     if (exon_start is None) and (exon_start_offset is not None):
-        warning = "exon_start_offset parameter requires explicit exon_start parameter"
+        warning = (
+            "No start param: exon_start_offset parameter requires explicit exon_start "
+            "parameter"
+        )
         warnings.append(warning)
     if (exon_end is None) and (exon_end_offset is not None):
-        warning = "exon_end_offset parameter requires explicit exon_end parameter"
+        warning = (
+            "No end param: exon_end_offset parameter requires explicit exon_end "
+            "parameter"
+        )
         warnings.append(warning)
     if warnings:
         for warning in warnings:
@@ -165,3 +177,32 @@ async def get_exon_coords(
         return CoordsUtilsResponse(warnings=warnings)
 
     return CoordsUtilsResponse(coordinates_data=response.genomic_data)
+
+
+@router.get(
+    "/utilities/get_sequence_id",
+    operation_id="getSequenceId",
+    response_model=SequenceIDResponse,
+    response_model_exclude_none=True,
+)
+async def get_sequence_id(request: Request, sequence_id: str) -> SequenceIDResponse:
+    """Get GA4GH sequence ID and aliases given sequence sequence ID
+    :param Request request: the HTTP request context, supplied by FastAPI. Use
+        to access FUSOR and UTA-associated tools.
+    :param str sequence_id: user-provided sequence identifier to translate
+    :return: Response object with ga4gh ID and aliases
+    """
+    params: Dict[str, Any] = {"sequence": sequence_id}
+    sr = request.app.state.fusor.uta_tools.seqrepo_access.seqrepo_client
+    try:
+        aliases = sr.translate_identifier(sequence_id)
+    except KeyError:
+        params["warnings"] = [f"Identifier {sequence_id} could not be retrieved"]
+        aliases = []
+    try:
+        params["ga4gh_sequence_id"] = [i for i in aliases if i.startswith("ga4gh")][0]
+    except IndexError:
+        logger.warning(f"No available ga4gh ID for {sequence_id}")
+        params["ga4gh_sequence_id"] = None
+    params["aliases"] = [i for i in aliases if not i.startswith("ga4gh")]
+    return SequenceIDResponse(**params)
