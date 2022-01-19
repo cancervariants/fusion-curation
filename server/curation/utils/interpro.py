@@ -134,7 +134,7 @@ def get_interpro_uniprot_rels(
     output_dir: Path,
     domain_ids: Set[str],
     uniprot_refs: Dict,
-) -> Dict[str, Tuple[str, str, str, str, str]]:
+) -> Dict[str, Dict[str, Tuple[str, str, str, str, str]]]:
     """Process InterPro to UniProtKB relations, using UniProt references to connect
     genes with domains
 
@@ -153,6 +153,7 @@ def get_interpro_uniprot_rels(
 
     interpro_uniprot = {}
     for row in protein_ipr_reader:
+        # FIX HERE
         domain_id = row[1]
         if domain_id in domain_ids:
             uniprot_ac = row[0]
@@ -161,15 +162,16 @@ def get_interpro_uniprot_rels(
                 continue
 
             gene_id, gene_label = normed_values
+            key = (uniprot_ac, gene_id)
             domain_name = row[2]
             start = row[4]
             end = row[5]
-            key = (uniprot_ac, gene_id)
             value = (gene_label, domain_id, domain_name, start, end)
             if key not in interpro_uniprot:
-                interpro_uniprot[key] = [value]
-            else:
-                interpro_uniprot[key].append(value)
+                interpro_uniprot[key] = {domain_id: value}
+            elif domain_id not in interpro_uniprot[key]:
+                interpro_uniprot[key][domain_id] = value
+
     protein_ipr.close()
     msg = f"Extracted {len(interpro_uniprot)} UniProt-InterPro references"
     click.echo(msg)
@@ -186,6 +188,9 @@ def get_protein_accessions(
     :param Optional[Path] uniprot_sprot_path: path to local uniprot_sprot.xml file.
     :return: Dict where keys are tuple containing Uniprot accession ID and NCBI gene ID,
         and values are known RefSeq protein accessions
+    TODO
+     * TPM3 tropomyosin should be NP_689476.2
+     * multiple TPM3/tropomyosin coordinate pairs??? Should only be 1
     """
     start = timer()
     if not uniprot_sprot_path:
@@ -195,11 +200,13 @@ def get_protein_accessions(
     cur_ac = ""
     cur_refseq_ac = ""
     cur_gene_id = ""
+    cur_molecule_id = ""
     for _, node in parser:
         if node.tag == "{http://uniprot.org/uniprot}entry":
             cur_refseq_ac = ""
             cur_gene_id = ""
             cur_ac = ""
+            cur_molecule_id = ""
         elif (
             (node.tag == "{http://uniprot.org/uniprot}accession")
             and (not cur_ac)
@@ -216,10 +223,25 @@ def get_protein_accessions(
                     cur_refseq_ac = tmp_refseq_id
             elif node_type == "HGNC":
                 cur_gene_id = node.get("id").lower()
-
-        if (
-            all([cur_ac, cur_refseq_ac, cur_gene_id])
-            and (cur_ac, cur_gene_id) not in accessions_map
+        elif (
+            cur_ac
+            and cur_refseq_ac
+            and (node.tag == "{http://uniprot.org/uniprot}molecule")
+        ):
+            tmp_molecule_id = node.get("id")
+            if "-" in tmp_molecule_id:
+                if tmp_molecule_id.endswith("-1"):  # canonical sequence
+                    cur_molecule_id = tmp_molecule_id
+            else:
+                cur_molecule_id = tmp_molecule_id
+        if all(
+            [
+                cur_ac,
+                cur_refseq_ac,
+                cur_gene_id,
+                cur_molecule_id,
+                (cur_ac, cur_gene_id) not in accessions_map,
+            ]
         ):
             accessions_map[(cur_ac, cur_gene_id)] = cur_refseq_ac
 
@@ -292,7 +314,7 @@ def build_gene_domain_maps(
     outfile_path = output_dir / f"domain_lookup_{today}.tsv"
     outfile = open(outfile_path, "w")
     for k, v_list in interpro_uniprot.items():
-        for v in v_list:
+        for v in v_list.values():
             if k[0] in uniprot_acs:
                 refseq_ac = prot_acs.get((k[0], k[1]))
                 if not refseq_ac:
