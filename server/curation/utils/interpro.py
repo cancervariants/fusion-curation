@@ -188,9 +188,6 @@ def get_protein_accessions(
     :param Optional[Path] uniprot_sprot_path: path to local uniprot_sprot.xml file.
     :return: Dict where keys are tuple containing Uniprot accession ID and NCBI gene ID,
         and values are known RefSeq protein accessions
-    TODO
-     * TPM3 tropomyosin should be NP_689476.2
-     * multiple TPM3/tropomyosin coordinate pairs??? Should only be 1
     """
     start = timer()
     if not uniprot_sprot_path:
@@ -201,12 +198,14 @@ def get_protein_accessions(
     cur_refseq_ac = ""
     cur_gene_id = ""
     cur_molecule_id = ""
+    cur_nucleotide_seq_id = ""
     for _, node in parser:
         if node.tag == "{http://uniprot.org/uniprot}entry":
             cur_refseq_ac = ""
             cur_gene_id = ""
             cur_ac = ""
             cur_molecule_id = ""
+            cur_nucleotide_seq_id = ""
         elif (
             (node.tag == "{http://uniprot.org/uniprot}accession")
             and (not cur_ac)
@@ -217,7 +216,7 @@ def get_protein_accessions(
                 cur_ac = tmp_ac
         elif cur_ac and (node.tag == "{http://uniprot.org/uniprot}dbReference"):
             node_type = node.get("type")
-            if node_type == "RefSeq":
+            if node_type == "RefSeq" and not cur_molecule_id:
                 tmp_refseq_id = node.get("id")
                 if tmp_refseq_id.startswith("NP_"):
                     cur_refseq_ac = tmp_refseq_id
@@ -233,17 +232,28 @@ def get_protein_accessions(
                 if tmp_molecule_id.endswith("-1"):  # canonical sequence
                     cur_molecule_id = tmp_molecule_id
             else:
+                # TODO does this happen?
+                breakpoint()
                 cur_molecule_id = tmp_molecule_id
+        elif (
+            cur_ac
+            and cur_refseq_ac
+            and (not cur_molecule_id)
+            and (not cur_nucleotide_seq_id)
+            and (node.tag == "{http://uniprot.org/uniprot}property")
+        ):
+            cur_nucleotide_seq_id = node.get("value")
         if all(
             [
                 cur_ac,
                 cur_refseq_ac,
                 cur_gene_id,
-                cur_molecule_id,
+                (cur_molecule_id or cur_nucleotide_seq_id),
                 (cur_ac, cur_gene_id) not in accessions_map,
             ]
         ):
             accessions_map[(cur_ac, cur_gene_id)] = cur_refseq_ac
+            # cur_ac = ""  # prevent further updates in this record
 
     stop = timer()
     msg = f"Retrieved accession values in {(stop - start):.5f} seconds."
