@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-fastapi = "*"
+fastapi = ">=0.72.0"
 aiofiles = "*"
 asyncpg = "*"
 "biocommons.seqrepo" = "*"

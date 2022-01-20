@@ -14,7 +14,8 @@ from curation.domain_services import DomainService
 from curation.routers import utilities, constructors, lookup, complete, validate
 
 
-app = FastAPI(version=__version__)
+app = FastAPI(version=__version__, swagger_ui_parameters={"tryItOutEnabled": True})
+
 app.include_router(utilities.router)
 app.include_router(constructors.router)
 app.include_router(lookup.router)
