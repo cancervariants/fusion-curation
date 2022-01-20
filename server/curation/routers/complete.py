@@ -4,11 +4,7 @@ from typing import Dict, Any
 from fastapi import Query, APIRouter, Request
 
 from curation import ServiceWarning
-from curation.schemas import (
-    ResponseDict,
-    AssociatedDomainResponse,
-    SuggestGeneResponse,
-)
+from curation.schemas import ResponseDict, AssociatedDomainResponse, SuggestGeneResponse
 
 
 router = APIRouter()
@@ -43,7 +39,7 @@ def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
     response_model=AssociatedDomainResponse,
     response_model_exclude_none=True,
 )
-def get_domain_suggestions(request: Request, gene_id: str = Query("")) -> ResponseDict:
+def suggest_domain(request: Request, gene_id: str = Query("")) -> ResponseDict:
     """Provide possible domains associated with a given gene to be selected by a user.
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.

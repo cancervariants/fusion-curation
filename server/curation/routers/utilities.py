@@ -185,24 +185,24 @@ async def get_exon_coords(
     response_model=SequenceIDResponse,
     response_model_exclude_none=True,
 )
-async def get_sequence_id(request: Request, sequence_id: str) -> SequenceIDResponse:
+async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse:
     """Get GA4GH sequence ID and aliases given sequence sequence ID
     :param Request request: the HTTP request context, supplied by FastAPI. Use
         to access FUSOR and UTA-associated tools.
     :param str sequence_id: user-provided sequence identifier to translate
     :return: Response object with ga4gh ID and aliases
     """
-    params: Dict[str, Any] = {"sequence": sequence_id}
+    params: Dict[str, Any] = {"sequence": sequence}
     sr = request.app.state.fusor.uta_tools.seqrepo_access.seqrepo_client
     try:
-        aliases = sr.translate_identifier(sequence_id)
+        aliases = sr.translate_identifier(sequence)
     except KeyError:
-        params["warnings"] = [f"Identifier {sequence_id} could not be retrieved"]
+        params["warnings"] = [f"Identifier {sequence} could not be retrieved"]
         aliases = []
     try:
         params["ga4gh_sequence_id"] = [i for i in aliases if i.startswith("ga4gh")][0]
     except IndexError:
-        logger.warning(f"No available ga4gh ID for {sequence_id}")
+        logger.warning(f"No available ga4gh ID for {sequence}")
         params["ga4gh_sequence_id"] = None
     params["aliases"] = [i for i in aliases if not i.startswith("ga4gh")]
     return SequenceIDResponse(**params)
