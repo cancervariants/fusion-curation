@@ -1,0 +1,20 @@
+[flake8]
+extend-ignore = D205, D400, I101, ANN101, ANN002, ANN003, W503, D301
+max-line-length = 100
+exclude =
+  .git
+  venv
+  __pycache__
+  source
+  outputs
+  docs/*
+  analysis/*
+inline-quotes = "
+import-order-style = pep8
+application-import-names =
+  curation
+  tests
+per-file-ignores =
+  tests/*:ANN001, ANN2
+  *__init__.py:F401
+mypy-init-return = true
