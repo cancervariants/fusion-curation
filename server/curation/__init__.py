@@ -3,6 +3,8 @@ from pathlib import Path
 from os import environ
 import logging
 
+from .version import __version__
+
 
 # provide consistent paths
 APP_ROOT = Path(__file__).resolve().parents[0]
