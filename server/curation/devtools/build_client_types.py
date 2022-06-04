@@ -1,11 +1,10 @@
-"""Utility for building client-side models."""
-from pathlib import Path
+"""Provide client type generation tooling."""
+from fastapi.param_functions import Path
+from pydantic2ts.cli.script import generate_typescript_defs
 
-from pydantic2ts import generate_typescript_defs
 
-
-def build_client_types_file():
-    """Build TypeScript type definitions file for client development."""
+def build_client_types():
+    """Construct type definitions for front-end client."""
     client_dir = Path(__file__).resolve().parents[3] / "client"
     generate_typescript_defs(
         "curation.schemas",

@@ -5,9 +5,10 @@ from pathlib import Path
 import uvicorn
 import click
 
-from curation.utils import DEFAULT_INTERPRO_TYPES
-from curation.utils.interpro import build_gene_domain_maps
-from curation.utils.gene import GeneSuggestionBuilder
+from curation.devtools import DEFAULT_INTERPRO_TYPES
+from curation.devtools.build_client_types import build_client_types
+from curation.devtools.interpro import build_gene_domain_maps
+from curation.devtools.gene import GeneSuggestionBuilder
 
 
 @click.command()
@@ -21,7 +22,7 @@ def serve(port: int) -> None:
 
 
 @click.group()
-def utils():
+def devtools():
     """Provide setup utilities for constructing data for Fusion Curation app."""
     pass
 
@@ -29,12 +30,12 @@ def utils():
 types_help = """
 Interpro entry types to include as possible functional domain values, provided as a
 comma-separated list (that likely must be quoted to be parsed correctly by your shell).
-Possible values: {"active_site", "binding_site", "conserved_site", "domain", "family",
-"homologous_superfamily", "ptm", "repeat"}
+Possible values: {`active_site`, `binding_site`, `conserved_site`, `domain`, `family`,
+`homologous_superfamily`, `ptm`, `repeat`}
 """
 
 
-@utils.command()
+@devtools.command()
 @click.option("--types", "-t", help=types_help, default=DEFAULT_INTERPRO_TYPES)
 @click.option(
     "--protein2ipr",
@@ -51,7 +52,7 @@ Possible values: {"active_site", "binding_site", "conserved_site", "domain", "fa
 @click.option(
     "--uniprot", "-u", help="Path to uniprot_sprot_YYYYMMDD.xml", default=None
 )
-def build_domains(
+def domains(
     types: str, protein2ipr: Optional[str], refs: Optional[str], uniprot: Optional[str]
 ) -> None:
     """Build domain mappings for use in Fusion Curation app.
@@ -83,8 +84,14 @@ def build_domains(
     )
 
 
-@utils.command()
-def build_genes() -> None:
+@devtools.command()
+def genes() -> None:
     """Build gene mappings for use in Fusion Curation gene autocomplete."""
     builder = GeneSuggestionBuilder()
     builder.build_gene_suggest_maps()
+
+
+@devtools.command()
+def client_types() -> None:
+    """Build type definitions for use in client development."""
+    build_client_types()

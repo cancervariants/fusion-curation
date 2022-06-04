@@ -13,7 +13,7 @@ from gene.query import QueryHandler
 import click
 
 from curation import APP_ROOT, logger
-from curation.utils import ftp_download
+from curation.devtools import ftp_download
 
 # uniprot accession id -> (normalized ID, normalized label)
 UniprotRefs = Dict[str, Tuple[str, str]]
