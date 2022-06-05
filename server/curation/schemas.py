@@ -1,17 +1,17 @@
 """Provide schemas for FastAPI responses."""
 from typing import List, Optional, Tuple, Union, Literal, Dict
-from abc import ABC
 
 from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
 from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 from fusor.models import (
-    Fusion,
-    TranscriptSegmentComponent,
-    LinkerComponent,
-    TemplatedSequenceComponent,
-    GeneComponent,
-    UnknownGeneComponent,
-    AnyGeneComponent,
+    AssayedFusion,
+    CategoricalFusion,
+    TranscriptSegmentElement,
+    LinkerElement,
+    TemplatedSequenceElement,
+    GeneElement,
+    UnknownGeneElement,
+    MultiplePossibleGenesElement,
     RegulatoryElement,
     FunctionalDomain,
     Strand,
@@ -27,17 +27,17 @@ ResponseDict = Dict[
 Warnings = List[str]
 
 
-class ClientComponent(BaseModel, ABC):
+class ClientStructuralElement(BaseModel):
     """Abstract class to provide identification properties used by client."""
 
-    component_id: StrictStr
-    component_name: StrictStr
+    element_id: StrictStr
+    element_name: StrictStr
     hr_name: StrictStr
     shorthand: Optional[StrictStr]
 
 
-class ClientTranscriptSegmentComponent(TranscriptSegmentComponent, ClientComponent):
-    """TranscriptSegment component class used client-side."""
+class ClientTranscriptSegmentElement(TranscriptSegmentElement, ClientStructuralElement):
+    """TranscriptSegment element class used client-side."""
 
     input_type: Union[
         Literal["genomic_coords_gene"],
@@ -52,34 +52,36 @@ class ClientTranscriptSegmentComponent(TranscriptSegmentComponent, ClientCompone
     input_genomic_end: Optional[str]
 
 
-class ClientLinkerComponent(LinkerComponent, ClientComponent):
-    """Linker component class used client-side."""
+class ClientLinkerElement(LinkerElement, ClientStructuralElement):
+    """Linker element class used client-side."""
 
     pass
 
 
-class ClientTemplatedSequenceComponent(TemplatedSequenceComponent, ClientComponent):
-    """Templated sequence component used client-side."""
+class ClientTemplatedSequenceElement(TemplatedSequenceElement, ClientStructuralElement):
+    """Templated sequence element used client-side."""
 
     input_chromosome: Optional[str]
     input_start: Optional[str]
     input_end: Optional[str]
 
 
-class ClientGeneComponent(GeneComponent, ClientComponent):
-    """Gene component used client-side."""
+class ClientGeneElement(GeneElement, ClientStructuralElement):
+    """Gene element used client-side."""
 
     pass
 
 
-class ClientUnknownGeneComponent(UnknownGeneComponent, ClientComponent):
-    """Unknown gene component used client-side."""
+class ClientUnknownGeneElement(UnknownGeneElement, ClientStructuralElement):
+    """Unknown gene element used client-side."""
 
     pass
 
 
-class ClientAnyGeneComponent(AnyGeneComponent, ClientComponent):
-    """Any gene component used client-side."""
+class ClientMultiplePossibleGenesElement(
+    MultiplePossibleGenesElement, ClientStructuralElement
+):
+    """Multiple possible gene element used client-side."""
 
     pass
 
@@ -106,7 +108,7 @@ class ClientFunctionalDomain(FunctionalDomain):
         extra = Extra.forbid
 
 
-class Response(BaseModel, ABC):
+class Response(BaseModel):
     """Abstract Response class for defining API response structures."""
 
     warnings: ResponseWarnings
@@ -117,22 +119,22 @@ class Response(BaseModel, ABC):
         extra = Extra.forbid
 
 
-class GeneComponentResponse(Response):
-    """Response model for gene component construction endoint."""
+class GeneElementResponse(Response):
+    """Response model for gene element construction endoint."""
 
-    component: Optional[GeneComponent]
-
-
-class TxSegmentComponentResponse(Response):
-    """Response model for transcript segment component construction endpoint."""
-
-    component: Optional[TranscriptSegmentComponent]
+    element: Optional[GeneElement]
 
 
-class TemplatedSequenceComponentResponse(Response):
-    """Response model for transcript segment component construction endpoint."""
+class TxSegmentElementResponse(Response):
+    """Response model for transcript segment element construction endpoint."""
 
-    component: Optional[TemplatedSequenceComponent]
+    element: Optional[TranscriptSegmentElement]
+
+
+class TemplatedSequenceElementResponse(Response):
+    """Response model for transcript segment element construction endpoint."""
+
+    element: Optional[TemplatedSequenceElement]
 
 
 class NormalizeGeneResponse(Response):
@@ -213,13 +215,6 @@ class SequenceIDResponse(Response):
     aliases: Optional[List[StrictStr]]
 
 
-class FusionValidationResponse(BaseModel):
-    """Response model for fusion validation endpoint."""
-
-    fusion: Optional[Fusion]
-    warnings: Optional[List[Dict]]
-
-
 class GetTranscriptsResponse(Response):
     """Response model for MANE transcript retrieval endpoint."""
 
@@ -229,23 +224,40 @@ class GetTranscriptsResponse(Response):
 class ServiceInfoResponse(Response):
     """Response model for service_info endpoint."""
 
-    version: StrictStr
+    fusion_curation_version: StrictStr
+    fusor_version: StrictStr
+    uta_tools_version: StrictStr
+    # TODO -- get VRS version (?), UTA version
 
 
-class ClientFusion(Fusion):
-    """Fusion with client-oriented structural component models. Used in global
-    FusionContext.
+class ClientCategoricalFusion(CategoricalFusion):
+    """Categorial fusion with client-oriented structural element models. Used in
+    global FusionContext.
     """
 
-    structural_components: List[
+    structural_elements: List[
         Union[
-            ClientTranscriptSegmentComponent,
-            ClientGeneComponent,
-            ClientAnyGeneComponent,
-            ClientUnknownGeneComponent,
-            ClientTemplatedSequenceComponent,
-            ClientLinkerComponent,
+            ClientTranscriptSegmentElement,
+            ClientGeneElement,
+            ClientTemplatedSequenceElement,
+            ClientLinkerElement,
+            ClientMultiplePossibleGenesElement,
         ]
     ]
-    regulatory_elements: List[ClientRegulatoryElement]
-    functional_domains: List[ClientFunctionalDomain]
+    critical_functional_domains: Optional[List[ClientFunctionalDomain]]
+
+
+class ClientAssayedFusion(AssayedFusion):
+    """Assayed fusion with client-oriented structural element models. Used in
+    global FusionContext.
+    """
+
+    structural_elements: List[
+        Union[
+            ClientTranscriptSegmentElement,
+            ClientGeneElement,
+            ClientTemplatedSequenceElement,
+            ClientLinkerElement,
+            ClientUnknownGeneElement,
+        ]
+    ]

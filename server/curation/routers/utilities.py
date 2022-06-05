@@ -84,21 +84,15 @@ async def get_genome_coords(
         )
         warnings.append(warning)
     if (exon_start is None) and (exon_start_offset is not None):
-        warning = (
-            "No start param: exon_start_offset parameter requires explicit exon_start "
-            "parameter"
-        )
+        warning = "No start param: exon_start_offset parameter requires explicit exon_start parameter"  # noqa: E501
         warnings.append(warning)
     if (exon_end is None) and (exon_end_offset is not None):
-        warning = (
-            "No end param: exon_end_offset parameter requires explicit exon_end "
-            "parameter"
-        )
+        warning = "No end param: exon_end_offset parameter requires explicit exon_end parameter"
         warnings.append(warning)
     if warnings:
         for warning in warnings:
             logger.warning(warning)
-        return CoordsUtilsResponse(warnings=warnings)
+        return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
     # TODO necessary for now
     if exon_start is not None and exon_start_offset is None:
@@ -113,12 +107,13 @@ async def get_genome_coords(
         exon_end=exon_end,
         exon_start_offset=exon_start_offset,
         exon_end_offset=exon_end_offset,
+        residue_mode="inter-residue",
     )
     warnings = response.warnings
     if warnings:
-        return CoordsUtilsResponse(warnings=warnings)
+        return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    return CoordsUtilsResponse(coordinates_data=response.genomic_data)
+    return CoordsUtilsResponse(coordinates_data=response.genomic_data, warnings=None)
 
 
 @router.get(
@@ -162,7 +157,7 @@ async def get_exon_coords(
     if warnings:
         for warning in warnings:
             logger.warning(warning)
-        return CoordsUtilsResponse(warnings=warnings)
+        return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
     response = await request.app.state.fusor.uta_tools.genomic_to_transcript_exon_coordinates(  # noqa: E501
         chromosome,
@@ -174,9 +169,9 @@ async def get_exon_coords(
     )
     warnings = response.warnings
     if warnings:
-        return CoordsUtilsResponse(warnings=warnings)
+        return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    return CoordsUtilsResponse(coordinates_data=response.genomic_data)
+    return CoordsUtilsResponse(coordinates_data=response.genomic_data, warnings=None)
 
 
 @router.get(

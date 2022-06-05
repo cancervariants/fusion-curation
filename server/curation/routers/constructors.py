@@ -1,4 +1,4 @@
-"""Provide routes for component construction endpoints"""
+"""Provide routes for element construction endpoints"""
 from typing import Optional
 
 from fastapi import Query, Request, APIRouter
@@ -7,9 +7,9 @@ from fusor.models import Strand, DomainStatus
 
 from curation import logger
 from curation.schemas import (
-    GeneComponentResponse,
-    TxSegmentComponentResponse,
-    TemplatedSequenceComponentResponse,
+    GeneElementResponse,
+    TxSegmentElementResponse,
+    TemplatedSequenceElementResponse,
     GetDomainResponse,
     ResponseDict,
 )
@@ -19,32 +19,30 @@ router = APIRouter()
 
 
 @router.get(
-    "/construct/component/gene",
-    operation_id="buildGeneComponent",
-    response_model=GeneComponentResponse,
+    "/construct/structural_element/gene",
+    operation_id="buildGeneElement",
+    response_model=GeneElementResponse,
     response_model_exclude_none=True,
 )
-def build_gene_component(
-    request: Request, term: str = Query("")
-) -> GeneComponentResponse:
-    """Construct valid gene component given user-provided term.
+def build_gene_element(request: Request, term: str = Query("")) -> GeneElementResponse:
+    """Construct valid gene element given user-provided term.
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param str term: gene symbol/alias/name/etc
-    :return: Pydantic class with gene component if successful and warnings otherwise
+    :return: Pydantic class with gene element if successful and warnings otherwise
     """
-    gene_component, warnings = request.app.state.fusor.gene_component(term)
+    gene_element, warnings = request.app.state.fusor.gene_element(term)
     if not warnings:
         warnings_l = []
     else:
         warnings_l = [warnings]
-    return GeneComponentResponse(component=gene_component, warnings=warnings_l)
+    return GeneElementResponse(element=gene_element, warnings=warnings_l)
 
 
 @router.get(
-    "/construct/component/tx_segment_ect",
-    operation_id="buildTranscriptSegmentComponentECT",
-    response_model=TxSegmentComponentResponse,
+    "/construct/structural_element/tx_segment_ect",
+    operation_id="buildTranscriptSegmentElementECT",
+    response_model=TxSegmentElementResponse,
     response_model_exclude_none=True,
 )
 async def build_tx_segment_ect(
@@ -54,8 +52,8 @@ async def build_tx_segment_ect(
     exon_start_offset: int = Query(0),
     exon_end: Optional[int] = Query(None),
     exon_end_offset: int = Query(0),
-) -> TxSegmentComponentResponse:
-    """Construct Transcript Segment component by providing transcript and exon
+) -> TxSegmentElementResponse:
+    """Construct Transcript Segment element by providing transcript and exon
         coordinates. Either exon_start or exon_end are required.
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
@@ -64,23 +62,23 @@ async def build_tx_segment_ect(
     :param int exon_start_offset: offset from starting exon
     :param Optional[int] exon_end: number of ending exon
     :param int exon_end_offset: offset from ending exon, 0 by default
-    :return: Pydantic class with TranscriptSegment component if successful, and warnings
+    :return: Pydantic class with TranscriptSegment element if successful, and warnings
         otherwise.
     """
-    tx_segment, warnings = await request.app.state.fusor.transcript_segment_component(
+    tx_segment, warnings = await request.app.state.fusor.transcript_segment_element(
         transcript=transcript,
         exon_start=exon_start,
         exon_start_offset=exon_start_offset,
         exon_end=exon_end,
         exon_end_offset=exon_end_offset,
     )
-    return TxSegmentComponentResponse(component=tx_segment, warnings=warnings)
+    return TxSegmentElementResponse(element=tx_segment, warnings=warnings)
 
 
 @router.get(
-    "/construct/component/tx_segment_gct",
-    operation_id="buildTranscriptSegmentComponentGCT",
-    response_model=TxSegmentComponentResponse,
+    "/construct/structural_element/tx_segment_gct",
+    operation_id="buildTranscriptSegmentElementGCT",
+    response_model=TxSegmentElementResponse,
     response_model_exclude_none=True,
 )
 async def build_tx_segment_gct(
@@ -90,8 +88,8 @@ async def build_tx_segment_gct(
     start: Optional[int] = Query(None),
     end: Optional[int] = Query(None),
     strand: Optional[str] = Query(None),
-) -> TxSegmentComponentResponse:
-    """Construct Transcript Segment component by providing transcript and genomic
+) -> TxSegmentElementResponse:
+    """Construct Transcript Segment element by providing transcript and genomic
     coordinates (chromosome, start, end positions).
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
@@ -99,7 +97,7 @@ async def build_tx_segment_gct(
     :param str chromosome: chromosome (TODO how to identify?)
     :param int start: starting position (TODO assume residue-based?)
     :param int end: ending position
-    :return: Pydantic class with TranscriptSegment component if successful, and
+    :return: Pydantic class with TranscriptSegment element if successful, and
         warnings otherwise.
     """
     if strand is not None:
@@ -108,24 +106,25 @@ async def build_tx_segment_gct(
         except InvalidInputException:
             warning = f"Received invalid strand value: {strand}"
             logger.warning(warning)
-            return TxSegmentComponentResponse(warnings=[warning])
+            return TxSegmentElementResponse(warnings=[warning], element=None)
     else:
         strand_validated = strand
-    tx_segment, warnings = await request.app.state.fusor.transcript_segment_component(
+    tx_segment, warnings = await request.app.state.fusor.transcript_segment_element(
         tx_to_genomic_coords=False,
         transcript=transcript,
         chromosome=chromosome,
         start=start,
         end=end,
         strand=strand_validated,
+        residue_mode="inter-residue",
     )
-    return TxSegmentComponentResponse(component=tx_segment, warnings=warnings)
+    return TxSegmentElementResponse(element=tx_segment, warnings=warnings)
 
 
 @router.get(
-    "/construct/component/tx_segment_gcg",
-    operation_id="buildTranscriptSegmentComponentGCG",
-    response_model=TxSegmentComponentResponse,
+    "/construct/structural_element/tx_segment_gcg",
+    operation_id="buildTranscriptSegmentElementGCG",
+    response_model=TxSegmentElementResponse,
     response_model_exclude_none=True,
 )
 async def build_tx_segment_gcg(
@@ -135,8 +134,8 @@ async def build_tx_segment_gcg(
     start: Optional[int] = Query(None),
     end: Optional[int] = Query(None),
     strand: Optional[str] = Query(None),
-) -> TxSegmentComponentResponse:
-    """Construct Transcript Segment component by providing gene and genomic
+) -> TxSegmentElementResponse:
+    """Construct Transcript Segment element by providing gene and genomic
     coordinates (chromosome, start, end positions).
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
@@ -144,7 +143,7 @@ async def build_tx_segment_gcg(
     :param str chromosome: chromosome (TODO how to identify?)
     :param int start: starting position (TODO assume residue-based?)
     :param int end: ending position
-    :return: Pydantic class with TranscriptSegment component if successful, and
+    :return: Pydantic class with TranscriptSegment element if successful, and
         warnings otherwise.
     """
     if strand is not None:
@@ -153,37 +152,38 @@ async def build_tx_segment_gcg(
         except InvalidInputException:
             warning = f"Received invalid strand value: {strand}"
             logger.warning(warning)
-            return TxSegmentComponentResponse(warnings=[warning])
+            return TxSegmentElementResponse(warnings=[warning], element=None)
     else:
         strand_validated = strand
-    tx_segment, warnings = await request.app.state.fusor.transcript_segment_component(
+    tx_segment, warnings = await request.app.state.fusor.transcript_segment_element(
         tx_to_genomic_coords=False,
         gene=gene,
         chromosome=chromosome,
         strand=strand_validated,
         start=start,
         end=end,
+        residue_mode="inter-residue",
     )
-    return TxSegmentComponentResponse(component=tx_segment, warnings=warnings)
+    return TxSegmentElementResponse(element=tx_segment, warnings=warnings)
 
 
 @router.get(
-    "/construct/component/templated_sequence",
-    operation_id="buildTemplatedSequenceComponent",
-    response_model=TemplatedSequenceComponentResponse,
+    "/construct/structural_element/templated_sequence",
+    operation_id="buildTemplatedSequenceElement",
+    response_model=TemplatedSequenceElementResponse,
     response_model_exclude_none=True,
 )
-def build_templated_sequence_component(
+def build_templated_sequence_element(
     request: Request, start: int, end: int, sequence_id: str, strand: str
-) -> TemplatedSequenceComponentResponse:
-    """Construct templated sequence component
+) -> TemplatedSequenceElementResponse:
+    """Construct templated sequence element
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param int start: genomic starting position
     :param int end: genomic ending position
     :param str sequence_id: chromosome accession for sequence
     :param str strand: chromosome strand - must be one of {'+', '-'}
-    :return: Pydantic class with Templated Sequnce component if successful, or warnings
+    :return: Pydantic class with Templated Sequnce element if successful, or warnings
         otherwise
     """
     try:
@@ -191,15 +191,15 @@ def build_templated_sequence_component(
     except ValueError:
         warning = f"Received invalid strand value: {strand}"
         logger.warning(warning)
-        return TemplatedSequenceComponentResponse(warnings=[warning])
-    component = request.app.state.fusor.templated_sequence_component(
+        return TemplatedSequenceElementResponse(warnings=[warning], element=None)
+    element = request.app.state.fusor.templated_sequence_element(
         start=start,
         end=end,
         sequence_id=sequence_id,
         strand=strand_n,
         add_location_id=True,
     )
-    return TemplatedSequenceComponentResponse(component=component, warnings=[])
+    return TemplatedSequenceElementResponse(element=element, warnings=[])
 
 
 @router.get(
@@ -208,7 +208,7 @@ def build_templated_sequence_component(
     response_model=GetDomainResponse,
     response_model_exclude_none=True,
 )
-def get_domain(
+def build_domain(
     request: Request,
     status: DomainStatus,
     name: str,
