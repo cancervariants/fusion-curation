@@ -1,0 +1,35 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = ">= 0.72.0"
+aiofiles = "*"
+asyncpg = "*"
+psycopg2-binary = "*"
+gene-normalizer = ">=0.1.27"
+uta-tools = ">=0.1.0"
+fusor = ">=0.0.20"
+sqlparse = ">=0.4.2"
+websockets = ">=9.1"
+uvloop = "*"
+httptools = "*"
+urllib3 = ">=1.26.5"
+click = "*"
+
+[dev-packages]
+curation = {editable = true, path = "."}
+pytest = "*"
+pytest-asyncio = "*"
+pytest-cov = "*"
+coverage = "*"
+httpx = "*"
+flake8 = "*"
+flake8-docstrings = "*"
+black = "*"
+pre-commit = "*"
+pydantic-to-typescript = "*"
+
+[requires]
+python_version = "3.9"
