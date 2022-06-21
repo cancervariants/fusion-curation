@@ -3,8 +3,8 @@ from typing import Dict, Any
 
 from fastapi import Query, APIRouter, Request
 
-from curation import ServiceWarning
-from curation.schemas import ResponseDict, AssociatedDomainResponse, SuggestGeneResponse
+from curfu import ServiceWarning
+from curfu.schemas import ResponseDict, AssociatedDomainResponse, SuggestGeneResponse
 
 
 router = APIRouter()

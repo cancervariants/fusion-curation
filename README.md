@@ -1,6 +1,6 @@
-# Gene Fusion Curation
+# CurFu: Curating fusions with the VICC Gene Fusion Guidelines0
 
-Provide an interactive curation tool for describing and representing gene fusions in a computable manner.
+Provide an interactive curation tool for describing and representing gene fusions in a computable manner. Developed to support the [VICC Fusion Guidelines](https://fusions.cancervariants.org/) project.
 
 ## Development
 
@@ -13,81 +13,64 @@ git clone https://github.com/cancervariants/fusion-curation
 cd fusion-curation
 ```
 
-[Install Pipenv](https://pipenv-fork.readthedocs.io/en/latest/#install-pipenv-today) if necessary.
+Ensure that the following data sources are available:
 
-Install backend dependencies and enter Pipenv environment:
+- the [VICC Gene Normalization](https://github.com/cancervariants/gene-normalization) database, accessible from a DynamoDB-compliant service. Set the endpoint address with environment variable `GENE_NORM_DB_URL`; default value is `http://localhost:8000`.
+- the [Biocommons SeqRepo](https://github.com/biocommons/biocommons.seqrepo) database. Provide local path with environment variable `SEQREPO_DATA_PATH`; default value is `/usr/local/share/seqrepo/latest`.
+- the [Biocommons Universal Transcript Archive](https://github.com/biocommons/uta), by way of VICC's [UTA Tools](https://github.com/GenomicMedLab/uta-tools) package. Connection parameters to the Postgres database are set most easily as a [Libpq-compliant URL](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) under the environment variable `UTA_DB_URL`.
 
-```commandline
-pipenv lock
-pipenv sync
-pipenv shell
-```
-
-Set up [uta](https://github.com/biocommons/uta):
-
-_The following commands will likely need modification appropriate for the installation environment._
-1. Install [PostgreSQL](https://www.postgresql.org/)
-2. Create user and database.
+Create a virtual environment for the server and install. Note: there's also a Pipfile so you can skip the virtualenv steps if you'd rather use a Pipenv instance instead of virtualenv/venv. I have been sticking with the latter because [Pipenv doesn't play well with entry points in development](https://stackoverflow.com/a/69225249), but if you aren't editing them in `setup.cfg`, then the former should be fine.
 
 ```commandline
-createuser -U postgres uta_admin
-createuser -U postgres anonymous
-createdb -U postgres -O uta_admin uta
+cd server  # regardless of your environment decision, build it in server/
+virtualenv venv
+source venv/bin/activate
+python3 -m pip install -e ".[dev,tests]"
 ```
 
-3. To install locally, from the _curation/data_ directory:
+Acquire two sets of static assets and place all of them within the `server/curation/data` directory:
+
+1. Gene autocomplete files, providing legal gene search terms to the client autocomplete component. One file each is used for entity types `aliases`, `assoc_with`, `xrefs`, `prev_symbols`, `labels`, and `symbols`. Each should be named according to the pattern `gene_<type>_<YYYYMMDD>.tsv`. These can be regenerated with the shell command `fc_devtools genes`.
+
+2. Domain lookup file, for use in providing possible functional domains for user-selected genes in the client. This should be named according to the pattern `domain_lookup_YYYYMMDD.tsv`. These can be regenerated with the shell command `fc_devtools domains`, although this is an extremely time- and storage-intensive process.
+
+Your data/directory should look something like this:
+
 ```
-UTA_VERSION = uta_20210129.pgd.gz
-curl -O http://dl.biocommons.org/uta/$UTA_VERSION
-gzip -cdq ${UTA_VERSION} | grep -v "^REFRESH MATERIALIZED VIEW" | psql -h localhost -U uta_admin --echo-errors --single-transaction -v ON_ERROR_STOP=1 -d uta -p 5433
+curation/data
+├── domain_lookup_2022-01-20.tsv
+├── gene_aliases_suggest_20211025.tsv
+├── gene_assoc_with_suggest_20211025.tsv
+├── gene_labels_suggest_20211025.tsv
+├── gene_prev_symbols_suggest_20211025.tsv
+├── gene_symbols_suggest_20211025.tsv
+└── gene_xrefs_suggest_20211025.tsv
 ```
 
-To connect to the UTA database, you can use the default url (`postgresql://uta_admin@localhost:5433/uta/uta_20210129`). If you use the default url, you must either set the password using environment variable `UTA_PASSWORD` or setting the parameter `db_pwd` in the UTA class.
-
-If you do not wish to use the default, you must set the environment variable `UTA_DB_URL` which has the format of `driver://user:pass@host/database/schema`.
-
-Set up [SeqRepo](https://github.com/biocommons/biocommons.seqrepo):
+Finally, start backend service with `fc_serve`, by default on port 5000. Alternative ports can be selected like so:
 
 ```commandline
-# within fusion-curation root directory
-pipenv shell # if not already within pipenv shell
-cd curation
-mkdir data
-seqrepo -r data/seqrepo pull -i 2021-01-29
-sudo chmod -R u+w data/seqrepo
-cd data/seqrepo
-seqrepo_date_dir=$(ls -d */)
-sudo mv $seqrepo_date_dir latest
+fc_serve -p 5001
 ```
 
-Alternate SeqRepo locations can be specified with the environment variable `SEQREPO_DATA_PATH`.
-
-The backend requires local DynamoDB service with tables initialized by the [Gene Normalization service](https://github.com/cancervariants/gene-normalization), listening on port 8000. See the Gene Normalizer documentation for initialization information.
-
-Backend domain and gene autocomplete services require generation of their respective indexes.
+In another shell, navigate to the repo `client/` directory and install frontend dependencies:
 
 ```commandline
-curutils build-genes
-curutils build-domains
-```
-
-In a terminal running the Pipenv Python environment, start a Uvicorn process to serve the FastAPI backend:
-
-```commandline
-curserve
-```
-
-In a separate terminal, install frontend dependencies and start the React development server:
-
-```commandline
+cd client
 yarn install
+```
+
+Then start the development server:
+
+```commandline
 yarn start
 ```
 
-Then proceed to http://localhost:3000/ in a browser window.
+### Shared type definitions
+
+The frontend utilizes Typescript definitions generated from the backend pydantic schema. These can be refreshed, from the server environment, with the command `fc_devtools client-types`.
 
 ### Style
-
 
 Python code style is enforced by [flake8](https://github.com/PyCQA/flake8), and frontend style is enforced by [ESLint](https://eslint.org/). Conformance is ensured by [pre-commit](https://pre-commit.com/#usage). Before your first commit, run
 
@@ -95,20 +78,6 @@ Python code style is enforced by [flake8](https://github.com/PyCQA/flake8), and 
 pre-commit install
 ```
 
-### UI Version 2
-The most recent UI updates can be found in the client directory. It currently makes use of dummy data via the testAPI directory. 
+### Tests
 
-To run this version (from the root directory):
-```commandline
-cd client/testAPI
-npm i
-node app
-```
-
-In a separate terminal (from the root directory):
-```commandline
-cd client
-yarn install
-yarn start
-```
-Navigate to http://localhost:3000/ to test the application locally (the server should be running on port 9000)
+So far, we've heavily privileged integration rather than unit tests for the backend,

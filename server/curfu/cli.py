@@ -5,10 +5,10 @@ from pathlib import Path
 import uvicorn
 import click
 
-from curation.devtools import DEFAULT_INTERPRO_TYPES
-from curation.devtools.build_client_types import build_client_types
-from curation.devtools.interpro import build_gene_domain_maps
-from curation.devtools.gene import GeneSuggestionBuilder
+from curfu.devtools import DEFAULT_INTERPRO_TYPES
+from curfu.devtools.build_client_types import build_client_types
+from curfu.devtools.interpro import build_gene_domain_maps
+from curfu.devtools.gene import GeneSuggestionBuilder
 
 
 @click.command()
@@ -18,7 +18,7 @@ def serve(port: int) -> None:
     \f
     :param int port: port to serve at (default: 5000)
     """
-    uvicorn.run("curation.main:app", port=port, reload=True)
+    uvicorn.run("curfu.main:app", port=port, reload=True)
 
 
 @click.group()

@@ -9,7 +9,7 @@ import csv
 import os
 from pathlib import Path
 
-from curation import APP_ROOT, logger, ServiceWarning
+from curfu import APP_ROOT, logger, ServiceWarning
 
 
 class DomainService:

@@ -1,8 +1,8 @@
 """Provide routes for basic data lookup endpoints"""
 from fastapi import Query, Request, APIRouter
 
-from curation import ServiceWarning
-from curation.schemas import ResponseDict, NormalizeGeneResponse
+from curfu import ServiceWarning
+from curfu.schemas import ResponseDict, NormalizeGeneResponse
 
 
 router = APIRouter()

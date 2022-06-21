@@ -5,16 +5,16 @@ from fastapi.staticfiles import StaticFiles
 from fusor import FUSOR, __version__ as fusor_version
 from uta_tools.version import __version__ as uta_tools_version
 
-from curation import APP_ROOT
-from curation.version import __version__ as curation_version
-from curation.schemas import ServiceInfoResponse
-from curation.gene_services import GeneService
-from curation.domain_services import DomainService
-from curation.routers import utilities, constructors, lookup, complete
+from curfu import APP_ROOT
+from curfu.version import __version__ as curfu_version
+from curfu.schemas import ServiceInfoResponse
+from curfu.gene_services import GeneService
+from curfu.domain_services import DomainService
+from curfu.routers import utilities, constructors, lookup, complete
 
 
 app = FastAPI(
-    version=curation_version,
+    version=curfu_version,
     swagger_ui_parameters={"tryItOutEnabled": True},
     docs_url="/docs",
     openapi_url="/openapi.json",
@@ -87,7 +87,7 @@ def get_service_info() -> ServiceInfoResponse:
     """Return service info."""
     return ServiceInfoResponse(
         **{
-            "fusion_curation_version": curation_version,
+            "curfu_version": curfu_version,
             # "vrs_python_version": vrs_version,
             "uta_tools_version": uta_tools_version,
             "fusor_version": fusor_version,

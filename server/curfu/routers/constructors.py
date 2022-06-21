@@ -5,15 +5,15 @@ from fastapi import Query, Request, APIRouter
 from pydantic import ValidationError
 from fusor.models import Strand, DomainStatus
 
-from curation import logger
-from curation.schemas import (
+from curfu import logger
+from curfu.schemas import (
     GeneElementResponse,
     TxSegmentElementResponse,
     TemplatedSequenceElementResponse,
     GetDomainResponse,
     ResponseDict,
 )
-from curation.sequence_services import get_strand, InvalidInputException
+from curfu.sequence_services import get_strand, InvalidInputException
 
 router = APIRouter()
 

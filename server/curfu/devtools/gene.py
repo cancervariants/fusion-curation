@@ -7,7 +7,7 @@ from timeit import default_timer as timer
 from gene.query import QueryHandler
 import click
 
-from curation import APP_ROOT, logger
+from curfu import APP_ROOT, logger
 
 
 # type stub

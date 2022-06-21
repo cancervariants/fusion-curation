@@ -224,7 +224,7 @@ class GetTranscriptsResponse(Response):
 class ServiceInfoResponse(Response):
     """Response model for service_info endpoint."""
 
-    fusion_curation_version: StrictStr
+    curfu_version: StrictStr
     fusor_version: StrictStr
     uta_tools_version: StrictStr
     # TODO -- get VRS version (?), UTA version

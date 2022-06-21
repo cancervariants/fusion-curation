@@ -12,8 +12,8 @@ import xml.etree.ElementTree as ET
 from gene.query import QueryHandler
 import click
 
-from curation import APP_ROOT, logger
-from curation.devtools import ftp_download
+from curfu import APP_ROOT, logger
+from curfu.devtools import ftp_download
 
 # uniprot accession id -> (normalized ID, normalized label)
 UniprotRefs = Dict[str, Tuple[str, str]]

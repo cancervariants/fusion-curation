@@ -5,7 +5,7 @@ import pytest
 import asyncio
 from httpx import AsyncClient
 
-from curation.main import app, start_fusor, get_gene_services, get_domain_services
+from curfu.main import app, start_fusor, get_gene_services, get_domain_services
 
 
 @pytest.fixture(scope="session")

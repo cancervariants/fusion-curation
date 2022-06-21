@@ -4,13 +4,13 @@ from typing import Dict, Optional, List, Any
 from fastapi import APIRouter, Request
 from gene import schemas as GeneSchemas
 
-from curation import logger
-from curation.schemas import (
+from curfu import logger
+from curfu.schemas import (
     GetTranscriptsResponse,
     CoordsUtilsResponse,
     SequenceIDResponse,
 )
-from curation.sequence_services import get_strand, InvalidInputException
+from curfu.sequence_services import get_strand, InvalidInputException
 
 
 router = APIRouter()
