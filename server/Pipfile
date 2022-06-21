@@ -19,7 +19,6 @@ urllib3 = ">=1.26.5"
 click = "*"
 
 [dev-packages]
-curation = {editable = true, path = "."}
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
