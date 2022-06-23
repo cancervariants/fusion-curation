@@ -1,6 +1,8 @@
-# CurFu: Curating fusions with the VICC Gene Fusion Guidelines0
+<h1 align="center">
+CurFu: Curating fusions with the VICC Gene Fusion Guidelines
+</h1>
 
-Provide an interactive curation tool for describing and representing gene fusions in a computable manner. Developed to support the [VICC Fusion Guidelines](https://fusions.cancervariants.org/) project.
+CurFu is an interactive curation tool for describing and representing gene fusions in a computable manner. It's developed to support the [VICC Fusion Guidelines](https://fusions.cancervariants.org/) project.
 
 ## Development
 
@@ -30,9 +32,9 @@ python3 -m pip install -e ".[dev,tests]"
 
 Acquire two sets of static assets and place all of them within the `server/curation/data` directory:
 
-1. Gene autocomplete files, providing legal gene search terms to the client autocomplete component. One file each is used for entity types `aliases`, `assoc_with`, `xrefs`, `prev_symbols`, `labels`, and `symbols`. Each should be named according to the pattern `gene_<type>_<YYYYMMDD>.tsv`. These can be regenerated with the shell command `fc_devtools genes`.
+1. Gene autocomplete files, providing legal gene search terms to the client autocomplete component. One file each is used for entity types `aliases`, `assoc_with`, `xrefs`, `prev_symbols`, `labels`, and `symbols`. Each should be named according to the pattern `gene_<type>_<YYYYMMDD>.tsv`. These can be regenerated with the shell command `curfu_devtools genes`.
 
-2. Domain lookup file, for use in providing possible functional domains for user-selected genes in the client. This should be named according to the pattern `domain_lookup_YYYYMMDD.tsv`. These can be regenerated with the shell command `fc_devtools domains`, although this is an extremely time- and storage-intensive process.
+2. Domain lookup file, for use in providing possible functional domains for user-selected genes in the client. This should be named according to the pattern `domain_lookup_YYYYMMDD.tsv`. These can be regenerated with the shell command `curfu_devtools domains`, although this is an extremely time- and storage-intensive process.
 
 Your data/directory should look something like this:
 
@@ -47,10 +49,10 @@ curation/data
 └── gene_xrefs_suggest_20211025.tsv
 ```
 
-Finally, start backend service with `fc_serve`, by default on port 5000. Alternative ports can be selected like so:
+Finally, start backend service with `curfu_serve`, by default on port 5000. Alternative ports can be selected like so:
 
 ```commandline
-fc_serve -p 5001
+curfu_serve -p 5001
 ```
 
 In another shell, navigate to the repo `client/` directory and install frontend dependencies:
@@ -68,7 +70,7 @@ yarn start
 
 ### Shared type definitions
 
-The frontend utilizes Typescript definitions generated from the backend pydantic schema. These can be refreshed, from the server environment, with the command `fc_devtools client-types`.
+The frontend utilizes Typescript definitions generated from the backend pydantic schema. These can be refreshed, from the server environment, with the command `curfu_devtools client-types`.
 
 ### Style
 
