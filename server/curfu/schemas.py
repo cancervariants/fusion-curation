@@ -6,6 +6,7 @@ from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 from fusor.models import (
     AssayedFusion,
     CategoricalFusion,
+    Fusion,
     TranscriptSegmentElement,
     LinkerElement,
     TemplatedSequenceElement,
@@ -176,6 +177,12 @@ class AssociatedDomainResponse(Response):
     suggestions: Optional[List[DomainParams]]
 
 
+class ValidateFusionResponse(Response):
+    """Response model for Fusion validation endpoint."""
+
+    fusion: Optional[Fusion]
+
+
 class ExonCoordsRequest(BaseModel):
     """Request model for genomic coordinates retrieval"""
 
@@ -227,7 +234,11 @@ class ServiceInfoResponse(Response):
     curfu_version: StrictStr
     fusor_version: StrictStr
     uta_tools_version: StrictStr
-    # TODO -- get VRS version (?), UTA version
+
+    # consider additional tool versions:
+    # - UTA (need to add a method to UTA tools)
+    # - vrs/vrs-python
+    # - the gene normalizer
 
 
 class ClientCategoricalFusion(CategoricalFusion):

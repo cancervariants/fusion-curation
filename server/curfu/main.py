@@ -10,7 +10,7 @@ from curfu.version import __version__ as curfu_version
 from curfu.schemas import ServiceInfoResponse
 from curfu.gene_services import GeneService
 from curfu.domain_services import DomainService
-from curfu.routers import utilities, constructors, lookup, complete
+from curfu.routers import utilities, constructors, lookup, complete, validate
 
 
 app = FastAPI(
@@ -24,6 +24,7 @@ app.include_router(utilities.router)
 app.include_router(constructors.router)
 app.include_router(lookup.router)
 app.include_router(complete.router)
+app.include_router(validate.router)
 
 origins = ["http://localhost", "http://localhost:3000"]
 
