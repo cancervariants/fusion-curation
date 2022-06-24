@@ -49,10 +49,10 @@ curation/data
 └── gene_xrefs_suggest_20211025.tsv
 ```
 
-Finally, start backend service with `curfu_serve`, by default on port 5000. Alternative ports can be selected like so:
+Finally, start backend service with `curfu`, by default on port 5000. Alternative ports can be selected like so:
 
 ```commandline
-curfu_serve -p 5001
+curfu -p 5001
 ```
 
 In another shell, navigate to the repo `client/` directory and install frontend dependencies:
