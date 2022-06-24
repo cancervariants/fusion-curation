@@ -19,6 +19,7 @@ urllib3 = ">=1.26.5"
 click = "*"
 
 [dev-packages]
+curfu = {editable = true, path = "."}
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
