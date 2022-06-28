@@ -1,11 +1,23 @@
-import React from 'react';
+/*
+TODO:
+ * Style assayed/categorical buttons
+ * better "disabled" styling for continue button when fusion type not selected,
+   and for restricted tabs
+*/
+import React, { useContext } from 'react';
+
+// Global fusion
+import { FusionContext } from '../../../global/contexts/FusionContext';
 
 // Pages
+import { FusionType } from '../../Pages/FusionType/FusionType';
 import { Structure } from '../../Pages/Structure/Main/Structure';
 import { RegElement } from '../../Pages/RegElement/Main/RegElement';
 import { Summary } from '../../Pages/Summary/Main/Summary';
 import { Domain } from '../../Pages/Domains/Main/Domains';
-import { OtherAttribs } from '../../Pages/OtherAttribs/OtherAttribs';
+import { ReadingFrame } from '../../Pages/ReadingFrame/ReadingFrame';
+import { CausativeEvent } from '../../Pages/CausativeEvent/CausativeEvent';
+import { Assay } from '../../Pages/Assay/Assay';
 
 // MUI Stuff
 import { makeStyles, Theme } from '@material-ui/core/styles';
@@ -22,11 +34,8 @@ interface TabPanelProps {
   value: any;
 }
 
-
 function TabPanel(props: TabPanelProps) {
-
   const { children, value, index, ...other } = props;
-
   return (
     <div
       hidden={value !== index}
@@ -53,6 +62,7 @@ function a11yProps(index) {
 interface LinkTabProps {
   label?: string;
   href?: string;
+  disabled?: boolean;
 }
 
 function LinkTab(props: LinkTabProps) {
@@ -68,7 +78,10 @@ function LinkTab(props: LinkTabProps) {
 }
 
 export default function NavTabs(): React.ReactElement {
+  const { fusion } = useContext(FusionContext);
+  const [visibleTab, setVisibleTab] = React.useState(0);
 
+  const { colorTheme } = useColorTheme();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -95,19 +108,14 @@ export default function NavTabs(): React.ReactElement {
       borderBottom: `1px solid ${colorTheme['--medium-gray']}`
     },
   }));
-
-
-  const { colorTheme } = useColorTheme();
-
   const classes = useStyles();
-  const [value, setValue] = React.useState(0); // current visible tab
 
-  const handleChange = (event: unknown, newValue: number) => {
-    setValue(newValue);
+
+  const updateVisibleTab = (event: unknown, newIndex: number) => {
+    setVisibleTab(newIndex);
   };
 
   return (
-
     <div className="nav-tabs">
       <AppBar elevation={0} position="static">
         <Tabs
@@ -115,53 +123,76 @@ export default function NavTabs(): React.ReactElement {
             indicator: classes.indicator
           }}
           variant="fullWidth"
-          value={value}
-          onChange={handleChange}
+          value={visibleTab}
+          onChange={updateVisibleTab}
           aria-label="nav tabs example"
           className={classes.enabledtabs}
         >
-          {/* <LinkTab label="Gene" href="/drafts" {...a11yProps(0)}  /> */}
-          <LinkTab label="Structure" href="/drafts" {...a11yProps(0)} />
-          <LinkTab label="Regulatory Element" href="/trash" {...a11yProps(1)} />
-          <LinkTab label="Domains" href="/spam" {...a11yProps(2)} />
-          <LinkTab label="Other Attributes" href="/spam" {...a11yProps(3)} />
-          <LinkTab label="Summary" href="/spam" {...a11yProps(4)} />
+          <LinkTab label="Type" href="/" {...a11yProps(0)} />
+          <LinkTab label="Structure" href="/" disabled={fusion.type == null} {...a11yProps(1)} />
+          <
+            LinkTab label="Regulatory Element" href="/" disabled={fusion.type == null}
+            {...a11yProps(2)}
+          />
+          {fusion.type === 'CategoricalFusion' ?
+            <LinkTab label="Domain" href="/" {...a11yProps(3)} />
+            : fusion.type === 'AssayedFusion' ?
+              <LinkTab label="Event" href="/" {...a11yProps(3)} />
+              : <></>
+          }
+          {fusion.type === 'CategoricalFusion' ?
+            <LinkTab label="Reading Frame" href="/" {...a11yProps(4)} />
+            : fusion.type === 'AssayedFusion' ?
+              <LinkTab label="Assay" href="/" {...a11yProps(4)} />
+              : <></>
+          }
+          <LinkTab label="Summary" href="/" disabled={fusion.type == null} {...a11yProps(5)} />
         </Tabs>
       </AppBar>
       <div className="tab-panel">
-        {/* <TabPanel value={value} index={0} >
-          <Gene index={1}/>
-        </TabPanel> */}
-        <TabPanel value={value} index={0}>
+        <TabPanel value={visibleTab} index={0}>
+          <FusionType index={0} />
+        </TabPanel>
+        <TabPanel value={visibleTab} index={1}>
           <Structure index={1} />
         </TabPanel>
-        <TabPanel value={value} index={1}>
-          <RegElement index={1} />
+        <TabPanel value={visibleTab} index={2}>
+          <RegElement index={2} />
         </TabPanel>
-        <TabPanel value={value} index={2}>
-          <Domain index={1} />
+        <TabPanel value={visibleTab} index={3}>
+          {fusion.type === 'CategoricalFusion' ?
+            <Domain index={3} />
+            : fusion.type === 'AssayedFusion' ?
+              <CausativeEvent index={3} />
+              : <></>
+          }
         </TabPanel>
-        <TabPanel value={value} index={3}>
-          <OtherAttribs index={1} />
+        <TabPanel value={visibleTab} index={4}>
+          {fusion.type === 'CategoricalFusion' ?
+            <ReadingFrame index={4} />
+            : fusion.type === 'AssayedFusion' ?
+              <Assay index={3} />
+              : <></>
+          }
         </TabPanel>
-        <TabPanel value={value} index={4}>
-          <Summary index={1} />
+        <TabPanel value={visibleTab} index={5}>
+          <Summary index={5} />
         </TabPanel>
       </div>
 
       <div className="footer">
-        {value !== 0 ?
+        {visibleTab !== 0 ?
           <div className="previous">
             <Button
               className={classes.previous}
-              onClick={(event) => handleChange(event, value - 1)}
+              onClick={(event) => updateVisibleTab(event, visibleTab - 1)}
               variant="contained" color="primary"
             >
               Back
             </Button>
           </div>
           : null}
-        {value !== 4 ?
+        {visibleTab !== 5 ?
           <div className="continue">
             <Button
               style={
@@ -170,8 +201,9 @@ export default function NavTabs(): React.ReactElement {
                   marginLeft: 'auto'
                 }
               }
-              onClick={(event) => handleChange(event, value + 1)}
+              onClick={(event) => updateVisibleTab(event, visibleTab + 1)}
               variant="contained" color="primary"
+              disabled={!fusion.type}
             >
               Continue
             </Button>
