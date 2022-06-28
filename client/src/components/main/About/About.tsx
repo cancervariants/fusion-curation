@@ -4,6 +4,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { getInfo } from '../../../services/main';
 import { ServiceInfoResponse } from '../../../services/ResponseModels';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import './About.scss';
 
 interface AboutProps {
@@ -28,11 +29,13 @@ const About: React.FC<AboutProps> = ({ show, setShow }) => {
       aria-labelledby="simple-dialog-title"
       open={show}
       onClose={() => setShow(false)}
+      maxWidth="sm"
+      fullWidth={true}
     >
       <DialogTitle id="simple-dialog-title">
         {
-          'version' in serviceInfo ?
-            `Fusion Curation v${serviceInfo.version}`
+          'fusion_curation_version' in serviceInfo ?
+            `Fusion Curation v${serviceInfo.fusion_curation_version}`
             : 'version lookup failed'
         }
       </DialogTitle>
@@ -41,13 +44,14 @@ const About: React.FC<AboutProps> = ({ show, setShow }) => {
         <ListItem
           button
           component='a'
-          href='https://cancervariants.org/projects/fusions'
+          href='https://fusions.cancervariants.org'
           target='_blank'
           rel='noopener'
         >
           <ListItemText>
-            Project Homepage
+            Fusion Guidelines Homepage
           </ListItemText>
+          <ArrowForwardIosIcon style={{ fontSize: 20 }}/>
         </ListItem>
         <ListItem
           button
@@ -59,6 +63,19 @@ const About: React.FC<AboutProps> = ({ show, setShow }) => {
           <ListItemText>
             Code Repository
           </ListItemText>
+          <ArrowForwardIosIcon style={{ fontSize: 20 }}/>
+        </ListItem>
+        <ListItem
+          button
+          component='a'
+          href='https://cancervariants.org/'
+          target='_blank'
+          rel='noopener'
+        >
+          <ListItemText>
+            Variant Interpretation for Cancer Consortium
+          </ListItemText>
+          <ArrowForwardIosIcon style={{ fontSize: 20 }}/>
         </ListItem>
       </List>
     </Dialog >
