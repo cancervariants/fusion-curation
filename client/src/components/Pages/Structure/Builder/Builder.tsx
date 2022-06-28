@@ -1,32 +1,34 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+// core components
 import React, { useContext, useEffect } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { v4 as uuid } from 'uuid';
+// global fusion
 import { FusionContext } from '../../../../global/contexts/FusionContext';
-import { ClientComponentUnion } from '../../../../services/main';
+// elements
+import { ClientElementUnion } from '../../../../services/main';
 import {
-  ClientAnyGeneComponent, ClientUnknownGeneComponent,
+  ClientMultiplePossibleGenesElement, ClientUnknownGeneElement,
 } from '../../../../services/ResponseModels';
-import GeneCompInput from '../Input/GeneCompInput/GeneCompInput';
-import LinkerCompInput from '../Input/LinkerCompInput/LinkerCompInput';
-import StaticComponent from '../Input/StaticComponent/StaticComponent';
-import TemplatedSequenceCompInput from
-  '../Input/TemplatedSequenceCompInput/TemplatedSequenceCompInput';
-import TxSegmentCompInput from '../Input/TxSegmentCompInput/TxSegmentCompInput';
+import GeneElementInput from '../Input/GeneElementInput/GeneElementInput';
+import LinkerElementInput from '../Input/LinkerElementInput/LinkerElementInput';
+import StaticElement from '../Input/StaticElement/StaticElement';
+import TemplatedSequenceElementInput from
+  '../Input/TemplatedSequenceElementInput/TemplatedSequenceElementInput';
+import TxSegmentElementInput from '../Input/TxSegmentElementInput/TxSegmentElementInput';
+// style
 import './Builder.scss';
-// import { unstable_createMuiStrictModeTheme } from '@material-ui/core';
 
-const EDITABLE_COMPONENT_TYPES = [
-  'gene', 'linker_sequence', 'templated_sequence', 'transcript_segment'
+const EDITABLE_ELEMENT_TYPES = [
+  'GeneElement', 'LinkerSequenceElement', 'TemplatedSequenceElement', 'TranscriptSegmentElement'
 ];
 
 // these are the empty object templates the user drags into the array
 // TODO: should be dynamic (?)
-const COMPONENT_TEMPLATE = [
+const ELEMENT_TEMPLATE = [
   {
-    component_type: 'gene',
-    component_name: '',
-    component_id: uuid(),
+    type: 'GeneElement',
+    element_name: '',
+    element_id: uuid(),
     gene_descriptor: {
       id: '',
       type: '',
@@ -35,9 +37,9 @@ const COMPONENT_TEMPLATE = [
     }
   },
   {
-    component_type: 'transcript_segment',
-    component_name: '',
-    component_id: uuid(),
+    type: 'TranscriptSegmentElement',
+    element_name: '',
+    element_id: uuid(),
     exon_start: null,
     exon_start_offset: null,
     exon_end: null,
@@ -50,16 +52,15 @@ const COMPONENT_TEMPLATE = [
     }
   },
   {
-    component_name: '',
-    component_type: 'linker_sequence',
-    component_id: uuid(),
+    element_name: '',
+    type: 'LinkerSequenceElement',
+    element_id: uuid(),
   },
   {
-    component_name: '',
-    component_type: 'templated_sequence',
-    component_id: uuid(),
+    element_name: '',
+    type: 'TemplatedSequenceElement',
+    element_id: uuid(),
     id: '',
-    type: '',
     location: {
       sequence_id: '',
       type: '',
@@ -77,15 +78,15 @@ const COMPONENT_TEMPLATE = [
     },
   },
   {
-    component_name: '*',
-    component_type: 'any_gene',
-    component_id: uuid(),
-    hr_name: '*',
+    element_name: 'v',
+    type: 'MultiplePossibleGenesElement',
+    element_id: uuid(),
+    hr_name: 'v',
   },
   {
-    component_name: '?',
-    component_type: 'unknown_gene',
-    component_id: uuid(),
+    element_name: '?',
+    type: 'UnknownGeneElement',
+    element_id: uuid(),
     hr_name: '?'
   }
 ];
@@ -95,63 +96,63 @@ const Builder: React.FC = () => {
   const { fusion, setFusion } = useContext(FusionContext);
 
   useEffect(() => {
-    if (!('structural_components' in fusion)) {
+    if (!('structural_elements' in fusion)) {
       setFusion({
         ...fusion,
-        ...{ 'structural_components': [] }
+        ...{ 'structural_elements': [] }
       });
     }
   }, [fusion]);
 
-  // drop new component into structure
+  // drop new element into structure
   const createNew = (result: DropResult) => {
     const { source, destination } = result;
-    const sourceClone = Array.from(COMPONENT_TEMPLATE);
-    const destClone = Array.from(fusion.structural_components);
+    const sourceClone = Array.from(ELEMENT_TEMPLATE);
+    const destClone = Array.from(fusion.structural_elements);
     const item = sourceClone[source.index];
     const newItem = Object.assign({}, item);
-    newItem.component_id = uuid();
+    newItem.element_id = uuid();
     destClone.splice(destination.index, 0, newItem);
-    setFusion({ ...fusion, ...{ 'structural_components': destClone } });
+    setFusion({ ...fusion, ...{ 'structural_elements': destClone } });
 
-    // auto-save components that don't need any additional input
+    // auto-save elements that don't need any additional input
     // TODO shouldn't need explicit autosave
-    if (['any_gene', 'unknown_gene'].includes(newItem.component_type)) {
+    if (['AnyGeneElement', 'UnknownGeneElement'].includes(newItem.type)) {
       handleSave(
-        destination.index, newItem as ClientAnyGeneComponent | ClientUnknownGeneComponent
+        destination.index, newItem as ClientMultiplePossibleGenesElement | ClientUnknownGeneElement
       );
     }
   };
 
   const reorder = (result: DropResult) => {
     const { source, destination } = result;
-    const sourceClone = Array.from(fusion.structural_components);
-    const [movedComponent] = sourceClone.splice(source.index, 1);
-    sourceClone.splice(destination.index, 0, movedComponent);
-    setFusion({ ...fusion, ...{ 'structural_components': sourceClone } });
+    const sourceClone = Array.from(fusion.structural_elements);
+    const [movedElement] = sourceClone.splice(source.index, 1);
+    sourceClone.splice(destination.index, 0, movedElement);
+    setFusion({ ...fusion, ...{ 'structural_elements': sourceClone } });
   };
 
   // Update global fusion object
-  const handleSave = (index: number, newComponent: ClientComponentUnion) => {
-    const items = Array.from(fusion.structural_components);
-    const spliceLength = EDITABLE_COMPONENT_TYPES.includes(newComponent.component_type) ? 1 : 0;
-    items.splice(index, spliceLength, newComponent);
-    setFusion({ ...fusion, ...{ 'structural_components': items } });
+  const handleSave = (index: number, newElement: ClientElementUnion) => {
+    const items = Array.from(fusion.structural_elements);
+    const spliceLength = EDITABLE_ELEMENT_TYPES.includes(newElement.type) ? 1 : 0;
+    items.splice(index, spliceLength, newElement);
+    setFusion({ ...fusion, ...{ 'structural_elements': items } });
   };
 
   const handleDelete = (uuid: string) => {
-    let items: Array<ClientComponentUnion> = Array.from(fusion.structural_components);
-    items = items.filter(item => item.component_id !== uuid);
-    setFusion({ ...fusion, ...{ 'structural_components': items } });
+    let items: Array<ClientElementUnion> = Array.from(fusion.structural_elements);
+    items = items.filter(item => item.element_id !== uuid);
+    setFusion({ ...fusion, ...{ 'structural_elements': items } });
   };
 
-  const formatType = {
-    gene: 'Gene',
-    transcript_segment: 'Transcript Segment',
-    linker_sequence: 'Linker Sequence',
-    templated_sequence: 'Templated Sequence',
-    any_gene: 'Any Gene',
-    unknown_gene: 'Unknown Gene'
+  const elementNameMap = {
+    GeneElement: 'Gene',
+    TranscriptSegmentElement: 'Transcript Segment',
+    LinkerSequenceElement: 'Linker Sequence',
+    TemplatedSequenceElement: 'Templated Sequence',
+    MultiplePossibleGenesElement: 'Multiple Possible Genes',
+    UnknownGeneElement: 'Unknown Gene'
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -164,23 +165,23 @@ const Builder: React.FC = () => {
     }
   };
 
-  const renderComponent = (
-    component: ClientComponentUnion, index: number,
+  const renderElement = (
+    element: ClientElementUnion, index: number,
   ) => {
-    switch (component.component_type) {
-      case 'gene':
-        return (<GeneCompInput {...{ component, index, handleDelete, handleSave }} />);
-      case 'linker_sequence':
-        return (<LinkerCompInput {...{ component, index, handleDelete, handleSave }} />);
-      case 'templated_sequence':
-        return (<TemplatedSequenceCompInput {
-          ...{ component, index, handleDelete, handleSave }
+    switch (element.type) {
+      case 'GeneElement':
+        return (<GeneElementInput {...{ element, index, handleDelete, handleSave }} />);
+      case 'LinkerSequenceElement':
+        return (<LinkerElementInput {...{ element, index, handleDelete, handleSave }} />);
+      case 'TemplatedSequenceElement':
+        return (<TemplatedSequenceElementInput {
+          ...{ element, index, handleDelete, handleSave }
         } />);
-      case 'transcript_segment':
-        return (<TxSegmentCompInput {...{ component, index, handleDelete, handleSave }} />);
-      case 'any_gene':
-      case 'unknown_gene':
-        return (<StaticComponent {...{ component, index, handleDelete }} />);
+      case 'TranscriptSegmentElement':
+        return (<TxSegmentElementInput {...{ element, index, handleDelete, handleSave }} />);
+      case 'MultiplePossibleGenesElement':
+      case 'UnknownGeneElement':
+        return (<StaticElement {...{ element, index, handleDelete }} />);
     }
   };
 
@@ -194,41 +195,47 @@ const Builder: React.FC = () => {
               ref={provided.innerRef}
             >
               <div className='options-container'>
-                {COMPONENT_TEMPLATE.map(({ component_id, component_type }, index) => (
-                  <Draggable
-                    key={component_id}
-                    draggableId={component_id}
-                    index={index}
-                  >
-                    {(provided, snapshot) => {
-                      return (<React.Fragment>
-                        <div
-                          ref={provided.innerRef}
-                          className={`option-item ${component_type}`}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          style={{
-                            ...provided.draggableProps.style,
-                            transform: snapshot.isDragging
-                              ? provided.draggableProps.style?.transform
-                              : 'translate(0px, 0px)',
-                          }}
-                        >
-                          {formatType[component_type]}
-                        </div>
-                        {snapshot.isDragging && (
-                          <div
-                            style={{ transform: 'none !important' }}
-                            key={component_id}
-                            className={`option-item clone ${component_type}`}
-                          >
-                            {formatType[component_type]}
-                          </div>
-                        )}
-                      </React.Fragment>);
-                    }}
-                  </Draggable>
-                ))}
+                {ELEMENT_TEMPLATE.filter(element => (
+                  fusion.type === 'AssayedFusion' && element.type !== 'MultiplePossibleGenesElement'
+                ) || (fusion.type === 'CategoricalFusion' && element.type !== 'UnknownGeneElement')
+                )
+                  .map(({ element_id, type }, index) => (
+                    <Draggable
+                      key={element_id}
+                      draggableId={element_id}
+                      index={index}
+                    >
+                      {(provided, snapshot) => {
+                        return (
+                          <React.Fragment>
+                            <div
+                              ref={provided.innerRef}
+                              className={`option-item ${type}`}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={{
+                                ...provided.draggableProps.style,
+                                transform: snapshot.isDragging
+                                  ? provided.draggableProps.style?.transform
+                                  : 'translate(0px, 0px)',
+                              }}
+                            >
+                              {elementNameMap[type]}
+                            </div>
+                            {snapshot.isDragging && (
+                              <div
+                                style={{ transform: 'none !important' }}
+                                key={element_id}
+                                className={`option-item clone ${type}`}
+                              >
+                                {elementNameMap[type]}
+                              </div>
+                            )}
+                          </React.Fragment>
+                        );
+                      }}
+                    </Draggable>
+                  ))}
               </div>
             </div>
           )}
@@ -238,22 +245,22 @@ const Builder: React.FC = () => {
             {(provided, snapshot) => (
               <div className='block-container' {...provided.droppableProps} ref={provided.innerRef}>
                 <h2 className={
-                  `${fusion.structural_components.length === 0 ? 'instruction' : 'hidden'}`
+                  `${fusion.structural_elements?.length === 0 ? 'instruction' : 'hidden'}`
                 }>
-                  Drag components here
+                  Drag elements here
                 </h2>
-                {fusion.structural_components.map((
-                  component: ClientComponentUnion, index: number
+                {fusion.structural_elements?.map((
+                  element: ClientElementUnion, index: number
                 ) => {
                   return (
-                    <Draggable key={index} draggableId={component.component_id} index={index}>
+                    <Draggable key={index} draggableId={element.element_id} index={index}>
                       {(provided, snapshot) => (
                         <div ref={provided.innerRef}
-                          className={`block ${component.component_type}`}
+                          className={`block ${element.type}`}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
                         >
-                          {renderComponent(component, index)}
+                          {renderElement(element, index)}
                         </div>
                       )}
                     </Draggable>
@@ -264,10 +271,10 @@ const Builder: React.FC = () => {
           </Droppable>
           <div className='hr-section'>
             {
-              fusion.structural_components?.filter(
-                (comp: ClientComponentUnion) => Boolean(comp) && comp.hr_name
-              ).map((comp: ClientComponentUnion, index: number) => (
-                <div key={comp.component_id}>{`${index ? '::' : ''}${comp.hr_name}`}</div>
+              fusion.structural_elements?.filter(
+                (element: ClientElementUnion) => Boolean(element) && element.hr_name
+              ).map((element: ClientElementUnion, index: number) => (
+                <div key={element.element_id}>{`${index ? '::' : ''}${element.hr_name}`}</div>
               ))
             }
           </div>
