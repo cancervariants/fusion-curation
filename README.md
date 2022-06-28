@@ -27,7 +27,7 @@ Create a virtual environment for the server and install. Note: there's also a Pi
 cd server  # regardless of your environment decision, build it in server/
 virtualenv venv
 source venv/bin/activate
-python3 -m pip install -e ".[dev,tests]"
+python3 -m pip install -e ".[dev,tests]"  # make sure to include the extra dependencies!
 ```
 
 Acquire two sets of static assets and place all of them within the `server/curation/data` directory:
@@ -70,7 +70,7 @@ yarn start
 
 ### Shared type definitions
 
-The frontend utilizes Typescript definitions generated from the backend pydantic schema. These can be refreshed, from the server environment, with the command `curfu_devtools client-types`.
+The frontend utilizes Typescript definitions generated from the backend pydantic schema. These can be refreshed, from the server environment, with the command `curfu_devtools client-types`. This will only work if `json2ts` has been installed in the `node_modules` binary directory.
 
 ### Style
 
@@ -80,6 +80,8 @@ Python code style is enforced by [flake8](https://github.com/PyCQA/flake8), and 
 pre-commit install
 ```
 
+This will require installation of `dev` dependencies on the server side.
+
 ### Tests
 
-So far, we've heavily privileged integration rather than unit tests for the backend,
+Requires installation of `tests` dependencies. Run with `pytest`.
