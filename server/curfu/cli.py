@@ -4,6 +4,7 @@ from pathlib import Path
 
 import uvicorn
 import click
+from curfu import APP_ROOT
 
 from curfu.devtools import DEFAULT_INTERPRO_TYPES
 from curfu.devtools.build_client_types import build_client_types
@@ -18,7 +19,9 @@ def serve(port: int) -> None:
     \f
     :param int port: port to serve at (default: 5000)
     """
-    uvicorn.run("curfu.main:app", port=port, reload=True)
+    uvicorn.run(
+        "curfu.main:app", port=port, reload=True, reload_dirs=[str(APP_ROOT.absolute())]
+    )
 
 
 @click.group()
