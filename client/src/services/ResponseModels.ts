@@ -6,6 +6,31 @@
 */
 
 /**
+ * Define possible classes of Regulatory Elements. Options are the possible values
+ * for /regulatory_class value property in the INSDC controlled vocabulary:
+ * https://www.insdc.org/controlled-vocabulary-regulatoryclass
+ */
+export type RegulatoryClass =
+  | "attenuator"
+  | "caat_signal"
+  | "enhancer"
+  | "enhancer_blocking_element"
+  | "gc_signal"
+  | "imprinting_control_region"
+  | "insulator"
+  | "locus_control_region"
+  | "minus_35_signal"
+  | "minus_10_signal"
+  | "polya_signal_sequence"
+  | "promoter"
+  | "response_element"
+  | "ribosome_binding_site"
+  | "riboswitch"
+  | "silencer"
+  | "tata_box"
+  | "terminator"
+  | "other";
+/**
  * A string that refers to an object uniquely.  The lifetime and scope of
  * an id is defined by the sender. VRS does not impose any constraints on
  * strings used as ids in messages. However, to maximize sharability of data,
@@ -22,10 +47,6 @@
  * strongly discouraged.
  */
 export type CURIE = string;
-/**
- * Define possible statuses of functional domains.
- */
-export type DomainStatus = "lost" | "preserved";
 /**
  * A range comparator.
  */
@@ -48,74 +69,47 @@ export type Strand = "+" | "-";
  */
 export type Sequence = string;
 /**
- * Define Event class (causative event)
+ * Permissible values for describing the underlying causative event driving an
+ * assayed fusion.
  */
-export type Event = "rearrangement" | "read-through" | "trans-splicing";
+export type EventType = "rearrangement" | "read-through" | "trans-splicing";
 /**
- * Define possible types of Regulatory Elements.
+ * Form of evidence supporting identification of the fusion.
  */
-export type RegulatoryElementType = "promoter" | "enhancer";
+export type Evidence = "observed" | "inferred";
+/**
+ * Define possible statuses of functional domains.
+ */
+export type DomainStatus = "lost" | "preserved";
 
 /**
- * Define AnyGene class. This is primarily intended to represent a partner
- * in a categorical fusion, typifying generalizable characteristics of a class
- * of fusions such as retained or lost regulatory elements and/or functional
- * domains, often curated from biomedical literature for use in genomic
- * knowledgebases. For example, EWSR1 rearrangements are often found in Ewing
- * and Ewing-like small round cell sarcomas, regardless of the partner gene.
- * We would associate this assertion with the fusion of EWSR1 with an
- * AnyGene component.
+ * Assayed gene fusions from biological specimens are directly detected using
+ * RNA-based gene fusion assays, or alternatively may be inferred from genomic
+ * rearrangements detected by whole genome sequencing or by coarser-scale cytogenomic
+ * assays. Example: an EWSR1 fusion inferred from a breakapart FISH assay.
  */
-export interface AnyGeneComponent {
-  component_type?: "any_gene";
+export interface AssayedFusion {
+  type?: "AssayedFusion";
+  regulatory_elements?: RegulatoryElement[];
+  structural_elements: (
+    | TranscriptSegmentElement
+    | GeneElement
+    | TemplatedSequenceElement
+    | LinkerElement
+    | UnknownGeneElement
+  )[];
+  causative_event: CausativeEvent;
+  assay: Assay;
 }
 /**
- * Response model for domain ID autocomplete suggestion endpoint.
+ * Define RegulatoryElement class
  */
-export interface AssociatedDomainResponse {
-  warnings?: string[];
-  gene_id: string;
-  suggestions?: DomainParams[];
-}
-/**
- * Fields for individual domain suggestion entries
- */
-export interface DomainParams {
-  interpro_id: CURIE;
-  domain_name: string;
-  start: number;
-  end: number;
-  refseq_ac: string;
-}
-/**
- * Any gene component used client-side.
- */
-export interface ClientAnyGeneComponent {
-  component_id: string;
-  component_name: string;
-  hr_name: string;
-  shorthand?: string;
-  component_type?: "any_gene";
-}
-/**
- * Abstract class to provide identification properties used by client.
- */
-export interface ClientComponent {
-  component_id: string;
-  component_name: string;
-  hr_name: string;
-  shorthand?: string;
-}
-/**
- * Define functional domain object used client-side.
- */
-export interface ClientFunctionalDomain {
-  id: CURIE;
-  name: string;
-  status: DomainStatus;
-  gene_descriptor: GeneDescriptor;
-  location_descriptor: LocationDescriptor;
-  domain_id: string;
+export interface RegulatoryElement {
+  type?: "RegulatoryElement";
+  regulatory_class: RegulatoryClass;
+  feature_id?: CURIE;
+  associated_gene?: GeneDescriptor;
+  genomic_location?: LocationDescriptor;
 }
 /**
  * This descriptor is intended to reference VRS Gene value objects.
@@ -173,7 +167,7 @@ export interface SequenceLocation {
   _id?: CURIE;
   type?: "SequenceLocation";
   sequence_id: CURIE;
-  interval: SequenceInterval;
+  interval: SequenceInterval | SimpleInterval;
 }
 /**
  * A SequenceInterval represents a span of sequence. Positions are always
@@ -216,6 +210,16 @@ export interface DefiniteRange {
   max: number;
 }
 /**
+ * DEPRECATED: A SimpleInterval represents a span of sequence. Positions
+ * are always represented by contiguous spans using interbase coordinates.
+ * This class is deprecated. Use SequenceInterval instead.
+ */
+export interface SimpleInterval {
+  type?: "SimpleInterval";
+  start: number;
+  end: number;
+}
+/**
  * A Location on a chromosome defined by a species and chromosome name.
  */
 export interface ChromosomeLocation {
@@ -234,93 +238,41 @@ export interface CytobandInterval {
   end: HumanCytoband;
 }
 /**
- * Fusion with client-oriented structural component models. Used in global
- * FusionContext.
+ * Define TranscriptSegment class
  */
-export interface ClientFusion {
-  r_frame_preserved?: boolean;
-  functional_domains: ClientFunctionalDomain[];
-  structural_components: (
-    | ClientTranscriptSegmentComponent
-    | ClientGeneComponent
-    | ClientAnyGeneComponent
-    | ClientUnknownGeneComponent
-    | ClientTemplatedSequenceComponent
-    | ClientLinkerComponent
-  )[];
-  causative_event?: Event;
-  regulatory_elements: ClientRegulatoryElement[];
-}
-/**
- * TranscriptSegment component class used client-side.
- */
-export interface ClientTranscriptSegmentComponent {
-  component_id: string;
-  component_name: string;
-  hr_name: string;
-  shorthand?: string;
-  component_type?: "transcript_segment";
+export interface TranscriptSegmentElement {
+  type?: "TranscriptSegmentElement";
   transcript: CURIE;
   exon_start?: number;
   exon_start_offset?: number;
   exon_end?: number;
   exon_end_offset?: number;
   gene_descriptor: GeneDescriptor;
-  component_genomic_start?: LocationDescriptor;
-  component_genomic_end?: LocationDescriptor;
-  input_type: "genomic_coords_gene" | "genomic_coords_tx" | "exon_coords_tx";
-  input_tx?: string;
-  input_strand?: Strand;
-  input_gene?: string;
-  input_chr?: string;
-  input_genomic_start?: string;
-  input_genomic_end?: string;
+  element_genomic_start?: LocationDescriptor;
+  element_genomic_end?: LocationDescriptor;
 }
 /**
- * Gene component used client-side.
+ * Define Gene Element class.
  */
-export interface ClientGeneComponent {
-  component_id: string;
-  component_name: string;
-  hr_name: string;
-  shorthand?: string;
-  component_type?: "gene";
+export interface GeneElement {
+  type?: "GeneElement";
   gene_descriptor: GeneDescriptor;
 }
 /**
- * Unknown gene component used client-side.
+ * Define Templated Sequence Element class.
+ * A templated sequence is a contiguous genomic sequence found in the gene
+ * product.
  */
-export interface ClientUnknownGeneComponent {
-  component_id: string;
-  component_name: string;
-  hr_name: string;
-  shorthand?: string;
-  component_type?: "unknown_gene";
-}
-/**
- * Templated sequence component used client-side.
- */
-export interface ClientTemplatedSequenceComponent {
-  component_id: string;
-  component_name: string;
-  hr_name: string;
-  shorthand?: string;
-  component_type?: "templated_sequence";
+export interface TemplatedSequenceElement {
+  type?: "TemplatedSequenceElement";
   region: LocationDescriptor;
   strand: Strand;
-  input_chromosome?: string;
-  input_start?: string;
-  input_end?: string;
 }
 /**
- * Linker component class used client-side.
+ * Define Linker class (linker sequence)
  */
-export interface ClientLinkerComponent {
-  component_id: string;
-  component_name: string;
-  hr_name: string;
-  shorthand?: string;
-  component_type?: "linker_sequence";
+export interface LinkerElement {
+  type?: "LinkerSequenceElement";
   linker_sequence: SequenceDescriptor;
 }
 /**
@@ -339,12 +291,245 @@ export interface SequenceDescriptor {
   residue_type?: CURIE;
 }
 /**
+ * Define UnknownGene class. This is primarily intended to represent a
+ * partner in the result of a fusion partner-agnostic assay, which identifies
+ * the absence of an expected gene. For example, a FISH break-apart probe may
+ * indicate rearrangement of an MLL gene, but by design, the test cannot
+ * provide the identity of the new partner. In this case, we would associate
+ * any clinical observations from this patient with the fusion of MLL with
+ * an UnknownGene element.
+ */
+export interface UnknownGeneElement {
+  type?: "UnknownGeneElement";
+}
+/**
+ * The evaluation of a fusion may be influenced by the underlying mechanism that
+ * generated the fusion. Often this will be a DNA rearrangement, but it could also be
+ * a read-through or trans-splicing event.
+ */
+export interface CausativeEvent {
+  type?: "CausativeEvent";
+  event_type: EventType;
+  event_description?: string;
+}
+/**
+ * Information pertaining to the assay used in identifying the fusion.
+ */
+export interface Assay {
+  type?: "Assay";
+  assay_name: string;
+  assay_id: CURIE;
+  method_uri: CURIE;
+  fusion_detection: Evidence;
+}
+/**
+ * Response model for domain ID autocomplete suggestion endpoint.
+ */
+export interface AssociatedDomainResponse {
+  warnings?: string[];
+  gene_id: string;
+  suggestions?: DomainParams[];
+}
+/**
+ * Fields for individual domain suggestion entries
+ */
+export interface DomainParams {
+  interpro_id: CURIE;
+  domain_name: string;
+  start: number;
+  end: number;
+  refseq_ac: string;
+}
+/**
+ * Categorical gene fusions are generalized concepts representing a class
+ * of fusions by their shared attributes, such as retained or lost regulatory
+ * elements and/or functional domains, and are typically curated from the
+ * biomedical literature for use in genomic knowledgebases.
+ */
+export interface CategoricalFusion {
+  type?: "CategoricalFusion";
+  regulatory_elements?: RegulatoryElement[];
+  structural_elements: (
+    | TranscriptSegmentElement
+    | GeneElement
+    | TemplatedSequenceElement
+    | LinkerElement
+    | MultiplePossibleGenesElement
+  )[];
+  r_frame_preserved?: boolean;
+  critical_functional_domains?: FunctionalDomain[];
+}
+/**
+ * Define MultiplePossibleGenesElement class. This is primarily intended to
+ * represent a partner in a categorical fusion, typifying generalizable
+ * characteristics of a class of fusions such as retained or lost regulatory elements
+ * and/or functional domains, often curated from biomedical literature for use in
+ * genomic knowledgebases. For example, EWSR1 rearrangements are often found in Ewing
+ * and Ewing-like small round cell sarcomas, regardless of the partner gene.
+ * We would associate this assertion with the fusion of EWSR1 with a
+ * MultiplePossibleGenesElement.
+ */
+export interface MultiplePossibleGenesElement {
+  type?: "MultiplePossibleGenesElement";
+}
+/**
+ * Define FunctionalDomain class
+ */
+export interface FunctionalDomain {
+  type?: "FunctionalDomain";
+  status: DomainStatus;
+  associated_gene: GeneDescriptor;
+  _id?: CURIE;
+  label?: string;
+  sequence_location?: LocationDescriptor;
+}
+/**
+ * Assayed fusion with client-oriented structural element models. Used in
+ * global FusionContext.
+ */
+export interface ClientAssayedFusion {
+  type?: "AssayedFusion";
+  regulatory_elements?: RegulatoryElement[];
+  structural_elements: (
+    | ClientTranscriptSegmentElement
+    | ClientGeneElement
+    | ClientTemplatedSequenceElement
+    | ClientLinkerElement
+    | ClientUnknownGeneElement
+  )[];
+  causative_event: CausativeEvent;
+  assay: Assay;
+}
+/**
+ * TranscriptSegment element class used client-side.
+ */
+export interface ClientTranscriptSegmentElement {
+  element_id: string;
+  element_name: string;
+  hr_name: string;
+  shorthand?: string;
+  type?: "TranscriptSegmentElement";
+  transcript: CURIE;
+  exon_start?: number;
+  exon_start_offset?: number;
+  exon_end?: number;
+  exon_end_offset?: number;
+  gene_descriptor: GeneDescriptor;
+  element_genomic_start?: LocationDescriptor;
+  element_genomic_end?: LocationDescriptor;
+  input_type: "genomic_coords_gene" | "genomic_coords_tx" | "exon_coords_tx";
+  input_tx?: string;
+  input_strand?: Strand;
+  input_gene?: string;
+  input_chr?: string;
+  input_genomic_start?: string;
+  input_genomic_end?: string;
+}
+/**
+ * Gene element used client-side.
+ */
+export interface ClientGeneElement {
+  element_id: string;
+  element_name: string;
+  hr_name: string;
+  shorthand?: string;
+  type?: "GeneElement";
+  gene_descriptor: GeneDescriptor;
+}
+/**
+ * Templated sequence element used client-side.
+ */
+export interface ClientTemplatedSequenceElement {
+  element_id: string;
+  element_name: string;
+  hr_name: string;
+  shorthand?: string;
+  type?: "TemplatedSequenceElement";
+  region: LocationDescriptor;
+  strand: Strand;
+  input_chromosome?: string;
+  input_start?: string;
+  input_end?: string;
+}
+/**
+ * Linker element class used client-side.
+ */
+export interface ClientLinkerElement {
+  element_id: string;
+  element_name: string;
+  hr_name: string;
+  shorthand?: string;
+  type?: "LinkerSequenceElement";
+  linker_sequence: SequenceDescriptor;
+}
+/**
+ * Unknown gene element used client-side.
+ */
+export interface ClientUnknownGeneElement {
+  element_id: string;
+  element_name: string;
+  hr_name: string;
+  shorthand?: string;
+  type?: "UnknownGeneElement";
+}
+/**
+ * Categorial fusion with client-oriented structural element models. Used in
+ * global FusionContext.
+ */
+export interface ClientCategoricalFusion {
+  type?: "CategoricalFusion";
+  regulatory_elements?: RegulatoryElement[];
+  structural_elements: (
+    | ClientTranscriptSegmentElement
+    | ClientGeneElement
+    | ClientTemplatedSequenceElement
+    | ClientLinkerElement
+    | ClientMultiplePossibleGenesElement
+  )[];
+  r_frame_preserved?: boolean;
+  critical_functional_domains?: ClientFunctionalDomain[];
+}
+/**
+ * Multiple possible gene element used client-side.
+ */
+export interface ClientMultiplePossibleGenesElement {
+  element_id: string;
+  element_name: string;
+  hr_name: string;
+  shorthand?: string;
+  type?: "MultiplePossibleGenesElement";
+}
+/**
+ * Define functional domain object used client-side.
+ */
+export interface ClientFunctionalDomain {
+  type?: "FunctionalDomain";
+  status: DomainStatus;
+  associated_gene: GeneDescriptor;
+  _id?: CURIE;
+  label?: string;
+  sequence_location?: LocationDescriptor;
+  domain_id: string;
+}
+/**
  * Regulatory element object used client-side.
  */
 export interface ClientRegulatoryElement {
-  type: RegulatoryElementType;
-  gene_descriptor: GeneDescriptor;
+  type?: "RegulatoryElement";
+  regulatory_class: RegulatoryClass;
+  feature_id?: CURIE;
+  associated_gene?: GeneDescriptor;
+  genomic_location?: LocationDescriptor;
   element_id: string;
+}
+/**
+ * Abstract class to provide identification properties used by client.
+ */
+export interface ClientStructuralElement {
+  element_id: string;
+  element_name: string;
+  hr_name: string;
+  shorthand?: string;
 }
 /**
  * Response model for genomic coordinates retrieval
@@ -380,104 +565,11 @@ export interface ExonCoordsRequest {
   exon_end_offset?: number;
 }
 /**
- * Define FunctionalDomain class
+ * Response model for gene element construction endoint.
  */
-export interface FunctionalDomain {
-  id: CURIE;
-  name: string;
-  status: DomainStatus;
-  gene_descriptor: GeneDescriptor;
-  location_descriptor: LocationDescriptor;
-}
-/**
- * Define Fusion class
- */
-export interface Fusion {
-  r_frame_preserved?: boolean;
-  functional_domains?: FunctionalDomain[];
-  structural_components: (
-    | TranscriptSegmentComponent
-    | GeneComponent
-    | TemplatedSequenceComponent
-    | LinkerComponent
-    | UnknownGeneComponent
-    | AnyGeneComponent
-  )[];
-  causative_event?: Event;
-  regulatory_elements?: RegulatoryElement[];
-}
-/**
- * Define TranscriptSegment class
- */
-export interface TranscriptSegmentComponent {
-  component_type?: "transcript_segment";
-  transcript: CURIE;
-  exon_start?: number;
-  exon_start_offset?: number;
-  exon_end?: number;
-  exon_end_offset?: number;
-  gene_descriptor: GeneDescriptor;
-  component_genomic_start?: LocationDescriptor;
-  component_genomic_end?: LocationDescriptor;
-}
-/**
- * Define Gene component class.
- */
-export interface GeneComponent {
-  component_type?: "gene";
-  gene_descriptor: GeneDescriptor;
-}
-/**
- * Define Templated Sequence Component class.
- * A templated sequence is contiguous genomic sequence found in the
- * gene product
- */
-export interface TemplatedSequenceComponent {
-  component_type?: "templated_sequence";
-  region: LocationDescriptor;
-  strand: Strand;
-}
-/**
- * Define Linker class (linker sequence)
- */
-export interface LinkerComponent {
-  component_type?: "linker_sequence";
-  linker_sequence: SequenceDescriptor;
-}
-/**
- * Define UnknownGene class. This is primarily intended to represent a
- * partner in the result of a fusion partner-agnostic assay, which identifies
- * the absence of an expected gene. For example, a FISH break-apart probe may
- * indicate rearrangement of an MLL gene, but by design, the test cannot
- * provide the identity of the new partner. In this case, we would associate
- * any clinical observations from this patient with the fusion of MLL with
- * an UnknownGene component.
- */
-export interface UnknownGeneComponent {
-  component_type?: "unknown_gene";
-}
-/**
- * Define RegulatoryElement class
- */
-export interface RegulatoryElement {
-  type: RegulatoryElementType;
-  gene_descriptor: GeneDescriptor;
-}
-/**
- * Response model for fusion validation endpoint.
- */
-export interface FusionValidationResponse {
-  fusion?: Fusion;
-  warnings?: {
-    [k: string]: unknown;
-  }[];
-}
-/**
- * Response model for gene component construction endoint.
- */
-export interface GeneComponentResponse {
+export interface GeneElementResponse {
   warnings?: string[];
-  component?: GeneComponent;
+  element?: GeneElement;
 }
 /**
  * Response model for functional domain constructor endpoint.
@@ -516,14 +608,17 @@ export interface Response {
 export interface SequenceIDResponse {
   warnings?: string[];
   sequence: string;
-  sequence_id?: string;
+  ga4gh_sequence_id?: string;
+  aliases?: string[];
 }
 /**
  * Response model for service_info endpoint.
  */
 export interface ServiceInfoResponse {
   warnings?: string[];
-  version: string;
+  curfu_version: string;
+  fusor_version: string;
+  uta_tools_version: string;
 }
 /**
  * Response model for gene autocomplete suggestions endpoint.
@@ -531,19 +626,26 @@ export interface ServiceInfoResponse {
 export interface SuggestGeneResponse {
   warnings?: string[];
   term: string;
-  suggestions?: [] | [string] | [string, string] | [string, string, string] | [string, string, string, string][];
+  suggestions?: [string, string, string, string][];
 }
 /**
- * Response model for transcript segment component construction endpoint.
+ * Response model for transcript segment element construction endpoint.
  */
-export interface TemplatedSequenceComponentResponse {
+export interface TemplatedSequenceElementResponse {
   warnings?: string[];
-  component?: TemplatedSequenceComponent;
+  element?: TemplatedSequenceElement;
 }
 /**
- * Response model for transcript segment component construction endpoint.
+ * Response model for transcript segment element construction endpoint.
  */
-export interface TxSegmentComponentResponse {
+export interface TxSegmentElementResponse {
   warnings?: string[];
-  component?: TranscriptSegmentComponent;
+  element?: TranscriptSegmentElement;
+}
+/**
+ * Response model for Fusion validation endpoint.
+ */
+export interface ValidateFusionResponse {
+  warnings?: string[];
+  fusion?: CategoricalFusion | AssayedFusion;
 }
