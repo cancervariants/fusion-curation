@@ -2,24 +2,24 @@ import React, { useState, useEffect, KeyboardEvent } from 'react';
 import {
   TextField, RadioGroup, FormLabel, FormControlLabel, Radio
 } from '@material-ui/core';
-import { StructuralComponentInputProps } from '../StructCompInputProps';
-import { getTemplatedSequenceComponent } from '../../../../../services/main';
+import { StructuralElementInputProps } from '../StructuralElementInputProps';
+import { getTemplatedSequenceElement } from '../../../../../services/main';
 import {
-  ClientTemplatedSequenceComponent, Number as VrsNumber, SequenceLocation
+  ClientTemplatedSequenceElement, Number as VrsNumber, SequenceLocation
 } from '../../../../../services/ResponseModels';
-import CompInputAccordion from '../CompInputAccordion';
+import StructuralElementInputAccordion from '../StructuralElementInputAccordion';
 
-interface TemplatedSequenceComponentInputProps extends StructuralComponentInputProps {
-  component: ClientTemplatedSequenceComponent;
+interface TemplatedSequenceElementInputProps extends StructuralElementInputProps {
+  element: ClientTemplatedSequenceElement;
 }
 
-const TemplatedSequenceCompInput: React.FC<TemplatedSequenceComponentInputProps> = (
-  { component, index, handleSave, handleDelete }
+const TemplatedSequenceElementInput: React.FC<TemplatedSequenceElementInputProps> = (
+  { element, index, handleSave, handleDelete }
 ) => {
-  const [chromosome, setChromosome] = useState<string>(component.input_chromosome || '');
-  const [strand, setStrand] = useState<string>(component.strand || '');
-  const [startPosition, setStartPosition] = useState<string>(component.input_start || '');
-  const [endPosition, setEndPosition] = useState<string>(component.input_end || '');
+  const [chromosome, setChromosome] = useState<string>(element.input_chromosome || '');
+  const [strand, setStrand] = useState<string>(element.strand || '');
+  const [startPosition, setStartPosition] = useState<string>(element.input_start || '');
+  const [endPosition, setEndPosition] = useState<string>(element.input_end || '');
   const [inputError, setInputError] = useState<string>('');
 
   const inputComplete = (
@@ -31,7 +31,7 @@ const TemplatedSequenceCompInput: React.FC<TemplatedSequenceComponentInputProps>
 
   useEffect(() => {
     if (inputComplete) {
-      buildTemplatedSequenceComponent();
+      buildTemplatedSequenceElement();
     }
   }, [chromosome, strand, startPosition, endPosition]
   );
@@ -42,31 +42,31 @@ const TemplatedSequenceCompInput: React.FC<TemplatedSequenceComponentInputProps>
     }
   };
 
-  const buildTemplatedSequenceComponent = () => {
-    getTemplatedSequenceComponent(chromosome, strand, startPosition, endPosition)
+  const buildTemplatedSequenceElement = () => {
+    getTemplatedSequenceElement(chromosome, strand, startPosition, endPosition)
       .then(templatedSequenceResponse => {
         if (templatedSequenceResponse.warnings?.length > 0) {
           // TODO visible error handling
-          setInputError('component validation unsuccessful');
+          setInputError('element validation unsuccessful');
           return;
         } else {
           setInputError('');
-          const location = templatedSequenceResponse.component.region.location as SequenceLocation;
+          const location = templatedSequenceResponse.element.region.location as SequenceLocation;
           const sequence = location.sequence_id.split(':')[1];
           const start = location.interval.start as VrsNumber;
           const end = location.interval.end as VrsNumber;
           const name = `${sequence}:g.${start.value}_${end.value}(${strand})`;
 
-          const templatedSequenceComponent: ClientTemplatedSequenceComponent = {
-            ...templatedSequenceResponse.component,
-            component_id: component.component_id,
-            component_name: name,
+          const templatedSequenceElement: ClientTemplatedSequenceElement = {
+            ...templatedSequenceResponse.element,
+            element_id: element.element_id,
+            element_name: name,
             hr_name: name,
             input_chromosome: chromosome,
             input_start: startPosition,
             input_end: endPosition,
           };
-          handleSave(index, templatedSequenceComponent);
+          handleSave(index, templatedSequenceElement);
         }
       });
   };
@@ -115,9 +115,9 @@ const TemplatedSequenceCompInput: React.FC<TemplatedSequenceComponentInputProps>
     </>
   );
 
-  return CompInputAccordion({
-    expanded, setExpanded, component, handleDelete, inputElements, validated
+  return StructuralElementInputAccordion({
+    expanded, setExpanded, element, handleDelete, inputElements, validated
   });
 };
 
-export default TemplatedSequenceCompInput;
+export default TemplatedSequenceElementInput;

@@ -6,18 +6,18 @@ import DoneIcon from '@material-ui/icons/Done';
 import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import { red, green } from '@material-ui/core/colors';
-import './CompInputAccordion.scss';
-import { BaseComponentProps } from './StructCompInputProps';
+import './StructuralElementInputAccordion.scss';
+import { BaseStructuralElementProps } from './StructuralElementInputProps';
 
-interface CompInputAccordionProps extends BaseComponentProps {
+interface StructuralElementInputAccordionProps extends BaseStructuralElementProps {
   expanded: boolean,
   setExpanded?: React.Dispatch<React.SetStateAction<boolean>>,
   inputElements?: JSX.Element,
   validated: boolean,
 }
 
-const CompInputAccordion: React.FC<CompInputAccordionProps> = ({
-  expanded, setExpanded, component, handleDelete, inputElements, validated
+const StructuralElementInputAccordion: React.FC<StructuralElementInputAccordionProps> = ({
+  expanded, setExpanded, element, handleDelete, inputElements, validated
 }) => (
   <Accordion
     defaultExpanded={!validated}
@@ -42,17 +42,17 @@ const CompInputAccordion: React.FC<CompInputAccordionProps> = ({
         }
         <Typography>
           {
-            component.hr_name ?
-              component.hr_name :
+            element.hr_name ?
+              element.hr_name :
               null
           }
         </Typography>
         <div>
-          <Tooltip title="Delete component">
+          <Tooltip title="Delete element">
             <DeleteIcon
               onClick={(event) => {
                 event.stopPropagation();
-                handleDelete(component.component_id);
+                handleDelete(element.element_id);
               }}
               onFocus={(event) => event.stopPropagation()}
             />
@@ -70,4 +70,4 @@ const CompInputAccordion: React.FC<CompInputAccordionProps> = ({
   </Accordion>
 );
 
-export default CompInputAccordion;
+export default StructuralElementInputAccordion;

@@ -2,45 +2,45 @@ import {
   TextField, MenuItem, FormLabel, Select, RadioGroup, FormControlLabel, Radio,
 } from '@material-ui/core';
 import {
-  ClientTranscriptSegmentComponent, TranscriptSegmentComponent, TxSegmentComponentResponse
+  ClientTranscriptSegmentElement, TranscriptSegmentElement, TxSegmentElementResponse
 } from '../../../../../services/ResponseModels';
 import { useEffect, useState, KeyboardEvent } from 'react';
 import {
-  getTxSegmentComponentECT, getTxSegmentComponentGCG, getTxSegmentComponentGCT
+  getTxSegmentElementECT, getTxSegmentElementGCG, getTxSegmentElementGCT
 } from '../../../../../services/main';
 import { GeneAutocomplete } from '../../../../main/shared/GeneAutocomplete/GeneAutocomplete';
-import { StructuralComponentInputProps } from '../StructCompInputProps';
-import CompInputAccordion from '../CompInputAccordion';
+import { StructuralElementInputProps } from '../StructuralElementInputProps';
+import CompInputAccordion from '../StructuralElementInputAccordion';
 
-interface TxSegmentComponentInputProps extends StructuralComponentInputProps {
-  component: ClientTranscriptSegmentComponent;
+interface TxSegmentElementInputProps extends StructuralElementInputProps {
+  element: ClientTranscriptSegmentElement;
 }
 
-const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
-  { component, index, handleSave, handleDelete }
+const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = (
+  { element, index, handleSave, handleDelete }
 ) => {
-  const [txInputType, setTxInputType] = useState(component.input_type || 'default');
+  const [txInputType, setTxInputType] = useState(element.input_type || 'default');
 
-  const [txAc, setTxAc] = useState(component.input_tx || '');
+  const [txAc, setTxAc] = useState(element.input_tx || '');
   const [txAcText, setTxAcText] = useState('');
 
-  const [txGene, setTxGene] = useState(component.input_gene || '');
+  const [txGene, setTxGene] = useState(element.input_gene || '');
   const [txGeneText, setTxGeneText] = useState('');
 
-  const [txStrand, setTxStrand] = useState(component.input_strand || 'default');
+  const [txStrand, setTxStrand] = useState(element.input_strand || 'default');
 
-  const [txChrom, setTxChrom] = useState(component.input_chr || '');
+  const [txChrom, setTxChrom] = useState(element.input_chr || '');
   const [txChromText, setTxChromText] = useState('');
 
-  const [txStartingGenomic, setTxStartingGenomic] = useState(component.input_genomic_start || '');
+  const [txStartingGenomic, setTxStartingGenomic] = useState(element.input_genomic_start || '');
   const [txStartingGenomicText, setTxStartingGenomicText] = useState('');
-  const [txEndingGenomic, setTxEndingGenomic] = useState(component.input_genomic_end || '');
+  const [txEndingGenomic, setTxEndingGenomic] = useState(element.input_genomic_end || '');
   const [txEndingGenomicText, setTxEndingGenomicText] = useState('');
 
-  const [startingExon, setStartingExon] = useState(component.exon_start || '');
-  const [endingExon, setEndingExon] = useState(component.exon_end || '');
-  const [startingExonOffset, setStartingExonOffset] = useState(component.exon_start_offset || '');
-  const [endingExonOffset, setEndingExonOffset] = useState(component.exon_end_offset || '');
+  const [startingExon, setStartingExon] = useState(element.exon_start || '');
+  const [endingExon, setEndingExon] = useState(element.exon_end || '');
+  const [startingExonOffset, setStartingExonOffset] = useState(element.exon_start_offset || '');
+  const [endingExonOffset, setEndingExonOffset] = useState(element.exon_end_offset || '');
 
   // programming horror
   const inputComplete = (
@@ -65,62 +65,62 @@ const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
 
   useEffect(() => {
     if (inputComplete) {
-      buildTranscriptSegmentComponent();
+      buildTranscriptSegmentElement();
     }
   }, [
     txAc, txGene, txStrand, txChrom, txStartingGenomic, txEndingGenomic, startingExon,
     endingExon, startingExonOffset, endingExonOffset
   ]);
 
-  const handleTxComponentResponse = (
-    txSegmentResponse: TxSegmentComponentResponse, inputParams: Record<string, string>,
+  const handleTxElementResponse = (
+    txSegmentResponse: TxSegmentElementResponse, inputParams: Record<string, string>,
   ) => {
-    const responseComponent = txSegmentResponse.component as TranscriptSegmentComponent;
-    const finishedComponent: ClientTranscriptSegmentComponent = {
-      ...component,
-      ...responseComponent,
+    const responseElement = txSegmentResponse.element as TranscriptSegmentElement;
+    const finishedElement: ClientTranscriptSegmentElement = {
+      ...element,
+      ...responseElement,
       ...inputParams,
     };
 
     let eso: string;
-    if (finishedComponent.exon_start_offset > 0) {
-      eso = `+${finishedComponent.exon_start_offset}`;
-    } else if (finishedComponent.exon_start_offset < 0) {
-      eso = `${finishedComponent.exon_start_offset}`;
+    if (finishedElement.exon_start_offset > 0) {
+      eso = `+${finishedElement.exon_start_offset}`;
+    } else if (finishedElement.exon_start_offset < 0) {
+      eso = `${finishedElement.exon_start_offset}`;
     } else {
       eso = '';
     }
 
     let eeo: string;
-    if (finishedComponent.exon_end_offset > 0) {
-      eeo = `+${finishedComponent.exon_end_offset}`;
-    } else if (finishedComponent.exon_end_offset < 0) {
-      eeo = `${finishedComponent.exon_end_offset}`;
+    if (finishedElement.exon_end_offset > 0) {
+      eeo = `+${finishedElement.exon_end_offset}`;
+    } else if (finishedElement.exon_end_offset < 0) {
+      eeo = `${finishedElement.exon_end_offset}`;
     } else {
       eeo = '';
     }
 
     let hrExon: string;
-    if (finishedComponent.exon_start && finishedComponent.exon_end) {
-      hrExon = `e.${finishedComponent.exon_start}${eso}_${finishedComponent.exon_end}${eeo}`;
-    } else if (finishedComponent.exon_start) {
-      hrExon = `e.${finishedComponent.exon_start}${eso}_`;
+    if (finishedElement.exon_start && finishedElement.exon_end) {
+      hrExon = `e.${finishedElement.exon_start}${eso}_${finishedElement.exon_end}${eeo}`;
+    } else if (finishedElement.exon_start) {
+      hrExon = `e.${finishedElement.exon_start}${eso}_`;
     } else {
-      hrExon = `e._${finishedComponent.exon_end}${eeo}`;
+      hrExon = `e._${finishedElement.exon_end}${eeo}`;
     }
 
-    const responseGeneSymbol = finishedComponent.gene_descriptor.label;
-    const txAcName = finishedComponent.transcript.split(':')[1];
+    const responseGeneSymbol = finishedElement.gene_descriptor.label;
+    const txAcName = finishedElement.transcript.split(':')[1];
 
-    finishedComponent.component_name = `${txAcName} ${responseGeneSymbol}`;
-    finishedComponent.hr_name = `${txAcName}(${responseGeneSymbol}):${hrExon}`;
-    handleSave(index, finishedComponent);
+    finishedElement.element_name = `${txAcName} ${responseGeneSymbol}`;
+    finishedElement.hr_name = `${txAcName}(${responseGeneSymbol}):${hrExon}`;
+    handleSave(index, finishedElement);
   };
 
-  const buildTranscriptSegmentComponent = () => {
+  const buildTranscriptSegmentElement = () => {
     switch (txInputType) {
       case 'genomic_coords_gene':
-        getTxSegmentComponentGCG(txGene, txChrom, txStartingGenomic, txEndingGenomic, txStrand)
+        getTxSegmentElementGCG(txGene, txChrom, txStartingGenomic, txEndingGenomic, txStrand)
           .then(txSegmentResponse => {
             if (txSegmentResponse.warnings?.length > 0) {
               const chromWarning = `Invalid chromosome: ${txChrom}`;
@@ -137,12 +137,12 @@ const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
                 input_genomic_start: txStartingGenomic,
                 input_genomic_end: txEndingGenomic,
               };
-              handleTxComponentResponse(txSegmentResponse, inputParams);
+              handleTxElementResponse(txSegmentResponse, inputParams);
             }
           });
         break;
       case 'genomic_coords_tx':
-        getTxSegmentComponentGCT(txAc, txChrom, txStartingGenomic, txEndingGenomic, txStrand)
+        getTxSegmentElementGCT(txAc, txChrom, txStartingGenomic, txEndingGenomic, txStrand)
           .then(txSegmentResponse => {
             if (txSegmentResponse.warnings?.length > 0) {
               // TODO more warnings
@@ -167,12 +167,12 @@ const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
                 input_genomic_start: txStartingGenomic,
                 input_genomic_end: txEndingGenomic,
               };
-              handleTxComponentResponse(txSegmentResponse, inputParams);
+              handleTxElementResponse(txSegmentResponse, inputParams);
             }
           });
         break;
       case 'exon_coords_tx':
-        getTxSegmentComponentECT(
+        getTxSegmentElementECT(
           txAc, startingExon as string, endingExon as string, startingExonOffset as string,
           endingExonOffset as string,
         )
@@ -187,7 +187,7 @@ const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
                 input_type: txInputType,
                 input_tx: txAc,
               };
-              handleTxComponentResponse(txSegmentResponse, inputParams);
+              handleTxElementResponse(txSegmentResponse, inputParams);
             }
           });
     }
@@ -389,7 +389,7 @@ const TxSegmentCompInput: React.FC<TxSegmentComponentInputProps> = (
   );
 
   return CompInputAccordion({
-    expanded, setExpanded, component, handleDelete, inputElements, validated
+    expanded, setExpanded, element, handleDelete, inputElements, validated
   });
 };
 

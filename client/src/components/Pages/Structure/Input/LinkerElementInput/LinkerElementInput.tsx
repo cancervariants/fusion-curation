@@ -1,39 +1,39 @@
 import { TextField } from '@material-ui/core';
 import { useEffect, useState } from 'react';
-import { ClientLinkerComponent } from '../../../../../services/ResponseModels';
-import { StructuralComponentInputProps } from '../StructCompInputProps';
-import CompInputAccordion from '../CompInputAccordion';
+import { ClientLinkerElement } from '../../../../../services/ResponseModels';
+import { StructuralElementInputProps } from '../StructuralElementInputProps';
+import StructuralElementInputAccordion from '../StructuralElementInputAccordion';
 
-interface LinkerComponentInputProps extends StructuralComponentInputProps {
-  component: ClientLinkerComponent;
+interface LinkerElementInputProps extends StructuralElementInputProps {
+  element: ClientLinkerElement;
 }
 
-const LinkerCompInput: React.FC<LinkerComponentInputProps> = (
-  { component, index, handleSave, handleDelete }
+const LinkerElementInput: React.FC<LinkerElementInputProps> = (
+  { element, index, handleSave, handleDelete }
 ) => {
   // bases
-  const [sequence, setSequence] = useState<string>(component.linker_sequence?.sequence || '');
+  const [sequence, setSequence] = useState<string>(element.linker_sequence?.sequence || '');
   const linkerError = Boolean(sequence) && sequence.match(/^([aAgGtTcC]+)?$/) === null;
   const validated = Boolean(sequence && (!linkerError));
   const [expanded, setExpanded] = useState<boolean>(!validated);
 
   useEffect(() => {
-    if (validated) buildLinkerComponent();
+    if (validated) buildLinkerElement();
   }, [sequence]);
 
-  const buildLinkerComponent = () => {
-    const linkerComponent: ClientLinkerComponent = {
-      ...component,
+  const buildLinkerElement = () => {
+    const linkerElement: ClientLinkerElement = {
+      ...element,
       linker_sequence: {
         id: `fusor.sequence:${sequence}`,
         type: 'SequenceDescriptor',
         sequence: sequence,
         residue_type: 'SO:0000348'
       },
-      component_name: sequence,
+      element_name: sequence,
       hr_name: sequence,
     };
-    handleSave(index, linkerComponent);
+    handleSave(index, linkerElement);
   };
 
   const inputElements = (
@@ -54,9 +54,9 @@ const LinkerCompInput: React.FC<LinkerComponentInputProps> = (
     />
   );
 
-  return CompInputAccordion({
-    expanded, setExpanded, component, handleDelete, inputElements, validated
+  return StructuralElementInputAccordion({
+    expanded, setExpanded, element, handleDelete, inputElements, validated
   });
 };
 
-export default LinkerCompInput;
+export default LinkerElementInput;
