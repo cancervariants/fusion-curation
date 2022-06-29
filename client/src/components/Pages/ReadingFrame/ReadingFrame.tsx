@@ -1,4 +1,4 @@
-import './OtherAttribs.scss';
+import './ReadingFrame.scss';
 import { FusionContext } from '../../../global/contexts/FusionContext';
 import React, { useContext, useState } from 'react';
 import { FormControl, FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const OtherAttribs: React.FC<Props> = ({ index }) => {
+export const ReadingFrame: React.FC<Props> = ({ index }) => {
 
   const classes = useStyles();
 
@@ -38,44 +38,30 @@ export const OtherAttribs: React.FC<Props> = ({ index }) => {
       assignRadioValue(fusion.r_frame_preserved) :
       'unspecified'
   );
-  const [causativeEvent, setCausativeEvent] = useState(
-    fusion.causative_event !== undefined ? fusion.causative_event : 'unspecified'
-  );
-
   const handleRFrameChange = (event) => {
     const value = event.target.value;
     if (value === 'yes') {
       setRFramePreserved('yes');
-      setFusion({...fusion, r_frame_preserved: 'true'});
+      setFusion({...fusion, r_frame_preserved: true});
     } else if (value === 'no') {
       setRFramePreserved('no');
-      setFusion({...fusion, r_frame_preserved: 'false'});
+      setFusion({...fusion, r_frame_preserved: false});
     } else if (value === 'not applicable') {
       setRFramePreserved('not_applicable');
-      setFusion({...fusion, r_frame_preserved: 'not_applicable'});
+      setFusion({...fusion, r_frame_preserved: null});
     } else {
       setRFramePreserved('unspecified');
-      setFusion({...fusion, r_frame_preserved: 'undefined' });
+      setFusion({...fusion, r_frame_preserved: null});
     }
   };
 
-  const handleCauseChange = (event) => {
-    const value = event.target.value;
-    if (value !== 'unspecified') {
-      setCausativeEvent(value);
-      setFusion({...fusion, causative_event: value });
-    } else {
-      setCausativeEvent('unspecified');
-      setFusion({...fusion, causative_event: undefined });
-    }
-  };
 
   return (
-    <div className='other-attribs-tab-container'>
+    <div className='reading-frame-tab-container'>
       <FormControl component='fieldset'>
-        <h3>Must the reading frame be preserved?</h3>
+        <h3>Is the reading frame expected to be preserved?</h3>
         <RadioGroup
-          aria-label='Must the reading frame be preserved?'
+          aria-label='Is the reading frame expected to be preserved?'
           name='controlled-radio-buttons-group'
           value={rFramePreserved}
           onChange={handleRFrameChange}
@@ -83,19 +69,8 @@ export const OtherAttribs: React.FC<Props> = ({ index }) => {
         >
           <FormControlLabel value='yes' control={<Radio />} label='Yes' />
           <FormControlLabel value='no' control={<Radio />} label='No' />
-          <FormControlLabel value='unspecified' control={<Radio />} label='Unspecified' />
-        </RadioGroup>
-        <h3>What is the causative event?</h3>
-        <RadioGroup
-          aria-label='Causative event?'
-          name='controlled-radio-buttons-group'
-          value={causativeEvent}
-          onChange={handleCauseChange}
-          className={classes.formControl}
-        >
-          <FormControlLabel value='rearrangement' control={<Radio />} label='Rearrangement' />
-          <FormControlLabel value='trans-splicing' control={<Radio />} label='Trans-splicing' />
-          <FormControlLabel value='read-through' control={<Radio />} label='Read-through' />
+          {/*
+          <FormControlLabel value='not_applicable' control={<Radio />} label='Not Applicable' /> */}
           <FormControlLabel value='unspecified' control={<Radio />} label='Unspecified' />
         </RadioGroup>
       </FormControl>
