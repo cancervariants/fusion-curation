@@ -9,7 +9,6 @@ import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext'
 import '../../../global/styles/global.scss';
 import theme from '../../../global/styles/theme';
 import { getAssociatedDomains } from '../../../services/main';
-import { ClientFusion } from '../../../services/ResponseModels';
 import NavTabs from '../Nav/NavTabs';
 import About from '../About/About';
 import ButtonTop from '../shared/Buttons/ButtonTop';
