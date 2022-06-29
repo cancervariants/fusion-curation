@@ -20,7 +20,7 @@ interface Props {
 
 export const FusionType: React.FC<Props> = () => {
   const { fusion, setFusion } = useContext(FusionContext);
-  const [fusionType, setFusionType] = useState(fusion.fusion_type ? fusion.fusion_type : null);
+  const [fusionType, setFusionType] = useState(fusion.type ? fusion.type : null);
 
   const handleFusionTypeChange = (event) => {
     setFusionType(event.target.value);
