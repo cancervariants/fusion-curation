@@ -1,8 +1,8 @@
 """Provide command-line interface to application and associated utilities."""
+import os
 from typing import Optional
 from pathlib import Path
 
-import uvicorn
 import click
 from curfu import APP_ROOT
 
@@ -19,8 +19,10 @@ def serve(port: int) -> None:
     \f
     :param int port: port to serve at (default: 5000)
     """
-    uvicorn.run(
-        "curfu.main:app", port=port, reload=True, reload_dirs=[str(APP_ROOT.absolute())]
+    # calling uvicorn.run() doesn't get logs printed to console --
+    # performing a syscall for now until a more elegant solution appears
+    os.system(
+        f"uvicorn curfu.main:app --reload --port={port} --reload-dir={str(APP_ROOT.absolute())}"
     )
 
 
