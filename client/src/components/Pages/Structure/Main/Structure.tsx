@@ -3,7 +3,11 @@ import { FusionContext } from '../../../../global/contexts/FusionContext';
 import Builder from '../Builder/Builder';
 import './Structure.scss';
 
-export const Structure: React.FC = () => {
+interface Props {
+  index: number
+}
+
+export const Structure: React.FC<Props> = () => {
   const fusion = useContext(FusionContext).fusion;
 
   return (
@@ -11,11 +15,14 @@ export const Structure: React.FC = () => {
       <div className="structure-summary">
         <h3>Structure Overview</h3>
         <h5>
-          Drag and rearrange components to build the chimeric transcript.
+          Drag and rearrange elements.
           {
-            fusion.structural_components?.length >= 2 ?
+            // TODO -- how to interact w/ reg element count?
+            (fusion.structural_elements?.length + fusion.regulatory_elements?.length) >= 2 ?
               null
-              : <span className="error-banner"> Must provide at least 2 components.</span>
+              : <span className="error-banner">
+                Must provide at least 2 structural or regulatory elements.
+              </span>
           }
         </h5>
       </div>
