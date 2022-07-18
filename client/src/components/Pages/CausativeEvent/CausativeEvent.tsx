@@ -13,7 +13,7 @@ export const CausativeEvent: React.FC<Props> = () => {
 
   useEffect(() => {
     if (fusion.causative_event == undefined) {
-      setFusion({ ...fusion, CausativeEvent: {} });
+      setFusion({ ...fusion, causative_event: {} });
     }
   }, []);
 
