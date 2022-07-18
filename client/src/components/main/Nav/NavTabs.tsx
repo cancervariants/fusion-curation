@@ -138,13 +138,13 @@ export default function NavTabs(): React.ReactElement {
             <LinkTab label="Domain" href="/" {...a11yProps(3)} />
             : fusion.type === 'AssayedFusion' ?
               <LinkTab label="Event" href="/" {...a11yProps(3)} />
-              : <></>
+              : null
           }
           {fusion.type === 'CategoricalFusion' ?
             <LinkTab label="Reading Frame" href="/" {...a11yProps(4)} />
             : fusion.type === 'AssayedFusion' ?
               <LinkTab label="Assay" href="/" {...a11yProps(4)} />
-              : <></>
+              : null
           }
           <LinkTab label="Summary" href="/" disabled={fusion.type == null} {...a11yProps(5)} />
         </Tabs>
