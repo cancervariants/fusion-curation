@@ -4,28 +4,28 @@ TODO:
  * better "disabled" styling for continue button when fusion type not selected,
    and for restricted tabs
 */
-import React, { useContext } from 'react';
+import React, { useContext } from "react";
 
 // Global fusion
-import { FusionContext } from '../../../global/contexts/FusionContext';
+import { FusionContext } from "../../../global/contexts/FusionContext";
 
 // Pages
-import { FusionType } from '../../Pages/FusionType/FusionType';
-import { Structure } from '../../Pages/Structure/Main/Structure';
-import { RegElement } from '../../Pages/RegElement/Main/RegElement';
-import { Summary } from '../../Pages/Summary/Main/Summary';
-import { Domain } from '../../Pages/Domains/Main/Domains';
-import { ReadingFrame } from '../../Pages/ReadingFrame/ReadingFrame';
-import { CausativeEvent } from '../../Pages/CausativeEvent/CausativeEvent';
-import { Assay } from '../../Pages/Assay/Assay';
+import { FusionType } from "../../Pages/FusionType/FusionType";
+import { Structure } from "../../Pages/Structure/Main/Structure";
+import { RegElement } from "../../Pages/RegElement/Main/RegElement";
+import { Summary } from "../../Pages/Summary/Main/Summary";
+import { Domain } from "../../Pages/Domains/Main/Domains";
+import { ReadingFrame } from "../../Pages/ReadingFrame/ReadingFrame";
+import { CausativeEvent } from "../../Pages/CausativeEvent/CausativeEvent";
+import { Assay } from "../../Pages/Assay/Assay";
 
 // MUI Stuff
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import { AppBar, Tabs, Tab, Button, } from '@material-ui/core';
+import { makeStyles, Theme } from "@material-ui/core/styles";
+import { AppBar, Tabs, Tab, Button } from "@material-ui/core";
 
 // Styles
-import './NavTabs.scss';
-import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext';
+import "./NavTabs.scss";
+import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -43,11 +43,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`nav-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <>
-          {children}
-        </>
-      )}
+      {value === index && <>{children}</>}
     </div>
   );
 }
@@ -55,7 +51,7 @@ function TabPanel(props: TabPanelProps) {
 function a11yProps(index) {
   return {
     id: `nav-tab-${index}`,
-    'aria-controls': `nav-tabpanel-${index}`,
+    "aria-controls": `nav-tabpanel-${index}`,
   };
 }
 
@@ -85,31 +81,29 @@ export default function NavTabs(): React.ReactElement {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const useStyles = makeStyles((theme: Theme) => ({
     root: {
-      backgroundColor: colorTheme['--white'],
-
+      backgroundColor: colorTheme["--white"],
     },
     continue: {
-      backgroundColor: colorTheme['--primary'],
-      marginLeft: 'auto',
+      backgroundColor: colorTheme["--primary"],
+      marginLeft: "auto",
     },
     previous: {
-      backgroundColor: colorTheme['--primary'],
+      backgroundColor: colorTheme["--primary"],
     },
     indicator: {
-      backgroundColor: colorTheme['--primary'],
+      backgroundColor: colorTheme["--primary"],
     },
     footer: {
-      padding: '15px',
-      borderTop: `1px solid ${colorTheme['--light-gray']}`
+      padding: "15px",
+      borderTop: `1px solid ${colorTheme["--light-gray"]}`,
     },
     enabledtabs: {
-      backgroundColor: colorTheme['--tabs'],
-      color: colorTheme['--dark-gray'],
-      borderBottom: `1px solid ${colorTheme['--medium-gray']}`
+      backgroundColor: colorTheme["--tabs"],
+      color: colorTheme["--dark-gray"],
+      borderBottom: `1px solid ${colorTheme["--medium-gray"]}`,
     },
   }));
   const classes = useStyles();
-
 
   const updateVisibleTab = (event: unknown, newIndex: number) => {
     setVisibleTab(newIndex);
@@ -120,7 +114,7 @@ export default function NavTabs(): React.ReactElement {
       <AppBar elevation={0} position="static">
         <Tabs
           classes={{
-            indicator: classes.indicator
+            indicator: classes.indicator,
           }}
           variant="fullWidth"
           value={visibleTab}
@@ -129,24 +123,34 @@ export default function NavTabs(): React.ReactElement {
           className={classes.enabledtabs}
         >
           <LinkTab label="Type" href="/" {...a11yProps(0)} />
-          <LinkTab label="Structure" href="/" disabled={fusion.type == null} {...a11yProps(1)} />
-          <
-            LinkTab label="Regulatory Element" href="/" disabled={fusion.type == null}
+          <LinkTab
+            label="Structure"
+            href="/"
+            disabled={fusion.type == null}
+            {...a11yProps(1)}
+          />
+          <LinkTab
+            label="Regulatory Element"
+            href="/"
+            disabled={fusion.type == null}
             {...a11yProps(2)}
           />
-          {fusion.type === 'CategoricalFusion' ?
+          {fusion.type === "CategoricalFusion" ? (
             <LinkTab label="Domain" href="/" {...a11yProps(3)} />
-            : fusion.type === 'AssayedFusion' ?
-              <LinkTab label="Event" href="/" {...a11yProps(3)} />
-              : null
-          }
-          {fusion.type === 'CategoricalFusion' ?
+          ) : fusion.type === "AssayedFusion" ? (
+            <LinkTab label="Event" href="/" {...a11yProps(3)} />
+          ) : null}
+          {fusion.type === "CategoricalFusion" ? (
             <LinkTab label="Reading Frame" href="/" {...a11yProps(4)} />
-            : fusion.type === 'AssayedFusion' ?
-              <LinkTab label="Assay" href="/" {...a11yProps(4)} />
-              : null
-          }
-          <LinkTab label="Summary" href="/" disabled={fusion.type == null} {...a11yProps(5)} />
+          ) : fusion.type === "AssayedFusion" ? (
+            <LinkTab label="Assay" href="/" {...a11yProps(4)} />
+          ) : null}
+          <LinkTab
+            label="Summary"
+            href="/"
+            disabled={fusion.type == null}
+            {...a11yProps(5)}
+          />
         </Tabs>
       </AppBar>
       <div className="tab-panel">
@@ -160,20 +164,22 @@ export default function NavTabs(): React.ReactElement {
           <RegElement index={2} />
         </TabPanel>
         <TabPanel value={visibleTab} index={3}>
-          {fusion.type === 'CategoricalFusion' ?
+          {fusion.type === "CategoricalFusion" ? (
             <Domain index={3} />
-            : fusion.type === 'AssayedFusion' ?
-              <CausativeEvent index={3} />
-              : <></>
-          }
+          ) : fusion.type === "AssayedFusion" ? (
+            <CausativeEvent index={3} />
+          ) : (
+            <></>
+          )}
         </TabPanel>
         <TabPanel value={visibleTab} index={4}>
-          {fusion.type === 'CategoricalFusion' ?
+          {fusion.type === "CategoricalFusion" ? (
             <ReadingFrame index={4} />
-            : fusion.type === 'AssayedFusion' ?
-              <Assay index={3} />
-              : <></>
-          }
+          ) : fusion.type === "AssayedFusion" ? (
+            <Assay index={3} />
+          ) : (
+            <></>
+          )}
         </TabPanel>
         <TabPanel value={visibleTab} index={5}>
           <Summary index={5} />
@@ -181,34 +187,34 @@ export default function NavTabs(): React.ReactElement {
       </div>
 
       <div className="footer">
-        {visibleTab !== 0 ?
+        {visibleTab !== 0 ? (
           <div className="previous">
             <Button
               className={classes.previous}
               onClick={(event) => updateVisibleTab(event, visibleTab - 1)}
-              variant="contained" color="primary"
+              variant="contained"
+              color="primary"
             >
               Back
             </Button>
           </div>
-          : null}
-        {visibleTab !== 5 ?
+        ) : null}
+        {visibleTab !== 5 ? (
           <div className="continue">
             <Button
-              style={
-                {
-                  backgroundColor: colorTheme['--primary'],
-                  marginLeft: 'auto'
-                }
-              }
+              style={{
+                backgroundColor: colorTheme["--primary"],
+                marginLeft: "auto",
+              }}
               onClick={(event) => updateVisibleTab(event, visibleTab + 1)}
-              variant="contained" color="primary"
+              variant="contained"
+              color="primary"
               disabled={!fusion.type}
             >
               Continue
             </Button>
           </div>
-          : null}
+        ) : null}
       </div>
     </div>
   );

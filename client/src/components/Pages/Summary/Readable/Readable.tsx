@@ -1,28 +1,29 @@
 import {
-  ClientGeneElement, ClientLinkerElement, ClientTemplatedSequenceElement,
-  ClientTranscriptSegmentElement, ClientUnknownGeneElement,
-  ClientMultiplePossibleGenesElement, FunctionalDomain,
-  GeneDescriptor, RegulatoryElement, CausativeEvent,
-} from '../../../../services/ResponseModels';
-import './Readable.scss';
-import React from 'react';
-
+  RegulatoryElement,
+  CausativeEvent,
+  FunctionalDomain,
+} from "../../../../services/ResponseModels";
+import "./Readable.scss";
+import React from "react";
+import { ClientElementUnion } from "../../../../services/main";
 
 interface Props {
   // TODO: get types from model
-  genes: Array<GeneDescriptor>,
-  proteinDomains: Array<FunctionalDomain>,
-  regulatoryElements: Array<RegulatoryElement>,
-  structuralElements: Array<ClientGeneElement | ClientLinkerElement
-    | ClientTemplatedSequenceElement | ClientUnknownGeneElement
-    | ClientTranscriptSegmentElement | ClientMultiplePossibleGenesElement>,
-  rFramePreserved: boolean,
-  causativeEvent: CausativeEvent,
+  // genes: Array<GeneDescriptor>,
+  proteinDomains: Array<FunctionalDomain>;
+  regulatoryElements: Array<RegulatoryElement>;
+  structuralElements: Array<ClientElementUnion>;
+  rFramePreserved: boolean;
+  causativeEvent: CausativeEvent;
 }
 
 export const Readable: React.FC<Props> = ({
   // genes,
-  proteinDomains, regulatoryElements, structuralElements, rFramePreserved, causativeEvent
+  proteinDomains,
+  regulatoryElements,
+  structuralElements,
+  rFramePreserved,
+  causativeEvent,
 }) => {
   return (
     <div className="readable-items-container">
@@ -35,35 +36,33 @@ export const Readable: React.FC<Props> = ({
         <div className="row">
           <span className="left-item">Structure </span>
           <div className="right-item">
-            {structuralElements.map((comp, index) =>
-              // eslint-disable-next-line react/jsx-key
+            {structuralElements.map((comp, index) => (
               <span className="right-sub-item" key={index}>
-                {`${index ? '::' : ''}${comp.hr_name}`}
-              </span>)}
+                {`${index ? "::" : ""}${comp.hr_name}`}
+              </span>
+            ))}
           </div>
         </div>
         <hr />
         <div className="row">
-          <span className="left-item">Regulatory Elements  </span>
+          <span className="left-item">Regulatory Elements </span>
           <span className="right-item">
-            {
-              regulatoryElements.map(re =>
-                // eslint-disable-next-line react/jsx-key
-                <div className="right-sub-list-item">
-                  {`${re.associated_gene?.label?.toUpperCase()} ${re.type}`}
-                </div>
-              )
-            }
+            {regulatoryElements.map((re) => (
+              <div className="right-sub-list-item">
+                {`${re.associated_gene?.label?.toUpperCase()} ${re.type}`}
+              </div>
+            ))}
           </span>
         </div>
         <hr />
         <div className="row">
           <span className="left-item">Protein Domains</span>
           <span className="right-list-item">
-            {proteinDomains.map(pd =>
-              // eslint-disable-next-line react/jsx-key
-              <div className="right-sub-list-item">{`${pd.status}: ${pd.label}`} </div>
-            )}
+            {proteinDomains.map((pd) => (
+              <div className="right-sub-list-item">
+                {`${pd.status}: ${pd.label}`}{" "}
+              </div>
+            ))}
           </span>
         </div>
         <hr />
@@ -71,7 +70,7 @@ export const Readable: React.FC<Props> = ({
           <span className="left-item">Reading Frame</span>
           <span className="right-item"></span>
           <span className="right-item">
-            {`${rFramePreserved ? 'Preserved' : 'Not preserved'}`}
+            {`${rFramePreserved ? "Preserved" : "Not preserved"}`}
           </span>
         </div>
         <hr />

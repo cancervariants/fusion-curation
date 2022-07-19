@@ -1,20 +1,28 @@
-import { useContext, useState, useEffect } from 'react';
-import { InputLabel, MenuItem, FormControl, Select, Button } from '@material-ui/core/';
-import { makeStyles } from '@material-ui/core/styles';
-import { FusionContext } from '../../../../global/contexts/FusionContext';
-import { DomainOptionsContext } from '../../../../global/contexts/DomainOptionsContext';
-import { GeneContext } from '../../../../global/contexts/GeneContext';
-import { v4 as uuid } from 'uuid';
-import './DomainForm.scss';
+import { useContext, useState, useEffect } from "react";
 import {
-  ClientFunctionalDomain, DomainParams, DomainStatus
-} from '../../../../services/ResponseModels';
-import { getFunctionalDomain } from '../../../../services/main';
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Select,
+  Button,
+} from "@material-ui/core/";
+import { makeStyles } from "@material-ui/core/styles";
+import { FusionContext } from "../../../../global/contexts/FusionContext";
+import { DomainOptionsContext } from "../../../../global/contexts/DomainOptionsContext";
+import { GeneContext } from "../../../../global/contexts/GeneContext";
+import { v4 as uuid } from "uuid";
+import "./DomainForm.scss";
+import {
+  ClientFunctionalDomain,
+  DomainParams,
+  DomainStatus,
+} from "../../../../services/ResponseModels";
+import { getFunctionalDomain } from "../../../../services/main";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
-    minWidth: '80%',
+    minWidth: "80%",
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
@@ -25,7 +33,7 @@ const DomainForm: React.FC = () => {
   // // TODO: shouldn't be necessary
   useEffect(() => {
     if (fusion.functional_domains === undefined) {
-      setFusion({ ...fusion, ...{ 'functional_domains': [] } });
+      setFusion({ ...fusion, ...{ functional_domains: [] } });
     }
   }, []);
 
@@ -36,9 +44,9 @@ const DomainForm: React.FC = () => {
   const { fusion, setFusion } = useContext(FusionContext);
 
   // values for visible item
-  const [gene, setGene] = useState('');
-  const [domain, setDomain] = useState('');
-  const [status, setStatus] = useState('');
+  const [gene, setGene] = useState("");
+  const [domain, setDomain] = useState("");
+  const [status, setStatus] = useState("");
 
   const handleGeneChange = (event) => {
     setGene(event.target.value);
@@ -58,19 +66,18 @@ const DomainForm: React.FC = () => {
     );
     getFunctionalDomain(domainParams, status as DomainStatus, gene).then(
       (response) => {
-        console.log(response);
         if (response.domain) {
           const newDomain: ClientFunctionalDomain = {
             domain_id: uuid(),
-            ...response.domain
+            ...response.domain,
           };
-          const cloneArray = Array.from(fusion['functional_domains']);
+          const cloneArray = Array.from(fusion["functional_domains"]);
           cloneArray.push(newDomain);
-          setFusion({ ...fusion, ...{ 'functional_domains': cloneArray } });
+          setFusion({ ...fusion, ...{ functional_domains: cloneArray } });
 
-          setStatus('default');
-          setDomain('');
-          setGene('');
+          setStatus("default");
+          setDomain("");
+          setGene("");
         }
       }
     );
@@ -78,32 +85,29 @@ const DomainForm: React.FC = () => {
 
   const renderGeneOptions = () => {
     // concatenate default/unselectable option with all selectable genes
-    return [
-      (<MenuItem key={-1} value="" disabled></MenuItem>)
-    ].concat(Object.keys(domainOptions).map((geneId: string, index: number) => (
-      <MenuItem
-        key={index}
-        value={geneId}
-      >
-        {`${globalGenes[geneId].label}(${geneId})`}
-      </MenuItem>
-    )));
+    return [<MenuItem key={-1} value="" disabled></MenuItem>].concat(
+      Object.keys(domainOptions).map((geneId: string, index: number) => (
+        <MenuItem key={index} value={geneId}>
+          {`${globalGenes[geneId].label}(${geneId})`}
+        </MenuItem>
+      ))
+    );
   };
 
   const renderDomainOptions = () => {
-    const domainOptionMenuItems = [(
-      <MenuItem key={-1} value="" disabled></MenuItem>
-    )];
+    const domainOptionMenuItems = [
+      <MenuItem key={-1} value="" disabled></MenuItem>,
+    ];
     if (domainOptions[gene]) {
       const uniqueInterproIds: Set<string> = new Set();
       domainOptions[gene].forEach((domain: DomainParams, index: number) => {
-        if (!(uniqueInterproIds.has(domain.interpro_id))) {
+        if (!uniqueInterproIds.has(domain.interpro_id)) {
           uniqueInterproIds.add(domain.interpro_id);
-          domainOptionMenuItems.push((
+          domainOptionMenuItems.push(
             <MenuItem key={index} value={domain.interpro_id}>
               {domain.domain_name}
             </MenuItem>
-          ));
+          );
         }
       });
     }
@@ -111,13 +115,13 @@ const DomainForm: React.FC = () => {
   };
 
   return (
-    <div className='form-container'>
-      <div className='formInput'>
+    <div className="form-container">
+      <div className="formInput">
         <FormControl className={classes.formControl}>
-          <InputLabel id='demo-simple-select-label'>Gene</InputLabel>
+          <InputLabel id="demo-simple-select-label">Gene</InputLabel>
           <Select
-            labelId='demo-simple-select-label'
-            id='demo-simple-select'
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
             value={gene}
             onChange={handleGeneChange}
             disabled={Object.keys(domainOptions).length === 0}
@@ -127,40 +131,40 @@ const DomainForm: React.FC = () => {
         </FormControl>
       </div>
 
-      <div className='formInput'>
+      <div className="formInput">
         <FormControl className={classes.formControl}>
           <InputLabel>Domain</InputLabel>
           <Select
-            labelId='demo-simple-select-label'
-            id='demo-simple-select'
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
             value={domain}
             onChange={handleDomainChange}
-            disabled={gene === ''}
+            disabled={gene === ""}
           >
             {renderDomainOptions()}
           </Select>
         </FormControl>
       </div>
-      <div className='formInput'>
+      <div className="formInput">
         <FormControl className={classes.formControl}>
           <InputLabel>Status</InputLabel>
           <Select
             value={status}
             onChange={handleStatusChange}
-            disabled={domain === ''}
+            disabled={domain === ""}
           >
-            <MenuItem value='default' disabled></MenuItem>
-            <MenuItem value='lost'>Lost</MenuItem>
-            <MenuItem value='preserved'>Preserved</MenuItem>
+            <MenuItem value="default" disabled></MenuItem>
+            <MenuItem value="lost">Lost</MenuItem>
+            <MenuItem value="preserved">Preserved</MenuItem>
           </Select>
         </FormControl>
       </div>
-      <div className='add-button'>
+      <div className="add-button">
         <Button
-          variant='outlined'
-          color='primary'
+          variant="outlined"
+          color="primary"
           onClick={handleAdd}
-          disabled={status === ''}
+          disabled={status === ""}
         >
           Add
         </Button>

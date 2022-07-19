@@ -1,105 +1,132 @@
-import copy from 'clipboard-copy';
-import { useEffect, useState } from 'react';
-import { validateFusion } from '../../../../services/main';
+import copy from "clipboard-copy";
+import { useEffect, useState } from "react";
 import {
-  AnyGeneComponent, ClientFunctionalDomain, ClientFusion, Fusion, GeneComponent,
-  LinkerComponent, RegulatoryElement, TemplatedSequenceComponent, TranscriptSegmentComponent,
-  UnknownGeneComponent
-} from '../../../../services/ResponseModels';
-import './SummaryJSON.scss';
+  ClientElementUnion,
+  ClientFusion,
+  ElementUnion,
+  validateFusion,
+} from "../../../../services/main";
+import {
+  AssayedFusion,
+  CategoricalFusion,
+  FunctionalDomain,
+  GeneElement,
+  LinkerElement,
+  MultiplePossibleGenesElement,
+  TemplatedSequenceElement,
+  TranscriptSegmentElement,
+  UnknownGeneElement,
+} from "../../../../services/ResponseModels";
+import "./SummaryJSON.scss";
 
 interface Props {
   fusion: ClientFusion;
 }
 
 export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
+  const [isDown, setIsDown] = useState<boolean>(false);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
+  const [printedFusion, setPrintedFusion] = useState<string>("");
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
-  const [isDown, setIsDown] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
-  const [printedFusion, setPrintedFusion] = useState('');
-  const [validationErrors, setValidationErrors] = useState([]);
-
+  /**
+   * On component render, restructure fusion to drop properties used for client state purposes,
+   * transmit to validation endpoint, and update local copy.
+   */
   useEffect(() => {
-    // drop client fields
-    const formattedFusion: Fusion = {
-      structural_components: fusion.structural_components?.map(comp => {
-        switch (comp.component_type) {
-          case 'transcript_segment':
-            const txSegment: TranscriptSegmentComponent = {
-              component_type: comp.component_type,
-              transcript: comp.transcript,
-              exon_start: comp.exon_start,
-              exon_start_offset: comp.exon_start_offset,
-              exon_end: comp.exon_end,
-              exon_end_offset: comp.exon_end_offset,
-              gene_descriptor: comp.gene_descriptor,
-              component_genomic_start: comp.component_genomic_start,
-              component_genomic_end: comp.component_genomic_end,
+    const structuralElements: ElementUnion[] = fusion.structural_elements?.map(
+      (element: ClientElementUnion) => {
+        switch (element.type) {
+          case "GeneElement":
+            const geneElement: GeneElement = {
+              type: element.type,
+              gene_descriptor: element.gene_descriptor,
             };
-            return txSegment;
-          case 'templated_sequence':
-            const templatedSequence: TemplatedSequenceComponent = {
-              component_type: comp.component_type,
-              strand: comp.strand,
-              region: comp.region,
+            return geneElement;
+          case "LinkerSequenceElement":
+            const linkerElement: LinkerElement = {
+              type: element.type,
+              linker_sequence: element.linker_sequence,
             };
-            return templatedSequence;
-          case 'linker_sequence':
-            const linkerSequence: LinkerComponent = {
-              component_type: comp.component_type,
-              linker_sequence: comp.linker_sequence
+            return linkerElement;
+          case "TemplatedSequenceElement":
+            const templatedSequenceElement: TemplatedSequenceElement = {
+              type: element.type,
+              region: element.region,
+              strand: element.strand,
             };
-            return linkerSequence;
-          case 'gene':
-            const geneComponent: GeneComponent = {
-              component_type: comp.component_type,
-              gene_descriptor: comp.gene_descriptor,
+            return templatedSequenceElement;
+          case "TranscriptSegmentElement":
+            const txSegmentElement: TranscriptSegmentElement = {
+              type: element.type,
+              transcript: element.transcript,
+              exon_start: element.exon_start,
+              exon_start_offset: element.exon_start_offset,
+              exon_end: element.exon_end,
+              exon_end_offset: element.exon_end_offset,
+              gene_descriptor: element.gene_descriptor,
+              element_genomic_start: element.element_genomic_start,
+              element_genomic_end: element.element_genomic_end,
             };
-            return geneComponent;
-          case 'any_gene':
-            const anyGene: AnyGeneComponent = {
-              component_type: comp.component_type
+            return txSegmentElement;
+          case "MultiplePossibleGenesElement":
+          case "UnknownGeneElement":
+            const newElement:
+              | MultiplePossibleGenesElement
+              | UnknownGeneElement = {
+              type: element.type,
             };
-            return anyGene;
-          case 'unknown_gene':
-            const unknownGene: UnknownGeneComponent = {
-              component_type: comp.component_type
-            };
-            return unknownGene;
+            return newElement;
+          default:
+            throw new Error("Unrecognized element type");
         }
-      }),
-      causative_event: fusion.causative_event,
-      r_frame_preserved: fusion.r_frame_preserved,
-      regulatory_elements: fusion.regulatory_elements?.map(e => {
-        const element: RegulatoryElement = {
-          type: e.type,
-          gene_descriptor: e.gene_descriptor
-        };
-        return element;
-      }),
-      functional_domains: fusion.functional_domains?.map((domain: ClientFunctionalDomain) => (
-        {
-          id: domain.id,
-          name: domain.name,
+      }
+    );
+    const regulatoryElements = fusion.regulatory_elements?.map((re) => ({
+      type: re.type,
+      associated_gene: re.associated_gene,
+      regulatory_class: re.regulatory_class,
+      feature_id: re.feature_id,
+      genomic_location: re.genomic_location,
+    }));
+    let formattedFusion: AssayedFusion | CategoricalFusion;
+    if (fusion.type === "AssayedFusion") {
+      formattedFusion = {
+        ...fusion,
+        structural_elements: structuralElements,
+        regulatory_elements: regulatoryElements,
+      };
+    } else {
+      const criticalDomains: FunctionalDomain[] =
+        fusion.critical_functional_domains?.map((domain) => ({
+          _id: domain._id,
+          label: domain.label,
           status: domain.status,
-          gene_descriptor: domain.gene_descriptor,
-          location_descriptor: domain.location_descriptor,
-        }
-      ))
-    };
-    console.log(formattedFusion);
-    validateFusion(formattedFusion)
-      .then(response => {
-        if (response.warnings?.length > 0) {
-          // if (JSON.stringify(response.warnings.sort()) !==
-          //   JSON.stringify(validationErrors.sort())) {
+          associated_gene: domain.associated_gene,
+          sequence_location: domain.sequence_location,
+        }));
+      formattedFusion = {
+        ...fusion,
+        structural_elements: structuralElements,
+        regulatory_elements: regulatoryElements,
+        critical_functional_domains: criticalDomains,
+      };
+    }
+
+    // make request
+    validateFusion(formattedFusion).then((response) => {
+      if (response.warnings && response.warnings?.length > 0) {
+        if (
+          JSON.stringify(response.warnings.sort()) !==
+          JSON.stringify(validationErrors.sort())
+        ) {
           setValidationErrors(response.warnings);
-          // }
-        } else {
-          setPrintedFusion(JSON.stringify(response.fusion, null, 2));
         }
-      });
-  }, [fusion]);
+      } else {
+        setPrintedFusion(JSON.stringify(response.fusion, null, 2));
+      }
+    });
+  }, [fusion]); // should be blank?
 
   const handleCopy = () => {
     copy(printedFusion);
@@ -113,33 +140,26 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
 
   return (
     <>
-      {
-        validationErrors.length > 0 ?
-          <div className="summary-json-container summary-json-container-error">
-            {
-              fusion.structural_components?.length > 2 ?
-                <>{JSON.stringify(validationErrors)}</>
-                : <>Must provide at least 2 structural components</>
-            }
+      {validationErrors.length > 0 ? (
+        <div className="summary-json-container summary-json-container-error">
+          {JSON.stringify(validationErrors)}
+        </div>
+      ) : (
+        <>
+          <div className="headline">
+            <span className="copy-message">
+              {isCopied ? "Copied to Clipboard!" : "Click to Copy"}
+            </span>
           </div>
-          :
-          <>
-            <div className="headline">
-              <span className="copy-message">
-                {isCopied ? 'Copied to Clipboard!' : 'Click to Copy'}
-              </span>
-            </div>
-            <pre
-              className={`${isDown ? 'clicking' : ''} summary-json-container`}
-              onClick={handleCopy}
-              onMouseDown={handleMouseDown}
-            >
-              <div>
-                {printedFusion}
-              </div>
-            </pre>
-          </>
-      }
+          <pre
+            className={`${isDown ? "clicking" : ""} summary-json-container`}
+            onClick={handleCopy}
+            onMouseDown={handleMouseDown}
+          >
+            <div>{printedFusion}</div>
+          </pre>
+        </>
+      )}
     </>
   );
 };

@@ -1,13 +1,15 @@
-import { BaseStructuralElementProps } from '../StructuralElementInputProps';
-import CompInputAccordion from '../StructuralElementInputAccordion';
+import { BaseStructuralElementProps } from "../StructuralElementInputProps";
+import CompInputAccordion from "../StructuralElementInputAccordion";
 
-const StaticElement: React.FC<BaseStructuralElementProps> = (
-  { element, handleDelete }
-) => CompInputAccordion({
-  expanded: false,
+const StaticElement: React.FC<BaseStructuralElementProps> = ({
   element,
   handleDelete,
-  validated: true
-});
+}) =>
+  CompInputAccordion({
+    expanded: false,
+    element,
+    handleDelete,
+    validated: true,
+  });
 
 export default StaticElement;

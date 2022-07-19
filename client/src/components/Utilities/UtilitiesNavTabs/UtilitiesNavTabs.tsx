@@ -1,10 +1,11 @@
-import React from 'react';
-import { GetTranscripts } from '../GetTranscripts/GetTranscripts';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import { AppBar, Tabs, Tab } from '@material-ui/core';
-import './UtilitiesNavTabs.scss';
-import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext';
-import GetCoordinates from '../GetCoordinates/GetCoordinates';
+import React from "react";
+import { GetTranscripts } from "../GetTranscripts/GetTranscripts";
+import { makeStyles, Theme } from "@material-ui/core/styles";
+import { AppBar, Tabs, Tab } from "@material-ui/core";
+import "./UtilitiesNavTabs.scss";
+import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
+import GetCoordinates from "../GetCoordinates/GetCoordinates";
+import GetSequenceIds from "../GetSequenceIds/GetSequenceIds";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -22,11 +23,7 @@ const TabPanel = (props: TabPanelProps) => {
       aria-labelledby={`nav-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <>
-          {children}
-        </>
-      )}
+      {value === index && <>{children}</>}
     </div>
   );
 };
@@ -34,7 +31,7 @@ const TabPanel = (props: TabPanelProps) => {
 function a11yProps(index: number) {
   return {
     id: `nav-tab-${index}`,
-    'aria-controls': `nav-tabpanel-${index}`,
+    "aria-controls": `nav-tabpanel-${index}`,
   };
 }
 
@@ -59,27 +56,26 @@ const UtilitiesNavTabs = (): React.ReactElement => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const useStyles = makeStyles((theme: Theme) => ({
     root: {
-      backgroundColor: colorTheme['--white'],
-
+      backgroundColor: colorTheme["--white"],
     },
     continue: {
-      backgroundColor: colorTheme['--primary'],
-      marginLeft: 'auto',
+      backgroundColor: colorTheme["--primary"],
+      marginLeft: "auto",
     },
     previous: {
-      backgroundColor: colorTheme['--primary'],
+      backgroundColor: colorTheme["--primary"],
     },
     indicator: {
-      backgroundColor: colorTheme['--primary'],
+      backgroundColor: colorTheme["--primary"],
     },
     footer: {
-      padding: '15px',
-      borderTop: `1px solid ${colorTheme['--light-gray']}`
+      padding: "15px",
+      borderTop: `1px solid ${colorTheme["--light-gray"]}`,
     },
     enabledtabs: {
-      backgroundColor: colorTheme['--tabs'],
-      color: colorTheme['--dark-gray'],
-      borderBottom: `1px solid ${colorTheme['--medium-gray']}`
+      backgroundColor: colorTheme["--tabs"],
+      color: colorTheme["--dark-gray"],
+      borderBottom: `1px solid ${colorTheme["--medium-gray"]}`,
     },
   }));
 
@@ -96,7 +92,7 @@ const UtilitiesNavTabs = (): React.ReactElement => {
       <AppBar elevation={0} position="static">
         <Tabs
           classes={{
-            indicator: classes.indicator
+            indicator: classes.indicator,
           }}
           variant="fullWidth"
           value={value}
@@ -117,7 +113,7 @@ const UtilitiesNavTabs = (): React.ReactElement => {
           <GetCoordinates />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <>todo</>
+          <GetSequenceIds />
         </TabPanel>
       </div>
     </div>

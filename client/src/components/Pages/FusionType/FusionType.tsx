@@ -8,19 +8,25 @@
  * (ie if event.target.value !== fusionType). Maybe have a warning popup if that's about to happen.
  */
 import {
-  FormControl, FormControlLabel, FormLabel, Radio, RadioGroup
-} from '@material-ui/core';
-import { useContext, useState } from 'react';
-import { FusionContext } from '../../../global/contexts/FusionContext';
-import './FusionType.scss';
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+} from "@material-ui/core";
+import { useContext, useState } from "react";
+import { FusionContext } from "../../../global/contexts/FusionContext";
+import "./FusionType.scss";
 
 interface Props {
-  index: number
+  index: number;
 }
 
 export const FusionType: React.FC<Props> = () => {
   const { fusion, setFusion } = useContext(FusionContext);
-  const [fusionType, setFusionType] = useState(fusion.type ? fusion.type : null);
+  const [fusionType, setFusionType] = useState(
+    fusion.type ? fusion.type : null
+  );
 
   const handleFusionTypeChange = (event) => {
     setFusionType(event.target.value);
@@ -28,24 +34,21 @@ export const FusionType: React.FC<Props> = () => {
   };
 
   return (
-    <div className='fusion-type-container'>
+    <div className="fusion-type-container">
       <FormControl component="fieldset">
         <FormLabel component="legend">Select fusion type:</FormLabel>
-        <
-          RadioGroup
+        <RadioGroup
           aria-label="fusion_type"
           name="fusion_type"
           value={fusionType}
           onChange={handleFusionTypeChange}
         >
-          <
-            FormControlLabel
+          <FormControlLabel
             value="AssayedFusion"
             control={<Radio />}
             label="AssayedFusion"
           />
-          <
-            FormControlLabel
+          <FormControlLabel
             value="CategoricalFusion"
             control={<Radio />}
             label="CategoricalFusion"

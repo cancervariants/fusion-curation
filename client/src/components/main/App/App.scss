@@ -8,12 +8,20 @@
 
 .app-main {
   @extend %app;
-  background: linear-gradient(45deg, var(--gradient-1) 30%, var(--gradient-2)  90%);
+  background: linear-gradient(
+    45deg,
+    var(--gradient-1) 30%,
+    var(--gradient-2) 90%
+  );
 }
 
 .app-utils {
   @extend %app;
-  background: linear-gradient(45deg, var(--gradient-1) 40%, var(--gradient-3)  130%);
+  background: linear-gradient(
+    45deg,
+    var(--gradient-1) 40%,
+    var(--gradient-3) 130%
+  );
 }
 
 .title {

@@ -1,12 +1,12 @@
-import React, { useContext, useRef } from 'react';
-import Close from './Close';
-import { FusionContext } from '../../../../global/contexts/FusionContext';
+import React, { useContext, useRef } from "react";
+import Close from "./Close";
+import { FusionContext } from "../../../../global/contexts/FusionContext";
 
-import './Domains.scss';
-import DomainForm from '../DomainForm/DomainForm';
+import "./Domains.scss";
+import DomainForm from "../DomainForm/DomainForm";
 
 interface Props {
-  index: number
+  index: number;
 }
 
 export const Domain: React.FC<Props> = () => {
@@ -25,31 +25,34 @@ export const Domain: React.FC<Props> = () => {
     //copy domain array, then remove the domain with the relevant ID
     let cloneArray = Array.from(fusion.functional_domains);
     cloneArray = cloneArray.filter((obj) => {
-      return obj['domain_id'] !== domain['domain_id'];
+      return obj["domain_id"] !== domain["domain_id"];
     });
-    setFusion({ ...fusion, ...{ 'functional_domains': cloneArray || [] } });
+    setFusion({ ...fusion, ...{ functional_domains: cloneArray || [] } });
   };
 
   return (
-    <div className='domain-tab-container'>
-      <div className='left'>
-        <div className='blurb-container'>
-          <div className='sub-blurb'>
-            You can add or remove domains.
-          </div>
+    <div className="domain-tab-container">
+      <div className="left">
+        <div className="blurb-container">
+          <div className="sub-blurb">You can add or remove domains.</div>
 
           {/* TODO: maybe create a two column list of lost vs preserved */}
           {domains.map((domain, index: number) => (
-            <div className='domain' key={index}>
-              <span>{domain.gene_descriptor.label} {domain.name} {domain.status}</span>
-              <span className='close-button-domain' onClick={() => handleRemove(domain)}>
+            <div className="domain" key={index}>
+              <span>
+                {domain.gene_descriptor.label} {domain.name} {domain.status}
+              </span>
+              <span
+                className="close-button-domain"
+                onClick={() => handleRemove(domain)}
+              >
                 <Close />
               </span>
             </div>
           ))}
         </div>
       </div>
-      <div className='right'>
+      <div className="right">
         <DomainForm />
       </div>
     </div>

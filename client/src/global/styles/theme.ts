@@ -1,12 +1,8 @@
+import { createTheme } from "@material-ui/core/styles";
 
-import {
-  createTheme,
-} from '@material-ui/core/styles';
+import { COLORTHEMES } from "../contexts/Theme/Theme.model";
 
-import {COLORTHEMES} from '../contexts/Theme/Theme.model';
-
-
-declare module '@material-ui/core/styles/createTheme' {
+declare module "@material-ui/core/styles/createTheme" {
   interface Theme {
     colors: {
       navbutton: string;
@@ -26,17 +22,16 @@ declare module '@material-ui/core/styles/createTheme' {
 
 const theme = createTheme({
   colors: {
-    navbutton: '#0BD3D3',
-    enabledtabs: '#FFFFFF',
-    disabledtabs: '#F5F5FA',
+    navbutton: "#0BD3D3",
+    enabledtabs: "#FFFFFF",
+    disabledtabs: "#F5F5FA",
   },
   palette: {
-    primary:{
-      main: COLORTHEMES.light['--primary'],
-      contrastText: COLORTHEMES.light['--white']
-    }
-  }
-
+    primary: {
+      main: COLORTHEMES.light["--primary"],
+      contrastText: COLORTHEMES.light["--white"],
+    },
+  },
 });
 
 export default theme;

@@ -1,30 +1,29 @@
 .nav-tabs {
-    background-color: var(--white);
-  }
+  background-color: var(--white);
+}
 
-  .tab-panel {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.tab-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .sub-tab {
-    width: 80vw;
-    height: 600px;
-  }
+.sub-tab {
+  width: 80vw;
+  height: 600px;
+}
 
-  .previous {
+.previous {
+}
 
-  }
+.continue {
+  margin-left: auto;
+}
 
-  .continue{
-    margin-left: auto;
-  }
-
-  .footer {
-    flex-shrink: 0;
-    padding: 15px 10px;
-    display: flex;
-    align-items: center;
-    background-color: var(--white);
-  }
+.footer {
+  flex-shrink: 0;
+  padding: 15px 10px;
+  display: flex;
+  align-items: center;
+  background-color: var(--white);
+}

@@ -1,19 +1,17 @@
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import './Summary.scss';
-import { FusionContext } from '../../../../global/contexts/FusionContext';
-import React, { useContext, useState } from 'react';
-import { Button, Tabs, Tab } from '@material-ui/core/';
-import { Readable } from '../Readable/Readable';
-import { SummaryJSON } from '../JSON/SummaryJSON';
-import { useColorTheme } from '../../../../global/contexts/Theme/ColorThemeContext';
+import "./Summary.scss";
+import { FusionContext } from "../../../../global/contexts/FusionContext";
+import React, { useContext, useState } from "react";
+import { Button, Tabs, Tab } from "@material-ui/core/";
+import { Readable } from "../Readable/Readable";
+import { SummaryJSON } from "../JSON/SummaryJSON";
+import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
 
-import { Success } from '../Success/Success';
-
-import { validateFusion } from '../../../../services/main';
+import { Success } from "../Success/Success";
 
 interface Props {
-  index: number
+  index: number;
 }
 
 const TabPanel = (props) => {
@@ -27,17 +25,12 @@ const TabPanel = (props) => {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <div>
-          {children}
-        </div>
-      )}
+      {value === index && <div>{children}</div>}
     </div>
   );
 };
 
 export const Summary: React.FC<Props> = ({ index }) => {
-
   const { colorTheme } = useColorTheme();
 
   const [value, setValue] = useState(0);
@@ -51,10 +44,13 @@ export const Summary: React.FC<Props> = ({ index }) => {
 
   const handleSubmit = () => {
     setSaved(true);
-    validateFusion(fusion)
-      .then(fusionResponse => {
-        const { fusion, warnings } = fusionResponse;
-      });
+
+    // TODO -- clean up here
+
+    // validateFusion(fusion)
+    //   .then(fusionResponse => {
+    //     const { fusion, warnings } = fusionResponse;
+    //   });
   };
 
   let { fusion } = useContext(FusionContext);
@@ -63,9 +59,9 @@ export const Summary: React.FC<Props> = ({ index }) => {
   let regulatoryElements = fusion.regulatory_elements || [];
   let structuralComponents = fusion.structural_components || [];
   let rFramePreserved = fusion.r_frame_preserved || null;
-  let causativeEvent = fusion.causative_event || 'Unknown';
+  let causativeEvent = fusion.causative_event || "Unknown";
 
-  //TODO: fix this mess. formatting transcript stuff
+  //TODO: fix this. formatting transcript stuff
 
   // let transcriptGeneComponents = structuralComponents.filter(obj => {
   //   return obj.component_type === 'gene'
@@ -86,64 +82,61 @@ export const Summary: React.FC<Props> = ({ index }) => {
   // structuralComponents = [transcriptGenes, ...transcriptOthers]
 
   let regElementGenes = regulatoryElements.map((el) => {
-    return (`, ${el.gene_descriptor.label}`);
+    return `, ${el.gene_descriptor.label}`;
   });
 
   // let genes = [...transcriptGenes, ...regElementGenes]
   return (
     <div className="summary-tab-container">
       <div className="summary-sub-tab-container">
-
-        {
-          (accepted || !saved) ?
-            <>
-              <div className="summary-nav">
-                <Tabs
-                  TabIndicatorProps={{ style: { backgroundColor: colorTheme['--primary'] } }}
-                  value={value}
-                  onChange={handleChange}
-                  centered
-                >
-                  <Tab label="Summary" />
-                  <Tab label="JSON" />
-                </Tabs>
-              </div>
-              <TabPanel value={value} index={0}>
-                <div className="summary-sub-tab">
-                  <Readable
-                    genes={genes}
-                    proteinDomains={proteinDomains}
-                    regulatoryElements={regulatoryElements}
-                    structuralComponents={structuralComponents}
-                    rFramePreserved={rFramePreserved}
-                    causativeEvent={causativeEvent}
-                  />
-                </div>
-
-              </TabPanel>
-              <TabPanel value={value} index={1}>
-                <div className="summary-sub-tab">
-                  <SummaryJSON
-                    fusion={fusion}
-                  />
-                </div>
-              </TabPanel>
-              <div className="save-button-container">
-                <Button
-                  style={{ width: '300px', marginTop: '30px' }}
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSubmit}
-                >
-                  Submit
-                </Button>
-              </div>
-            </>
-            :
-            <div className="success-confirmation">
-              <Success setAccepted={setAccepted} />
+        {accepted || !saved ? (
+          <>
+            <div className="summary-nav">
+              <Tabs
+                TabIndicatorProps={{
+                  style: { backgroundColor: colorTheme["--primary"] },
+                }}
+                value={value}
+                onChange={handleChange}
+                centered
+              >
+                <Tab label="Summary" />
+                <Tab label="JSON" />
+              </Tabs>
             </div>
-        }
+            <TabPanel value={value} index={0}>
+              <div className="summary-sub-tab">
+                <Readable
+                  genes={genes}
+                  proteinDomains={proteinDomains}
+                  regulatoryElements={regulatoryElements}
+                  structuralElements={structuralComponents}
+                  rFramePreserved={rFramePreserved}
+                  causativeEvent={causativeEvent}
+                />
+              </div>
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              <div className="summary-sub-tab">
+                <SummaryJSON fusion={fusion} />
+              </div>
+            </TabPanel>
+            <div className="save-button-container">
+              <Button
+                style={{ width: "300px", marginTop: "30px" }}
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+              >
+                Submit
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div className="success-confirmation">
+            <Success setAccepted={setAccepted} />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext } from "react";
 
 /* Provide hashmap keying gene IDs to associated domain options.
  * Updated via effect hook in main App component whenever new genes are added.

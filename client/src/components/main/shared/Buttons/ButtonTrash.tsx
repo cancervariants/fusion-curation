@@ -1,7 +1,9 @@
 /* eslint-disable max-len */
-import * as React from 'react';
+import * as React from "react";
 
-const ButtonTrash = (props: React.SVGProps<SVGSVGElement>): React.ReactElement => {
+const ButtonTrash = (
+  props: React.SVGProps<SVGSVGElement>
+): React.ReactElement => {
   return (
     <svg
       data-name="Layer 1"

@@ -1,7 +1,6 @@
-import './ColorKey.scss';
+import "./ColorKey.scss";
 
 export const ColorKey: React.FC = () => {
-
   return (
     <div className="colorkey-container">
       <div className="key-row">

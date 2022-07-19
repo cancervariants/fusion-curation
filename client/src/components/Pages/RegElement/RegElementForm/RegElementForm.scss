@@ -1,5 +1,4 @@
 .form-container {
-
   display: flex;
   flex-direction: column;
   width: 600px;
@@ -9,7 +8,7 @@
     margin-top: -3px;
     position: absolute;
   }
-  
+
   .formInput {
     margin: 20px;
     display: flex;
@@ -18,23 +17,20 @@
     justify-content: center;
     width: 550px;
   }
-  
+
   .regel {
     margin-top: 20px;
     width: 34%;
-    font-size:medium;
+    font-size: medium;
     font-weight: 200;
     border: 1px solid rgba(0, 0, 0, 0.3);
     padding: 10px;
     margin-left: -35px;
     border-radius: 7px;
   }
-  
+
   .regel-add-button {
     align-self: flex-end;
     margin-right: 85px;
   }
-  
 }
-
-

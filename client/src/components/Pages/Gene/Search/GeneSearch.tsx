@@ -1,33 +1,30 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { SuggestionContext } from '../../../../global/contexts/SuggestionContext';
+import React, { useState, useContext, useEffect } from "react";
+import { SuggestionContext } from "../../../../global/contexts/SuggestionContext";
 
 // MUI
-import { makeStyles } from '@material-ui/core/styles';
-import {TextField } from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+import { makeStyles } from "@material-ui/core/styles";
+import { TextField } from "@material-ui/core";
+import { Autocomplete } from "@material-ui/lab";
 
 // Styles
-import './GeneSearch.scss'
+import "./GeneSearch.scss";
 
 // SVG
-import Close from './Close';
-
+import Close from "./Close";
 
 export const GeneSearch: React.FC = () => {
-  
   const useStyles = makeStyles((theme) => ({
     root: {
       "& .MuiInputLabel-outlined:not(.MuiInputLabel-shrink)": {
         transform: "translate(34px, 20px) scale(1);",
-        outline: 'none',
+        outline: "none",
       },
-      '& .MuiFormLabel-root.Mui-disabled': {
-        color: "rgba(0, 0, 0, 0.87)"
+      "& .MuiFormLabel-root.Mui-disabled": {
+        color: "rgba(0, 0, 0, 0.87)",
       },
-
     },
-    'svg.MuiSvgIcon-root': {
-      display: 'none'
+    "svg.MuiSvgIcon-root": {
+      display: "none",
     },
     inputRoot: {
       // color: "purple",
@@ -50,13 +47,12 @@ export const GeneSearch: React.FC = () => {
         outline: "0px",
       },
       "& .Mui-focused": {
-        color: "rgba(0, 0, 0, 0.8)", 
+        color: "rgba(0, 0, 0, 0.8)",
       },
-    }
+    },
   }));
 
   const classes = useStyles();
-
 
   // entered by user in search
   const [genes, setGenes] = useState([]);
@@ -66,40 +62,37 @@ export const GeneSearch: React.FC = () => {
 
   // autocomplete
   const [open, setOpen] = React.useState(false);
-  const [disabled, setDisabled] = React.useState(false)
+  const [disabled, setDisabled] = React.useState(false);
   const [inputValue, setInputValue] = React.useState("");
 
-
   const getData = () => {
-    fetch('http://localhost:9000/suggestions'
-    ,{
+    fetch("http://localhost:9000/suggestions", {
       method: "GET",
       mode: "cors",
-      headers : { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-       }
-    }
-    )
-      .then(function(response){
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    })
+      .then(function (response) {
         return response.json();
       })
-      .then(function(myJson) {
+      .then(function (myJson) {
         // really should have search button, then check for presence of genes in objects
-        if(genes.length === 2){
-          setSuggestions([...suggestions, myJson[0]])
-        }     
-        return;   
+        if (genes.length === 2) {
+          setSuggestions([...suggestions, myJson[0]]);
+        }
+        return;
       });
-  }
+  };
 
   useEffect(() => {
-    if(genes.length === 1){
-      return
+    if (genes.length === 1) {
+      return;
     }
     // setFusion({ ...fusion, ...{ "genes" : genes }})
-    getData()
-  }, [genes])
+    getData();
+  }, [genes]);
 
   // AUTOCOMPLETE METHODS
   const handleInputChange = (event, newInputValue) => {
@@ -119,7 +112,7 @@ export const GeneSearch: React.FC = () => {
 
   const removeGene = (gene: string) => {
     setGenes([]);
-  }
+  };
 
   // const onSelectGene = (value) => {
   //   setGenes([...genes, value]);
@@ -127,12 +120,12 @@ export const GeneSearch: React.FC = () => {
   // }
 
   const resetter = () => {
-    setInputValue('');
+    setInputValue("");
     setOpen(false);
-  }
+  };
 
   useEffect(() => {
-    setInputValue('');
+    setInputValue("");
     setOpen(false);
 
     // dumb hack for demoing because it kept re-opening when clicking outside
@@ -140,58 +133,100 @@ export const GeneSearch: React.FC = () => {
     genes.length === 2 ? setDisabled(true) : setDisabled(false);
   }, [genes]);
 
-
   return (
     <div className="gene-search">
-
-<Autocomplete
-      freeSolo={false}
-      popupIcon={""}
-      clearOnBlur={true}
-      autoHighlight={false}
-      autoSelect={true}
-      open={open}
-      disabled={disabled}
-      classes={{inputRoot: classes.inputRoot}}
-      onOpen={handleOpen}
-      onClose={() => resetter()}
-      inputValue={inputValue}
-      onChange={(event: any, newValue) => {
-        
+      <Autocomplete
+        freeSolo={false}
+        popupIcon={""}
+        clearOnBlur={true}
+        autoHighlight={false}
+        autoSelect={true}
+        open={open}
+        disabled={disabled}
+        classes={{ inputRoot: classes.inputRoot }}
+        onOpen={handleOpen}
+        onClose={() => resetter()}
+        inputValue={inputValue}
+        onChange={(event: any, newValue) => {
           if (newValue === null) {
-            setInputValue('');
+            setInputValue("");
           } else {
-            setGenes([...genes, newValue])
+            setGenes([...genes, newValue]);
           }
+        }}
+        onInputChange={handleInputChange}
+        options={tempGeneList}
+        getOptionLabel={(option) => option}
+        style={{ width: 300 }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label={inputValue === "" ? "Search Genes" : ""}
+            InputLabelProps={{ shrink: false }}
+            className={classes.inputRoot}
+            variant="outlined"
+          />
+        )}
+      />
 
-      }}
-      onInputChange={handleInputChange}
-      options={tempGeneList}
-      getOptionLabel={option => option}
-      style={{ width: 300 }}
-      renderInput={params => (
-        <TextField {...params} label={inputValue=== "" ? "Search Genes" : ""} InputLabelProps={{shrink: false }} className={classes.inputRoot} variant="outlined" 
-        />
-      )}
-/>
-
-        <div className="selected-parent">
-          &nbsp;
-        
-        { genes &&  
+      <div className="selected-parent">
+        &nbsp;
+        {genes && (
           <ul className="selected-genes">
-            {genes.map((gene: string) => (    
-                <li><span onClick={() => removeGene(gene)}><Close /></span> {gene}</li>
-            ))}     
-        </ul>   
-      }
-        </div>
-      
+            {genes.map((gene: string) => (
+              <li>
+                <span onClick={() => removeGene(gene)}>
+                  <Close />
+                </span>{" "}
+                {gene}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
-  )
-
-}
+  );
+};
 
 const tempGeneList = [
-  'BCR', 'BRAF', 'ALK', 'BCL2', 'BCCT', 'BCL2L1', 'BcsC', 'BcsE', 'BcsQ', 'ABCB1', 'ABL1', 'ABCB1', 'ABLIM1', 'ABLIM2', 'ABLIM3', 'ABL2', 'MYC', 'Myoglobin', 'Myosin-8', 'Myosin-9', 'MYLK', 'MYCN', 'MYD88', 'MYBPC3', 'INC', 'IL6', "Insulin A chain", 'Interleukin-2', 'IGHG1', 'IKZF1', 'IL1B', 'IFNG', 'INSR', 'IGF1', 'IGF1R', 'IGHM', 'IGLL5', 'IGH', 'IGHE', 'IGFBP3'  
+  "BCR",
+  "BRAF",
+  "ALK",
+  "BCL2",
+  "BCCT",
+  "BCL2L1",
+  "BcsC",
+  "BcsE",
+  "BcsQ",
+  "ABCB1",
+  "ABL1",
+  "ABCB1",
+  "ABLIM1",
+  "ABLIM2",
+  "ABLIM3",
+  "ABL2",
+  "MYC",
+  "Myoglobin",
+  "Myosin-8",
+  "Myosin-9",
+  "MYLK",
+  "MYCN",
+  "MYD88",
+  "MYBPC3",
+  "INC",
+  "IL6",
+  "Insulin A chain",
+  "Interleukin-2",
+  "IGHG1",
+  "IKZF1",
+  "IL1B",
+  "IFNG",
+  "INSR",
+  "IGF1",
+  "IGF1R",
+  "IGHM",
+  "IGLL5",
+  "IGH",
+  "IGHE",
+  "IGFBP3",
 ];

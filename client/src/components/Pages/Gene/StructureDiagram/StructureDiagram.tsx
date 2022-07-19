@@ -1,18 +1,15 @@
-import React, { useContext, useState } from 'react';
-import { SuggestionContext } from '../../../../global/contexts/SuggestionContext';
-import { FusionContext } from '../../../../global/contexts/FusionContext';
-import Grid from '@material-ui/core/Grid';
+import React, { useContext, useState } from "react";
+import { SuggestionContext } from "../../../../global/contexts/SuggestionContext";
+import { FusionContext } from "../../../../global/contexts/FusionContext";
+import Grid from "@material-ui/core/Grid";
 
-import './StructureDiagram.scss';
-
+import "./StructureDiagram.scss";
 
 export const StructureDiagram: React.FC = () => {
-
   const [suggestions] = useContext(SuggestionContext);
   const { setFusion } = useContext(FusionContext);
 
   const [active, setActive] = useState(-1);
-
 
   const selectStructure = (structure: string[], index: number) => {
     if (active === index) {
@@ -40,52 +37,41 @@ export const StructureDiagram: React.FC = () => {
     <Grid container justify="center">
       {suggestions.map((suggestion, index) => {
         const structure = [];
-        suggestion.structural_components.forEach(comp => {
+        suggestion.structural_components.forEach((comp) => {
           structure.push(comp);
         });
 
         const regEls = [];
-        suggestion.regulatory_elements.forEach(el => {
+        suggestion.regulatory_elements.forEach((el) => {
           regEls.push(el.gene_descriptor.label);
         });
 
         return (
           <div
-            className={`structure ${active === index ? 'highlighted' : ''}`}
+            className={`structure ${active === index ? "highlighted" : ""}`}
             onClick={() => selectStructure(structure, index)}
             key={index}
           >
-            <div className="dimmer">
-            </div>
+            <div className="dimmer"></div>
 
             <div key={index} className="sub-structure">
               {structure.map((s, index) => (
-                <span
-                  className={s.component_type}
-                  key={index}
-                >
+                <span className={s.component_type} key={index}>
                   {s.shorthand}
                 </span>
               ))}
             </div>
 
             <div className="regel-row">
-              {
-                regEls.map((el) => (
-                  <span
-                    className="regel-square"
-                    key={index}
-                  >
-                    {el}
-                  </span>
-                ))
-              }
+              {regEls.map((el) => (
+                <span className="regel-square" key={index}>
+                  {el}
+                </span>
+              ))}
             </div>
-
           </div>
         );
       })}
     </Grid>
   );
 };
-
