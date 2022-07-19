@@ -78,16 +78,16 @@ const ELEMENT_TEMPLATE = [
     },
   },
   {
-    element_name: 'v',
-    type: 'MultiplePossibleGenesElement',
-    element_id: uuid(),
-    hr_name: 'v',
-  },
-  {
     element_name: '?',
     type: 'UnknownGeneElement',
     element_id: uuid(),
     hr_name: '?'
+  },
+  {
+    element_name: 'v',
+    type: 'MultiplePossibleGenesElement',
+    element_id: uuid(),
+    hr_name: 'v',
   }
 ];
 
@@ -195,47 +195,50 @@ const Builder: React.FC = () => {
               ref={provided.innerRef}
             >
               <div className='options-container'>
-                {ELEMENT_TEMPLATE.filter(element => (
-                  fusion.type === 'AssayedFusion' && element.type !== 'MultiplePossibleGenesElement'
-                ) || (fusion.type === 'CategoricalFusion' && element.type !== 'UnknownGeneElement')
-                )
-                  .map(({ element_id, type }, index) => (
-                    <Draggable
-                      key={element_id}
-                      draggableId={element_id}
-                      index={index}
-                    >
-                      {(provided, snapshot) => {
-                        return (
-                          <React.Fragment>
-                            <div
-                              ref={provided.innerRef}
-                              className={`option-item ${type}`}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              style={{
-                                ...provided.draggableProps.style,
-                                transform: snapshot.isDragging
-                                  ? provided.draggableProps.style?.transform
-                                  : 'translate(0px, 0px)',
-                              }}
-                            >
-                              {elementNameMap[type]}
-                            </div>
-                            {snapshot.isDragging && (
+                {ELEMENT_TEMPLATE.map(({ element_id, type }, index) => {
+                  if (
+                    (fusion.type === 'AssayedFusion' && type !== 'MultiplePossibleGenesElement') ||
+                    (fusion.type === 'CategoricalFusion' && type !== 'UnknownGeneElement')
+                  ) {
+                    return (
+                      <Draggable
+                        key={element_id}
+                        draggableId={element_id}
+                        index={index}
+                      >
+                        {(provided, snapshot) => {
+                          return (
+                            <React.Fragment>
                               <div
-                                style={{ transform: 'none !important' }}
-                                key={element_id}
-                                className={`option-item clone ${type}`}
+                                ref={provided.innerRef}
+                                className={`option-item ${type}`}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                style={{
+                                  ...provided.draggableProps.style,
+                                  transform: snapshot.isDragging
+                                    ? provided.draggableProps.style?.transform
+                                    : 'translate(0px, 0px)',
+                                }}
                               >
                                 {elementNameMap[type]}
                               </div>
-                            )}
-                          </React.Fragment>
-                        );
-                      }}
-                    </Draggable>
-                  ))}
+                              {snapshot.isDragging && (
+                                <div
+                                  style={{ transform: 'none !important' }}
+                                  key={element_id}
+                                  className={`option-item clone ${type}`}
+                                >
+                                  {elementNameMap[type]}
+                                </div>
+                              )}
+                            </React.Fragment>
+                          );
+                        }}
+                      </Draggable>
+                    );
+                  }
+                })}
               </div>
             </div>
           )}

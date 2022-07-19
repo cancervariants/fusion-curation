@@ -1,7 +1,8 @@
 import {
-  ClientGeneComponent, ClientLinkerComponent, ClientTemplatedSequenceComponent,
-  ClientTranscriptSegmentComponent, ClientUnknownGeneComponent, FunctionalDomain,
-  GeneDescriptor, RegulatoryElement
+  ClientGeneElement, ClientLinkerElement, ClientTemplatedSequenceElement,
+  ClientTranscriptSegmentElement, ClientUnknownGeneElement,
+  ClientMultiplePossibleGenesElement, FunctionalDomain,
+  GeneDescriptor, RegulatoryElement, CausativeEvent,
 } from '../../../../services/ResponseModels';
 import './Readable.scss';
 import React from 'react';
@@ -12,20 +13,17 @@ interface Props {
   genes: Array<GeneDescriptor>,
   proteinDomains: Array<FunctionalDomain>,
   regulatoryElements: Array<RegulatoryElement>,
-  structuralComponents: Array<ClientGeneComponent | ClientLinkerComponent
-    | ClientTemplatedSequenceComponent | ClientUnknownGeneComponent
-    | ClientTranscriptSegmentComponent>,
+  structuralElements: Array<ClientGeneElement | ClientLinkerElement
+    | ClientTemplatedSequenceElement | ClientUnknownGeneElement
+    | ClientTranscriptSegmentElement | ClientMultiplePossibleGenesElement>,
   rFramePreserved: boolean,
-  causativeEvent: Event,
+  causativeEvent: CausativeEvent,
 }
 
 export const Readable: React.FC<Props> = ({
   // genes,
-  proteinDomains, regulatoryElements, structuralComponents, rFramePreserved, causativeEvent
+  proteinDomains, regulatoryElements, structuralElements, rFramePreserved, causativeEvent
 }) => {
-
-
-
   return (
     <div className="readable-items-container">
       <div className="row-items">
@@ -37,7 +35,7 @@ export const Readable: React.FC<Props> = ({
         <div className="row">
           <span className="left-item">Structure </span>
           <div className="right-item">
-            {structuralComponents.map((comp, index) =>
+            {structuralElements.map((comp, index) =>
               // eslint-disable-next-line react/jsx-key
               <span className="right-sub-item" key={index}>
                 {`${index ? '::' : ''}${comp.hr_name}`}
@@ -52,7 +50,7 @@ export const Readable: React.FC<Props> = ({
               regulatoryElements.map(re =>
                 // eslint-disable-next-line react/jsx-key
                 <div className="right-sub-list-item">
-                  {`${re.gene_descriptor.label.toUpperCase()} ${re.type}`}
+                  {`${re.associated_gene?.label?.toUpperCase()} ${re.type}`}
                 </div>
               )
             }
@@ -64,7 +62,7 @@ export const Readable: React.FC<Props> = ({
           <span className="right-list-item">
             {proteinDomains.map(pd =>
               // eslint-disable-next-line react/jsx-key
-              <div className="right-sub-list-item">{`${pd.status}: ${pd.name}`} </div>
+              <div className="right-sub-list-item">{`${pd.status}: ${pd.label}`} </div>
             )}
           </span>
         </div>
@@ -79,7 +77,7 @@ export const Readable: React.FC<Props> = ({
         <hr />
         <div className="row">
           <span className="left-item">Causative Event</span>
-          <span className="right-item">{causativeEvent} </span>
+          <span className="right-item">{causativeEvent.event_type}</span>
         </div>
       </div>
     </div>
