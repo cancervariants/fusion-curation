@@ -29,7 +29,7 @@ export const Assay: React.FC<Props> = () => {
   const [fusionDetection, setFusionDetection] = useState(
     fusion.assay?.fusion_detection !== undefined
       ? fusion.assay.fusion_detection
-      : "unknown"
+      : null
   );
 
   const [assayName, setAssayName] = useState(
@@ -97,11 +97,6 @@ export const Assay: React.FC<Props> = () => {
             value="inferred"
             control={<Radio />}
             label="Inferred"
-          />
-          <FormControlLabel
-            value="unknown"
-            control={<Radio />}
-            label="Unknown"
           />
         </RadioGroup>
       </FormControl>
