@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import * as React from 'react';
+import * as React from "react";
 
 function ButtonEdit(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -11,7 +11,7 @@ function ButtonEdit(props: React.SVGProps<SVGSVGElement>) {
       {...props}
     >
       <defs>
-        <style>{'.prefix__cls-2{fill:#fff;fill-rule:evenodd}'}</style>
+        <style>{".prefix__cls-2{fill:#fff;fill-rule:evenodd}"}</style>
       </defs>
       <rect width={612} height={612} rx={193.26} />
       <path
