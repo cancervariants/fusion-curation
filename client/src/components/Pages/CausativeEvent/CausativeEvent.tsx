@@ -17,6 +17,7 @@ interface Props {
 export const CausativeEvent: React.FC<Props> = () => {
   const { fusion, setFusion } = useContext(FusionContext);
 
+  // initialize event field
   useEffect(() => {
     if (fusion.causative_event == undefined) {
       setFusion({ ...fusion, causative_event: {} });
@@ -34,6 +35,18 @@ export const CausativeEvent: React.FC<Props> = () => {
       ? fusion.causative_event?.event_description
       : ""
   );
+
+  // ensure live updates
+  useEffect(() => {
+    if (fusion.causative_event.event_type !== causativeEventType) {
+      setCausativeEventType(fusion.causative_event.event_type);
+    }
+    if (
+      fusion.causative_event.event_description !== causativeEventDescription
+    ) {
+      setCausativeEventDescription(fusion.causative_event.event_description);
+    }
+  }, [fusion]);
 
   const handleCauseChange = (event) => {
     const value = event.target.value;

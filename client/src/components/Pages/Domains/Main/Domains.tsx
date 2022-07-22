@@ -1,9 +1,10 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import Close from "./Close";
 import { FusionContext } from "../../../../global/contexts/FusionContext";
 
 import "./Domains.scss";
 import DomainForm from "../DomainForm/DomainForm";
+import { ClientFunctionalDomain } from "../../../../services/ResponseModels";
 
 interface Props {
   index: number;
@@ -19,11 +20,13 @@ export const Domain: React.FC<Props> = () => {
   // should maybe create a separate context of the unmutated selected suggestion
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const initialDomains = useRef(domains);
+  // const initialDomains = useRef(domains);
 
   const handleRemove = (domain) => {
     //copy domain array, then remove the domain with the relevant ID
-    let cloneArray = Array.from(fusion.functional_domains);
+    let cloneArray: ClientFunctionalDomain[] = Array.from(
+      fusion.functional_domains
+    );
     cloneArray = cloneArray.filter((obj) => {
       return obj["domain_id"] !== domain["domain_id"];
     });
@@ -37,10 +40,10 @@ export const Domain: React.FC<Props> = () => {
           <div className="sub-blurb">You can add or remove domains.</div>
 
           {/* TODO: maybe create a two column list of lost vs preserved */}
-          {domains.map((domain, index: number) => (
+          {domains.map((domain: ClientFunctionalDomain, index: number) => (
             <div className="domain" key={index}>
               <span>
-                {domain.gene_descriptor.label} {domain.name} {domain.status}
+                {domain.associated_gene.label} {domain.label} {domain.status}
               </span>
               <span
                 className="close-button-domain"

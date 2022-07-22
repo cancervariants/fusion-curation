@@ -1,6 +1,6 @@
 import "./ReadingFrame.scss";
 import { FusionContext } from "../../../global/contexts/FusionContext";
-import React, { useContext, useState } from "react";
+import React, { FormEvent, useContext, useEffect, useState } from "react";
 import {
   FormControl,
   FormControlLabel,
@@ -42,20 +42,29 @@ export const ReadingFrame: React.FC<Props> = ({ index }) => {
       ? assignRadioValue(fusion.r_frame_preserved)
       : "unspecified"
   );
-  const handleRFrameChange = (event) => {
-    const value = event.target.value;
-    if (value === "yes") {
-      setRFramePreserved("yes");
-      setFusion({ ...fusion, r_frame_preserved: true });
-    } else if (value === "no") {
-      setRFramePreserved("no");
-      setFusion({ ...fusion, r_frame_preserved: false });
-    } else if (value === "not applicable") {
-      setRFramePreserved("not_applicable");
-      setFusion({ ...fusion, r_frame_preserved: null });
-    } else {
-      setRFramePreserved("unspecified");
-      setFusion({ ...fusion, r_frame_preserved: null });
+
+  useEffect(() => {
+    if (fusion.r_frame_preserved !== rFramePreserved) {
+      setRFramePreserved(fusion.r_frame_preserved);
+    }
+  }, [fusion]);
+
+  const handleRFrameChange = (event: FormEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value;
+    if (value !== rFramePreserved) {
+      if (value === "yes") {
+        setRFramePreserved("yes");
+        setFusion({ ...fusion, r_frame_preserved: true });
+      } else if (value === "no") {
+        setRFramePreserved("no");
+        setFusion({ ...fusion, r_frame_preserved: false });
+      } else if (value === "not applicable") {
+        setRFramePreserved("not_applicable");
+        setFusion({ ...fusion, r_frame_preserved: null });
+      } else {
+        setRFramePreserved("unspecified");
+        setFusion({ ...fusion, r_frame_preserved: null });
+      }
     }
   };
 

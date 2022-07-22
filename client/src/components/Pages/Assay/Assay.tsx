@@ -45,15 +45,11 @@ export const Assay: React.FC<Props> = () => {
   );
 
   const handleEvidenceChange = (event: FormEvent<HTMLInputElement>) => {
-    const value = event.currentTarget.value;
-    const assay = JSON.parse(JSON.stringify(fusion.assay));
-    if (value === "observed" || value === "inferred") {
-      setFusionDetection(value);
-      assay["fusion_detection"] = value;
-      setFusion({ ...fusion, assay: assay });
-    } else {
-      setFusionDetection("unknown");
-      assay["fusion_detection"] = null;
+    const evidence_value = event.currentTarget.value;
+    if (fusion.assay.fusion_detection !== evidence_value) {
+      setFusionDetection(evidence_value);
+      const assay = JSON.parse(JSON.stringify(fusion.assay));
+      assay["fusion_detection"] = evidence_value;
       setFusion({ ...fusion, assay: assay });
     }
   };
@@ -64,15 +60,33 @@ export const Assay: React.FC<Props> = () => {
     methodUri: [setMethodUri, "method_uri"],
   };
 
+  // live update fields
+  useEffect(() => {
+    if (fusion.assay.fusion_detection !== fusionDetection) {
+      setFusionDetection(fusion.assay.fusion_detection);
+    }
+    if (fusion.assay.assay_name !== assayName) {
+      setAssayName(fusion.assay.assay_name);
+    }
+    if (fusion.assay.assay_id !== assayId) {
+      setAssayId(fusion.assay.assay_id);
+    }
+    if (fusion.assay.method_uri !== methodUri) {
+      setMethodUri(fusion.assay.method_uri);
+    }
+  }, [fusion]);
+
   // TODO: not sure if this is the correct or necessary way to handle copying/assignments
   // good place for Colin to clean up
   const handleValueChange = (propertyName: string, value: string | null) => {
     const setterFunction: CallableFunction = propertySetterMap[propertyName][0];
     const jsonName: string = propertySetterMap[propertyName][1];
-    setterFunction(value);
     const assay: FusionAssay = JSON.parse(JSON.stringify(fusion.assay));
-    assay[jsonName] = value;
-    setFusion({ ...fusion, assay: assay });
+    if (value !== assay[jsonName]) {
+      setterFunction(value);
+      assay[jsonName] = value;
+      setFusion({ ...fusion, assay: assay });
+    }
   };
 
   const evidenceText =

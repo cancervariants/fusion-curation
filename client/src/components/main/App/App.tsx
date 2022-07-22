@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from "react";
 // m-ui things
-import { Menu, MenuItem, ThemeProvider } from "@material-ui/core";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Menu,
+  MenuItem,
+  ThemeProvider,
+} from "@material-ui/core";
 // global contexts
 import { DomainOptionsContext } from "../../../global/contexts/DomainOptionsContext";
 import { FusionContext } from "../../../global/contexts/FusionContext";
@@ -28,6 +38,8 @@ import {
   ClientTemplatedSequenceElement,
   ClientTranscriptSegmentElement,
   ClientUnknownGeneElement,
+  DomainParams,
+  GeneDescriptor,
   RegulatoryElement,
 } from "../../../services/ResponseModels";
 
@@ -39,6 +51,9 @@ type ClientElement =
   | ClientMultiplePossibleGenesElement
   | ClientLinkerElement
   | ClientTemplatedSequenceElement;
+
+type GenesLookup = Record<string, GeneDescriptor>;
+type DomainOptionsLookup = Record<string, DomainParams[]>;
 
 const demoAssayedFusion: ClientAssayedFusion = {
   type: "AssayedFusion",
@@ -75,6 +90,88 @@ const demoAssayedFusion: ClientAssayedFusion = {
   },
 };
 
+const demoCategoricalFusion: ClientCategoricalFusion = {
+  type: "CategoricalFusion",
+  critical_functional_domains: [],
+  structural_elements: [
+    {
+      type: "TranscriptSegmentElement",
+      element_id: uuid(),
+      element_name: "NM_152263.3 TPM3",
+      hr_name: "NM_002529.3(TPM3):e._8",
+      input_type: "exon_coords_tx",
+      transcript: "refseq:NM_152263.3",
+      input_tx: "NM_152263.3",
+      exon_end: 8,
+      exon_end_offset: 0,
+      gene_descriptor: {
+        id: "normalize.gene:TPM3",
+        type: "GeneDescriptor",
+        label: "TPM3",
+        gene_id: "hgnc:12012",
+      },
+      element_genomic_end: {
+        id: "fusor.location_descriptor:NC_000001.11",
+        type: "LocationDescriptor",
+        label: "NC_000001.11",
+        location: {
+          type: "SequenceLocation",
+          sequence_id: "refseq:NC_000001.11",
+          interval: {
+            type: "SequenceInterval",
+            start: {
+              type: "Number",
+              value: 154170399,
+            },
+            end: {
+              type: "Number",
+              value: 154170400,
+            },
+          },
+        },
+      },
+    },
+    {
+      type: "TranscriptSegmentElement",
+      element_id: uuid(),
+      element_name: "NM_002609.3 PDGFRB",
+      hr_name: "NM_002609.3(PDGFRB):e.11_",
+      input_type: "exon_coords_tx",
+      transcript: "refseq:NM_002609.3",
+      input_tx: "NM_002609.3",
+      exon_start: 11,
+      exon_start_offset: 0,
+      gene_descriptor: {
+        id: "normalize.gene:PDGFRB",
+        type: "GeneDescriptor",
+        label: "PDGFRB",
+        gene_id: "hgnc:8804",
+      },
+      element_genomic_start: {
+        id: "fusor.location_descriptor:NC_000005.10",
+        type: "LocationDescriptor",
+        label: "NC_000005.10",
+        location: {
+          type: "SequenceLocation",
+          sequence_id: "refseq:NC_000005.10",
+          interval: {
+            type: "SequenceInterval",
+            start: {
+              type: "Number",
+              value: 150125577,
+            },
+            end: {
+              type: "Number",
+              value: 150125578,
+            },
+          },
+        },
+      },
+    },
+  ],
+  regulatory_elements: [],
+};
+
 const defaultFusion: ClientFusion = {
   structural_elements: [],
   regulatory_elements: [],
@@ -83,11 +180,15 @@ const defaultFusion: ClientFusion = {
 const App = (): React.ReactElement => {
   const [suggestions, setSuggestions] = useState<unknown>([]);
   const [fusion, setFusion] = useState<ClientFusion>(defaultFusion);
-  const [globalGenes, setGlobalGenes] = useState<unknown>({});
-  const [domainOptions, setDomainOptions] = useState<unknown>({});
+  const [globalGenes, setGlobalGenes] = useState<GenesLookup>({});
+  const [domainOptions, setDomainOptions] = useState<DomainOptionsLookup>({});
   const [showMain, setShowMain] = useState<boolean>(true);
   const [showServiceInfo, setShowServiceInfo] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [dialogCallback, setDialogCallback] = useState<CallableFunction | null>(
+    null
+  );
 
   /**
    * Update global genes contexts.
@@ -125,7 +226,7 @@ const App = (): React.ReactElement => {
       (geneId, index) => remainingGeneIds.indexOf(geneId) === index
     );
 
-    const geneContextCopy = {};
+    const geneContextCopy: GenesLookup = {};
     uniqueRemainingGeneIds.forEach((geneId: string) => {
       if (geneId in globalGenes) {
         geneContextCopy[geneId] = globalGenes[geneId];
@@ -138,7 +239,7 @@ const App = (): React.ReactElement => {
 
   // update domain options based on available genes
   useEffect(() => {
-    const updatedDomainOptions = {};
+    const updatedDomainOptions: DomainOptionsLookup = {};
     Object.keys(globalGenes).forEach((geneId: string) => {
       if (geneId) {
         if (geneId in domainOptions) {
@@ -154,20 +255,76 @@ const App = (): React.ReactElement => {
   }, [globalGenes]);
 
   // disable superfluous react_dnd warnings
-  window["__react-beautiful-dnd-disable-dev-warnings"] = true;
+  // window["__react-beautiful-dnd-disable-dev-warnings"] = true;
 
   const { colorTheme } = useColorTheme();
 
-  const handleClear = () => {
-    setAnchorEl(null);
-    setFusion(defaultFusion);
-    setGlobalGenes({});
-    setDomainOptions({});
+  /**
+   * Check if user has submitted any data.
+   * This could easily be a messy one-liner, but it's distributed out for
+   * readability.
+   */
+  const fusionIsEmpty = () => {
+    if (fusion.type) {
+      return false;
+    } else if (fusion.structural_elements.length > 0) {
+      return false;
+    } else if (
+      fusion.regulatory_elements &&
+      fusion.regulatory_elements.length > 0
+    ) {
+      return false;
+    } else if (fusion.type == "AssayedFusion") {
+      if (
+        fusion.assay &&
+        (fusion.assay.assay_name ||
+          fusion.assay.assay_id ||
+          fusion.assay.method_uri ||
+          fusion.assay.fusion_detection)
+      ) {
+        return false;
+      }
+      if (
+        fusion.causative_event &&
+        (fusion.causative_event.event_type ||
+          fusion.causative_event.event_description)
+      ) {
+        return false;
+      }
+    } else if (fusion.type == "CategoricalFusion") {
+      if (fusion.r_frame_preserved !== undefined) {
+        return false;
+      }
+      if (
+        fusion.critical_functional_domains &&
+        fusion.critical_functional_domains.length > 0
+      ) {
+        return false;
+      }
+    }
+    return true;
   };
 
-  const handleDemo = () => {
+  const handleClear = () => {
     setAnchorEl(null);
-    setFusion(demoAssayedFusion);
+    if (fusionIsEmpty()) {
+      setFusion(defaultFusion);
+    } else {
+      setDialogCallback(() => () => setFusion(defaultFusion));
+      setDialogOpen(true);
+    }
+  };
+
+  const handleDemo = (
+    fusion: ClientAssayedFusion | ClientCategoricalFusion
+  ) => {
+    setAnchorEl(null);
+    if (fusionIsEmpty()) {
+      setFusion(fusion);
+    } else {
+      setDialogCallback(() => () => setFusion(fusion));
+      setDialogOpen(true);
+    }
   };
 
   const handleShowMainClick = () => {
@@ -178,6 +335,14 @@ const App = (): React.ReactElement => {
   const handleServiceInfo = () => {
     setAnchorEl(null);
     setShowServiceInfo(true);
+  };
+
+  const handleDialogResponse = (proceed: boolean) => {
+    setDialogOpen(false);
+    if (proceed && dialogCallback) {
+      dialogCallback();
+    }
+    setDialogCallback(null);
   };
 
   document.title = "VICC Fusion Curation";
@@ -211,7 +376,12 @@ const App = (): React.ReactElement => {
                 <MenuItem onClick={() => handleClear()}>
                   Clear Entered Data
                 </MenuItem>
-                <MenuItem onClick={() => handleDemo()}>Use Demo Data</MenuItem>
+                <MenuItem onClick={() => handleDemo(demoAssayedFusion)}>
+                  Use Assayed Fusion Demo
+                </MenuItem>
+                <MenuItem onClick={() => handleDemo(demoCategoricalFusion)}>
+                  Use Categorical Fusion Demo
+                </MenuItem>
                 <MenuItem onClick={() => handleShowMainClick()}>
                   Utilities
                 </MenuItem>
@@ -248,6 +418,33 @@ const App = (): React.ReactElement => {
         </div>
       </div>
       <About show={showServiceInfo} setShow={setShowServiceInfo} />
+      <Dialog
+        open={dialogOpen}
+        onClose={() => handleDialogResponse(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Clear existing data?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Warning: This action will clear all existing data.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => handleDialogResponse(true)} color="primary">
+            Proceed
+          </Button>
+          <Button
+            onClick={() => handleDialogResponse(false)}
+            color="primary"
+            autoFocus
+          >
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
     </ThemeProvider>
   );
 };

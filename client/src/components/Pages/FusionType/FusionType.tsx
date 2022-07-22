@@ -14,7 +14,7 @@ import {
   Radio,
   RadioGroup,
 } from "@material-ui/core";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FusionContext } from "../../../global/contexts/FusionContext";
 import "./FusionType.scss";
 
@@ -28,9 +28,18 @@ export const FusionType: React.FC<Props> = () => {
     fusion.type ? fusion.type : null
   );
 
+  useEffect(() => {
+    if (fusion.type !== fusionType) {
+      setFusionType(fusion.type);
+    }
+  }, [fusion]);
+
   const handleFusionTypeChange = (event) => {
-    setFusionType(event.target.value);
-    setFusion({ ...fusion, type: event.target.value });
+    const newType = event.target.value;
+    if (newType !== fusionType) {
+      setFusionType(newType);
+      setFusion({ ...fusion, type: newType });
+    }
   };
 
   return (
