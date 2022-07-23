@@ -67,14 +67,14 @@ const demoAssayedFusion: ClientAssayedFusion = {
         gene_id: "hgnc:3508",
       },
       element_id: uuid(),
-      element_name: "z",
-      hr_name: "z",
+      element_name: "EWSR1(hgnc:3508)",
+      hr_name: "EWSR1(hgnc:3508)",
     },
     {
       type: "UnknownGeneElement",
       element_id: uuid(),
-      element_name: "z",
-      hr_name: "z",
+      element_name: "?",
+      hr_name: "?",
     },
   ],
   causative_event: {
