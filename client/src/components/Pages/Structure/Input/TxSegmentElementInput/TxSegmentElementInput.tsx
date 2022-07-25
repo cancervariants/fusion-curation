@@ -17,6 +17,7 @@ import {
   getTxSegmentElementECT,
   getTxSegmentElementGCG,
   getTxSegmentElementGCT,
+  getTxSegmentNomenclature,
 } from "../../../../../services/main";
 import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
@@ -115,39 +116,23 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       ...inputParams,
     };
 
-    let eso: string;
-    if (finishedElement.exon_start_offset > 0) {
-      eso = `+${finishedElement.exon_start_offset}`;
-    } else if (finishedElement.exon_start_offset < 0) {
-      eso = `${finishedElement.exon_start_offset}`;
-    } else {
-      eso = "";
-    }
-
-    let eeo: string;
-    if (finishedElement.exon_end_offset > 0) {
-      eeo = `+${finishedElement.exon_end_offset}`;
-    } else if (finishedElement.exon_end_offset < 0) {
-      eeo = `${finishedElement.exon_end_offset}`;
-    } else {
-      eeo = "";
-    }
-
-    let hrExon: string;
-    if (finishedElement.exon_start && finishedElement.exon_end) {
-      hrExon = `e.${finishedElement.exon_start}${eso}_${finishedElement.exon_end}${eeo}`;
-    } else if (finishedElement.exon_start) {
-      hrExon = `e.${finishedElement.exon_start}${eso}_`;
-    } else {
-      hrExon = `e._${finishedElement.exon_end}${eeo}`;
-    }
-
     const responseGeneSymbol = finishedElement.gene_descriptor.label;
     const txAcName = finishedElement.transcript.split(":")[1];
 
     finishedElement.element_name = `${txAcName} ${responseGeneSymbol}`;
-    finishedElement.hr_name = `${txAcName}(${responseGeneSymbol}):${hrExon}`;
-    handleSave(index, finishedElement);
+
+    // TODO get element position
+    getTxSegmentNomenclature(responseElement, false, false).then(
+      (nomenclatureResponse) => {
+        if (
+          !nomenclatureResponse.warnings &&
+          nomenclatureResponse.nomenclature
+        ) {
+          finishedElement.hr_name = nomenclatureResponse.nomenclature;
+          handleSave(index, finishedElement);
+        }
+      }
+    );
   };
 
   const buildTranscriptSegmentElement = () => {
@@ -160,7 +145,10 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           txEndingGenomic,
           txStrand
         ).then((txSegmentResponse) => {
-          if (txSegmentResponse.warnings?.length > 0) {
+          if (
+            txSegmentResponse.warnings &&
+            txSegmentResponse.warnings?.length > 0
+          ) {
             const chromWarning = `Invalid chromosome: ${txChrom}`;
             if (txSegmentResponse.warnings.includes(chromWarning)) {
               setTxChromText("Unrecognized value");
@@ -187,7 +175,10 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           txEndingGenomic,
           txStrand
         ).then((txSegmentResponse) => {
-          if (txSegmentResponse.warnings?.length > 0) {
+          if (
+            txSegmentResponse.warnings &&
+            txSegmentResponse.warnings?.length > 0
+          ) {
             // TODO more warnings
             const chromWarning = `Invalid chromosome: ${txChrom}`;
             if (txSegmentResponse.warnings.includes(chromWarning)) {
@@ -225,7 +216,10 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           startingExonOffset as string,
           endingExonOffset as string
         ).then((txSegmentResponse) => {
-          if (txSegmentResponse.warnings?.length > 0) {
+          if (
+            txSegmentResponse.warnings &&
+            txSegmentResponse.warnings?.length > 0
+          ) {
             const txWarning = `Unable to get exons for ${txAc}`;
             if (txSegmentResponse.warnings.includes(txWarning)) {
               setTxAcText("Unrecognized value");
@@ -424,7 +418,14 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       <div className="top-inputs">
         <Select
           value={txInputType}
-          onChange={(event) => setTxInputType(event.target.value as string)}
+          onChange={(event) =>
+            setTxInputType(
+              event.target.value as
+                | "genomic_coords_gene"
+                | "genomic_coords_tx"
+                | "exon_coords_tx"
+            )
+          }
         >
           <MenuItem value="default" disabled>
             Select input data

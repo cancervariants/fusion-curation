@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
-import { ClientGeneElement } from "../../../../../services/ResponseModels";
+import {
+  ClientGeneElement,
+  NomenclatureResponse,
+} from "../../../../../services/ResponseModels";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneAutocomplete";
-import { getGeneElement } from "../../../../../services/main";
+import {
+  getGeneElement,
+  getGeneNomenclature,
+} from "../../../../../services/main";
 import ElementInputAccordion from "../StructuralElementInputAccordion";
 
 interface GeneElementInputProps extends StructuralElementInputProps {
@@ -28,18 +34,31 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
 
   const buildGeneElement = () => {
     getGeneElement(gene).then((geneElementResponse) => {
-      if (geneElementResponse.warnings?.length > 0) {
+      if (
+        geneElementResponse.warnings &&
+        geneElementResponse.warnings.length > 0
+      ) {
         setGeneText("Gene not found");
-      } else {
-        const descr = geneElementResponse.element.gene_descriptor;
-        const nomenclature = `${descr.label}(${descr.gene_id})`;
-        const clientGeneElement: ClientGeneElement = {
-          ...geneElementResponse.element,
-          element_id: element.element_id,
-          element_name: nomenclature,
-          hr_name: nomenclature,
-        };
-        handleSave(index, clientGeneElement);
+      } else if (
+        geneElementResponse.element &&
+        geneElementResponse.element.gene_descriptor
+      ) {
+        getGeneNomenclature(geneElementResponse.element).then(
+          (nomenclatureResponse: NomenclatureResponse) => {
+            if (
+              !nomenclatureResponse.warnings &&
+              nomenclatureResponse.nomenclature
+            ) {
+              const clientGeneElement: ClientGeneElement = {
+                ...geneElementResponse.element,
+                element_id: element.element_id,
+                element_name: nomenclatureResponse.nomenclature,
+                hr_name: nomenclatureResponse.nomenclature,
+              };
+              handleSave(index, clientGeneElement);
+            }
+          }
+        );
       }
     });
   };

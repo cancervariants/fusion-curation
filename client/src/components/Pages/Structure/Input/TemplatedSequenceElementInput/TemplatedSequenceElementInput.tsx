@@ -7,12 +7,11 @@ import {
   Radio,
 } from "@material-ui/core";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
-import { getTemplatedSequenceElement } from "../../../../../services/main";
 import {
-  ClientTemplatedSequenceElement,
-  Number as VrsNumber,
-  SequenceLocation,
-} from "../../../../../services/ResponseModels";
+  getTemplatedSequenceElement,
+  getTemplatedSequenceNomenclature,
+} from "../../../../../services/main";
+import { ClientTemplatedSequenceElement } from "../../../../../services/ResponseModels";
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
 
 interface TemplatedSequenceElementInputProps
@@ -63,29 +62,31 @@ const TemplatedSequenceElementInput: React.FC<
       startPosition,
       endPosition
     ).then((templatedSequenceResponse) => {
-      if (templatedSequenceResponse.warnings?.length > 0) {
+      if (
+        templatedSequenceResponse.warnings &&
+        templatedSequenceResponse.warnings?.length > 0
+      ) {
         // TODO visible error handling
         setInputError("element validation unsuccessful");
         return;
-      } else {
+      } else if (templatedSequenceResponse.element) {
         setInputError("");
-        const location = templatedSequenceResponse.element.region
-          .location as SequenceLocation;
-        const sequence = location.sequence_id.split(":")[1];
-        const start = location.interval.start as VrsNumber;
-        const end = location.interval.end as VrsNumber;
-        const name = `${sequence}:g.${start.value}_${end.value}(${strand})`;
-
-        const templatedSequenceElement: ClientTemplatedSequenceElement = {
-          ...templatedSequenceResponse.element,
-          element_id: element.element_id,
-          element_name: name,
-          hr_name: name,
-          input_chromosome: chromosome,
-          input_start: startPosition,
-          input_end: endPosition,
-        };
-        handleSave(index, templatedSequenceElement);
+        getTemplatedSequenceNomenclature(
+          templatedSequenceResponse.element
+        ).then((nomenclatureResponse) => {
+          if (nomenclatureResponse.nomenclature) {
+            const templatedSequenceElement: ClientTemplatedSequenceElement = {
+              ...templatedSequenceResponse.element,
+              element_id: element.element_id,
+              element_name: nomenclatureResponse.nomenclature,
+              hr_name: nomenclatureResponse.nomenclature,
+              input_chromosome: chromosome,
+              input_start: startPosition,
+              input_end: endPosition,
+            };
+            handleSave(index, templatedSequenceElement);
+          }
+        });
       }
     });
   };
