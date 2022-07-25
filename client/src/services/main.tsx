@@ -32,6 +32,8 @@ import {
   ValidateFusionResponse,
   AssayedFusion,
   CategoricalFusion,
+  NomenclatureResponse,
+  RegulatoryElement,
 } from "./ResponseModels";
 
 export type ClientElementUnion =
@@ -278,6 +280,93 @@ export const getSequenceIds = async (
  */
 export const getInfo = async (): Promise<ServiceInfoResponse> => {
   const response = await fetch("/service_info");
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+/**
+ * Get nomenclature subcomponent for a given Regulatory Element
+ * @param regulatoryElement
+ * @returns nomenclature if successful
+ */
+export const getRegElementNomenclature = async (
+  regulatoryElement: RegulatoryElement
+): Promise<NomenclatureResponse> => {
+  const response = await fetch("/nomenclature/regulatory_element", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(regulatoryElement),
+  });
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+/**
+ * Get nomenclature subcomponent for a given Transcript Segment Element
+ * @param txSegment
+ * @param first true if element is first in structure
+ * @param last true if element is last in structure
+ * @returns nomenclature if successful
+ */
+export const getTxSegmentNomenclature = async (
+  txSegment: TranscriptSegmentElement,
+  first: boolean,
+  last: boolean
+): Promise<NomenclatureResponse> => {
+  const response = await fetch(
+    `/nomenclature/transcript_segment?first=${first}&last=${last}`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(txSegment),
+    }
+  );
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+/**
+ * Get nomenclature subcomponent for a given Templated Sequence Element
+ * @param templatedSequenceElement
+ * @returns nomenclature if successful
+ */
+export const getTemplatedSequenceNomenclature = async (
+  templatedSequenceElement: TemplatedSequenceElement
+): Promise<NomenclatureResponse> => {
+  const response = await fetch("/nomenclature/templated_sequence", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(templatedSequenceElement),
+  });
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+/**
+ * Get nomenclature subcomponent for a given Gene Element
+ * @param gene
+ * @returns nomenclature if successful
+ */
+export const getGeneNomenclature = async (
+  gene: GeneElement
+): Promise<NomenclatureResponse> => {
+  const response = await fetch("/nomenclature/gene", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(gene),
+  });
   const responseJson = await response.json();
   return responseJson;
 };

@@ -272,3 +272,9 @@ class ClientAssayedFusion(AssayedFusion):
             ClientUnknownGeneElement,
         ]
     ]
+
+
+class NomenclatureResponse(Response):
+    """Response model for regulatory element nomenclature endpoint."""
+
+    nomenclature: Optional[str]

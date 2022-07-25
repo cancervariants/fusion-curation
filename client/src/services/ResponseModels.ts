@@ -588,6 +588,13 @@ export interface GetTranscriptsResponse {
   }[];
 }
 /**
+ * Response model for regulatory element nomenclature endpoint.
+ */
+export interface NomenclatureResponse {
+  warnings?: string[];
+  nomenclature?: string;
+}
+/**
  * Response model for gene normalization endpoint.
  */
 export interface NormalizeGeneResponse {
