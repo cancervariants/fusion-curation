@@ -521,6 +521,8 @@ export interface ClientRegulatoryElement {
   associated_gene?: GeneDescriptor;
   genomic_location?: LocationDescriptor;
   element_id: string;
+  hr_class: string;
+  hr_name: string;
 }
 /**
  * Abstract class to provide identification properties used by client.
@@ -602,6 +604,13 @@ export interface NormalizeGeneResponse {
   term: string;
   concept_id?: CURIE;
   symbol?: string;
+}
+/**
+ * Response model for regulatory element constructor.
+ */
+export interface RegulatoryElementResponse {
+  warnings?: string[];
+  regulatory_element: RegulatoryElement;
 }
 /**
  * Abstract Response class for defining API response structures.

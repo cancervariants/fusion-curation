@@ -34,6 +34,8 @@ import {
   CategoricalFusion,
   NomenclatureResponse,
   RegulatoryElement,
+  RegulatoryClass,
+  RegulatoryElementResponse,
 } from "./ResponseModels";
 
 export type ClientElementUnion =
@@ -367,6 +369,23 @@ export const getGeneNomenclature = async (
     },
     body: JSON.stringify(gene),
   });
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+/**
+ * Build complete RegulatoryElement
+ * @param regulatoryClass value of regulatory element class (the generated Typescript type expects it to be lowercase, which is fine -- the server will upper-case it)
+ * @param geneName user-provided gene referent (could theoretically be some sort of concept ID or xref, too)
+ * @returns constructed Regulatory element or warnings
+ */
+export const getRegulatoryElement = async (
+  regulatoryClass: RegulatoryClass,
+  geneName: string
+): Promise<RegulatoryElementResponse> => {
+  const response = await fetch(
+    `/construct/regulatory_element?element_class=${regulatoryClass}&gene_name=${geneName}`
+  );
   const responseJson = await response.json();
   return responseJson;
 };

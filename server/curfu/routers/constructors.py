@@ -3,11 +3,12 @@ from typing import Optional
 
 from fastapi import Query, Request, APIRouter
 from pydantic import ValidationError
-from fusor.models import Strand, DomainStatus
+from fusor.models import RegulatoryClass, Strand, DomainStatus
 
 from curfu import logger
 from curfu.schemas import (
     GeneElementResponse,
+    RegulatoryElementResponse,
     TxSegmentElementResponse,
     TemplatedSequenceElementResponse,
     GetDomainResponse,
@@ -230,6 +231,7 @@ def build_domain(
         but not validated, and namespace shouldn't be included)
     :param int start: the domain's protein start position
     :param int end: the domain's protein end position
+    :return: complete domain or warning msg
     """
     response: ResponseDict = {}
     try:
@@ -243,3 +245,29 @@ def build_domain(
     except ValidationError as e:
         response["warnings"] = [f"Unable to construct Functional Domain: {e}"]
     return response
+
+
+@router.get(
+    "/construct/regulatory_element",
+    operation_id="getRegulatoryElement",
+    response_model=RegulatoryElementResponse,
+    response_model_exclude_none=True,
+)
+def build_regulatory_element(
+    request: Request, element_class: RegulatoryClass, gene_name: str
+) -> ResponseDict:
+    """Construct regulatory element from given params.
+    :param request: the HTTP request context, supplied by FastAPI. Used to access
+        FUSOR and UTA-associated tools.
+    :param element_class: type of regulatory element
+    :param gene_name: referent acquired from autocomplete.
+    :return: complete regulatory element object or warning message
+    """
+    try:
+        normalized_class = RegulatoryClass[element_class.upper()]
+    except KeyError:
+        return {"warnings": [f"unrecognized regulatory class value: {element_class}"]}
+    element, warnings = request.app.state.fusor.regulatory_element(
+        normalized_class, gene_name
+    )
+    return {"regulatory_element": element, "warnings": warnings}

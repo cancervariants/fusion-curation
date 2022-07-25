@@ -91,6 +91,8 @@ class ClientRegulatoryElement(RegulatoryElement):
     """Regulatory element object used client-side."""
 
     element_id: str
+    hr_class: str
+    hr_name: str
 
     class Config:
         """Configure class."""
@@ -236,7 +238,7 @@ class ServiceInfoResponse(Response):
     uta_tools_version: StrictStr
 
     # consider additional tool versions:
-    # - UTA (need to add a method to UTA tools)
+    # - UTA (https://github.com/GenomicMedLab/uta-tools/issues/98)
     # - vrs/vrs-python
     # - the gene normalizer
 
@@ -278,3 +280,9 @@ class NomenclatureResponse(Response):
     """Response model for regulatory element nomenclature endpoint."""
 
     nomenclature: Optional[str]
+
+
+class RegulatoryElementResponse(Response):
+    """Response model for regulatory element constructor."""
+
+    regulatory_element: RegulatoryElement
