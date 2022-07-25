@@ -9,8 +9,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useContext, useState, KeyboardEvent } from "react";
 import { v4 as uuid } from "uuid";
 import { FusionContext } from "../../../../global/contexts/FusionContext";
-import { getGeneId } from "../../../../services/main";
-import { ClientRegulatoryElement } from "../../../../services/ResponseModels";
+import {
+  getRegElementNomenclature,
+  getRegulatoryElement,
+} from "../../../../services/main";
+import {
+  ClientRegulatoryElement,
+  RegulatoryClass,
+} from "../../../../services/ResponseModels";
 import { GeneAutocomplete } from "../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import "./RegElementForm.scss";
 
@@ -30,14 +36,17 @@ const RegElementForm: React.FC = () => {
   const { fusion, setFusion } = useContext(FusionContext);
   const regElements = fusion.regulatory_elements;
 
-  const [type, setType] = useState("default");
+  const [elementClass, setElementClass] = useState<RegulatoryClass | "default">(
+    "default"
+  );
   const [gene, setGene] = useState<string>("");
   const [geneText, setGeneText] = useState<string>("");
 
-  const inputComplete = type !== "default" && gene !== "" && geneText === "";
+  const inputComplete =
+    elementClass !== "default" && gene !== "" && geneText === "";
 
   const handleTypeChange = (event) => {
-    setType(event.target.value);
+    setElementClass(event.target.value);
   };
 
   const handleEnterKey = (e: KeyboardEvent) => {
@@ -47,53 +56,94 @@ const RegElementForm: React.FC = () => {
   };
 
   const handleAdd = () => {
-    getGeneId(gene)
-      .then((geneResponse) => {
-        if (geneResponse.warnings?.length > 0) {
-          const geneWarning = `Lookup of gene term ${gene} failed.`;
-          if (geneResponse.warnings.includes(geneWarning)) {
-            setGeneText("Unrecognized term");
+    if (elementClass === "default") return;
+    getRegulatoryElement(elementClass, gene).then((reResponse) => {
+      if (reResponse.warnings && reResponse.warnings.length > 0) {
+        throw new Error(reResponse.warnings[0]);
+      }
+
+      getRegElementNomenclature(reResponse.regulatory_element)
+        .then((nomResponse) => {
+          if (nomResponse.warnings && nomResponse.warnings.length > 0) {
+            throw new Error(nomResponse.warnings[0]);
           }
-          throw new Error(geneWarning);
-        }
 
-        const cloneArray = Array.from(regElements);
-        const newRegElement: ClientRegulatoryElement = {
-          element_id: uuid(),
-          type: "RegulatoryElement",
-          regulatory_class: "promoter", // TODO fix
-          associated_gene: {
-            id: `gene:${geneResponse.term}`,
-            type: "GeneDescriptor",
-            gene_id: geneResponse.concept_id,
-            label: geneResponse.term,
-          },
-        };
-        cloneArray.push(newRegElement);
+          const newRegElement: ClientRegulatoryElement = {
+            ...reResponse.regulatory_element,
+            element_id: uuid(),
+            hr_class:
+              regulatoryClassItems[
+                reResponse.regulatory_element.regulatory_class
+              ],
+            hr_name: nomResponse.nomenclature as string,
+          };
 
-        setFusion({ ...fusion, ...{ regulatory_elements: cloneArray } });
-        setGene("");
-        setType("default");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+          const cloneArray = Array.from(regElements);
+          cloneArray.push(newRegElement);
+          setFusion({ ...fusion, ...{ regulatory_elements: cloneArray } });
+          setGene("");
+          setElementClass("default");
+        })
+        .catch((error) => console.log(error));
+    });
+  };
+
+  /**
+   * Lookup table used to map raw regulatory class enum values to options for the class
+   * drop-down menu and for display purposes.
+   * It's not clear to me if Typescript can check these values for correctness if they change,
+   * so any changes to the Pydantic RegulatoryClass class need to be reflected in the keys here.
+   */
+  const regulatoryClassItems = {
+    default: [true, ""],
+    attenuator: [false, "Attenuator"],
+    caat_signal: [false, "CAAT signal"],
+    enhancer: [false, "Enhancer"],
+    enhancer_blocking_element: [false, "Enhancer Blocking Element"],
+    gc_signal: [false, "GC Signal"],
+    imprinting_control_region: [false, "Imprinting Control Region"],
+    insulator: [false, "Insulator"],
+    minus_35_signal: [false, "-35 Signal"],
+    minus_10_signal: [false, "-10 Signal"],
+    polya_signal_sequence: [false, "PolyA Signal Sequence"],
+    promoter: [false, "Promoter"],
+    response_element: [false, "Response Element"],
+    ribosome_binding_site: [false, "Ribosome Binding Site"],
+    riboswitch: [false, "Riboswitch"],
+    silencer: [false, "Silencer"],
+    tata_box: [false, "TATA Box"],
+    teminator: [false, "Terminator"],
+    other: [false, "Other"],
+  };
+
+  /**
+   * Construct the regulatory class menu item array.
+   * @returns list of MenuItems
+   */
+  const buildMenuItems = () => {
+    return Object.keys(regulatoryClassItems).map((class_value, i) => (
+      <MenuItem
+        value={class_value}
+        disabled={regulatoryClassItems[class_value][0]}
+        key={i}
+      >
+        {regulatoryClassItems[class_value][1]}
+      </MenuItem>
+    ));
   };
 
   return (
     <div className="form-container">
       <div className="formInput">
         <FormControl className={classes.formControl}>
-          <InputLabel id="demo-simple-select-label">Type</InputLabel>
+          <InputLabel id="regulatory-element-class-label">Class</InputLabel>
           <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={type}
+            labelId="regulatory-element-class-label"
+            id="regulatory-element-class"
+            value={elementClass}
             onChange={handleTypeChange}
           >
-            <MenuItem value="default" disabled></MenuItem>
-            <MenuItem value="enhancer">Enhancer</MenuItem>
-            <MenuItem value="promoter">Promoter</MenuItem>
+            {buildMenuItems()}
           </Select>
         </FormControl>
       </div>

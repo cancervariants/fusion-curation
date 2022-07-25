@@ -23,7 +23,7 @@ export const RegElement: React.FC<Props> = ({ index }) => {
 
   const handleRemove = (regEl: ClientRegulatoryElement) => {
     //copy regulatory elements array, then remove the element with the relevant ID
-    let cloneArray = Array.from(regElements);
+    let cloneArray: ClientRegulatoryElement[] = Array.from(regElements);
     cloneArray = cloneArray.filter((obj) => {
       return obj["element_id"] !== regEl["element_id"];
     });
@@ -38,11 +38,16 @@ export const RegElement: React.FC<Props> = ({ index }) => {
             <div className="blurb">
               This transcript structure appears to be associated with a
               <p />
-              {regElements.map((regEl, index) => (
-                <span key={index} className="bold">
-                  {regEl.gene_descriptor.label.toUpperCase()} {regEl.type}
-                </span>
-              ))}
+              {regElements.map(
+                (regEl: ClientRegulatoryElement, index: number) => (
+                  <span key={index} className="bold">
+                    {regEl.associated_gene &&
+                      regEl.associated_gene.label &&
+                      regEl.associated_gene.label.toUpperCase()}{" "}
+                    {regEl.hr_class}
+                  </span>
+                )
+              )}
               <p />
               Regulatory Element.
             </div>
@@ -53,10 +58,13 @@ export const RegElement: React.FC<Props> = ({ index }) => {
             You can add or remove regulatory elements.
           </div>
 
-          {regElements.map((regEl, index) => (
+          {regElements.map((regEl: ClientRegulatoryElement, index: number) => (
             <div className="regel" key={index}>
               <div>
-                {regEl.gene_descriptor.label.toUpperCase()} {regEl.type}
+                {regEl.associated_gene &&
+                  regEl.associated_gene.label &&
+                  regEl.associated_gene.label.toUpperCase()}{" "}
+                {regEl.regulatory_class}
               </div>
               <div
                 className="close-button-reg"
