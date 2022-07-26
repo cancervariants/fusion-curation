@@ -1,83 +1,86 @@
 import {
+  CategoricalFusion,
+  AssayedFusion,
   RegulatoryElement,
-  CausativeEvent,
-  FunctionalDomain,
 } from "../../../../services/ResponseModels";
 import "./Readable.scss";
 import React from "react";
-import { ClientElementUnion } from "../../../../services/main";
+import {
+  ElementUnion,
+  getGeneNomenclature,
+  getRegElementNomenclature,
+  getStructuralElementArrayNomenclature,
+} from "../../../../services/main";
 
 interface Props {
-  // TODO: get types from model
-  // genes: Array<GeneDescriptor>,
-  proteinDomains: Array<FunctionalDomain>;
-  regulatoryElements: Array<RegulatoryElement>;
-  structuralElements: Array<ClientElementUnion>;
-  rFramePreserved: boolean;
-  causativeEvent: CausativeEvent;
+  fusion: AssayedFusion | CategoricalFusion;
 }
 
-export const Readable: React.FC<Props> = ({
-  // genes,
-  proteinDomains,
-  regulatoryElements,
-  structuralElements,
-  rFramePreserved,
-  causativeEvent,
-}) => {
+export const Readable: React.FC<Props> = ({ fusion }) => {
   return (
     <div className="readable-items-container">
       <div className="row-items">
-        {/* <div className="row">
-        <div className="left-item">Genes </div>
-        <div className="right-item">{genes.map((gene) => gene.toUpperCase())}</div>
-      </div>
-      <hr /> */}
         <div className="row">
           <span className="left-item">Structure </span>
-          <div className="right-item">
-            {structuralElements.map((comp, index) => (
-              <span className="right-sub-item" key={index}>
-                {`${index ? "::" : ""}${comp.hr_name}`}
-              </span>
-            ))}
-          </div>
+          <div className="right-item">"todo"</div>
         </div>
         <hr />
         <div className="row">
           <span className="left-item">Regulatory Elements </span>
           <span className="right-item">
-            {regulatoryElements.map((re) => (
-              <div className="right-sub-list-item">
-                {`${re.associated_gene?.label?.toUpperCase()} ${re.type}`}
-              </div>
-            ))}
+            {fusion.regulatory_elements &&
+              fusion.regulatory_elements.map((re: RegulatoryElement) => (
+                <div className="right-sub-list-item">
+                  {getRegElementNomenclature(re)}
+                </div>
+              ))}
           </span>
         </div>
         <hr />
-        <div className="row">
-          <span className="left-item">Protein Domains</span>
-          <span className="right-list-item">
-            {proteinDomains.map((pd) => (
-              <div className="right-sub-list-item">
-                {`${pd.status}: ${pd.label}`}{" "}
-              </div>
-            ))}
-          </span>
-        </div>
-        <hr />
-        <div className="row">
-          <span className="left-item">Reading Frame</span>
-          <span className="right-item"></span>
-          <span className="right-item">
-            {`${rFramePreserved ? "Preserved" : "Not preserved"}`}
-          </span>
-        </div>
-        <hr />
-        <div className="row">
-          <span className="left-item">Causative Event</span>
-          <span className="right-item">{causativeEvent.event_type}</span>
-        </div>
+        {fusion.type === "CategoricalFusion" && (
+          <>
+            <div className="row">
+              <span className="left-item">Protein Domains</span>
+              <span className="right-list-item">
+                {fusion.critical_functional_domains &&
+                  fusion.critical_functional_domains.length > 0 &&
+                  fusion.critical_functional_domains.map((pd) => (
+                    <div className="right-sub-list-item">
+                      {`${pd.status}: ${pd.label}`}{" "}
+                    </div>
+                  ))}
+              </span>
+            </div>
+            <hr />
+            <div className="row">
+              <span className="left-item">Reading Frame</span>
+              <span className="right-item"></span>
+              <span className="right-item">
+                {fusion.r_frame_preserved &&
+                  (fusion.r_frame_preserved === true
+                    ? "Preserved"
+                    : fusion.r_frame_preserved === false
+                    ? "Not preserved"
+                    : "")}
+              </span>
+            </div>
+          </>
+        )}
+        {fusion.type === "AssayedFusion" && (
+          <>
+            <div className="row">
+              <span className="left-item">Causative Event</span>
+              <span className="right-item">
+                {fusion.causative_event.event_type || ""}
+              </span>
+            </div>
+            <hr />
+            <div className="row">
+              <span className="left-item">Assay</span>
+              <span className="right-item">{fusion.assay.assay_name}</span>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
