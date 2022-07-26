@@ -74,6 +74,8 @@ You can run:
 
 ```commandline
 yarn install --ignore-engines
+yarn build
+mv build/ ../server/curfu/build
 ```
 
 Then start the development server:
