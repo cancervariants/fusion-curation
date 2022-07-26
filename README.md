@@ -62,6 +62,20 @@ cd client
 yarn install
 ```
 
+If you get the following error:
+
+```
+error api@3.4.2: The engine "node" is incompatible with this module. Expected version "^12 || ^14 || ^16". Got "18.0.0"
+error Found incompatible module.
+info Visit https://yarnpkg.com/en/docs/cli/install for documentation about this command.
+```
+
+You can run:
+
+```commandline
+yarn install --ignore-engines
+```
+
 Then start the development server:
 
 ```commandline
