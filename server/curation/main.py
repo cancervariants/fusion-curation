@@ -1,29 +1,31 @@
-"""Initialize FastAPI and provide routes."""
-from typing import Dict, Any
-
-from asyncpg.exceptions import InvalidAuthorizationSpecificationError
-from fastapi import FastAPI, Query, Request
+"""Provide FastAPI application and route declarations."""
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-import uvicorn
+from fusor import FUSOR, __version__ as fusor_version
+from uta_tools.version import __version__ as uta_tools_version
 
 from curation import APP_ROOT
-from curation.version import __version__
-from curation.schemas import NormalizeGeneResponse, DomainIDResponse, SuggestDomainResponse, \
-    ExonCoordsRequest, ExonCoordsResponse, SequenceIDResponse, FusionValidationResponse
-from curation.gene_services import get_gene_id
-from curation.domain_services import get_domain_id, get_domain_matches
-from curation.uta_services import PostgresDatabase, get_genomic_coords
-from curation.sequence_services import get_ga4gh_sequence_id
-from curation.validation_services import validate_fusion
+from curation.version import __version__ as curation_version
+from curation.schemas import ServiceInfoResponse
+from curation.gene_services import GeneService
+from curation.domain_services import DomainService
+from curation.routers import utilities, constructors, lookup, complete
 
 
-app = FastAPI(version=__version__)
+app = FastAPI(
+    version=curation_version,
+    swagger_ui_parameters={"tryItOutEnabled": True},
+    docs_url="/docs",
+    openapi_url="/openapi.json",
+)
 
-origins = [
-    "http://localhost",
-    "http://localhost:3000",
-]
+app.include_router(utilities.router)
+app.include_router(constructors.router)
+app.include_router(lookup.router)
+app.include_router(complete.router)
+
+origins = ["http://localhost", "http://localhost:3000"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -34,149 +36,64 @@ app.add_middleware(
 )
 
 
-async def start_db() -> PostgresDatabase:
-    """Start UTA DB and create asyncpg thrad pool.
+async def start_fusor() -> FUSOR:
+    """Initialize FUSOR instance and create UTA thread pool.
 
-    :return: UTA DB instance
+    :return: FUSOR instance
     """
-    postgres_instance = PostgresDatabase()
-    await postgres_instance.create_pool()
-    return postgres_instance
+    fusor_instance = FUSOR()
+    await fusor_instance.uta_tools.uta_db.create_pool()
+    return fusor_instance
+
+
+def get_gene_services() -> GeneService:
+    """Initialize gene services instance. Retrieve and load mappings.
+
+    :return: GeneService instance
+    """
+    gene_services = GeneService()
+    gene_services.load_mapping()
+    return gene_services
+
+
+def get_domain_services() -> DomainService:
+    """Initialize domain services instance. Retrieve and load mappings.
+
+    :return: DomainService instance
+    """
+    domain_service = DomainService()
+    domain_service.load_mapping()
+    return domain_service
 
 
 @app.on_event("startup")
 async def startup():
-    """Initialize asyncpg thread pool."""
-    app.state.db = await start_db()
+    """Get FUSOR reference"""
+    app.state.fusor = await start_fusor()
+    app.state.genes = get_gene_services()
+    app.state.domains = get_domain_services()
 
 
 @app.on_event("shutdown")
 async def shutdown():
-    """Close asyncpg thread pool."""
-    await app.state.db._connection_pool.close()
+    """Clean up thread pool."""
+    await app.state.fusor.uta_tools.uta_db._connection_pool.close()
 
 
-@app.get("/lookup/gene",
-         operation_id="normalizeGene",
-         response_model=NormalizeGeneResponse)
-def normalize_gene(term: str = Query("")) -> Dict:
-    """Normalize gene term provided by user.
-    :param str term: gene symbol/alias/name/etc
-    :return: JSON response with normalized ID if successful and warnings otherwise
-    """
-    concept_id, warnings = get_gene_id(term.strip())
-    return {
-        "term": term,
-        "concept_id": concept_id,
-        "warnings": warnings
-    }
-
-
-@app.get("/lookup/domain",
-         operation_id="getDomainID",
-         response_model=DomainIDResponse)
-def fetch_domain_id(domain: str = Query("")) -> Dict:
-    """Fetch interpro ID given functional domain name.
-    :param str name: name of functional domain
-    :return: Dict (to be served as JSON) containing provided name, ID (as CURIE) if available,
-        and relevant warnings
-    """
-    (domain_id, warnings) = get_domain_id(domain.strip())
-    return {
-        "domain": domain,
-        "domain_id": domain_id,
-        "warnings": warnings
-    }
-
-
-@app.get("/complete/domain",
-         operation_id="suggestDomain",
-         response_model=SuggestDomainResponse,
-         response_model_exclude_none=True)
-def suggest_domain(term: str = Query("")) -> Dict:
-    """Provide completion suggestions for domain term provided by user.
-    :param str term: text typed by user in domain field
-    :return: JSON response with suggestions listed, or warnings if unable to
-        provide suggestions.
-    """
-    response: Dict[str, Any] = {
-        "term": term,
-    }
-    possible_matches = get_domain_matches(term)
-    if len(possible_matches) < 25:
-        response["suggestions"] = possible_matches
-    else:
-        response["warnings"] = ["Max suggestions exceeded"]
-    return response
-
-
-@app.post("/lookup/coords",
-          operation_id="getExonCoords",
-          response_model=ExonCoordsResponse)
-async def get_exon_coords(request: Request, exon_data: ExonCoordsRequest) -> Dict:
-    """Fetch a transcript"s exon information.
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access DB
-        retrieval methods by way of the `state` property.
-    :param ExonCoordsRequest exon_data: exon data to retrieve coordinates for. See schemas for
-        expected structure.
-    :return: Dict served as JSON containing transcript"s exon information
-    """
-    if not exon_data.gene:
-        exon_data.gene = ""
-
-    try:
-        genomic_coords = await get_genomic_coords(
-            request.app.state.db, exon_data.tx_ac, exon_data.exon_start,
-            exon_data.exon_end, exon_data.exon_start_offset, exon_data.exon_end_offset,
-            exon_data.gene)
-    except InvalidAuthorizationSpecificationError:
-        app.state.db = await start_db()
-        genomic_coords = await get_genomic_coords(
-            request.app.state.db, exon_data.tx_ac, exon_data.exon_start,
-            exon_data.exon_end, exon_data.exon_start_offset, exon_data.exon_end_offset,
-            exon_data.gene)
-
-    if genomic_coords:
-        genomic_coords["gene_id"] = get_gene_id(genomic_coords["gene"])[0]
-        genomic_coords["sequence_id"] = get_ga4gh_sequence_id(genomic_coords["chr"])[0]
-        genomic_coords["tx_ac"] = exon_data.tx_ac
-        genomic_coords["warnings"] = []
-        return genomic_coords
-    else:
-        return {"warnings": ["Coordinate retrieval failed."]}
-
-
-@app.get("/lookup/sequence_id",
-         operation_id="getSequenceID",
-         response_model=SequenceIDResponse)
-def get_sequence_id(input_sequence: str) -> Dict:
-    """Get GA4GH sequence ID CURIE for input sequence.
-    :param str input_sequence: user-submitted sequence to retrieve ID for
-    :return: Dict (served as JSON) containing either GA4GH sequence ID or
-        warnings if unable to retrieve ID
-    """
-    (sequence_id, warnings) = get_ga4gh_sequence_id(input_sequence.strip())
-    return {
-        "sequence": input_sequence,
-        "sequence_id": sequence_id,
-        "warnings": warnings
-    }
-
-
-@app.post("/lookup/validate",
-          operation_id="validateFusion",
-          response_model=FusionValidationResponse)
-def validate_object(proposed_fusion: Dict) -> Dict:
-    """Validate constructed Fusion object. Return warnings if invalid.
-    No arguments supplied, but receives a POSTed JSON payload via Flask request context.
-    :return: Dict served as JSON with validated Fusion object if correct, and empty
-        Object + a list of Warnings if not.
-    """
-    return validate_fusion(proposed_fusion)
+@app.get(
+    "/service_info", operation_id="serviceInfo", response_model=ServiceInfoResponse
+)
+def get_service_info() -> ServiceInfoResponse:
+    """Return service info."""
+    return ServiceInfoResponse(
+        **{
+            "fusion_curation_version": curation_version,
+            # "vrs_python_version": vrs_version,
+            "uta_tools_version": uta_tools_version,
+            "fusor_version": fusor_version,
+            "warnings": [],
+        }
+    )
 
 
 app.mount("/", StaticFiles(html=True, directory=APP_ROOT / "build"))
-
-
-if __name__ == "__main__":
-    uvicorn.run("curation.main:app", port=5000, reload=True)

@@ -16,8 +16,16 @@
 		background-color: var(--linker);
 	}
 
-	.genomic_region {
+	.templated_sequence {
 		background-color: var(--region);
+	}
+
+	.any_gene {
+		background-color:var(--any-gene);
+	}
+
+	.unknown_gene {
+		background-color:var(--unknown-gene);
 	}
 
 	.block-container {
@@ -35,6 +43,19 @@
 
 		.hr-name {
 			text-align: center;
+		}
+
+		.button-edit {
+			position: absolute;
+			right: 30px;
+			top: 1px;
+			cursor: pointer;
+		}
+
+		.button-edit-disabled {
+			position: absolute;
+			right: 30px;
+			top: 1px;
 		}
 
 		.button-trash {
@@ -85,7 +106,7 @@
 			font-weight: 500;
 		}
 
-		.transcript_component {
+		.structural_component {
 			border: 2px solid var(--transcript-light) !important;
 			color: var(--dark-gray);
 			font-weight: 500;
@@ -97,7 +118,7 @@
 			font-weight: 500;
 		}
 
-		.genomic_region {
+		.templated_sequence {
 			border: 2px solid var(--region-light) !important;
 			color: var(--dark-gray);
 			font-weight: 500;
@@ -126,6 +147,11 @@
 	}
 
 	.top-inputs {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.mid-inputs {
 		display: flex;
 		justify-content: space-between;
 	}

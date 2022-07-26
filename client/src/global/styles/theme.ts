@@ -1,8 +1,6 @@
 
-import React from 'react';
 import {
   createTheme,
-  Theme as AugmentedTheme,
 } from '@material-ui/core/styles';
 
 import {COLORTHEMES} from '../contexts/Theme/Theme.model';
@@ -36,9 +34,9 @@ const theme = createTheme({
     primary:{
       main: COLORTHEMES.light['--primary'],
       contrastText: COLORTHEMES.light['--white']
-    } 
+    }
   }
-  
+
 });
 
 export default theme;

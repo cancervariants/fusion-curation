@@ -1,73 +1,122 @@
+import {
+  Fusion, FusionValidationResponse, NormalizeGeneResponse, AssociatedDomainResponse,
+  SuggestGeneResponse, GeneComponentResponse, TxSegmentComponentResponse,
+  TemplatedSequenceComponentResponse, GetTranscriptsResponse, ServiceInfoResponse,
+  GetDomainResponse, DomainParams, DomainStatus, GeneComponent, TranscriptSegmentComponent,
+  AnyGeneComponent, ClientAnyGeneComponent, ClientGeneComponent, ClientLinkerComponent,
+  ClientTemplatedSequenceComponent, ClientTranscriptSegmentComponent, ClientUnknownGeneComponent,
+  LinkerComponent, TemplatedSequenceComponent, UnknownGeneComponent, CoordsUtilsResponse
+} from './ResponseModels';
 
+export type ClientComponentUnion = ClientAnyGeneComponent | ClientGeneComponent |
+  ClientLinkerComponent | ClientTemplatedSequenceComponent | ClientTranscriptSegmentComponent |
+  ClientUnknownGeneComponent;
 
-export async function getGeneId(symbol) {
-  let response = await fetch(`/lookup/gene?term=${symbol}`);
-  let geneResponse = await response.json();
-  return geneResponse;
+export type ComponentUnion = AnyGeneComponent | GeneComponent | LinkerComponent |
+  UnknownGeneComponent | TemplatedSequenceComponent | TranscriptSegmentComponent;
 
-  //returns term, concept_id, warnings
-}
+export const getGeneComponent = async (term: string): Promise<GeneComponentResponse> => {
+  const response = await fetch(`construct/component/gene?term=${term}`);
+  const responseJson = await response.json();
+  return responseJson;
+};
 
-export async function getDomainId(domain) {
-  let response = await fetch(`/lookup/domain?domain=${domain}`);
-  let domainResponse = await response.json();
-  return domainResponse;
+export const getTemplatedSequenceComponent = async (
+  chr: string, strand: string, start: string, end: string
+): Promise<TemplatedSequenceComponentResponse> => {
+  const response = await fetch(
+    `construct/component/templated_sequence?sequence_id=${chr}&start=${start}&end=${end}` +
+    `&strand=${strand === '+' ? '%2B' : '-'}`
+  );
+  const responseJson = await response.json();
+  return responseJson;
+};
 
-  //returns domain, domain_id, warnings
-}
-
-export async function getSequenceId(chr) {
-  let response = await fetch(`/lookup/sequence_id?input_sequence=GRCh38:${chr}`);
-  let sequenceId = await response.json();
-  return sequenceId;  
-
-  // response model:
-  // sequence: StrictStr
-  //   sequence_id: StrictStr = ''
-  //   warnings: List
-}
-
-export async function getExon(txAc, gene, startExon, endExon, startExonOffset, endExonOffset) {
-  console.log(`txac ${txAc}, gene ${gene}, startExon ${startExon}, endExon ${endExon}, startExonOffset ${startExonOffset}, endExonOffset ${endExonOffset}`)
-  let reqObj = {
-    tx_ac: txAc,
-    gene: gene,
-    exon_start: startExon,
-    exon_start_offset: startExonOffset,
-    exon_end: endExon,
-    exon_end_offset: endExonOffset
+export const getTxSegmentComponentECT = async (
+  transcript: string, exonStart: string, exonEnd: string, exonStartOffset: string,
+  exonEndOffset: string
+): Promise<TxSegmentComponentResponse> => {
+  const params: Array<string> = [`transcript=${transcript}`];
+  // add optional params -- previous methods should've already checked that the request as a whole
+  // is valid
+  if (exonStart !== '') {
+    params.push(`exon_start=${exonStart}`);
   }
+  if (exonStartOffset !== '') {
+    params.push(`exon_start_offset=${exonStartOffset}`);
+  }
+  if (exonEnd !== '') {
+    params.push(`exon_end=${exonEnd}`);
+  }
+  if (exonEndOffset !== '') {
+    params.push(`exon_end_offset=${exonEndOffset}`);
+  }
+  const url = 'component/tx_segment_ect?' + params.join('&');
+  const response = await fetch(url);
+  const responseJson = await response.json();
+  return responseJson;
+};
 
-  let response = await fetch(`/lookup/coords`, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(reqObj),
-  });
+export const getTxSegmentComponentGCT = async (
+  transcript: string, chromosome: string, start: string, end: string, strand: string
+): Promise<TxSegmentComponentResponse> => {
+  const params: Array<string> = [
+    `transcript=${transcript}`, `chromosome=${chromosome}`,
+    `strand=${strand === '+' ? '%2B' : '-'}`
+  ];
+  if (start !== '') params.push(`start=${start}`);
+  if (end !== '') params.push(`end=${end}`);
+  const url = 'construct/component/tx_segment_gct?' + params.join('&');
+  const response = await fetch(url);
+  const responseJson = await response.json();
+  return responseJson;
+};
 
-  let exonResponse = await response.json();
+export const getTxSegmentComponentGCG = async (
+  gene: string, chromosome: string, start: string, end: string, strand: string
+): Promise<TxSegmentComponentResponse> => {
+  const params: Array<string> = [
+    `gene=${gene}`, `chromosome=${chromosome}`, `strand=${strand === '+' ? '%2B' : '-'}`
+  ];
+  if (start !== '') params.push(`start=${start}`);
+  if (end !== '') params.push(`end=${end}`);
+  const url = 'construct/component/tx_segment_gcg?' + params.join('&');
+  const response = await fetch(url);
+  const responseJson = await response.json();
+  return responseJson;
+};
 
-  return exonResponse;
+export const getGeneId = async (symbol: string): Promise<NormalizeGeneResponse> => {
+  const response = await fetch(`/lookup/gene?term=${symbol}`);
+  const geneResponse = await response.json();
+  return geneResponse;
+};
 
-  // Response model
-  // tx_ac: Optional[StrictStr]
-  //   gene: Optional[StrictStr]
-  //   gene_id: Optional[StrictStr]
-  //   exon_start: Optional[StrictInt]
-  //   exon_start_offset: Optional[StrictInt]
-  //   exon_end: Optional[StrictInt]
-  //   exon_end_offset: Optional[StrictInt]
-  //   sequence_id: Optional[CURIE]
-  //   chr: Optional[StrictStr]
-  //   start: Optional[StrictInt]
-  //   end: Optional[StrictInt]
-  //   warnings: List
-}
+export const getGeneSuggestions = async (term: string): Promise<SuggestGeneResponse> => {
+  const response = await fetch(`complete/gene?term=${term}`);
+  const responseJson = await response.json();
+  return responseJson;
+};
 
-export async function validateFusion(fusion) {
-  let response = await fetch(`/lookup/validate`, {
+export const getAssociatedDomains = async (gene_id: string): Promise<AssociatedDomainResponse> => {
+  const response = await fetch(`/complete/domain?gene_id=${gene_id}`);
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+export const getFunctionalDomain = async (
+  domain: DomainParams, domainStatus: DomainStatus, geneId: string
+): Promise<GetDomainResponse> => {
+  const url = `/construct/domain?status=${domainStatus}&name=${domain.domain_name}` +
+    `&domain_id=${domain.interpro_id}&gene_id=${geneId}` +
+    `&sequence_id=${domain.refseq_ac}&start=${domain.start}&end=${domain.end}`;
+  const response = await fetch(url);
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+export const validateFusion = async (fusion: Fusion): Promise<FusionValidationResponse> => {
+  const response = await fetch('/validate', {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -75,16 +124,53 @@ export async function validateFusion(fusion) {
     },
     body: JSON.stringify(fusion)
   });
-  let fusionResponse = await response.json();
+  const fusionResponse = await response.json();
   return fusionResponse;
+};
 
-  //returns fusion, warnings
-}
+export const getTranscripts = async (term: string): Promise<GetTranscriptsResponse> => {
+  const response = await fetch(`/utilities/get_transcripts?term=${term}`);
+  const transcriptResponse = await response.json();
+  return transcriptResponse;
+};
 
+export const getExonCoords = async (
+  chromosome: string, start: string, end: string, strand: string, gene?: string, txAc?: string
+): Promise<CoordsUtilsResponse> => {
+  const argsArray = [
+    `chromosome=${chromosome}`,
+    `strand=${strand === '+' ? '%2B' : '-'}`,
+    gene !== '' ? `gene=${gene}` : '',
+    txAc !== '' ? `transcript=${txAc}` : '',
+    start !== '' ? `start=${start}` : '',
+    end !== '' ? `end=${end}` : '',
+  ];
+  const args = argsArray.filter(a => a !== '').join('&');
+  const response = await fetch (`/utilities/get_exon?${args}`);
+  const responseJson = await response.json();
+  return responseJson;
+};
 
-export async function getDomainList(query) {
-  const response = await fetch(`/complete/domain?term=${query}`)
-  const data = await response.json()
+export const getGenomicCoords = async (
+  gene: string, txAc: string, exonStart: string, exonEnd: string, exonStartOffset: string,
+  exonEndOffset: string
+): Promise<CoordsUtilsResponse> => {
+  const argsArray = [
+    gene !== '' ? `gene=${gene}` : '',
+    txAc !== '' ? `transcript=${txAc}` : '',
+    exonStart !== '' ? `exon_start=${exonStart}` : '',
+    exonEnd !== '' ? `exon_end=${exonEnd}` : '',
+    exonStartOffset !== '' ? `exon_start_offset=${exonStartOffset}` : '',
+    exonEndOffset !== '' ? `exon_end_offset=${exonEndOffset}` : '',
+  ];
+  const args = argsArray.filter(a => a !== '').join('&');
+  const response = await fetch (`/utilities/get_genomic?${args}`);
+  const responseJson = await response.json();
+  return responseJson;
+};
 
-  return data;
-}
+export const getInfo = async (): Promise<ServiceInfoResponse> => {
+  const response = await fetch('/service_info');
+  const responseJson = await response.json();
+  return responseJson;
+};

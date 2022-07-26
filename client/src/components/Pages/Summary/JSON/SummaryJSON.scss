@@ -14,10 +14,13 @@
   cursor: pointer;
 }
 
+.summary-json-container-error {
+  color: red;
+}
+
 .clicking {
   background-color: var(--light-gray);
 }
-
 
 .copy-message {
   font-family: "Poppins", Arial, Helvetica, sans-serif;

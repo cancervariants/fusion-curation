@@ -1,24 +1,24 @@
 import React from 'react';
 
 // Pages
-import { Structure}  from '../../Pages/Structure/Main/Structure';
-import { Gene } from '../../Pages/Gene/Main/Gene';
+import { Structure } from '../../Pages/Structure/Main/Structure';
 import { RegElement } from '../../Pages/RegElement/Main/RegElement';
 import { Summary } from '../../Pages/Summary/Main/Summary';
 import { Domain } from '../../Pages/Domains/Main/Domains';
-import { Questions } from '../../Pages/Questions/Questions';
+import { OtherAttribs } from '../../Pages/OtherAttribs/OtherAttribs';
 
-//MUI Stuff
+// MUI Stuff
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import {AppBar, Tabs, Tab, Button,} from '@material-ui/core';
+import { AppBar, Tabs, Tab, Button, } from '@material-ui/core';
 
 // Styles
-import './NavTabs.scss'
-import { useColorTheme  } from '../../../global/contexts/Theme/ColorThemeContext';
+import './NavTabs.scss';
+import { useColorTheme } from '../../../global/contexts/Theme/ColorThemeContext';
 
 interface TabPanelProps {
   children?: React.ReactNode;
-  index: any;
+  index: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
 }
 
@@ -43,7 +43,7 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-function a11yProps(index: any) {
+function a11yProps(index) {
   return {
     id: `nav-tab-${index}`,
     'aria-controls': `nav-tabpanel-${index}`,
@@ -67,13 +67,13 @@ function LinkTab(props: LinkTabProps) {
   );
 }
 
+export default function NavTabs(): React.ReactElement {
 
-export default function NavTabs() {
-  
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const useStyles = makeStyles((theme: Theme) => ({
     root: {
       backgroundColor: colorTheme['--white'],
-    
+
     },
     continue: {
       backgroundColor: colorTheme['--primary'],
@@ -85,36 +85,35 @@ export default function NavTabs() {
     indicator: {
       backgroundColor: colorTheme['--primary'],
     },
-    footer:{
+    footer: {
       padding: '15px',
       borderTop: `1px solid ${colorTheme['--light-gray']}`
     },
-    enabledtabs:{
+    enabledtabs: {
       backgroundColor: colorTheme['--tabs'],
       color: colorTheme['--dark-gray'],
       borderBottom: `1px solid ${colorTheme['--medium-gray']}`
     },
   }));
-  
-  
+
+
   const { colorTheme } = useColorTheme();
 
   const classes = useStyles();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(0); // current visible tab
 
   const handleChange = (event: unknown, newValue: number) => {
     setValue(newValue);
   };
 
   return (
-    
-    <div className="nav-tabs">
 
+    <div className="nav-tabs">
       <AppBar elevation={0} position="static">
         <Tabs
-        classes={{
-          indicator: classes.indicator
-        }}
+          classes={{
+            indicator: classes.indicator
+          }}
           variant="fullWidth"
           value={value}
           onChange={handleChange}
@@ -122,46 +121,62 @@ export default function NavTabs() {
           className={classes.enabledtabs}
         >
           {/* <LinkTab label="Gene" href="/drafts" {...a11yProps(0)}  /> */}
-          <LinkTab label="Structure" href="/drafts" {...a11yProps(0)}  />
+          <LinkTab label="Structure" href="/drafts" {...a11yProps(0)} />
           <LinkTab label="Regulatory Element" href="/trash" {...a11yProps(1)} />
           <LinkTab label="Domains" href="/spam" {...a11yProps(2)} />
-          <LinkTab label="Questions" href="/spam" {...a11yProps(3)} />
+          <LinkTab label="Other Attributes" href="/spam" {...a11yProps(3)} />
           <LinkTab label="Summary" href="/spam" {...a11yProps(4)} />
         </Tabs>
       </AppBar>
       <div className="tab-panel">
-        {/* <TabPanel value={value} index={0} >    
+        {/* <TabPanel value={value} index={0} >
           <Gene index={1}/>
         </TabPanel> */}
         <TabPanel value={value} index={0}>
-          <Structure index={1}/>
+          <Structure index={1} />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <RegElement index={1}/>
+          <RegElement index={1} />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <Domain index={1}/>
+          <Domain index={1} />
         </TabPanel>
         <TabPanel value={value} index={3}>
-          <Questions index={1}/>
+          <OtherAttribs index={1} />
         </TabPanel>
         <TabPanel value={value} index={4}>
-          <Summary index={1}/>
+          <Summary index={1} />
         </TabPanel>
       </div>
 
       <div className="footer">
-
-        { value !== 0 ? 
-        <div className="previous">
-          <Button className={classes.previous} onClick={(event) => {handleChange(event, value - 1)}} variant="contained" color="primary" >Back</Button>
-        </div>  
-        : null} 
-        { value !== 4 ?
-        <div className="continue">
-           <Button style={{backgroundColor: colorTheme['--primary'], marginLeft: 'auto'}} onClick={(event) => {handleChange(event, value + 1)}} variant="contained" color="primary">Continue</Button>
-        </div>
-        : null}
+        {value !== 0 ?
+          <div className="previous">
+            <Button
+              className={classes.previous}
+              onClick={(event) => handleChange(event, value - 1)}
+              variant="contained" color="primary"
+            >
+              Back
+            </Button>
+          </div>
+          : null}
+        {value !== 4 ?
+          <div className="continue">
+            <Button
+              style={
+                {
+                  backgroundColor: colorTheme['--primary'],
+                  marginLeft: 'auto'
+                }
+              }
+              onClick={(event) => handleChange(event, value + 1)}
+              variant="contained" color="primary"
+            >
+              Continue
+            </Button>
+          </div>
+          : null}
       </div>
     </div>
   );

@@ -1,480 +1,280 @@
-import React, { useState, useEffect, useContext } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useContext, useEffect } from 'react';
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { v4 as uuid } from 'uuid';
 import { FusionContext } from '../../../../global/contexts/FusionContext';
-import { DragDropContext, Draggable, Droppable, DropResult } from "react-beautiful-dnd";
+import { ClientComponentUnion } from '../../../../services/main';
+import {
+  ClientAnyGeneComponent, ClientUnknownGeneComponent,
+} from '../../../../services/ResponseModels';
+import GeneCompInput from '../Input/GeneCompInput/GeneCompInput';
+import LinkerCompInput from '../Input/LinkerCompInput/LinkerCompInput';
+import StaticComponent from '../Input/StaticComponent/StaticComponent';
+import TemplatedSequenceCompInput from
+  '../Input/TemplatedSequenceCompInput/TemplatedSequenceCompInput';
+import TxSegmentCompInput from '../Input/TxSegmentCompInput/TxSegmentCompInput';
 import './Builder.scss';
-import { TransCompInput } from '../TransCompInput/TransCompInput';
-import ButtonTrash from '../../../main/shared/Buttons/ButtonTrash';
+// import { unstable_createMuiStrictModeTheme } from '@material-ui/core';
 
-import {getGeneId, getSequenceId, getExon} from '../../../../services/main';
-
-
-interface Props {
-  transcriptComponents
-}
+const EDITABLE_COMPONENT_TYPES = [
+  'gene', 'linker_sequence', 'templated_sequence', 'transcript_segment'
+];
 
 // these are the empty object templates the user drags into the array
-// TODO: should be dynamic
-const OPTIONS = [
+// TODO: should be dynamic (?)
+const COMPONENT_TEMPLATE = [
   {
-    "component_type": "gene",
-    "component_name": "",
-    "component_id": uuid(),
-    "gene_descriptor": {
-      "id": "",
-      "type": "",
-      "gene_id": "",
-      "label": ""
+    component_type: 'gene',
+    component_name: '',
+    component_id: uuid(),
+    gene_descriptor: {
+      id: '',
+      type: '',
+      gene_id: '',
+      label: ''
     }
   },
   {
-    "component_type": "transcript_segment",
-    "component_name": "",
-    "component_id": uuid(),
-    "exon_start": null,
-    "exon_start_offset": null,
-    "exon_end": null,
-    "exon_end_offset": null,
-    "gene_descriptor": {
-      "id": "",
-      "gene_id": "",
-      "type": "",
-      "label": ""
+    component_type: 'transcript_segment',
+    component_name: '',
+    component_id: uuid(),
+    exon_start: null,
+    exon_start_offset: null,
+    exon_end: null,
+    exon_end_offset: null,
+    gene_descriptor: {
+      id: '',
+      gene_id: '',
+      type: '',
+      label: ''
     }
   },
   {
-    "component_name": "",
-    "component_type": "linker_sequence",
-    "component_id": uuid(),
-    // need an example linker structure
+    component_name: '',
+    component_type: 'linker_sequence',
+    component_id: uuid(),
   },
   {
-    "component_name": "",
-    "component_type": "genomic_region",
-    "component_id": uuid(),
-    "id": "",
-    "type": "",
-    "location": {
-      "sequence_id": "",
-      "type": "",
-      "interval": {
-        "start": {
-          "type": "",
-          "value": null
+    component_name: '',
+    component_type: 'templated_sequence',
+    component_id: uuid(),
+    id: '',
+    type: '',
+    location: {
+      sequence_id: '',
+      type: '',
+      interval: {
+        start: {
+          type: '',
+          value: null
         },
-        "end": {
-          "type": "",
-          "value": null
+        end: {
+          type: '',
+          value: null
         },
-        "type": ""
+        type: ''
       }
-    }
+    },
   },
-]
+  {
+    component_name: '*',
+    component_type: 'any_gene',
+    component_id: uuid(),
+    hr_name: '*',
+  },
+  {
+    component_name: '?',
+    component_type: 'unknown_gene',
+    component_id: uuid(),
+    hr_name: '?'
+  }
+];
 
-const Builder: React.FC<Props> = ({transcriptComponents}) =>  {
-  const {fusion, setFusion} = useContext(FusionContext);
-  const [structure, setStructure] = useState([]);
-  const [editMode, setEditMode] = useState('');
-  
+const Builder: React.FC = () => {
+  // Fusion object constructed throughout app lifecycle
+  const { fusion, setFusion } = useContext(FusionContext);
 
   useEffect(() => {
-    let diagram = [];
-
-    if("transcript_components" in fusion){
-      fusion.transcript_components.map(comp => (
-        diagram.push(comp)
-      ))
-      setStructure(diagram);
+    if (!('structural_components' in fusion)) {
+      setFusion({
+        ...fusion,
+        ...{ 'structural_components': [] }
+      });
     }
-  }, [transcriptComponents])
+  }, [fusion]);
 
-
-  // 
-  const copy = (result: DropResult) => {
-    const {source, destination} = result;
-  
-    const sourceClone = Array.from(OPTIONS);
-    const destClone = Array.from(structure);
+  // drop new component into structure
+  const createNew = (result: DropResult) => {
+    const { source, destination } = result;
+    const sourceClone = Array.from(COMPONENT_TEMPLATE);
+    const destClone = Array.from(fusion.structural_components);
     const item = sourceClone[source.index];
     const newItem = Object.assign({}, item);
     newItem.component_id = uuid();
-    destClone.splice(destination.index, 0, newItem)
-    setStructure(destClone);
-    setEditMode(newItem.component_id);
+    destClone.splice(destination.index, 0, newItem);
+    setFusion({ ...fusion, ...{ 'structural_components': destClone } });
+
+    // auto-save components that don't need any additional input
+    // TODO shouldn't need explicit autosave
+    if (['any_gene', 'unknown_gene'].includes(newItem.component_type)) {
+      handleSave(
+        destination.index, newItem as ClientAnyGeneComponent | ClientUnknownGeneComponent
+      );
+    }
   };
 
   const reorder = (result: DropResult) => {
-
-    // no dragging until done editing. the isDragDisabled prop is preferable for this,
-    // but it seems to impede seamless dragging even when false. 
-    if(editMode !== ''){
-      return 
-    }
-
-    const {source, destination} = result;
-
-
-    const sourceClone = Array.from(structure);
-    const [newOrder] = sourceClone.splice(source.index, 1);
-    sourceClone.splice(destination.index, 0, newOrder);
-  
-    setFusion({ ...fusion, ...{ "transcript_components" : sourceClone }})
-    setStructure(sourceClone);
-    
+    const { source, destination } = result;
+    const sourceClone = Array.from(fusion.structural_components);
+    const [movedComponent] = sourceClone.splice(source.index, 1);
+    sourceClone.splice(destination.index, 0, movedComponent);
+    setFusion({ ...fusion, ...{ 'structural_components': sourceClone } });
   };
 
-  const handleSave = (index, compType, ...values) => {
+  // Update global fusion object
+  const handleSave = (index: number, newComponent: ClientComponentUnion) => {
+    const items = Array.from(fusion.structural_components);
+    const spliceLength = EDITABLE_COMPONENT_TYPES.includes(newComponent.component_type) ? 1 : 0;
+    items.splice(index, spliceLength, newComponent);
+    setFusion({ ...fusion, ...{ 'structural_components': items } });
+  };
 
-    // TODO: prevent from sending empty fields (where applicable)
+  const handleDelete = (uuid: string) => {
+    let items: Array<ClientComponentUnion> = Array.from(fusion.structural_components);
+    items = items.filter(item => item.component_id !== uuid);
+    setFusion({ ...fusion, ...{ 'structural_components': items } });
+  };
 
-    
-    const items = Array.from(structure);
-    let obj = items[index];
-    let newObj = Object.assign({}, obj)
-
-
-    // TODO: Update backend schema to include component_name and any other keys
-
-    // building properties of newObj (which then gets pushed to transcript_components)
-    switch(compType){
-
-      case 'gene': 
-      let [symbol] = values;
-
-      if (symbol === 'ANY') {
-        newObj = {
-          "component_type": "gene",
-          "component_name": "*",
-          "component_id": uuid(),
-          "hr_name": "*",
-          "gene_descriptor": {
-            "id": "",
-            "type": "GeneDescriptor",
-            "gene_id": "",
-            "label": "ANY"
-          }
-        }
-        save(items, index, newObj);
-      } else {
-        getGeneId(symbol).then(geneResponse => {
-          newObj = {
-            "component_type": "gene",
-            "component_name": `${geneResponse.term.toUpperCase()} ${geneResponse.concept_id}`,
-            "component_id": uuid(),
-            "hr_name": `${geneResponse.term.toUpperCase()}(${geneResponse.concept_id})`,
-            "gene_descriptor": {
-              "id": `gene:${geneResponse.term}`,
-              "type": "GeneDescriptor",
-              "gene_id": geneResponse.concept_id,
-              "label": geneResponse.term
-            }
-          }
-  
-          save(items, index, newObj);
-          
-        })
-      }
-      
-      break;
-
-      case 'transcript_segment': 
-        let [transcript,  gene_symbol, exon_start, exon_end, exon_start_offset, exon_end_offset] = values
-
-        exon_start = parseInt(exon_start);
-        exon_end = parseInt(exon_end); 
-        exon_start_offset = parseInt(exon_start_offset);
-        exon_end_offset = parseInt(exon_end_offset);
-
-        getExon(transcript, gene_symbol, exon_start || 0, exon_end || 0,
-          exon_start_offset || 0, exon_end_offset || 0).then(exonResponse => {
-
-            let {tx_ac, gene, gene_id, exon_start, exon_end, exon_start_offset, exon_end_offset, sequence_id, chr, start, end, warnings } = exonResponse;
-
-            let eso;
-            if(exon_start_offset > 0){
-              eso = `+${exon_start_offset}`
-            } else if (exon_start_offset < 0){
-              eso = `${exon_start_offset}`
-            } else {
-              eso = '';
-            }
-
-            let eeo;
-            if(exon_end_offset > 0){
-              eeo = `+${exon_end_offset}`
-            } else if (exon_end_offset < 0){
-              eeo = `${exon_end_offset}`
-            } else {
-              eeo = '';
-            }
-
-            let hrExon;
-            if(exon_start && exon_end){
-              hrExon = `e[${exon_start}${eso}_${exon_end}${eeo}]`;
-            } else if (exon_start) {
-              hrExon = `e[${exon_start}${eso}_]`;
-            } else {
-              hrExon = `e[_${exon_end}${eeo}]`;
-            }
-
-
-            newObj = {
-              "component_type": "transcript_segment",
-              "component_name": `${tx_ac} ${gene}`,
-              "transcript": tx_ac,
-              "component_id": uuid(),
-              "shorthand": tx_ac,
-              "exon_start": exon_start,
-              "exon_start_offset": exon_start_offset,
-              "exon_end": exon_end,
-              "exon_end_offset": exon_end_offset,
-              "gene_descriptor": {
-                "id": `gene:${gene}`,
-                "gene_id": gene_id,
-                "type": "GeneDescriptor",
-                "label": `${gene}`
-              }
-            }
-
-            newObj.hr_name = `${tx_ac}(${gene}):${hrExon}`
-
-            save(items, index, newObj);
-
-          //TODO: nested genomic region (lookup GR based on transcript and vice versa)
-            // getSequenceId(chr).then(sequenceResponse => {
-            //   let [sequence, sequence_id, warnings] = sequenceResponse; 
-            // })
-          }) 
-          
-          
-      break;
-      
-      case 'genomic_region':
-          let [chromosome, strand, startPosition, endPosition] = values;
-          getSequenceId(chromosome).then(sequenceResponse => {
-
-            let {sequence, sequence_id, warnings} = sequenceResponse;
-
-            newObj = {
-              "component_type": "genomic_region",
-              "component_name": `chr${chromosome}:${startPosition}_${endPosition}(${strand})`,
-              "hr_name": `chr${chromosome}:${startPosition}_${endPosition}(${strand})`,
-              "component_id": uuid(),
-              "region": {
-                "id": `chr${chromosome}:${startPosition}_${endPosition}(${strand})`,
-                "type": "LocationDescriptor",
-                "location": {
-                  "type": "SequenceLocation",
-                  "sequence_id": sequence_id,
-                  "interval": {
-                    "type": "SequenceLocation",
-                    "start": {
-                      "type": "Number",
-                      "value": startPosition,
-                    },
-                    "end": {
-                      "type": "Number",
-                      "value": endPosition,
-                    },                  
-                  }
-                },
-                "label": `chr${chromosome}:${startPosition}-${endPosition}(${strand})`
-              },
-              "strand": strand
-            }
-            save(items, index, newObj);
-          })
-      break;
-
-      case 'linker_sequence':
-          let [sequence] = values;
-          newObj = {
-            "component_type": "linker_sequence",
-            "component_name": sequence,
-            "component_id": uuid(),
-            "hr_name": sequence,
-            "linker_sequence": {
-              "id": `sequence:${sequence}`,
-              "type": "SequenceDescriptor",
-              "sequence": sequence,
-            }
-          }
-          save(items, index, newObj);
-      break;
-    }  
-  }
-
-  const save = (items, index, newObj) => {
-
-    items.splice(index, 1, newObj);
-
-    // clear active state, update local state array, update global fusion object
-    setEditMode('');
-    setStructure(items);
-    setFusion({ ...fusion, ...{ "transcript_components" : items }});
-  
-  }
-
-  const handleCancel = (id) => {
-    let items = Array.from(structure);
-    items = items.filter(item => item.component_id !== id);
-    
-    setEditMode('');
-    setStructure(items);
-  }
-
-  const handleDelete = (id) => {
-    let items = Array.from(structure);
-    items = items.filter(item => item.component_id !== id);
-
-    setStructure(items);
-    setFusion({ ...fusion, ...{ "transcript_components" : items }});
-  }
-
-  const formatType = (str) => {
-    switch(str){
-      case 'gene':
-        return 'Gene'
-      case 'transcript_segment':
-        return 'Transcript Segment'
-      case 'linker_sequence':
-        return 'Linker Sequence'
-      case 'genomic_region':
-        return 'Genomic Region'
-    }
-      
-  }
-
+  const formatType = {
+    gene: 'Gene',
+    transcript_segment: 'Transcript Segment',
+    linker_sequence: 'Linker Sequence',
+    templated_sequence: 'Templated Sequence',
+    any_gene: 'Any Gene',
+    unknown_gene: 'Unknown Gene'
+  };
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
-
-    // dropped outside the list
-    if (!destination) return;
-
-    if(destination.droppableId === source.droppableId ) {
+    if (!destination) return; // dropped outside the list
+    if (destination.droppableId === source.droppableId) {
       reorder(result);
     } else {
-      copy(result);
+      createNew(result);
     }
   };
 
-    return (
-      <div className="builder">
+  const renderComponent = (
+    component: ClientComponentUnion, index: number,
+  ) => {
+    switch (component.component_type) {
+      case 'gene':
+        return (<GeneCompInput {...{ component, index, handleDelete, handleSave }} />);
+      case 'linker_sequence':
+        return (<LinkerCompInput {...{ component, index, handleDelete, handleSave }} />);
+      case 'templated_sequence':
+        return (<TemplatedSequenceCompInput {
+          ...{ component, index, handleDelete, handleSave }
+        } />);
+      case 'transcript_segment':
+        return (<TxSegmentCompInput {...{ component, index, handleDelete, handleSave }} />);
+      case 'any_gene':
+      case 'unknown_gene':
+        return (<StaticComponent {...{ component, index, handleDelete }} />);
+    }
+  };
+
+  return (
+    <div className='builder'>
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="OPTIONS" isDropDisabled={true}>
-          
-            {(provided, snapshot) => (
-              <div className="options" 
-                {...provided.droppableProps} 
-                ref={provided.innerRef}
-              >
-                
-                <div className="options-container">
-                
-                {OPTIONS.map(({component_id, component_type }, index) => (
-                  
-                    <Draggable 
-                      key={component_id} 
-                      draggableId={component_id} 
-                      index={index}
-                      >
-                      
-                      {(provided, snapshot) => {
-
-                        // crude way of cancelling when user has an unsaved component
-                        if(snapshot.isDragging && editMode !== ''){
-                          handleCancel(editMode);
-                        }
-                        return (<React.Fragment>
-                          <div 
-                           
-                            ref={provided.innerRef}
-                            className={`option-item ${component_type }`} 
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={{
-                              ...provided.draggableProps.style,
-                              transform: snapshot.isDragging
-                                ? provided.draggableProps.style?.transform
-                                : 'translate(0px, 0px)',
-                            }}
-                            
+        <Droppable droppableId='OPTIONS' isDropDisabled={true}>
+          {(provided, snapshot) => (
+            <div className='options'
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              <div className='options-container'>
+                {COMPONENT_TEMPLATE.map(({ component_id, component_type }, index) => (
+                  <Draggable
+                    key={component_id}
+                    draggableId={component_id}
+                    index={index}
+                  >
+                    {(provided, snapshot) => {
+                      return (<React.Fragment>
+                        <div
+                          ref={provided.innerRef}
+                          className={`option-item ${component_type}`}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={{
+                            ...provided.draggableProps.style,
+                            transform: snapshot.isDragging
+                              ? provided.draggableProps.style?.transform
+                              : 'translate(0px, 0px)',
+                          }}
+                        >
+                          {formatType[component_type]}
+                        </div>
+                        {snapshot.isDragging && (
+                          <div
+                            style={{ transform: 'none !important' }}
+                            key={component_id}
+                            className={`option-item clone ${component_type}`}
                           >
-                            {formatType(component_type) }
+                            {formatType[component_type]}
                           </div>
-                          {snapshot.isDragging && (
-                              <div style={{ transform: 'none !important' }} key={component_id} className={`option-item clone ${component_type }`}>
-                              {formatType(component_type) }
-                              </div>
-                            )}
-                        </React.Fragment>)
-                      }}
-                    </Draggable>
-                  
-                ))}
-                </div>
-
-              </div>
-            )}
-            
-          </Droppable>
-          <div className="right-side">
-
-          
-        <Droppable droppableId="structure">
-          {(provided) => (
-            <div className="block-container" {...provided.droppableProps} ref={provided.innerRef}>
-              <h2 className={`${structure.length === 0 ? "instruction" : "hidden"}`}>Drag components here</h2>
-              {structure.map(({component_id, hr_name, component_type}, index) => {
-                return (
-                  <Draggable key={component_id} draggableId={component_id} index={index}>
-                    {(provided, snapshot) => (
-                      <div ref={provided.innerRef}
-                        className={`block ${component_type}`}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      
-                      >
-                        {
-                          component_id === editMode ?
-                          <TransCompInput handleSave={handleSave} handleCancel={handleCancel}  compType={component_type} index={index} key={component_id} id={component_id}/>
-                          : <div className="comp-input">
-                              <div className="hr-name">
-                                {hr_name}
-                              </div> 
-                              <div className="button-trash" onClick={() => handleDelete(component_id)}>
-                                <ButtonTrash fill="#878799" width="40" height="15"/>
-                              </div>
-                              
-                            </div>
-                        }
-                        
-                      </div>
-                    )}
+                        )}
+                      </React.Fragment>);
+                    }}
                   </Draggable>
-                )
-              })}
-              
+                ))}
+              </div>
             </div>
           )}
         </Droppable>
-
-          <div className="hr-section">
+        <div className='right-side'>
+          <Droppable droppableId='structure'>
+            {(provided, snapshot) => (
+              <div className='block-container' {...provided.droppableProps} ref={provided.innerRef}>
+                <h2 className={
+                  `${fusion.structural_components.length === 0 ? 'instruction' : 'hidden'}`
+                }>
+                  Drag components here
+                </h2>
+                {fusion.structural_components.map((
+                  component: ClientComponentUnion, index: number
+                ) => {
+                  return (
+                    <Draggable key={index} draggableId={component.component_id} index={index}>
+                      {(provided, snapshot) => (
+                        <div ref={provided.innerRef}
+                          className={`block ${component.component_type}`}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          {renderComponent(component, index)}
+                        </div>
+                      )}
+                    </Draggable>
+                  );
+                })}
+              </div>
+            )}
+          </Droppable>
+          <div className='hr-section'>
             {
-              transcriptComponents.map((comp, index) => (
-                <div key={comp.component_id}>{`${index ? "::" : ""}${comp.hr_name}`}</div>
+              fusion.structural_components?.filter(
+                (comp: ClientComponentUnion) => Boolean(comp) && comp.hr_name
+              ).map((comp: ClientComponentUnion, index: number) => (
+                <div key={comp.component_id}>{`${index ? '::' : ''}${comp.hr_name}`}</div>
               ))
             }
           </div>
-
         </div>
-        
       </DragDropContext>
-      
-      </div>
-    )
-}
+    </div>
+  );
+};
 
 export default Builder;

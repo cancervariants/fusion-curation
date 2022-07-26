@@ -16,6 +16,7 @@
     position: relative;
 
     h3 {
+      padding-top: 10px;
       font-weight: 400;
       font-size: x-large;
       margin: 0;
@@ -26,7 +27,9 @@
       margin: 0 0 10px 0;
     }
 
-
+    .error-banner {
+      color: red;
+    }
 
     .gene {
       background-color: var(--gene);
@@ -34,7 +37,7 @@
       text-align: center;
       color: black;
     }
-    
+
     .transcript_segment {
       background-color: var(--transcript);
       width: 150px;
@@ -46,27 +49,21 @@
       width: 60px;
       text-align: center;
     }
-    
+
     .genomic_region {
       background-color: var(--region);
       width: 60px;
       text-align: center;
     }
-    
   }
-
-
 }
 
 .summary-title {
   h3 {
     font-weight: 400;
     font-size: x-large;
-  } 
+  }
 }
-
-
-
 
 // .structure-summary {
 //   padding: 5px;

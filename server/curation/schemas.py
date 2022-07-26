@@ -1,94 +1,179 @@
 """Provide schemas for FastAPI responses."""
-from typing import List, Optional, Tuple
-from abc import ABC
+from typing import List, Optional, Tuple, Union, Literal, Dict
 
 from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
-from ga4gh.vrsatile.pydantic.vrsatile_model import CURIE
-from fusor.model import Fusion, TranscriptSegmentComponent, LinkerComponent, \
-    GenomicRegionComponent, GeneComponent, UnknownGeneComponent, \
-    AnyGeneComponent
+from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
+from fusor.models import (
+    AssayedFusion,
+    CategoricalFusion,
+    TranscriptSegmentElement,
+    LinkerElement,
+    TemplatedSequenceElement,
+    GeneElement,
+    UnknownGeneElement,
+    MultiplePossibleGenesElement,
+    RegulatoryElement,
+    FunctionalDomain,
+    Strand,
+)
+from uta_tools.schemas import GenomicData
 
 
-class ClientComponent(BaseModel, ABC):
+ResponseWarnings = Optional[List[StrictStr]]
+
+ResponseDict = Dict[
+    str, Union[str, CURIE, List[str], List[Tuple[str, str, str, str]], FunctionalDomain]
+]
+Warnings = List[str]
+
+
+class ClientStructuralElement(BaseModel):
     """Abstract class to provide identification properties used by client."""
 
-    uuid: StrictStr
-    component_name: StrictStr
+    element_id: StrictStr
+    element_name: StrictStr
+    hr_name: StrictStr
+    shorthand: Optional[StrictStr]
 
 
-class ClientTranscriptSegmentComponent(TranscriptSegmentComponent, ClientComponent):
-    """TranscriptSegment component class used client-side."""
+class ClientTranscriptSegmentElement(TranscriptSegmentElement, ClientStructuralElement):
+    """TranscriptSegment element class used client-side."""
 
-    pass
-
-
-class ClientLinkerComponent(LinkerComponent, ClientComponent):
-    """Linker component class used client-side."""
-
-    pass
-
-
-class ClientGenomicRegionComponent(GenomicRegionComponent, ClientComponent):
-    """GenomicRegion component used client-side."""
-
-    pass
+    input_type: Union[
+        Literal["genomic_coords_gene"],
+        Literal["genomic_coords_tx"],
+        Literal["exon_coords_tx"],
+    ]
+    input_tx: Optional[str]
+    input_strand: Optional[Strand]
+    input_gene: Optional[str]
+    input_chr: Optional[str]
+    input_genomic_start: Optional[str]
+    input_genomic_end: Optional[str]
 
 
-class ClientGeneComponent(GeneComponent, ClientComponent):
-    """Gene component used client-side."""
-
-    pass
-
-
-class ClientUnknownGeneComponent(UnknownGeneComponent, ClientComponent):
-    """Unknown gene component used client-side."""
+class ClientLinkerElement(LinkerElement, ClientStructuralElement):
+    """Linker element class used client-side."""
 
     pass
 
 
-class ClientAnyGeneComponent(AnyGeneComponent, ClientComponent):
-    """Any gene component used client-side."""
+class ClientTemplatedSequenceElement(TemplatedSequenceElement, ClientStructuralElement):
+    """Templated sequence element used client-side."""
+
+    input_chromosome: Optional[str]
+    input_start: Optional[str]
+    input_end: Optional[str]
+
+
+class ClientGeneElement(GeneElement, ClientStructuralElement):
+    """Gene element used client-side."""
 
     pass
 
 
-class NormalizeGeneResponse(BaseModel):
+class ClientUnknownGeneElement(UnknownGeneElement, ClientStructuralElement):
+    """Unknown gene element used client-side."""
+
+    pass
+
+
+class ClientMultiplePossibleGenesElement(
+    MultiplePossibleGenesElement, ClientStructuralElement
+):
+    """Multiple possible gene element used client-side."""
+
+    pass
+
+
+class ClientRegulatoryElement(RegulatoryElement):
+    """Regulatory element object used client-side."""
+
+    element_id: str
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
+
+
+class ClientFunctionalDomain(FunctionalDomain):
+    """Define functional domain object used client-side."""
+
+    domain_id: str
+
+    class Config:
+        """Configure class."""
+
+        extra = Extra.forbid
+
+
+class Response(BaseModel):
+    """Abstract Response class for defining API response structures."""
+
+    warnings: ResponseWarnings
+
+    class Config:
+        """Configure class"""
+
+        extra = Extra.forbid
+
+
+class GeneElementResponse(Response):
+    """Response model for gene element construction endoint."""
+
+    element: Optional[GeneElement]
+
+
+class TxSegmentElementResponse(Response):
+    """Response model for transcript segment element construction endpoint."""
+
+    element: Optional[TranscriptSegmentElement]
+
+
+class TemplatedSequenceElementResponse(Response):
+    """Response model for transcript segment element construction endpoint."""
+
+    element: Optional[TemplatedSequenceElement]
+
+
+class NormalizeGeneResponse(Response):
     """Response model for gene normalization endpoint."""
 
     term: StrictStr
     concept_id: Optional[CURIE]
-    warnings: List
-
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
+    symbol: Optional[StrictStr]
 
 
-class DomainIDResponse(BaseModel):
-    """Response model for domain ID retrieval endpoint."""
-
-    domain: StrictStr
-    domain_id: Optional[CURIE]
-    warnings: List
-
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
-
-
-class SuggestDomainResponse(BaseModel):
-    """Response model for domain ID autocomplete suggestion endpoint."""
+class SuggestGeneResponse(Response):
+    """Response model for gene autocomplete suggestions endpoint."""
 
     term: StrictStr
-    suggestions: Optional[List[Tuple[str, str]]]
-    warnings: Optional[List[StrictStr]]
+    # complete term, normalized ID, normalized label, item type
+    suggestions: Optional[List[Tuple[str, str, str, str]]]
 
-    class Config:
-        """Configure class."""
 
-        extra = Extra.forbid
+class DomainParams(BaseModel):
+    """Fields for individual domain suggestion entries"""
+
+    interpro_id: CURIE
+    domain_name: StrictStr
+    start: int
+    end: int
+    refseq_ac: StrictStr
+
+
+class GetDomainResponse(Response):
+    """Response model for functional domain constructor endpoint."""
+
+    domain: Optional[FunctionalDomain]
+
+
+class AssociatedDomainResponse(Response):
+    """Response model for domain ID autocomplete suggestion endpoint."""
+
+    gene_id: StrictStr
+    suggestions: Optional[List[DomainParams]]
 
 
 class ExonCoordsRequest(BaseModel):
@@ -116,48 +201,63 @@ class ExonCoordsRequest(BaseModel):
         return v
 
 
-class ExonCoordsResponse(BaseModel):
+class CoordsUtilsResponse(Response):
     """Response model for genomic coordinates retrieval"""
 
-    tx_ac: Optional[StrictStr]
-    gene: Optional[StrictStr]
-    gene_id: Optional[StrictStr]
-    exon_start: Optional[StrictInt]
-    exon_start_offset: Optional[StrictInt]
-    exon_end: Optional[StrictInt]
-    exon_end_offset: Optional[StrictInt]
-    sequence_id: Optional[CURIE]
-    chr: Optional[StrictStr]
-    start: Optional[StrictInt]
-    end: Optional[StrictInt]
-    warnings: List
-
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
+    coordinates_data: Optional[GenomicData]
 
 
-class SequenceIDResponse(BaseModel):
+class SequenceIDResponse(Response):
     """Response model for sequence ID retrieval endpoint."""
 
     sequence: StrictStr
-    sequence_id: StrictStr = ""
-    warnings: List
-
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
+    ga4gh_sequence_id: Optional[StrictStr] = ""
+    aliases: Optional[List[StrictStr]]
 
 
-class FusionValidationResponse(BaseModel):
-    """Response model for fusion validation endpoint."""
+class GetTranscriptsResponse(Response):
+    """Response model for MANE transcript retrieval endpoint."""
 
-    fusion: Optional[Fusion]
-    warnings: List
+    transcripts: Optional[List[Dict[StrictStr, Union[StrictStr, StrictInt]]]]
 
-    class Config:
-        """Configure class."""
 
-        extra = Extra.forbid
+class ServiceInfoResponse(Response):
+    """Response model for service_info endpoint."""
+
+    fusion_curation_version: StrictStr
+    fusor_version: StrictStr
+    uta_tools_version: StrictStr
+    # TODO -- get VRS version (?), UTA version
+
+
+class ClientCategoricalFusion(CategoricalFusion):
+    """Categorial fusion with client-oriented structural element models. Used in
+    global FusionContext.
+    """
+
+    structural_elements: List[
+        Union[
+            ClientTranscriptSegmentElement,
+            ClientGeneElement,
+            ClientTemplatedSequenceElement,
+            ClientLinkerElement,
+            ClientMultiplePossibleGenesElement,
+        ]
+    ]
+    critical_functional_domains: Optional[List[ClientFunctionalDomain]]
+
+
+class ClientAssayedFusion(AssayedFusion):
+    """Assayed fusion with client-oriented structural element models. Used in
+    global FusionContext.
+    """
+
+    structural_elements: List[
+        Union[
+            ClientTranscriptSegmentElement,
+            ClientGeneElement,
+            ClientTemplatedSequenceElement,
+            ClientLinkerElement,
+            ClientUnknownGeneElement,
+        ]
+    ]

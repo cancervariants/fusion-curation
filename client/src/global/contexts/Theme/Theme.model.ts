@@ -15,8 +15,11 @@ export enum Color {
   PALE_YELLOW = '#fcfcc0',
   PALE_MAGENTA = '#ffbaff',
   PALE_PASTEL_PURPLE = '#e1e1fc',
+  PEACH = '#F29999',
+  GREENISH = '#94EB94',
   PINKRED = '#FE6B8B',
   ORANGE = '#FF8E53',
+  PURPLEY = '#564787',
   //new pallette stuff
   FLICKR = '#F72585',
   BYZ = '#B5179E',
@@ -48,8 +51,12 @@ export interface ColorTheme {
   '--linker-light': Color;
   '--region': Color;
   '--region-light': Color;
+  '--any-gene': Color;
+  '--unknown-gene': Color;
+  // '--any-gene-light': Color;
   '--gradient-1': Color;
   '--gradient-2': Color;
+  '--gradient-3': Color;
 }
 
 export type ColorThemeType = 'two' | 'light' | 'dark';
@@ -71,10 +78,13 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     '--transcript-light': Color.PALE_YELLOW,
     '--linker': Color.MAGENTA,
     '--linker-light': Color.PALE_MAGENTA,
+    '--any-gene': Color.PEACH,
+    '--unknown-gene': Color.GREENISH,
     '--region': Color.PASTEL_PURPLE,
     '--region-light': Color.PALE_PASTEL_PURPLE,
     '--gradient-1': Color.PINKRED,
-    '--gradient-2': Color.ORANGE
+    '--gradient-2': Color.ORANGE,
+    '--gradient-3': Color.PURPLEY
   },
   dark: {
     '--primary': Color.SEAFOAM,
@@ -92,10 +102,13 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     '--transcript-light': Color.PALE_YELLOW,
     '--linker': Color.MAGENTA,
     '--linker-light': Color.PALE_MAGENTA,
+    '--any-gene': Color.PEACH,
+    '--unknown-gene': Color.GREENISH,
     '--region': Color.PASTEL_PURPLE,
     '--region-light': Color.PALE_PASTEL_PURPLE,
     '--gradient-1': Color.PINKRED,
-    '--gradient-2': Color.ORANGE
+    '--gradient-2': Color.ORANGE,
+    '--gradient-3': Color.PURPLEY
   },
   two: {
     '--primary': Color.DODGER,
@@ -113,9 +126,12 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     '--transcript-light': Color.PURP1,
     '--linker': Color.FLICKR,
     '--linker-light': Color.FLICKR,
+    '--any-gene': Color.PEACH,  // TODO ?
+    '--unknown-gene': Color.GREENISH,  // TODO ?
     '--region': Color.ULTRA,
     '--region-light': Color.ULTRA,
     '--gradient-1': Color.PURP1,
-    '--gradient-2': Color.ULTRA
+    '--gradient-2': Color.ULTRA,
+    '--gradient-3': Color.PURPLEY
   }
 };

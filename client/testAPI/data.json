@@ -17,7 +17,7 @@
         }
       }
     ],
-    "transcript_components": [
+    "structural_components": [
       {
         "component_type": "transcript_segment",
         "component_name": "refseq:NM_152263.3",
@@ -36,7 +36,7 @@
       },
       {
         "component_name": "exon1-exon8",
-        "component_type": "genomic_region",
+        "component_type": "templated_sequence",
         "component_id": "95bd881d-3bb4-46c5-a3f5-d07c6a77e46e",
         "id": "refseq:NM_152263.3_exon1-exon8",
         "shorthand": "e1e8",
