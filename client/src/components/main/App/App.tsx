@@ -88,6 +88,7 @@ const demoAssayedFusion: ClientAssayedFusion = {
     assay_name: "fluorescence in-situ hybridization assay",
     fusion_detection: "inferred",
   },
+  regulatory_elements: [],
 };
 
 const demoCategoricalFusion: ClientCategoricalFusion = {

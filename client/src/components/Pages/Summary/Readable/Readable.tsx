@@ -37,6 +37,8 @@ export const Readable: React.FC<Props> = ({ fusion }) => {
         return getGeneNomenclature(el).then((resp) => resp.nomenclature);
       } else if (el.type === "LinkerSequenceElement") {
         return el.linker_sequence.sequence;
+      } else if (el.type === "UnknownGeneElement") {
+        return "?";
       }
     });
     const resolved = await Promise.all(promises);
