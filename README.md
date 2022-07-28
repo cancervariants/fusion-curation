@@ -39,7 +39,7 @@ Acquire two sets of static assets and place all of them within the `server/curat
 Your data/directory should look something like this:
 
 ```
-curation/data
+server/curfu/data
 ├── domain_lookup_2022-01-20.tsv
 ├── gene_aliases_suggest_20211025.tsv
 ├── gene_assoc_with_suggest_20211025.tsv

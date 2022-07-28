@@ -32,8 +32,8 @@ const useStyles = makeStyles((theme) => ({
 const DomainForm: React.FC = () => {
   // // TODO: shouldn't be necessary
   useEffect(() => {
-    if (fusion.functional_domains === undefined) {
-      setFusion({ ...fusion, ...{ functional_domains: [] } });
+    if (fusion.critical_functional_domains === undefined) {
+      setFusion({ ...fusion, ...{ critical_functional_domains: [] } });
     }
   }, []);
 
@@ -71,9 +71,12 @@ const DomainForm: React.FC = () => {
             domain_id: uuid(),
             ...response.domain,
           };
-          const cloneArray = Array.from(fusion["functional_domains"]);
+          const cloneArray = Array.from(fusion["critical_functional_domains"]);
           cloneArray.push(newDomain);
-          setFusion({ ...fusion, ...{ functional_domains: cloneArray } });
+          setFusion({
+            ...fusion,
+            ...{ critical_functional_domains: cloneArray },
+          });
 
           setStatus("default");
           setDomain("");
