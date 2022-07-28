@@ -6,10 +6,8 @@ import {
 import "./Readable.scss";
 import React from "react";
 import {
-  ElementUnion,
-  getGeneNomenclature,
   getRegElementNomenclature,
-  getStructuralElementArrayNomenclature,
+  getTxSegmentNomenclature,
 } from "../../../../services/main";
 
 interface Props {
@@ -17,12 +15,33 @@ interface Props {
 }
 
 export const Readable: React.FC<Props> = ({ fusion }) => {
+  const structureNomenclature = async () => {
+    await Promise.all(
+      fusion.structural_elements
+        .map(async (el, index) => {
+          if (el.type === "TranscriptSegmentElement") {
+            return await getTxSegmentNomenclature(
+              el,
+              index === 0,
+              index === fusion.structural_elements.length - 1
+            ).then((resp) => resp.nomenclature);
+          }
+        })
+        .join("::")
+    );
+  };
+  console.log(structureNomenclature());
+
   return (
     <div className="readable-items-container">
       <div className="row-items">
         <div className="row">
           <span className="left-item">Structure </span>
-          <div className="right-item">"todo"</div>
+          <div className="right-item">
+            <span className="right-sub-item" key={1}>
+              {""}
+            </span>
+          </div>
         </div>
         <hr />
         <div className="row">
