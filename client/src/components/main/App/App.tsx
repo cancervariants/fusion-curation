@@ -88,6 +88,7 @@ const demoAssayedFusion: ClientAssayedFusion = {
     assay_name: "fluorescence in-situ hybridization assay",
     fusion_detection: "inferred",
   },
+  regulatory_elements: [],
 };
 
 const demoCategoricalFusion: ClientCategoricalFusion = {
@@ -98,7 +99,7 @@ const demoCategoricalFusion: ClientCategoricalFusion = {
       type: "TranscriptSegmentElement",
       element_id: uuid(),
       element_name: "NM_152263.3 TPM3",
-      hr_name: "NM_002529.3(TPM3):e._8",
+      hr_name: "NM_002529.3(TPM3):e.8",
       input_type: "exon_coords_tx",
       transcript: "refseq:NM_152263.3",
       input_tx: "NM_152263.3",
@@ -135,7 +136,7 @@ const demoCategoricalFusion: ClientCategoricalFusion = {
       type: "TranscriptSegmentElement",
       element_id: uuid(),
       element_name: "NM_002609.3 PDGFRB",
-      hr_name: "NM_002609.3(PDGFRB):e.11_",
+      hr_name: "NM_002609.3(PDGFRB):e.11",
       input_type: "exon_coords_tx",
       transcript: "refseq:NM_002609.3",
       input_tx: "NM_002609.3",

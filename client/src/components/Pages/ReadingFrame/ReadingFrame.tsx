@@ -30,22 +30,30 @@ export const ReadingFrame: React.FC<Props> = ({ index }) => {
   //TODO: do a useref here or something
 
   const assignRadioValue = (value: boolean) => {
-    if (value) {
-      return "yes";
-    } else {
-      return "no";
+    switch (value) {
+      case true:
+        return "yes";
+      case false:
+        return "no";
+      default:
+        return "unspecified";
     }
   };
 
   const [rFramePreserved, setRFramePreserved] = useState(
-    fusion.r_frame_preserved !== undefined
-      ? assignRadioValue(fusion.r_frame_preserved)
-      : "unspecified"
+    assignRadioValue(fusion.r_frame_preserved)
   );
 
   useEffect(() => {
-    if (fusion.r_frame_preserved !== rFramePreserved) {
-      setRFramePreserved(fusion.r_frame_preserved);
+    if (
+      fusion.r_frame_preserved &&
+      fusion.r_frame_preserved !== rFramePreserved
+    ) {
+      setRFramePreserved(assignRadioValue(fusion.r_frame_preserved));
+    }
+
+    if (fusion.r_frame_preserved === undefined) {
+      setFusion({ ...fusion, r_frame_preserved: null });
     }
   }, [fusion]);
 
@@ -58,9 +66,6 @@ export const ReadingFrame: React.FC<Props> = ({ index }) => {
       } else if (value === "no") {
         setRFramePreserved("no");
         setFusion({ ...fusion, r_frame_preserved: false });
-      } else if (value === "not applicable") {
-        setRFramePreserved("not_applicable");
-        setFusion({ ...fusion, r_frame_preserved: null });
       } else {
         setRFramePreserved("unspecified");
         setFusion({ ...fusion, r_frame_preserved: null });
@@ -81,8 +86,6 @@ export const ReadingFrame: React.FC<Props> = ({ index }) => {
         >
           <FormControlLabel value="yes" control={<Radio />} label="Yes" />
           <FormControlLabel value="no" control={<Radio />} label="No" />
-          {/*
-          <FormControlLabel value='not_applicable' control={<Radio />} label='Not Applicable' /> */}
           <FormControlLabel
             value="unspecified"
             control={<Radio />}
