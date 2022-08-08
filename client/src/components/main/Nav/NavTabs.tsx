@@ -83,10 +83,6 @@ export default function NavTabs(): React.ReactElement {
     root: {
       backgroundColor: colorTheme["--white"],
     },
-    continue: {
-      backgroundColor: colorTheme["--primary"],
-      marginLeft: "auto",
-    },
     previous: {
       backgroundColor: colorTheme["--primary"],
     },
@@ -111,7 +107,7 @@ export default function NavTabs(): React.ReactElement {
 
   return (
     <div className="nav-tabs">
-      <AppBar elevation={0} position="static">
+      <div className="tabs">
         <Tabs
           classes={{
             indicator: classes.indicator,
@@ -152,7 +148,7 @@ export default function NavTabs(): React.ReactElement {
             {...a11yProps(5)}
           />
         </Tabs>
-      </AppBar>
+        </div>
       <div className="tab-panel">
         <TabPanel value={visibleTab} index={0}>
           <FusionType index={0} />
@@ -186,7 +182,7 @@ export default function NavTabs(): React.ReactElement {
         </TabPanel>
       </div>
 
-      <div className="footer">
+      <div className={`footer ${visibleTab !== 0 ? "with-prev" : ""}`}>
         {visibleTab !== 0 ? (
           <div className="previous">
             <Button
@@ -202,10 +198,6 @@ export default function NavTabs(): React.ReactElement {
         {visibleTab !== 5 ? (
           <div className="continue">
             <Button
-              style={{
-                backgroundColor: colorTheme["--primary"],
-                marginLeft: "auto",
-              }}
               onClick={(event) => updateVisibleTab(event, visibleTab + 1)}
               variant="contained"
               color="primary"

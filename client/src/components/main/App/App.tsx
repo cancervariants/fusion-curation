@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 // m-ui things
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -25,7 +26,6 @@ import "./App.scss";
 import UtilitiesNavTabs from "../../../components/Utilities/UtilitiesNavTabs/UtilitiesNavTabs";
 import NavTabs from "../Nav/NavTabs";
 import About from "../About/About";
-import ButtonTop from "../shared/Buttons/ButtonTop";
 // services things
 import { v4 as uuid } from "uuid";
 import { getAssociatedDomains } from "../../../services/main";
@@ -178,7 +178,7 @@ const defaultFusion: ClientFusion = {
   regulatory_elements: [],
 };
 
-const App = (): React.ReactElement => {
+const App = (): JSX.Element => {
   const [suggestions, setSuggestions] = useState<unknown>([]);
   const [fusion, setFusion] = useState<ClientFusion>(defaultFusion);
   const [globalGenes, setGlobalGenes] = useState<GenesLookup>({});
@@ -349,6 +349,7 @@ const App = (): React.ReactElement => {
   document.title = "VICC Fusion Curation";
 
   return (
+    <>
     <ThemeProvider theme={theme}>
       <div
         className={showMain ? "app-main" : "app-utils"}
@@ -358,13 +359,17 @@ const App = (): React.ReactElement => {
           } as React.CSSProperties
         }
       >
+        <Box display='flex'>
+        <h2 className="title">
+          VICC Fusion Curation {showMain ? "Interface" : "Utilities"}
+        </h2>
         <div className="menu-container">
-          <ButtonTop
-            text="Menu"
+          <Button
             variant="contained"
             color="secondary"
-            onClick={(event) => setAnchorEl(event.currentTarget)}
-          />
+            onClick={(event) => setAnchorEl(event.currentTarget)}>
+              Menu
+          </Button>
           <Menu
             id="simple-menu"
             anchorEl={anchorEl}
@@ -395,9 +400,7 @@ const App = (): React.ReactElement => {
             <MenuItem onClick={() => handleServiceInfo()}>About</MenuItem>
           </Menu>
         </div>
-        <h1 className="title">
-          VICC Fusion Curation {showMain ? "Interface" : "Utilities"}
-        </h1>
+        </Box>
         <div className="main-component">
           {showMain ? (
             <GeneContext.Provider value={{ globalGenes, setGlobalGenes }}>
@@ -447,6 +450,7 @@ const App = (): React.ReactElement => {
         </DialogActions>
       </Dialog>
     </ThemeProvider>
+    </>
   );
 };
 
