@@ -74,6 +74,11 @@ You can run:
 
 ```commandline
 yarn install --ignore-engines
+```
+
+Next, run the following commands:
+
+```
 yarn build
 mv build/ ../server/curfu/build
 ```
