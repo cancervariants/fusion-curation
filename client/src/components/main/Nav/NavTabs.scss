@@ -2,15 +2,17 @@
   display: flex;
   flex-wrap: wrap;
   background-color: var(--white);
-  min-height: 35vh;
+  min-height: 60vh;
 }
 
 .tab-panel {
+  min-height: 40vh;
   margin: 1em 2em 0 2em;
   width: 100%;
 }
 
 .tabs {
+  max-height: 50px;
   width: 100%;
 }
 
@@ -21,6 +23,7 @@
 .footer {
   flex-shrink: 0;
   width: 100%;
+  padding-top: 1em;
   display: flex;
   align-items: center;
   background-color: var(--white);
