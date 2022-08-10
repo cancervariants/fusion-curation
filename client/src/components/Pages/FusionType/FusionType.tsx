@@ -55,12 +55,12 @@ export const FusionType: React.FC<Props> = () => {
           <FormControlLabel
             value="AssayedFusion"
             control={<Radio />}
-            label="AssayedFusion"
+            label="Assayed Fusion"
           />
           <FormControlLabel
             value="CategoricalFusion"
             control={<Radio />}
-            label="CategoricalFusion"
+            label="Categorical Fusion"
           />
         </RadioGroup>
       </FormControl>

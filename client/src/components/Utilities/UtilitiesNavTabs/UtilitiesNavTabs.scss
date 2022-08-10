@@ -2,28 +2,10 @@
   background-color: var(--white);
 }
 
-.tab-panel {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.sub-tab {
-  width: 80vw;
-  height: 600px;
-}
-
 .previous {
-}
-
-.continue {
-  margin-left: auto;
+  padding: 1em 2em;
 }
 
 .footer {
-  flex-shrink: 0;
-  padding: 15px 10px;
-  display: flex;
-  align-items: center;
-  background-color: var(--white);
+  justify-content: space-between;
 }
