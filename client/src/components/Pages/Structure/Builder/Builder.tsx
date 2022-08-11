@@ -212,11 +212,12 @@ const Builder: React.FC = () => {
     <div className="builder">
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="OPTIONS" isDropDisabled={true}>
-          {(provided, snapshot) => (
+          {(provided) => (
             <div
               className="options"
               {...provided.droppableProps}
               ref={provided.innerRef}
+              style={{display: "flex" }}
             >
               <div className="options-container">
                 {ELEMENT_TEMPLATE.map(({ element_id, type }, index) => {
@@ -271,7 +272,7 @@ const Builder: React.FC = () => {
         </Droppable>
         <div className="right-side">
           <Droppable droppableId="structure">
-            {(provided, snapshot) => (
+            {(provided) => (
               <div
                 className="block-container"
                 {...provided.droppableProps}
@@ -290,11 +291,11 @@ const Builder: React.FC = () => {
                   (element: ClientElementUnion, index: number) => {
                     return (
                       <Draggable
-                        key={index}
+                        key={element.element_id}
                         draggableId={element.element_id}
                         index={index}
                       >
-                        {(provided, snapshot) => (
+                        {(provided) => (
                           <div
                             ref={provided.innerRef}
                             className={`block ${element.type}`}
