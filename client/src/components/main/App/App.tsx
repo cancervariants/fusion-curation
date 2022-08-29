@@ -10,6 +10,8 @@ import {
   DialogTitle,
   Menu,
   MenuItem,
+  Tab,
+  Tabs,
   ThemeProvider,
 } from "@material-ui/core";
 // global contexts
@@ -42,6 +44,7 @@ import {
   GeneDescriptor,
   RegulatoryElement,
 } from "../../../services/ResponseModels";
+import FusionTabs from "../Nav/FusionTabs";
 
 type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 type ClientElement =
@@ -176,6 +179,7 @@ const demoCategoricalFusion: ClientCategoricalFusion = {
 const defaultFusion: ClientFusion = {
   structural_elements: [],
   regulatory_elements: [],
+  type: "AssayedFusion"
 };
 
 const App = (): JSX.Element => {
@@ -411,7 +415,7 @@ const App = (): JSX.Element => {
                   value={[suggestions, setSuggestions]}
                 >
                   <FusionContext.Provider value={{ fusion, setFusion }}>
-                    <NavTabs />
+                    <FusionTabs />
                   </FusionContext.Provider>
                 </SuggestionContext.Provider>
               </DomainOptionsContext.Provider>

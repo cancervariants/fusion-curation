@@ -397,8 +397,8 @@ export interface ClientAssayedFusion {
     | ClientLinkerElement
     | ClientUnknownGeneElement
   )[];
-  causative_event: CausativeEvent;
-  assay: Assay;
+  causative_event?: CausativeEvent;
+  assay?: Assay;
 }
 /**
  * TranscriptSegment element class used client-side.
