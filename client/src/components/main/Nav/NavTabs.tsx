@@ -10,7 +10,6 @@ import React, { useContext } from "react";
 import { FusionContext } from "../../../global/contexts/FusionContext";
 
 // Pages
-import { FusionType } from "../../Pages/FusionType/FusionType";
 import { Structure } from "../../Pages/Structure/Main/Structure";
 import { RegElement } from "../../Pages/RegElement/Main/RegElement";
 import { Summary } from "../../Pages/Summary/Main/Summary";
@@ -21,7 +20,7 @@ import { Assay } from "../../Pages/Assay/Assay";
 
 // MUI Stuff
 import { makeStyles, Theme } from "@material-ui/core/styles";
-import { AppBar, Tabs, Tab, Button } from "@material-ui/core";
+import { Tabs, Tab, Button } from "@material-ui/core";
 
 // Styles
 import "./NavTabs.scss";

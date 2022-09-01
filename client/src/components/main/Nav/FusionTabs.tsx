@@ -4,9 +4,9 @@ import { FusionContext } from "../../../global/contexts/FusionContext";
 
 const useStyles = makeStyles(() => ({
   fusionType: {
-    marginRight: '0.5em',
-    color: 'white',
-    fontWeight: 'normal',
+    marginRight: "0.5em",
+    color: "white",
+    fontWeight: "normal",
   },
 }));
 
@@ -16,14 +16,14 @@ export default function FusionTabs(): React.ReactElement {
 
   console.log(fusion)
 
-  const fusionType = fusion.type === 'CategoricalFusion' ? 'Categorical Fusion' : 'Assayed Fusion'
-  const switchToType = fusion.type === 'CategoricalFusion' ? 'Assayed Fusion' : 'Categorical Fusion'
+  const fusionType = fusion.type === "CategoricalFusion" ? "Categorical Fusion" : "Assayed Fusion"
+  const switchToType = fusion.type === "CategoricalFusion" ? "Assayed Fusion" : "Categorical Fusion"
 
   return (
     <div>
-      <Box display='flex'>
+      <Box display="flex">
         <h2 className={classes.fusionType}>{fusionType}</h2>
-        <Typography color='inherit' style={{ cursor: 'pointer', margin: 'auto' }} onClick={() => { setFusion({ ...fusion, type: switchToType.replace(/\s/g, '') }) }}>(Switch to {switchToType} tool?)</Typography>
+        <Typography color="inherit" style={{ cursor: "pointer", margin: "auto" }} onClick={() => { setFusion({ ...fusion, type: switchToType.replace(/\s/g, "") }) }}>(Switch to {switchToType} tool?)</Typography>
       </Box>
     </div>
   )
