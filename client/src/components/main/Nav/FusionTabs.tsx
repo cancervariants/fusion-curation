@@ -14,7 +14,6 @@ export default function FusionTabs(): React.ReactElement {
   const classes = useStyles()
   const { fusion, setFusion } = useContext(FusionContext);
 
-  console.log(fusion)
 
   const fusionType = fusion.type === "CategoricalFusion" ? "Categorical Fusion" : "Assayed Fusion"
   const switchToType = fusion.type === "CategoricalFusion" ? "Assayed Fusion" : "Categorical Fusion"
