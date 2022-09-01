@@ -149,9 +149,6 @@ export default function NavTabs(): React.ReactElement {
         </Tabs>
         </div>
       <div className="tab-panel">
-        {/* <TabPanel value={visibleTab} index={0}>
-          <FusionType index={0} />
-        </TabPanel> */}
         <TabPanel value={visibleTab} index={0}>
           <Structure index={0} />
         </TabPanel>
