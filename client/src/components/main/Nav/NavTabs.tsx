@@ -118,7 +118,6 @@ export default function NavTabs(): React.ReactElement {
           aria-label="nav tabs example"
           className={classes.enabledtabs}
         >
-          {/* <LinkTab label="Type" href="/" {...a11yProps(0)} /> */}
           <LinkTab
             label="Structure"
             href="/"
