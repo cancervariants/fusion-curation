@@ -24,9 +24,10 @@
 }
 
 .title {
-  margin: 1em;
+  margin-left: 1em;
+  width: 100%;
+  justify-content: space-between;
   display: flex;
-  flex: 1;
   color: var(--white);
   font-weight: normal;
 }
@@ -38,4 +39,8 @@
 
 .menu-container {
   margin: 1em;
+}
+
+h2 {
+  font-weight: normal;
 }

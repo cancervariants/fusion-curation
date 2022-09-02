@@ -42,6 +42,7 @@ import {
   GeneDescriptor,
   RegulatoryElement,
 } from "../../../services/ResponseModels";
+import FusionTabs from "../Nav/FusionTabs";
 
 type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 type ClientElement =
@@ -176,6 +177,7 @@ const demoCategoricalFusion: ClientCategoricalFusion = {
 const defaultFusion: ClientFusion = {
   structural_elements: [],
   regulatory_elements: [],
+  type: "AssayedFusion"
 };
 
 const App = (): JSX.Element => {
@@ -360,9 +362,12 @@ const App = (): JSX.Element => {
         }
       >
         <Box display='flex'>
-        <h2 className="title">
-          VICC Fusion Curation {showMain ? "Interface" : "Utilities"}
-        </h2>
+        <div className="title">
+          <h2>VICC Fusion Curation {showMain ? "Interface" : "Utilities"}</h2>
+          <FusionContext.Provider value={{ fusion, setFusion }}>
+            <FusionTabs />
+          </FusionContext.Provider>
+        
         <div className="menu-container">
           <Button
             variant="contained"
@@ -399,6 +404,7 @@ const App = (): JSX.Element => {
             )}
             <MenuItem onClick={() => handleServiceInfo()}>About</MenuItem>
           </Menu>
+        </div>
         </div>
         </Box>
         <div className="main-component">

@@ -10,6 +10,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import { Assay as FusionAssay } from "../../../services/ResponseModels";
+import React from "react";
 
 interface Props {
   index: number;
