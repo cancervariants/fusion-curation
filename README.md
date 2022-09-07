@@ -49,10 +49,10 @@ server/curfu/data
 └── gene_xrefs_suggest_20211025.tsv
 ```
 
-Finally, start backend service with `curfu`, by default on port 5000. Alternative ports can be selected like so:
+Finally, start backend service with `curfu`, by default on port 5000. To use a different port, pass the number to the `-p` option:
 
 ```commandline
-curfu -p 5001
+curfu -p 5000
 ```
 
 In another shell, navigate to the repo `client/` directory and install frontend dependencies:
@@ -91,7 +91,7 @@ yarn start
 
 ### Shared type definitions
 
-The frontend utilizes Typescript definitions generated from the backend pydantic schema. These can be refreshed, from the server environment, with the command `curfu_devtools client-types`. This will only work if `json2ts` has been installed in the `node_modules` binary directory.
+The frontend utilizes Typescript definitions generated from the backend pydantic schema. These can be refreshed, from the server environment, with the command `curfu_devtools client-types`. This will only work if `json2ts` has been installed in the client's `node_modules` binary directory.
 
 ### Style
 
@@ -107,4 +107,4 @@ In practice, Prettier and Black will do most of the formatting work for you to b
 
 ### Tests
 
-Requires installation of `tests` dependencies. Run with `pytest`.
+Backend tests require installation of `tests` dependencies. Run with `pytest`.
