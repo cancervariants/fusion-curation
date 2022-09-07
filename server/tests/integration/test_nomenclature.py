@@ -125,7 +125,7 @@ async def test_tx_segment_nomenclature(
         json=ntrk1_tx_element_start,
     )
     assert response.status_code == 200
-    assert response.json().get("nomenclature", "") == "refseq:NM_002529.3(NTRK1):e.21_"
+    assert response.json().get("nomenclature", "") == "refseq:NM_002529.3(NTRK1):e.21"
 
     response = await async_client.post(
         "/nomenclature/transcript_segment?first=true&last=false", json=epcam_invalid
