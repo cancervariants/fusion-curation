@@ -38,13 +38,13 @@ export const CausativeEvent: React.FC<Props> = () => {
 
   // ensure live updates
   useEffect(() => {
-    if (fusion.causative_event.event_type !== causativeEventType) {
-      setCausativeEventType(fusion.causative_event.event_type);
+    if (fusion?.causative_event?.event_type !== causativeEventType) {
+      setCausativeEventType(fusion?.causative_event?.event_type);
     }
     if (
-      fusion.causative_event.event_description !== causativeEventDescription
+      fusion?.causative_event?.event_description !== causativeEventDescription
     ) {
-      setCausativeEventDescription(fusion.causative_event.event_description);
+      setCausativeEventDescription(fusion?.causative_event?.event_description);
     }
   }, [fusion]);
 
