@@ -174,9 +174,7 @@ export const getTxSegmentElementGCG = async (
 export const getGeneId = async (
   symbol: string
 ): Promise<NormalizeGeneResponse> => {
-  const response = await fetch(
-    `construct/structural_element/gene?term=${symbol}`
-  );
+  const response = await fetch(`lookup/gene?term=${symbol}`);
   const geneResponse = await response.json();
   return geneResponse;
 };

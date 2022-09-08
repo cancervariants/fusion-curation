@@ -49,11 +49,11 @@ const RegElementForm: React.FC = () => {
     setElementClass(event.target.value);
   };
 
-  const handleEnterKey = (e: KeyboardEvent) => {
-    if (e.key == "Enter" && inputComplete) {
-      handleAdd();
-    }
-  };
+  // const handleEnterKey = (e: KeyboardEvent) => {
+  //   if (e.key == "Enter" && inputComplete) {
+  //     handleAdd();
+  //   }
+  // };
 
   const handleAdd = () => {
     if (elementClass === "default") return;

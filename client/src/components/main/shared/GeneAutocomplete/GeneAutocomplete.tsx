@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import { TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getGeneId, getGeneSuggestions } from "../../../../services/main";
+import { CSSProperties } from "@material-ui/core/styles/withStyles";
 
 interface Props {
   selectedGene: string;
   setSelectedGene: CallableFunction;
   geneText: string;
   setGeneText: CallableFunction;
-  style: unknown;
+  onKeyDown: CallableFunction;
+  style: CSSProperties;
 }
 
 export const GeneAutocomplete: React.FC<Props> = ({
@@ -18,68 +20,68 @@ export const GeneAutocomplete: React.FC<Props> = ({
   setGeneText,
   style,
 }) => {
-  const [geneOptions, setGeneOptions] = useState([]);
+  const [geneOptions, setGeneOptions] = useState<string[]>([]);
+  const [inputValue, setInputValue] = React.useState(selectedGene);
 
   useEffect(() => {
-    if (selectedGene === "") {
+    if (inputValue === "") {
       setGeneText("");
       setGeneOptions([]);
     } else {
-      getGeneSuggestions(selectedGene).then((suggestResponseJson) => {
+      getGeneSuggestions(inputValue).then((suggestResponseJson) => {
         if (suggestResponseJson.warnings) {
           // max matches exceeded is currently the only possible warning
           if (
             suggestResponseJson.warnings[0].startsWith("Exceeds max matches")
           ) {
             // try exact match
-            getGeneId(selectedGene).then((geneResponseJson) => {
-              if (geneResponseJson.warnings) {
+            getGeneId(inputValue).then((geneResponseJson) => {
+              if (
+                geneResponseJson.warnings &&
+                geneResponseJson.warnings.length > 0
+              ) {
                 setGeneText("Unrecognized term");
                 setGeneOptions([]);
               } else {
+                // just provide entered term, but correctly-cased
                 setGeneText("");
-                setGeneOptions([]);
+                if (geneResponseJson.cased) {
+                  setGeneOptions([geneResponseJson.cased]);
+                }
               }
             });
           }
-        } else if (suggestResponseJson.suggestions.length === 0) {
+        } else if (suggestResponseJson.suggestions?.length === 0) {
           setGeneText("Unrecognized term");
           setGeneOptions([]);
-        } else {
+        } else if (suggestResponseJson.suggestions) {
           setGeneText("");
           setGeneOptions(
-            suggestResponseJson.suggestions.map((s) =>
-              s[0] !== "" ? s[0] : s[2]
-            )
+            suggestResponseJson.suggestions
+              .map((s) => (s[0] !== "" ? s[0] : s[2]))
+              .sort()
           );
         }
       });
     }
-  }, [selectedGene]);
+  }, [inputValue]);
 
   return (
     <Autocomplete
-      freeSolo
-      options={geneOptions}
-      getOptionLabel={(option) => option}
-      onChange={(event, value) => {
-        setSelectedGene(value);
-        if (value === "") {
-          setGeneOptions([]);
-        }
-      }}
       value={selectedGene}
+      onChange={(event, newValue) => setSelectedGene(newValue)}
+      inputValue={inputValue}
+      onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
+      options={geneOptions}
       disableClearable
       renderInput={(params) => (
         <TextField
           {...params}
+          variant="standard"
           label="Gene Symbol"
           margin="dense"
           style={style}
-          variant="standard"
-          value={selectedGene}
           error={geneText !== ""}
-          onChange={(event) => setSelectedGene(event.target.value)}
           helperText={geneText ? geneText : null}
         />
       )}
