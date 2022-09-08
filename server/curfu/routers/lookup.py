@@ -23,11 +23,12 @@ def normalize_gene(request: Request, term: str = Query("")) -> ResponseDict:
     """
     response: ResponseDict = {"term": term}
     try:
-        concept_id, symbol = request.app.state.genes.get_normalized_gene(
+        concept_id, symbol, cased = request.app.state.genes.get_normalized_gene(
             term.strip(), request.app.state.fusor.gene_normalizer
         )
         response["concept_id"] = concept_id
         response["symbol"] = symbol
+        response["cased"] = cased
     except ServiceWarning as e:
         response["warnings"] = [str(e)]
     return response

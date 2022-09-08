@@ -146,6 +146,7 @@ class NormalizeGeneResponse(Response):
     term: StrictStr
     concept_id: Optional[CURIE]
     symbol: Optional[StrictStr]
+    cased: Optional[StrictStr]
 
 
 class SuggestGeneResponse(Response):

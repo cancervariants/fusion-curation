@@ -1,5 +1,5 @@
 """Wrapper for required Gene Normalization services."""
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Union
 import csv
 
 from gene.query import QueryHandler
@@ -51,7 +51,9 @@ class GeneService:
                     map[term_lower] = (term, normalized_id, normalized_label)
 
     @staticmethod
-    def get_normalized_gene(term: str, normalizer: QueryHandler) -> Tuple[CURIE, str]:
+    def get_normalized_gene(
+        term: str, normalizer: QueryHandler
+    ) -> Tuple[CURIE, str, Union[str, CURIE, None]]:
         """Get normalized ID given gene symbol/label/alias.
         :param str term: user-entered gene term
         :param QueryHandler normalizer:  gene normalizer instance
@@ -60,17 +62,56 @@ class GeneService:
         """
         response = normalizer.normalize(term)
         if response.match_type != MatchType.NO_MATCH:
-            if not response.gene_descriptor or not response.gene_descriptor.gene_id:
+            gd = response.gene_descriptor
+            if not gd or not gd.gene_id:
                 msg = f"Unexpected null property in normalized response for `{term}`"
                 logger.error(msg)
                 raise ServiceWarning(msg)
-            concept_id = response.gene_descriptor.gene_id
-            symbol = response.gene_descriptor.label
+            concept_id = gd.gene_id
+            symbol = gd.label
             if not symbol:
                 msg = f"Unable to retrieve symbol for gene {concept_id}"
                 logger.error(msg)
                 raise ServiceWarning(msg)
-            return (concept_id, symbol)
+            term_lower = term.lower()
+            term_cased = None
+            if response.match_type == 100:
+                if term_lower == symbol.lower():
+                    term_cased = symbol
+                elif term_lower == concept_id.lower():
+                    term_cased = concept_id
+            elif response.match_type == 80:
+                for ext in gd.extensions:
+                    if ext.name == "previous_symbols":
+                        for prev_symbol in ext.value:
+                            if term_lower == prev_symbol.lower():
+                                term_cased = prev_symbol
+                                break
+                        break
+            elif response.match_type == 60:
+                if gd.alternate_labels:
+                    for alias in gd.alternate_labels:
+                        if term_lower == alias.lower():
+                            term_cased = alias
+                            break
+                if not term_cased and gd.xrefs:
+                    for xref in gd.xrefs:
+                        if term_lower == xref.lower():
+                            term_cased = xref
+                            break
+                if not term_cased:
+                    for ext in gd.extensions:
+                        if ext.name == "associated_with":
+                            for assoc in ext.value:
+                                if term_lower == assoc.lower():
+                                    term_cased = assoc
+                                    break
+                            break
+            if not term_cased:
+                logger.warning(
+                    f"Couldn't find cased version for search term {term} matching gene ID {response.gene_descriptor.gene_id}"  # noqa: E501
+                )  # noqa: E501
+            return (concept_id, symbol, term_cased)
         else:
             warn = f"Lookup of gene term {term} failed."
             logger.warning(warn)

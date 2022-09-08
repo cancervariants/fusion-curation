@@ -7,8 +7,9 @@
 
 /**
  * Define possible classes of Regulatory Elements. Options are the possible values
- * for /regulatory_class value property in the INSDC controlled vocabulary:
- * https://www.insdc.org/controlled-vocabulary-regulatoryclass
+ *     for /regulatory_class value property in the INSDC controlled vocabulary:
+ *     https://www.insdc.org/controlled-vocabulary-regulatoryclass
+ *
  */
 export type RegulatoryClass =
   | "attenuator"
@@ -70,7 +71,8 @@ export type Strand = "+" | "-";
 export type Sequence = string;
 /**
  * Permissible values for describing the underlying causative event driving an
- * assayed fusion.
+ *     assayed fusion.
+ *
  */
 export type EventType = "rearrangement" | "read-through" | "trans-splicing";
 /**
@@ -397,8 +399,8 @@ export interface ClientAssayedFusion {
     | ClientLinkerElement
     | ClientUnknownGeneElement
   )[];
-  causative_event?: CausativeEvent;
-  assay?: Assay;
+  causative_event: CausativeEvent;
+  assay: Assay;
 }
 /**
  * TranscriptSegment element class used client-side.
@@ -604,6 +606,7 @@ export interface NormalizeGeneResponse {
   term: string;
   concept_id?: CURIE;
   symbol?: string;
+  cased?: string;
 }
 /**
  * Response model for regulatory element constructor.
