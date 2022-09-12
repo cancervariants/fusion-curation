@@ -10,10 +10,7 @@ import {
   DialogContentText,
   DialogTitle,
   Drawer,
-  IconButton,
   Link,
-  Menu,
-  MenuItem,
   ThemeProvider,
   Typography,
 } from "@material-ui/core";
@@ -191,7 +188,6 @@ const App = (): JSX.Element => {
   const [fusion, setFusion] = useState<ClientFusion>(defaultFusion);
   const [globalGenes, setGlobalGenes] = useState<GenesLookup>({});
   const [domainOptions, setDomainOptions] = useState<DomainOptionsLookup>({});
-  const [showMain, setShowMain] = useState<boolean>(true);
   const [showServiceInfo, setShowServiceInfo] = useState(false);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [dialogCallback, setDialogCallback] = useState<CallableFunction | null>(
@@ -334,14 +330,6 @@ const App = (): JSX.Element => {
     }
   };
 
-  const handleShowMainClick = () => {
-    setShowMain(!showMain);
-  };
-
-  const handleServiceInfo = () => {
-    setShowServiceInfo(true);
-  };
-
   const handleDialogResponse = (proceed: boolean) => {
     setDialogOpen(false);
     if (proceed && dialogCallback) {
@@ -360,6 +348,23 @@ const App = (): JSX.Element => {
 
   document.title = "VICC Fusion Curation";
 
+  let title = ""
+  let displayTool = false
+  switch (path) {
+    case "/assayed-fusion":
+      title = "Assayed Fusion"
+      displayTool = true
+      break
+    case "/categorical-fusion":
+      title = "Categorical Fusion"
+      displayTool = true
+      break
+    case "/utilities":
+      title = "Utilities"
+      displayTool = true
+      break
+  }
+
   const fusionsComponent = (
     <div className="main-component">
           {path !== "/utilities" ? (
@@ -371,7 +376,7 @@ const App = (): JSX.Element => {
                   value={[suggestions, setSuggestions]}
                 >
                   <FusionContext.Provider value={{ fusion, setFusion }}>
-                    <NavTabs />
+                    <NavTabs handleClear={handleClear} />
                   </FusionContext.Provider>
                 </SuggestionContext.Provider>
               </DomainOptionsContext.Provider>
@@ -386,74 +391,29 @@ const App = (): JSX.Element => {
     <>
     <ThemeProvider theme={theme}>
       <div
-        className={showMain ? "app-main" : "app-utils"}
+        className="app-main"
         style={
           {
             ...colorTheme,
           } as React.CSSProperties
         }
       >
-        {/* <Box display='flex'>
-        <div className="title">
-          <Link href="/" style={{ color: "white" }}><h2>VICC Fusion Curation {showMain ? "Interface" : "Utilities"}</h2></Link>
-        
-        <div className="menu-container">
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={(event) => setAnchorEl(event.currentTarget)}>
-              Menu
-          </Button>
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={() => setAnchorEl(null)}
-          >
-            {showMain ? (
-              <div>
-                <MenuItem onClick={() => handleClear()}>
-                  Clear Entered Data
-                </MenuItem>
-                <MenuItem onClick={() => handleDemo(demoAssayedFusion)}>
-                  Use Assayed Fusion Demo
-                </MenuItem>
-                <MenuItem onClick={() => handleDemo(demoCategoricalFusion)}>
-                  Use Categorical Fusion Demo
-                </MenuItem>
-                <MenuItem onClick={() => handleShowMainClick()}>
-                  Utilities
-                </MenuItem>
-              </div>
-            ) : (
-              <MenuItem onClick={() => handleShowMainClick()}>
-                Return to Curation
-              </MenuItem>
-            )}
-            <MenuItem onClick={() => handleServiceInfo()}>About</MenuItem>
-          </Menu>
-        </div>
-        </div>
-        </Box> */}
-        <AppBar style={{ width: "100%", height: "50px" }}>
-          <Box m="auto">TITLE</Box>
+        <AppBar style={{ width: "100%", height: "50px", marginLeft: "225px", display: title === "" ? "none" : "" }}>
+          <Box m="auto" display="flex"><Typography>{title}</Typography></Box>
         </AppBar>
         <Drawer variant="permanent" open={open} anchor="left" className="menu-drawer">
-          <div className="title">
-          <Link href="/"><h2>VICC Fusion Curation {showMain ? "Interface" : "Utilities"}</h2></Link>
-          </div>
           <Box ml="10px">
+          <Link href="/"><h3>VICC Fusion Curation</h3></Link>
             <h3>Tools</h3>
-            <Box ml="10px">
+            <Box ml="10px" className="menu-link">
               <Box mb="10px"><Link href="/assayed-fusion">Assayed Fusion Tool</Link></Box>
               <Box mb="10px"><Link href="/categorical-fusion">Categorical Fusion Tool</Link></Box>
               <Box mb="10px"><Link href="/utilities">Utilities</Link></Box>
             </Box>
           
             <h3>Resources</h3>
-            <Box ml="10px">
-              <Box mb="10px"><Link href="https://cancervariants.org/projects/fusions/" target="_blank">Fusions Guidelines Home Page</Link></Box>
+            <Box ml="10px" className="menu-link">
+              <Box mb="10px"><Link href="https://cancervariants.org/projects/fusions/" target="_blank">Fusions Home Page</Link></Box>
               <Box mb="10px"><Link href="https://github.com/cancervariants/fusion-curation" target="_blank">Code Repository</Link></Box>
               <Box mb="10px"><Link href="https://cancervariants.org/" target="_blank">VICC</Link></Box>
             </Box>
@@ -461,8 +421,8 @@ const App = (): JSX.Element => {
             <Button onClick={() => handleDemo(demoCategoricalFusion)}>use categorical demo</Button>
           </Box>
         </Drawer>
-        <Box ml={open ? "260px" : "0"} mr="5px">
-          {path === "/assayed-fusion" || path === "/categorical-fusion" || path === "/utilities" ? fusionsComponent : ""}
+        <Box ml={open ? "240px" : "0"} mr="5px">
+          {displayTool ? fusionsComponent : ""}
         </Box>
         
       </div>

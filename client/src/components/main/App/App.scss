@@ -22,15 +22,6 @@
   );
 }
 
-.title {
-  margin-left: 1em;
-  width: 100%;
-  justify-content: space-between;
-  display: flex;
-  color: var(--white);
-  font-weight: normal;
-}
-
 .main-component {
   flex-grow: 1;
   margin-top: 75px;
@@ -46,10 +37,11 @@ h2 {
 
 .menu-drawer {
   .MuiDrawer-paper {
-    width: 250px;
+    width: 225px;
+    overflow-x: hidden !important;
   }
 }
 
 .menu-link {
-  width: 100%
+  font-size: 15px;
 }
