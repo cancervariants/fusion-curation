@@ -399,7 +399,7 @@ const App = (): JSX.Element => {
         }
       >
         <AppBar style={{ width: "100%", height: "50px", marginLeft: "225px", display: title === "" ? "none" : "" }}>
-          <Box m="auto" display="flex"><Typography>{title}</Typography></Box>
+          <Box ml={open ? "240px" : "0"}><h3>{title}</h3></Box>
         </AppBar>
         <Drawer variant="permanent" open={open} anchor="left" className="menu-drawer">
           <Box ml="10px">
