@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 // m-ui things
 import {
+  AppBar,
   Box,
   Button,
   Dialog,
@@ -8,9 +9,13 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Drawer,
+  IconButton,
+  Link,
   Menu,
   MenuItem,
   ThemeProvider,
+  Typography,
 } from "@material-ui/core";
 // global contexts
 import { DomainOptionsContext } from "../../../global/contexts/DomainOptionsContext";
@@ -42,7 +47,6 @@ import {
   GeneDescriptor,
   RegulatoryElement,
 } from "../../../services/ResponseModels";
-import FusionTabs from "../Nav/FusionTabs";
 
 type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 type ClientElement =
@@ -174,10 +178,12 @@ const demoCategoricalFusion: ClientCategoricalFusion = {
   regulatory_elements: [],
 };
 
+const path = window.location.pathname
+
 const defaultFusion: ClientFusion = {
   structural_elements: [],
   regulatory_elements: [],
-  type: "AssayedFusion"
+  type: path === "/assayed-fusion" ? "AssayedFusion" : "CategoricalFusion"
 };
 
 const App = (): JSX.Element => {
@@ -187,11 +193,11 @@ const App = (): JSX.Element => {
   const [domainOptions, setDomainOptions] = useState<DomainOptionsLookup>({});
   const [showMain, setShowMain] = useState<boolean>(true);
   const [showServiceInfo, setShowServiceInfo] = useState(false);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [dialogCallback, setDialogCallback] = useState<CallableFunction | null>(
     null
   );
+  const [open, setOpen] = React.useState(true);
 
   /**
    * Update global genes contexts.
@@ -309,7 +315,6 @@ const App = (): JSX.Element => {
   };
 
   const handleClear = () => {
-    setAnchorEl(null);
     if (fusionIsEmpty()) {
       setFusion(defaultFusion);
     } else {
@@ -321,7 +326,6 @@ const App = (): JSX.Element => {
   const handleDemo = (
     fusion: ClientAssayedFusion | ClientCategoricalFusion
   ) => {
-    setAnchorEl(null);
     if (fusionIsEmpty()) {
       setFusion(fusion);
     } else {
@@ -331,12 +335,10 @@ const App = (): JSX.Element => {
   };
 
   const handleShowMainClick = () => {
-    setAnchorEl(null);
     setShowMain(!showMain);
   };
 
   const handleServiceInfo = () => {
-    setAnchorEl(null);
     setShowServiceInfo(true);
   };
 
@@ -348,7 +350,37 @@ const App = (): JSX.Element => {
     setDialogCallback(null);
   };
 
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
   document.title = "VICC Fusion Curation";
+
+  const fusionsComponent = (
+    <div className="main-component">
+          {path !== "/utilities" ? (
+            <GeneContext.Provider value={{ globalGenes, setGlobalGenes }}>
+              <DomainOptionsContext.Provider
+                value={{ domainOptions, setDomainOptions }}
+              >
+                <SuggestionContext.Provider
+                  value={[suggestions, setSuggestions]}
+                >
+                  <FusionContext.Provider value={{ fusion, setFusion }}>
+                    <NavTabs />
+                  </FusionContext.Provider>
+                </SuggestionContext.Provider>
+              </DomainOptionsContext.Provider>
+            </GeneContext.Provider>
+          ) : (
+            <UtilitiesNavTabs />
+          )}
+        </div>
+  )
 
   return (
     <>
@@ -361,12 +393,9 @@ const App = (): JSX.Element => {
           } as React.CSSProperties
         }
       >
-        <Box display='flex'>
+        {/* <Box display='flex'>
         <div className="title">
-          <h2>VICC Fusion Curation {showMain ? "Interface" : "Utilities"}</h2>
-          <FusionContext.Provider value={{ fusion, setFusion }}>
-            <FusionTabs />
-          </FusionContext.Provider>
+          <Link href="/" style={{ color: "white" }}><h2>VICC Fusion Curation {showMain ? "Interface" : "Utilities"}</h2></Link>
         
         <div className="menu-container">
           <Button
@@ -406,26 +435,36 @@ const App = (): JSX.Element => {
           </Menu>
         </div>
         </div>
+        </Box> */}
+        <AppBar style={{ width: "100%", height: "50px" }}>
+          <Box m="auto">TITLE</Box>
+        </AppBar>
+        <Drawer variant="permanent" open={open} anchor="left" className="menu-drawer">
+          <div className="title">
+          <Link href="/"><h2>VICC Fusion Curation {showMain ? "Interface" : "Utilities"}</h2></Link>
+          </div>
+          <Box ml="10px">
+            <h3>Tools</h3>
+            <Box ml="10px">
+              <Box mb="10px"><Link href="/assayed-fusion">Assayed Fusion Tool</Link></Box>
+              <Box mb="10px"><Link href="/categorical-fusion">Categorical Fusion Tool</Link></Box>
+              <Box mb="10px"><Link href="/utilities">Utilities</Link></Box>
+            </Box>
+          
+            <h3>Resources</h3>
+            <Box ml="10px">
+              <Box mb="10px"><Link href="https://cancervariants.org/projects/fusions/" target="_blank">Fusions Guidelines Home Page</Link></Box>
+              <Box mb="10px"><Link href="https://github.com/cancervariants/fusion-curation" target="_blank">Code Repository</Link></Box>
+              <Box mb="10px"><Link href="https://cancervariants.org/" target="_blank">VICC</Link></Box>
+            </Box>
+            <Button onClick={() => handleDemo(demoAssayedFusion)}>use assay demo</Button>
+            <Button onClick={() => handleDemo(demoCategoricalFusion)}>use categorical demo</Button>
+          </Box>
+        </Drawer>
+        <Box ml={open ? "260px" : "0"} mr="5px">
+          {path === "/assayed-fusion" || path === "/categorical-fusion" || path === "/utilities" ? fusionsComponent : ""}
         </Box>
-        <div className="main-component">
-          {showMain ? (
-            <GeneContext.Provider value={{ globalGenes, setGlobalGenes }}>
-              <DomainOptionsContext.Provider
-                value={{ domainOptions, setDomainOptions }}
-              >
-                <SuggestionContext.Provider
-                  value={[suggestions, setSuggestions]}
-                >
-                  <FusionContext.Provider value={{ fusion, setFusion }}>
-                    <NavTabs />
-                  </FusionContext.Provider>
-                </SuggestionContext.Provider>
-              </DomainOptionsContext.Provider>
-            </GeneContext.Provider>
-          ) : (
-            <UtilitiesNavTabs />
-          )}
-        </div>
+        
       </div>
       <About show={showServiceInfo} setShow={setShowServiceInfo} />
       <Dialog

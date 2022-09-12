@@ -1,7 +1,6 @@
 %app {
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
   margin: 0 auto;
 }
 
@@ -34,7 +33,7 @@
 
 .main-component {
   flex-grow: 1;
-  margin: 0 1em 0 1em;
+  margin-top: 75px;
 }
 
 .menu-container {
@@ -43,4 +42,14 @@
 
 h2 {
   font-weight: normal;
+}
+
+.menu-drawer {
+  .MuiDrawer-paper {
+    width: 250px;
+  }
+}
+
+.menu-link {
+  width: 100%
 }
