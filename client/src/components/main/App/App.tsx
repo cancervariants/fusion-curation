@@ -11,8 +11,8 @@ import {
   DialogTitle,
   Drawer,
   Link,
+  Paper,
   ThemeProvider,
-  Typography,
 } from "@material-ui/core";
 // global contexts
 import { DomainOptionsContext } from "../../../global/contexts/DomainOptionsContext";
@@ -44,6 +44,7 @@ import {
   GeneDescriptor,
   RegulatoryElement,
 } from "../../../services/ResponseModels";
+import Carousel from "react-material-ui-carousel";
 
 type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 type ClientElement =
@@ -366,25 +367,55 @@ const App = (): JSX.Element => {
   }
 
   const fusionsComponent = (
-    <div className="main-component">
-          {path !== "/utilities" ? (
-            <GeneContext.Provider value={{ globalGenes, setGlobalGenes }}>
-              <DomainOptionsContext.Provider
-                value={{ domainOptions, setDomainOptions }}
-              >
-                <SuggestionContext.Provider
-                  value={[suggestions, setSuggestions]}
-                >
-                  <FusionContext.Provider value={{ fusion, setFusion }}>
-                    <NavTabs handleClear={handleClear} />
-                  </FusionContext.Provider>
-                </SuggestionContext.Provider>
-              </DomainOptionsContext.Provider>
-            </GeneContext.Provider>
-          ) : (
-            <UtilitiesNavTabs />
-          )}
-        </div>
+    <Box mt="75px">
+      {path !== "/utilities" ? (
+        <GeneContext.Provider value={{ globalGenes, setGlobalGenes }}>
+          <DomainOptionsContext.Provider
+            value={{ domainOptions, setDomainOptions }}
+          >
+            <SuggestionContext.Provider
+              value={[suggestions, setSuggestions]}
+            >
+              <FusionContext.Provider value={{ fusion, setFusion }}>
+                <NavTabs handleClear={handleClear} />
+              </FusionContext.Provider>
+            </SuggestionContext.Provider>
+          </DomainOptionsContext.Provider>
+        </GeneContext.Provider>
+      ) : (
+        <UtilitiesNavTabs />
+      )}
+  </Box>
+  )
+
+  const landingContent = (
+    <Box style={{ width:"100%", height: "100%", marginTop: "15px" }}>
+      <Paper elevation={0} style={{ width:"100%", height: "200px" }}>
+      <Carousel height="200px" navButtonsAlwaysVisible>
+        <Box ml="100px" mt="50px"><h2>Welcome to the VICC Fusion Curation Interface.</h2></Box>
+        <Box ml="100px" mt="50px"><h2>This is the landing page news section.</h2></Box>
+        <Box ml="100px" mt="50px"><h2>:-) :-) :-) :-)</h2></Box>
+      </Carousel>
+      </Paper>
+      <Paper style={{ width:"100%", height: "300px", marginTop: "50px" }}>
+        Placeholder
+      </Paper>
+      <Box display="flex" justifyContent="space-between">
+      <Paper style={{ width:"49%", height: "600px", marginTop: "30px" }}>
+        <Box fontSize="20px" ml="15px">
+          <h3>Assayed Tool Info</h3>
+          Placeholder for information about Assayed Tool Placeholder for information about Assayed Tool
+          Placeholder for information about Assayed Tool Placeholder for information about Assayed Tool
+          Placeholder for information about Assayed Tool Placeholder for information about Assayed Tool</Box>
+      </Paper>
+      <Paper style={{ width:"49%", height: "600px", marginTop: "30px" }}>
+        <Box fontSize="20px" ml="15px">
+          <h3>Categorical Tool Info</h3>
+          Placeholder text
+        </Box>
+      </Paper>
+      </Box>
+    </Box>
   )
 
   return (
@@ -406,23 +437,23 @@ const App = (): JSX.Element => {
           <Link href="/"><h3>VICC Fusion Curation</h3></Link>
             <h3>Tools</h3>
             <Box ml="10px" className="menu-link">
-              <Box mb="10px"><Link href="/assayed-fusion">Assayed Fusion Tool</Link></Box>
-              <Box mb="10px"><Link href="/categorical-fusion">Categorical Fusion Tool</Link></Box>
-              <Box mb="10px"><Link href="/utilities">Utilities</Link></Box>
+              <Box mb="15px"><Link href="/assayed-fusion">Assayed Fusion Tool</Link></Box>
+              <Box mb="15px"><Link href="/categorical-fusion">Categorical Fusion Tool</Link></Box>
+              <Box mb="15px"><Link href="/utilities">Utilities</Link></Box>
             </Box>
           
             <h3>Resources</h3>
             <Box ml="10px" className="menu-link">
-              <Box mb="10px"><Link href="https://cancervariants.org/projects/fusions/" target="_blank">Fusions Home Page</Link></Box>
-              <Box mb="10px"><Link href="https://github.com/cancervariants/fusion-curation" target="_blank">Code Repository</Link></Box>
-              <Box mb="10px"><Link href="https://cancervariants.org/" target="_blank">VICC</Link></Box>
+              <Box mb="15px"><Link href="https://cancervariants.org/projects/fusions/" target="_blank">Fusions Home Page</Link></Box>
+              <Box mb="15px"><Link href="https://github.com/cancervariants/fusion-curation" target="_blank">Code Repository</Link></Box>
+              <Box mb="15px"><Link href="https://cancervariants.org/" target="_blank">VICC</Link></Box>
             </Box>
             <Button onClick={() => handleDemo(demoAssayedFusion)}>use assay demo</Button>
             <Button onClick={() => handleDemo(demoCategoricalFusion)}>use categorical demo</Button>
           </Box>
         </Drawer>
-        <Box ml={open ? "240px" : "0"} mr="5px">
-          {displayTool ? fusionsComponent : ""}
+        <Box ml={open ? "240px" : "0"} mr="5px" width="100%">
+          {displayTool ? fusionsComponent : landingContent}
         </Box>
         
       </div>
