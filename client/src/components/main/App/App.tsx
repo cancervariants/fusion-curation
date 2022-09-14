@@ -9,9 +9,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Drawer,
-  Link,
-  Paper,
   ThemeProvider,
 } from "@material-ui/core";
 // global contexts
@@ -29,7 +26,6 @@ import UtilitiesNavTabs from "../../../components/Utilities/UtilitiesNavTabs/Uti
 import NavTabs from "../Nav/NavTabs";
 import About from "../About/About";
 // services things
-import { v4 as uuid } from "uuid";
 import { getAssociatedDomains } from "../../../services/main";
 import {
   ClientAssayedFusion,
@@ -44,7 +40,8 @@ import {
   GeneDescriptor,
   RegulatoryElement,
 } from "../../../services/ResponseModels";
-import Carousel from "react-material-ui-carousel";
+import LandingPage from "../Landing/LandingPage";
+import AppMenu from "./AppMenu";
 
 type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 type ClientElement =
@@ -57,124 +54,6 @@ type ClientElement =
 
 type GenesLookup = Record<string, GeneDescriptor>;
 type DomainOptionsLookup = Record<string, DomainParams[]>;
-
-const demoAssayedFusion: ClientAssayedFusion = {
-  type: "AssayedFusion",
-  structural_elements: [
-    {
-      type: "GeneElement",
-      gene_descriptor: {
-        type: "GeneDescriptor",
-        id: "normalize.gene:EWSR1",
-        label: "EWSR1",
-        gene_id: "hgnc:3508",
-      },
-      element_id: uuid(),
-      element_name: "EWSR1(hgnc:3508)",
-      hr_name: "EWSR1(hgnc:3508)",
-    },
-    {
-      type: "UnknownGeneElement",
-      element_id: uuid(),
-      element_name: "?",
-      hr_name: "?",
-    },
-  ],
-  causative_event: {
-    type: "CausativeEvent",
-    event_type: "rearrangement",
-  },
-  assay: {
-    type: "Assay",
-    method_uri: "pmid:33576979",
-    assay_id: "obi:OBI_0003094",
-    assay_name: "fluorescence in-situ hybridization assay",
-    fusion_detection: "inferred",
-  },
-  regulatory_elements: [],
-};
-
-const demoCategoricalFusion: ClientCategoricalFusion = {
-  type: "CategoricalFusion",
-  critical_functional_domains: [],
-  structural_elements: [
-    {
-      type: "TranscriptSegmentElement",
-      element_id: uuid(),
-      element_name: "NM_152263.3 TPM3",
-      hr_name: "NM_002529.3(TPM3):e.8",
-      input_type: "exon_coords_tx",
-      transcript: "refseq:NM_152263.3",
-      input_tx: "NM_152263.3",
-      exon_end: 8,
-      exon_end_offset: 0,
-      gene_descriptor: {
-        id: "normalize.gene:TPM3",
-        type: "GeneDescriptor",
-        label: "TPM3",
-        gene_id: "hgnc:12012",
-      },
-      element_genomic_end: {
-        id: "fusor.location_descriptor:NC_000001.11",
-        type: "LocationDescriptor",
-        label: "NC_000001.11",
-        location: {
-          type: "SequenceLocation",
-          sequence_id: "refseq:NC_000001.11",
-          interval: {
-            type: "SequenceInterval",
-            start: {
-              type: "Number",
-              value: 154170399,
-            },
-            end: {
-              type: "Number",
-              value: 154170400,
-            },
-          },
-        },
-      },
-    },
-    {
-      type: "TranscriptSegmentElement",
-      element_id: uuid(),
-      element_name: "NM_002609.3 PDGFRB",
-      hr_name: "NM_002609.3(PDGFRB):e.11",
-      input_type: "exon_coords_tx",
-      transcript: "refseq:NM_002609.3",
-      input_tx: "NM_002609.3",
-      exon_start: 11,
-      exon_start_offset: 0,
-      gene_descriptor: {
-        id: "normalize.gene:PDGFRB",
-        type: "GeneDescriptor",
-        label: "PDGFRB",
-        gene_id: "hgnc:8804",
-      },
-      element_genomic_start: {
-        id: "fusor.location_descriptor:NC_000005.10",
-        type: "LocationDescriptor",
-        label: "NC_000005.10",
-        location: {
-          type: "SequenceLocation",
-          sequence_id: "refseq:NC_000005.10",
-          interval: {
-            type: "SequenceInterval",
-            start: {
-              type: "Number",
-              value: 150125577,
-            },
-            end: {
-              type: "Number",
-              value: 150125578,
-            },
-          },
-        },
-      },
-    },
-  ],
-  regulatory_elements: [],
-};
 
 const path = window.location.pathname
 
@@ -195,6 +74,8 @@ const App = (): JSX.Element => {
     null
   );
   const [open, setOpen] = React.useState(true);
+
+  const leftMarginOffset = open ? "240px" : "0"
 
   /**
    * Update global genes contexts.
@@ -339,6 +220,7 @@ const App = (): JSX.Element => {
     setDialogCallback(null);
   };
 
+  //TODO: implement drawer in AppMenu ability to collapse/expand
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -388,36 +270,6 @@ const App = (): JSX.Element => {
   </Box>
   )
 
-  const landingContent = (
-    <Box style={{ width:"100%", height: "100%", marginTop: "15px" }}>
-      <Paper elevation={0} style={{ width:"100%", height: "200px" }}>
-      <Carousel height="200px" navButtonsAlwaysVisible>
-        <Box ml="100px" mt="50px"><h2>Welcome to the VICC Fusion Curation Interface.</h2></Box>
-        <Box ml="100px" mt="50px"><h2>This is the landing page news section.</h2></Box>
-        <Box ml="100px" mt="50px"><h2>:-) :-) :-) :-)</h2></Box>
-      </Carousel>
-      </Paper>
-      <Paper style={{ width:"100%", height: "300px", marginTop: "50px" }}>
-        Placeholder
-      </Paper>
-      <Box display="flex" justifyContent="space-between">
-      <Paper style={{ width:"49%", height: "600px", marginTop: "30px" }}>
-        <Box fontSize="20px" ml="15px">
-          <h3>Assayed Tool Info</h3>
-          Placeholder for information about Assayed Tool Placeholder for information about Assayed Tool
-          Placeholder for information about Assayed Tool Placeholder for information about Assayed Tool
-          Placeholder for information about Assayed Tool Placeholder for information about Assayed Tool</Box>
-      </Paper>
-      <Paper style={{ width:"49%", height: "600px", marginTop: "30px" }}>
-        <Box fontSize="20px" ml="15px">
-          <h3>Categorical Tool Info</h3>
-          Placeholder text
-        </Box>
-      </Paper>
-      </Box>
-    </Box>
-  )
-
   return (
     <>
     <ThemeProvider theme={theme}>
@@ -429,31 +281,12 @@ const App = (): JSX.Element => {
           } as React.CSSProperties
         }
       >
-        <AppBar style={{ width: "100%", height: "50px", marginLeft: "225px", display: title === "" ? "none" : "" }}>
-          <Box ml={open ? "240px" : "0"}><h3>{title}</h3></Box>
+        <AppBar style={{ width: "100%", height: "50px", marginLeft: "225px", display: title === "" ? "none" : "", backgroundColor: "#2980b9" }}>
+          <Box ml={leftMarginOffset}><h3>{title}</h3></Box>
         </AppBar>
-        <Drawer variant="permanent" open={open} anchor="left" className="menu-drawer">
-          <Box ml="10px">
-          <Link href="/"><h3>VICC Fusion Curation</h3></Link>
-            <h3>Tools</h3>
-            <Box ml="10px" className="menu-link">
-              <Box mb="15px"><Link href="/assayed-fusion">Assayed Fusion Tool</Link></Box>
-              <Box mb="15px"><Link href="/categorical-fusion">Categorical Fusion Tool</Link></Box>
-              <Box mb="15px"><Link href="/utilities">Utilities</Link></Box>
-            </Box>
-          
-            <h3>Resources</h3>
-            <Box ml="10px" className="menu-link">
-              <Box mb="15px"><Link href="https://cancervariants.org/projects/fusions/" target="_blank">Fusions Home Page</Link></Box>
-              <Box mb="15px"><Link href="https://github.com/cancervariants/fusion-curation" target="_blank">Code Repository</Link></Box>
-              <Box mb="15px"><Link href="https://cancervariants.org/" target="_blank">VICC</Link></Box>
-            </Box>
-            <Button onClick={() => handleDemo(demoAssayedFusion)}>use assay demo</Button>
-            <Button onClick={() => handleDemo(demoCategoricalFusion)}>use categorical demo</Button>
-          </Box>
-        </Drawer>
-        <Box ml={open ? "240px" : "0"} mr="5px" width="100%">
-          {displayTool ? fusionsComponent : landingContent}
+        <AppMenu handleDemo={handleDemo}/>
+        <Box ml={leftMarginOffset} mr="15px" width="100%">
+          {displayTool ? fusionsComponent : <LandingPage />}
         </Box>
         
       </div>

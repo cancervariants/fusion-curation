@@ -6,11 +6,12 @@
 
 .app-main {
   @extend %app;
-  background: linear-gradient(
-    45deg,
-    var(--gradient-1) 30%,
-    var(--gradient-2) 90%
-  );
+  // background: linear-gradient(
+  //   45deg,
+  //   var(--gradient-1) 30%,
+  //   var(--gradient-2) 90%
+  // );
+  background-color: #edf0f2;
 }
 
 .app-utils {
@@ -42,9 +43,14 @@ h3 {
   .MuiDrawer-paper {
     width: 225px;
     overflow-x: hidden !important;
+    background-color: #343131;
+    color: white !important;
   }
 }
 
 .menu-link {
   font-size: 15px;
+  a {
+    color: inherit !important;
+  }
 }
