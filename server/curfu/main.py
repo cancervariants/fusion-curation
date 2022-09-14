@@ -17,6 +17,7 @@ from curfu.routers import (
     lookup,
     complete,
     validate,
+    demo,
 )
 
 
@@ -33,6 +34,7 @@ app.include_router(lookup.router)
 app.include_router(complete.router)
 app.include_router(validate.router)
 app.include_router(nomenclature.router)
+app.include_router(demo.router)
 
 origins = ["http://localhost", "http://localhost:3000"]
 

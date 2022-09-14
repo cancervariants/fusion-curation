@@ -286,3 +286,9 @@ class RegulatoryElementResponse(Response):
     """Response model for regulatory element constructor."""
 
     regulatory_element: RegulatoryElement
+
+
+class DemoResponse(Response):
+    """Response model for demo fusion object retrieval endpoints."""
+
+    fusion: Fusion
