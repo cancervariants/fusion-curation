@@ -1,10 +1,13 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Close from "../../Domains/Main/Close";
 import { FusionContext } from "../../../../global/contexts/FusionContext";
 
 import "./RegElement.scss";
 import RegElementForm from "../RegElementForm/RegElementForm";
-import { ClientRegulatoryElement } from "../../../../services/ResponseModels";
+import {
+  ClientRegulatoryElement,
+  RegulatoryClass,
+} from "../../../../services/ResponseModels";
 
 interface Props {
   index: number;
@@ -13,71 +16,93 @@ interface Props {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const RegElement: React.FC<Props> = ({ index }) => {
   const { fusion, setFusion } = useContext(FusionContext);
+  const [regElement, setRegElement] = useState<
+    ClientRegulatoryElement | undefined
+  >(fusion.regulatory_element);
 
-  const regElements = fusion.regulatory_elements || [];
+  const [elementClass, setElementClass] = useState<RegulatoryClass | "default">(
+    regElement?.regulatory_class || "default"
+  );
+  const [gene, setGene] = useState<string>(
+    regElement?.associated_gene?.label || ""
+  );
+  const [geneText, setGeneText] = useState<string>("");
 
-  // Don't want to change the suggested element. should maybe create a separate context of the
-  // unmutated selected suggestion
-  // TODO -- working
-  // const initialElements = useRef(regElements);
+  /**
+   * Remove regulatory element submitted by user and wipe input fields.
+   */
+  const handleRemove = () => {
+    const cloneFusion = { ...fusion };
+    delete fusion.regulatory_element;
+    setRegElement(undefined);
+    setFusion(cloneFusion);
+  };
 
-  const handleRemove = (regEl: ClientRegulatoryElement) => {
-    //copy regulatory elements array, then remove the element with the relevant ID
-    let cloneArray: ClientRegulatoryElement[] = Array.from(regElements);
-    cloneArray = cloneArray.filter((obj) => {
-      return obj["element_id"] !== regEl["element_id"];
-    });
-    setFusion({ ...fusion, ...{ regulatory_elements: cloneArray || [] } });
+  /**
+   * Update state with newly-constructed or updated regulatory element object.
+   * @param element regulatory element constructed from user input by server.
+   */
+  const handleUpdate = (element: ClientRegulatoryElement) => {
+    setRegElement(element);
+    setFusion({ ...fusion, ...{ regulatory_element: element } });
+    setElementClass("default");
+    setGene("");
+    setGeneText("");
   };
 
   return (
     <div className="reg-element-tab-container">
       <div className="left">
         <div className="blurb-container">
-          {regElements.length > 0 ? (
+          {regElement !== undefined ? (
             <div className="blurb">
               This transcript structure appears to be associated with a
               <p />
-              {regElements.map(
-                (regEl: ClientRegulatoryElement, index: number) => (
-                  <span key={index} className="bold">
-                    {regEl.associated_gene &&
-                      regEl.associated_gene.label &&
-                      regEl.associated_gene.label.toUpperCase()}{" "}
-                    {regEl.hr_class}
-                  </span>
-                )
+              {regElement !== undefined ? (
+                <span key={index} className="bold">
+                  {regElement.associated_gene &&
+                    regElement.associated_gene.label &&
+                    regElement.associated_gene.label.toUpperCase()}{" "}
+                  {regElement.display_class}
+                  {"."}
+                </span>
+              ) : (
+                <></>
               )}
               <p />
-              Regulatory Element.
             </div>
           ) : (
             <div className="blurb">No regulatory element found.</div>
           )}
           <div className="sub-blurb">
-            You can add or remove regulatory elements.
+            {regElement !== undefined
+              ? "You can remove or replace this regulatory element."
+              : "You can add a regulatory element."}
           </div>
 
-          {regElements.map((regEl: ClientRegulatoryElement, index: number) => (
+          {regElement !== undefined ? (
             <div className="regel" key={index}>
-              <div>
-                {regEl.associated_gene &&
-                  regEl.associated_gene.label &&
-                  regEl.associated_gene.label.toUpperCase()}{" "}
-                {regEl.regulatory_class}
-              </div>
-              <div
-                className="close-button-reg"
-                onClick={() => handleRemove(regEl)}
-              >
+              <div>remove element</div>
+              <div className="close-button-reg" onClick={() => handleRemove()}>
                 <Close />
               </div>
             </div>
-          ))}
+          ) : (
+            <></>
+          )}
         </div>
       </div>
       <div className="right">
-        <RegElementForm />
+        <RegElementForm
+          regElement={regElement}
+          setRegElement={handleUpdate}
+          elementClass={elementClass}
+          setElementClass={setElementClass}
+          gene={gene}
+          setGene={setGene}
+          geneText={geneText}
+          setGeneText={setGeneText}
+        />
       </div>
     </div>
   );

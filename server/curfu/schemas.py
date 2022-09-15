@@ -102,6 +102,12 @@ class ClientFunctionalDomain(FunctionalDomain):
         extra = Extra.forbid
 
 
+class ClientRegulatoryElement(RegulatoryElement):
+    """Define regulatory element object used client-side."""
+
+    display_class: str
+
+
 class Response(BaseModel):
     """Abstract Response class for defining API response structures."""
 
