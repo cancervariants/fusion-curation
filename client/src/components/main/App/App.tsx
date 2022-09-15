@@ -60,7 +60,7 @@ const path = window.location.pathname
 const defaultFusion: ClientFusion = {
   structural_elements: [],
   regulatory_elements: [],
-  type: path === "/assayed-fusion" ? "AssayedFusion" : "CategoricalFusion"
+  type: path.includes("/assayed-fusion") ? "AssayedFusion" : "CategoricalFusion"
 };
 
 const App = (): JSX.Element => {
