@@ -1,17 +1,12 @@
 %app {
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
   margin: 0 auto;
 }
 
 .app-main {
   @extend %app;
-  background: linear-gradient(
-    45deg,
-    var(--gradient-1) 30%,
-    var(--gradient-2) 90%
-  );
+  background-color: #edf0f2;
 }
 
 .app-utils {
@@ -23,18 +18,8 @@
   );
 }
 
-.title {
-  margin-left: 1em;
-  width: 100%;
-  justify-content: space-between;
-  display: flex;
-  color: var(--white);
-  font-weight: normal;
-}
-
 .main-component {
   flex-grow: 1;
-  margin: 0 1em 0 1em;
 }
 
 .menu-container {
@@ -43,4 +28,24 @@
 
 h2 {
   font-weight: normal;
+}
+
+h3 {
+  margin-top: 15px;
+}
+
+.menu-drawer {
+  .MuiDrawer-paper {
+    width: 225px;
+    overflow-x: hidden !important;
+    background-color: #343131;
+    color: white !important;
+  }
+}
+
+.menu-link {
+  font-size: 15px;
+  a {
+    color: inherit !important;
+  }
 }

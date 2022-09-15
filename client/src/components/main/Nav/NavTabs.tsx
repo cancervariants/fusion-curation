@@ -72,7 +72,12 @@ function LinkTab(props: LinkTabProps) {
   );
 }
 
-export default function NavTabs(): React.ReactElement {
+interface NavTabsProps {
+  handleClear: () => void;
+}
+
+export default function NavTabs(props: NavTabsProps): React.ReactElement {
+  const { handleClear } = props
   const { fusion } = useContext(FusionContext);
   const [visibleTab, setVisibleTab] = React.useState(0);
 
@@ -190,18 +195,25 @@ export default function NavTabs(): React.ReactElement {
             </Button>
           </div>
         ) : null}
-        {visibleTab !== 5 ? (
-          <div className="continue">
+          <div className="buttons">
+            <Button
+              className="clear-all"
+              onClick={handleClear}
+              variant="contained"
+              color="secondary"
+              disabled={!fusion.type}>
+              Clear All
+            </Button>
             <Button
               onClick={(event) => updateVisibleTab(event, visibleTab + 1)}
               variant="contained"
               color="primary"
               disabled={!fusion.type}
+              style={{ display: visibleTab === 5 ? "none" : "", marginLeft: "10px" }}
             >
               Continue
             </Button>
           </div>
-        ) : null}
       </div>
     </div>
   );
