@@ -43,7 +43,7 @@ export default function LandingPage(): React.ReactElement {
       <Carousel height="200px" navButtonsAlwaysVisible>
         <Box className={classes.carouselItem}><h2>Welcome to the <b>VICC Fusion Curation Interface</b>, an educational tool for exploring gene fusions.</h2>  
         </Box>
-        <Box className={classes.carouselItem}><h2>Contribute on our <Link href="https://github.com/cancervariants/fusion-curation" target="_blank" color="inherit"><b>GitHub.</b></Link></h2></Box>
+        <Box className={classes.carouselItem}><h2>Contribute on our <Link href="https://github.com/cancervariants/fusion-curation" target="_blank" color="inherit"><b>GitHub repository.</b></Link></h2></Box>
         <Box className={classes.carouselItem}><h2>Learn about the <Link href="https://fusions.cancervariants.org/en/latest/index.html" target="_blank" color="inherit"><b>Gene Fusion Specification.</b></Link></h2></Box>
       </Carousel>
       </Paper>
