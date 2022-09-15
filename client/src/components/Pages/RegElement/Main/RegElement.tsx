@@ -36,6 +36,9 @@ export const RegElement: React.FC<Props> = ({ index }) => {
     delete fusion.regulatory_element;
     setRegElement(undefined);
     setFusion(cloneFusion);
+    setElementClass("default");
+    setGene("");
+    setGeneText("");
   };
 
   /**
@@ -45,9 +48,6 @@ export const RegElement: React.FC<Props> = ({ index }) => {
   const handleUpdate = (element: ClientRegulatoryElement) => {
     setRegElement(element);
     setFusion({ ...fusion, ...{ regulatory_element: element } });
-    setElementClass("default");
-    setGene("");
-    setGeneText("");
   };
 
   return (
