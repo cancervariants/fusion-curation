@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 // m-ui things
 import {
+  AppBar,
   Box,
   Button,
   Dialog,
@@ -8,8 +9,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Menu,
-  MenuItem,
   ThemeProvider,
 } from "@material-ui/core";
 // global contexts
@@ -27,7 +26,6 @@ import UtilitiesNavTabs from "../../../components/Utilities/UtilitiesNavTabs/Uti
 import NavTabs from "../Nav/NavTabs";
 import About from "../About/About";
 // services things
-import { v4 as uuid } from "uuid";
 import { getAssociatedDomains } from "../../../services/main";
 import {
   ClientAssayedFusion,
@@ -42,7 +40,8 @@ import {
   GeneDescriptor,
   RegulatoryElement,
 } from "../../../services/ResponseModels";
-import FusionTabs from "../Nav/FusionTabs";
+import LandingPage from "../Landing/LandingPage";
+import AppMenu from "./AppMenu";
 
 type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 type ClientElement =
@@ -56,128 +55,12 @@ type ClientElement =
 type GenesLookup = Record<string, GeneDescriptor>;
 type DomainOptionsLookup = Record<string, DomainParams[]>;
 
-const demoAssayedFusion: ClientAssayedFusion = {
-  type: "AssayedFusion",
-  structural_elements: [
-    {
-      type: "GeneElement",
-      gene_descriptor: {
-        type: "GeneDescriptor",
-        id: "normalize.gene:EWSR1",
-        label: "EWSR1",
-        gene_id: "hgnc:3508",
-      },
-      element_id: uuid(),
-      element_name: "EWSR1(hgnc:3508)",
-      hr_name: "EWSR1(hgnc:3508)",
-    },
-    {
-      type: "UnknownGeneElement",
-      element_id: uuid(),
-      element_name: "?",
-      hr_name: "?",
-    },
-  ],
-  causative_event: {
-    type: "CausativeEvent",
-    event_type: "rearrangement",
-  },
-  assay: {
-    type: "Assay",
-    method_uri: "pmid:33576979",
-    assay_id: "obi:OBI_0003094",
-    assay_name: "fluorescence in-situ hybridization assay",
-    fusion_detection: "inferred",
-  },
-  regulatory_elements: [],
-};
-
-const demoCategoricalFusion: ClientCategoricalFusion = {
-  type: "CategoricalFusion",
-  critical_functional_domains: [],
-  structural_elements: [
-    {
-      type: "TranscriptSegmentElement",
-      element_id: uuid(),
-      element_name: "NM_152263.3 TPM3",
-      hr_name: "NM_002529.3(TPM3):e.8",
-      input_type: "exon_coords_tx",
-      transcript: "refseq:NM_152263.3",
-      input_tx: "NM_152263.3",
-      exon_end: 8,
-      exon_end_offset: 0,
-      gene_descriptor: {
-        id: "normalize.gene:TPM3",
-        type: "GeneDescriptor",
-        label: "TPM3",
-        gene_id: "hgnc:12012",
-      },
-      element_genomic_end: {
-        id: "fusor.location_descriptor:NC_000001.11",
-        type: "LocationDescriptor",
-        label: "NC_000001.11",
-        location: {
-          type: "SequenceLocation",
-          sequence_id: "refseq:NC_000001.11",
-          interval: {
-            type: "SequenceInterval",
-            start: {
-              type: "Number",
-              value: 154170399,
-            },
-            end: {
-              type: "Number",
-              value: 154170400,
-            },
-          },
-        },
-      },
-    },
-    {
-      type: "TranscriptSegmentElement",
-      element_id: uuid(),
-      element_name: "NM_002609.3 PDGFRB",
-      hr_name: "NM_002609.3(PDGFRB):e.11",
-      input_type: "exon_coords_tx",
-      transcript: "refseq:NM_002609.3",
-      input_tx: "NM_002609.3",
-      exon_start: 11,
-      exon_start_offset: 0,
-      gene_descriptor: {
-        id: "normalize.gene:PDGFRB",
-        type: "GeneDescriptor",
-        label: "PDGFRB",
-        gene_id: "hgnc:8804",
-      },
-      element_genomic_start: {
-        id: "fusor.location_descriptor:NC_000005.10",
-        type: "LocationDescriptor",
-        label: "NC_000005.10",
-        location: {
-          type: "SequenceLocation",
-          sequence_id: "refseq:NC_000005.10",
-          interval: {
-            type: "SequenceInterval",
-            start: {
-              type: "Number",
-              value: 150125577,
-            },
-            end: {
-              type: "Number",
-              value: 150125578,
-            },
-          },
-        },
-      },
-    },
-  ],
-  regulatory_elements: [],
-};
+const path = window.location.pathname
 
 const defaultFusion: ClientFusion = {
   structural_elements: [],
   regulatory_elements: [],
-  type: "AssayedFusion"
+  type: path.includes("/assayed-fusion") ? "AssayedFusion" : "CategoricalFusion"
 };
 
 const App = (): JSX.Element => {
@@ -185,13 +68,14 @@ const App = (): JSX.Element => {
   const [fusion, setFusion] = useState<ClientFusion>(defaultFusion);
   const [globalGenes, setGlobalGenes] = useState<GenesLookup>({});
   const [domainOptions, setDomainOptions] = useState<DomainOptionsLookup>({});
-  const [showMain, setShowMain] = useState<boolean>(true);
   const [showServiceInfo, setShowServiceInfo] = useState(false);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [dialogCallback, setDialogCallback] = useState<CallableFunction | null>(
     null
   );
+  const [open, setOpen] = React.useState(true);
+
+  const leftMarginOffset = open ? "240px" : "0"
 
   /**
    * Update global genes contexts.
@@ -309,7 +193,6 @@ const App = (): JSX.Element => {
   };
 
   const handleClear = () => {
-    setAnchorEl(null);
     if (fusionIsEmpty()) {
       setFusion(defaultFusion);
     } else {
@@ -321,23 +204,12 @@ const App = (): JSX.Element => {
   const handleDemo = (
     fusion: ClientAssayedFusion | ClientCategoricalFusion
   ) => {
-    setAnchorEl(null);
     if (fusionIsEmpty()) {
       setFusion(fusion);
     } else {
       setDialogCallback(() => () => setFusion(fusion));
       setDialogOpen(true);
     }
-  };
-
-  const handleShowMainClick = () => {
-    setAnchorEl(null);
-    setShowMain(!showMain);
-  };
-
-  const handleServiceInfo = () => {
-    setAnchorEl(null);
-    setShowServiceInfo(true);
   };
 
   const handleDialogResponse = (proceed: boolean) => {
@@ -348,84 +220,75 @@ const App = (): JSX.Element => {
     setDialogCallback(null);
   };
 
+  //TODO: implement drawer in AppMenu ability to collapse/expand
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
   document.title = "VICC Fusion Curation";
+
+  let title = ""
+  let displayTool = false
+  switch (path) {
+    case "/assayed-fusion":
+      title = "Assayed Fusion"
+      displayTool = true
+      break
+    case "/categorical-fusion":
+      title = "Categorical Fusion"
+      displayTool = true
+      break
+    case "/utilities":
+      title = "Utilities"
+      displayTool = true
+      break
+  }
+
+  const fusionsComponent = (
+    <Box mt="75px">
+      {path !== "/utilities" ? (
+        <GeneContext.Provider value={{ globalGenes, setGlobalGenes }}>
+          <DomainOptionsContext.Provider
+            value={{ domainOptions, setDomainOptions }}
+          >
+            <SuggestionContext.Provider
+              value={[suggestions, setSuggestions]}
+            >
+              <FusionContext.Provider value={{ fusion, setFusion }}>
+                <NavTabs handleClear={handleClear} />
+              </FusionContext.Provider>
+            </SuggestionContext.Provider>
+          </DomainOptionsContext.Provider>
+        </GeneContext.Provider>
+      ) : (
+        <UtilitiesNavTabs />
+      )}
+  </Box>
+  )
 
   return (
     <>
     <ThemeProvider theme={theme}>
       <div
-        className={showMain ? "app-main" : "app-utils"}
+        className="app-main"
         style={
           {
             ...colorTheme,
           } as React.CSSProperties
         }
       >
-        <Box display='flex'>
-        <div className="title">
-          <h2>VICC Fusion Curation {showMain ? "Interface" : "Utilities"}</h2>
-          <FusionContext.Provider value={{ fusion, setFusion }}>
-            <FusionTabs />
-          </FusionContext.Provider>
-        
-        <div className="menu-container">
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={(event) => setAnchorEl(event.currentTarget)}>
-              Menu
-          </Button>
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={() => setAnchorEl(null)}
-          >
-            {showMain ? (
-              <div>
-                <MenuItem onClick={() => handleClear()}>
-                  Clear Entered Data
-                </MenuItem>
-                <MenuItem onClick={() => handleDemo(demoAssayedFusion)}>
-                  Use Assayed Fusion Demo
-                </MenuItem>
-                <MenuItem onClick={() => handleDemo(demoCategoricalFusion)}>
-                  Use Categorical Fusion Demo
-                </MenuItem>
-                <MenuItem onClick={() => handleShowMainClick()}>
-                  Utilities
-                </MenuItem>
-              </div>
-            ) : (
-              <MenuItem onClick={() => handleShowMainClick()}>
-                Return to Curation
-              </MenuItem>
-            )}
-            <MenuItem onClick={() => handleServiceInfo()}>About</MenuItem>
-          </Menu>
-        </div>
-        </div>
+        <AppBar style={{ width: "100%", height: "50px", marginLeft: "225px", display: title === "" ? "none" : "", backgroundColor: "#2980b9" }}>
+          <Box ml={leftMarginOffset}><h3>{title}</h3></Box>
+        </AppBar>
+        <AppMenu handleDemo={handleDemo}/>
+        <Box ml={leftMarginOffset} mr="15px" width="100%">
+          {displayTool ? fusionsComponent : <LandingPage />}
         </Box>
-        <div className="main-component">
-          {showMain ? (
-            <GeneContext.Provider value={{ globalGenes, setGlobalGenes }}>
-              <DomainOptionsContext.Provider
-                value={{ domainOptions, setDomainOptions }}
-              >
-                <SuggestionContext.Provider
-                  value={[suggestions, setSuggestions]}
-                >
-                  <FusionContext.Provider value={{ fusion, setFusion }}>
-                    <NavTabs />
-                  </FusionContext.Provider>
-                </SuggestionContext.Provider>
-              </DomainOptionsContext.Provider>
-            </GeneContext.Provider>
-          ) : (
-            <UtilitiesNavTabs />
-          )}
-        </div>
+        
       </div>
       <About show={showServiceInfo} setShow={setShowServiceInfo} />
       <Dialog

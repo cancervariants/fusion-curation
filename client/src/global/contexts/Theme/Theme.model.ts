@@ -31,6 +31,9 @@ export enum Color {
   ULTRA = "#4361EE",
   DODGER = "#4895EF",
   VIVID = "#4CC9F0",
+  VICC_GREEN = "#A1D044",
+  VICC_BLUE = "#2980b9",
+  VICC_DARK_BLUE = "#18252B",
 }
 
 export interface ColorTheme {
@@ -57,13 +60,14 @@ export interface ColorTheme {
   "--gradient-1": Color;
   "--gradient-2": Color;
   "--gradient-3": Color;
+  "--menu-background": Color;
 }
 
 export type ColorThemeType = "two" | "light" | "dark";
 
 export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
   light: {
-    "--primary": Color.SEAFOAM,
+    "--primary": Color.VICC_BLUE,
     "--black-primary": Color.BLACKSEAFOAM,
     "--secondary": Color.DARK_VIOLET,
     "--tabs": Color.WHITE,
@@ -85,9 +89,10 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     "--gradient-1": Color.PINKRED,
     "--gradient-2": Color.ORANGE,
     "--gradient-3": Color.PURPLEY,
+    "--menu-background": Color.VICC_DARK_BLUE,
   },
   dark: {
-    "--primary": Color.SEAFOAM,
+    "--primary": Color.VICC_GREEN,
     "--black-primary": Color.BLACKSEAFOAM,
     "--secondary": Color.DARK_VIOLET,
     "--tabs": Color.WHITE,
@@ -109,6 +114,7 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     "--gradient-1": Color.PINKRED,
     "--gradient-2": Color.ORANGE,
     "--gradient-3": Color.PURPLEY,
+    "--menu-background": Color.VICC_DARK_BLUE,
   },
   two: {
     "--primary": Color.DODGER,
@@ -133,5 +139,6 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     "--gradient-1": Color.PURP1,
     "--gradient-2": Color.ULTRA,
     "--gradient-3": Color.PURPLEY,
+    "--menu-background": Color.VICC_DARK_BLUE,
   },
 };

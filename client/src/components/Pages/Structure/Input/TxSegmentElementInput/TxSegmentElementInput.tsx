@@ -27,16 +27,23 @@ interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
 }
 
+type InputType =
+  | "default"
+  | "genomic_coords_gene"
+  | "genomic_coords_tx"
+  | "exon_coords_tx";
+
 const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   element,
   index,
   handleSave,
   handleDelete,
 }) => {
-  const [txInputType, setTxInputType] = useState(
+  const [txInputType, setTxInputType] = useState<InputType>(
     element.input_type || "default"
   );
 
+  // "Text" variables refer to helper or warning text to set under input fields
   const [txAc, setTxAc] = useState(element.input_tx || "");
   const [txAcText, setTxAcText] = useState("");
 
@@ -58,13 +65,17 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   const [txEndingGenomicText, setTxEndingGenomicText] = useState("");
 
   const [startingExon, setStartingExon] = useState(element.exon_start || "");
+  const [startingExonText, setStartingExonText] = useState("");
   const [endingExon, setEndingExon] = useState(element.exon_end || "");
+  const [endingExonText, setEndingExonText] = useState("");
   const [startingExonOffset, setStartingExonOffset] = useState(
     element.exon_start_offset || ""
   );
+  const [startingExonOffsetText, setStartingExonOffsetText] = useState("");
   const [endingExonOffset, setEndingExonOffset] = useState(
     element.exon_end_offset || ""
   );
+  const [endingExonOffsetText, setEndingExonOffsetText] = useState("");
 
   // programming horror
   const inputComplete =
@@ -83,7 +94,16 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       (startingExon !== "" || endingExon !== ""));
 
   const validated =
-    inputComplete && txGeneText === "" && txChromText === "" && txAcText === "";
+    inputComplete &&
+    txGeneText === "" &&
+    txChromText === "" &&
+    txAcText === "" &&
+    txStartingGenomicText === "" &&
+    txEndingGenomicText === "" &&
+    startingExonText === "" &&
+    startingExonOffsetText === "" &&
+    endingExonText === "" &&
+    endingExonOffsetText === "";
 
   const [expanded, setExpanded] = useState<boolean>(!validated);
 
@@ -135,9 +155,64 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     );
   };
 
+  /**
+   * Check for, and handle, warning about invalid chromosome input
+   * @param responseWarnings warnings property of transcript segment response object
+   */
+  const checkChromosomeWarning = (responseWarnings: string[]) => {
+    const chromWarning = `Invalid chromosome: ${txChrom}`;
+    if (responseWarnings.includes(chromWarning)) {
+      setTxChromText("Unrecognized value");
+    }
+  };
+
+  /**
+   * Check for, and handle, warnings about invalid genomic coord values. Called by
+   * constructor methods.
+   * @param responseWarnings warnings property of transcript segment response object
+   */
+  const CheckGenomicCoordWarning = (responseWarnings: string[]) => {
+    if (txStartingGenomic !== "") {
+      const warning = `Unable to find a result for chromosome ${txChrom} where genomic coordinate ${txStartingGenomic} is mapped between an exon's start and end coordinates`;
+      if (responseWarnings.find((e) => e.startsWith(warning))) {
+        setTxStartingGenomicText("Out of range");
+      }
+    }
+    if (txEndingGenomic !== "") {
+      const warning = `Unable to find a result for chromosome ${txChrom} where genomic coordinate ${txEndingGenomic} is mapped between an exon's start and end coordinates`;
+      if (responseWarnings.find((e) => e.startsWith(warning))) {
+        setTxEndingGenomicText("Out of range");
+      }
+    }
+  };
+
+  /**
+   * Reset warnings related to genomic coordinate values
+   */
+  const clearGenomicCoordWarnings = () => {
+    setTxChromText("");
+    setTxStartingGenomicText("");
+    setTxEndingGenomicText("");
+  };
+
+  /**
+   * Reset warnings related to exon coordinate values
+   */
+  const clearExonWarnings = () => {
+    setStartingExonText("");
+    setStartingExonOffsetText("");
+    setEndingExonText("");
+    setEndingExonOffsetText("");
+  };
+
+  /**
+   * Request construction of tx segment element from server and handle response
+   */
   const buildTranscriptSegmentElement = () => {
+    // fire constructor request
     switch (txInputType) {
       case "genomic_coords_gene":
+        clearGenomicCoordWarnings();
         getTxSegmentElementGCG(
           txGene,
           txChrom,
@@ -149,11 +224,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             txSegmentResponse.warnings &&
             txSegmentResponse.warnings?.length > 0
           ) {
-            const chromWarning = `Invalid chromosome: ${txChrom}`;
-            if (txSegmentResponse.warnings.includes(chromWarning)) {
-              setTxChromText("Unrecognized value");
-            }
-            // TODO other errors
+            checkChromosomeWarning(txSegmentResponse.warnings);
+            CheckGenomicCoordWarning(txSegmentResponse.warnings);
           } else {
             const inputParams = {
               input_type: txInputType,
@@ -168,6 +240,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
         });
         break;
       case "genomic_coords_tx":
+        clearGenomicCoordWarnings();
         getTxSegmentElementGCT(
           txAc,
           txChrom,
@@ -180,21 +253,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             txSegmentResponse.warnings?.length > 0
           ) {
             // TODO more warnings
-            const chromWarning = `Invalid chromosome: ${txChrom}`;
-            if (txSegmentResponse.warnings.includes(chromWarning)) {
-              setTxChromText("Unrecognized value");
-            }
-            const startWarning =
-              `Unable to find a result for chromosome ${txChrom} where ` +
-              `genomic coordinate ${txStartingGenomic} is mapped between an exon's start ` +
-              `and end coordinates + on the ${
-                txStrand === "+" ? "positive" : "negative"
-              }`;
-            if (txSegmentResponse.warnings.includes(startWarning)) {
-              // TODO set starting warning
-            }
-            // TODO set ending warning
-            // also TODO make sure to unset where needed
+            checkChromosomeWarning(txSegmentResponse.warnings);
+            CheckGenomicCoordWarning(txSegmentResponse.warnings);
           } else {
             const inputParams = {
               input_type: txInputType,
@@ -241,6 +301,88 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     }
   };
 
+  /**
+   * Render transcript segment chromosome input field
+   * @returns chromosome input TextField
+   */
+  const renderTxChrom = () => (
+    <TextField
+      margin="dense"
+      style={{ height: 38, width: 125 }}
+      value={txChrom}
+      onChange={(event) => setTxChrom(event.target.value)}
+      error={txChromText !== ""}
+      onKeyDown={handleEnterKey}
+      label="Chromosome"
+      helperText={txChromText !== "" ? txChromText : null}
+    />
+  );
+
+  /**
+   * Handle pre-request validation for a numeric input field
+   * @param value user-entered value
+   * @param warnSetter useState setter function for warning text
+   * @param valueSetter useState value setter function
+   * @param positive if true, must be >= 0
+   */
+  const setNumericField = (
+    value: string,
+    warnSetter: CallableFunction,
+    valueSetter: CallableFunction,
+    positive: boolean
+  ) => {
+    const re = positive ? /^[0-9]*$/ : /^\-?[0-9]*$/;
+    if (!value.match(re)) {
+      warnSetter(`${positive ? "Nonzero i" : "I"}nteger required`);
+    } else {
+      warnSetter("");
+    }
+    valueSetter(value);
+  };
+
+  /**
+   * Render transcript segment genomic coordinate fields
+   * @returns start and end position input TextFields
+   */
+  const renderTxGenomicCoords = () => (
+    <>
+      <TextField
+        margin="dense"
+        style={{ width: 125 }}
+        label="Starting Position"
+        value={txStartingGenomic}
+        onChange={(event) =>
+          setNumericField(
+            event.target.value,
+            setTxStartingGenomicText,
+            setTxStartingGenomic,
+            true
+          )
+        }
+        onKeyDown={handleEnterKey}
+        error={txStartingGenomicText !== ""}
+        helperText={txStartingGenomicText !== "" ? txStartingGenomicText : null}
+      />
+      <TextField
+        margin="dense"
+        style={{ width: 125 }}
+        label="Ending Position"
+        value={txEndingGenomic}
+        onChange={(event) =>
+          setNumericField(
+            event.target.value,
+            setTxEndingGenomicText,
+            setTxEndingGenomic,
+            true
+          )
+        }
+        onKeyDown={handleEnterKey}
+        error={txEndingGenomicText !== ""}
+        helperText={txEndingGenomicText !== "" ? txEndingGenomicText : null}
+      />
+    </>
+  );
+
   const renderTxOptions = () => {
     switch (txInputType) {
       case "genomic_coords_gene":
@@ -256,15 +398,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
               />
             </div>
             <div className="mid-inputs">
-              <TextField
-                margin="dense"
-                style={{ height: 38, width: 125 }}
-                value={txChrom}
-                onChange={(event) => setTxChrom(event.target.value)}
-                error={txChromText !== ""}
-                onKeyDown={handleEnterKey}
-                label="Chromosome"
-              />
+              {renderTxChrom()}
               <FormLabel component="legend">Strand</FormLabel>
               <RadioGroup
                 aria-label="strand"
@@ -277,24 +411,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 <FormControlLabel value="-" control={<Radio />} label="-" />
               </RadioGroup>
             </div>
-            <div className="bottom-inputs">
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Starting Position"
-                value={txStartingGenomic}
-                onChange={(event) => setTxStartingGenomic(event.target.value)}
-                onKeyDown={handleEnterKey}
-              />
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Ending Position"
-                value={txEndingGenomic}
-                onChange={(event) => setTxEndingGenomic(event.target.value)}
-                onKeyDown={handleEnterKey}
-              />
-            </div>
+            <div className="bottom-inputs">{renderTxGenomicCoords()}</div>
           </div>
         );
       case "genomic_coords_tx":
@@ -313,14 +430,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
               />
             </div>
             <div className="mid-inputs">
-              <TextField
-                margin="dense"
-                style={{ height: 38, width: 125 }}
-                value={txChrom}
-                onChange={(event) => setTxChrom(event.target.value)}
-                onKeyDown={handleEnterKey}
-                label="Chromosome"
-              />
+              {renderTxChrom()}
               <FormLabel component="legend">Strand</FormLabel>
               <RadioGroup
                 aria-label="strand"
@@ -333,24 +443,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 <FormControlLabel value="-" control={<Radio />} label="-" />
               </RadioGroup>
             </div>
-            <div className="bottom-inputs">
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Starting Position"
-                value={txStartingGenomic}
-                onChange={(event) => setTxStartingGenomic(event.target.value)}
-                onKeyDown={handleEnterKey}
-              />
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Ending Position"
-                value={txEndingGenomic}
-                onChange={(event) => setTxEndingGenomic(event.target.value)}
-                onKeyDown={handleEnterKey}
-              />
-            </div>
+            <div className="bottom-inputs">{renderTxGenomicCoords()}</div>
           </div>
         );
       case "exon_coords_tx":
@@ -374,16 +467,34 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 style={{ width: 125 }}
                 label="Starting Exon"
                 value={startingExon}
-                onChange={(event) => setStartingExon(event.target.value)}
+                onChange={(event) =>
+                  setNumericField(
+                    event.target.value,
+                    setStartingExonText,
+                    setStartingExon,
+                    true
+                  )
+                }
                 onKeyDown={handleEnterKey}
+                error={startingExonText !== ""}
+                helperText={startingExonText !== "" ? startingExonText : null}
               />
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
                 label="Ending Exon"
                 value={endingExon}
-                onChange={(event) => setEndingExon(event.target.value)}
+                onChange={(event) =>
+                  setNumericField(
+                    event.target.value,
+                    setEndingExonText,
+                    setEndingExon,
+                    true
+                  )
+                }
                 onKeyDown={handleEnterKey}
+                error={endingExonText !== ""}
+                helperText={endingExonText !== "" ? endingExonText : null}
               />
             </div>
             {startingExon !== "" || endingExon !== "" ? (
@@ -394,17 +505,39 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                   label="Starting Offset"
                   value={startingExonOffset}
                   onChange={(event) =>
-                    setStartingExonOffset(event.target.value)
+                    setNumericField(
+                      event.target.value,
+                      setStartingExonOffsetText,
+                      setStartingExonOffset,
+                      true
+                    )
                   }
                   onKeyDown={handleEnterKey}
+                  error={startingExonOffsetText !== ""}
+                  helperText={
+                    startingExonOffsetText !== ""
+                      ? startingExonOffsetText
+                      : null
+                  }
                 />
                 <TextField
                   margin="dense"
                   style={{ width: 125 }}
                   label="Ending Offset"
                   value={endingExonOffset}
-                  onChange={(event) => setEndingExonOffset(event.target.value)}
+                  onChange={(event) =>
+                    setNumericField(
+                      event.target.value,
+                      setEndingExonOffsetText,
+                      setEndingExonOffset,
+                      true
+                    )
+                  }
                   onKeyDown={handleEnterKey}
+                  error={endingExonOffsetText !== ""}
+                  helperText={
+                    endingExonOffsetText !== "" ? endingExonOffsetText : null
+                  }
                 />
               </div>
             ) : null}
@@ -413,19 +546,27 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     }
   };
 
+  /**
+   * Wrapper around input type selection to ensure unused inputs/warnings get cleared
+   * @param selection selection from input type dropdown menu
+   */
+  const selectInputType = (selection: InputType) => {
+    if (txInputType !== "default") {
+      if (selection === "exon_coords_tx") {
+        clearGenomicCoordWarnings();
+      } else {
+        clearExonWarnings();
+      }
+    }
+    setTxInputType(selection);
+  };
+
   const inputElements = (
     <>
       <div className="top-inputs">
         <Select
           value={txInputType}
-          onChange={(event) =>
-            setTxInputType(
-              event.target.value as
-                | "genomic_coords_gene"
-                | "genomic_coords_tx"
-                | "exon_coords_tx"
-            )
-          }
+          onChange={(event) => selectInputType(event.target.value as InputType)}
         >
           <MenuItem value="default" disabled>
             Select input data
