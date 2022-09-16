@@ -51,12 +51,6 @@ const RegElementForm: React.FC<Props> = ({
   const inputComplete =
     elementClass !== "default" && gene !== "" && geneText === "";
 
-  const handleEnterKey = (e: KeyboardEvent) => {
-    if (e.key == "Enter" && inputComplete) {
-      handleAdd();
-    }
-  };
-
   /**
    * Handle user click on "add" button
    * @returns nothing, but updates input fields and app fusion object
