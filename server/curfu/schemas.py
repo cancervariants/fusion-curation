@@ -32,7 +32,7 @@ class ClientStructuralElement(BaseModel):
     """Abstract class to provide identification properties used by client."""
 
     element_id: StrictStr
-    element_name: StrictStr
+    element_name: StrictStr  # TODO: pretty sure we can remove this
     hr_name: StrictStr
     shorthand: Optional[StrictStr]
 
@@ -51,6 +51,10 @@ class ClientTranscriptSegmentElement(TranscriptSegmentElement, ClientStructuralE
     input_chr: Optional[str]
     input_genomic_start: Optional[str]
     input_genomic_end: Optional[str]
+    input_exon_start: Optional[str]
+    input_exon_start_offset: Optional[str]
+    input_exon_end: Optional[str]
+    input_exon_end_offset: Optional[str]
 
 
 class ClientLinkerElement(LinkerElement, ClientStructuralElement):
@@ -87,19 +91,6 @@ class ClientMultiplePossibleGenesElement(
     pass
 
 
-class ClientRegulatoryElement(RegulatoryElement):
-    """Regulatory element object used client-side."""
-
-    element_id: str
-    hr_class: str
-    hr_name: str
-
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
-
-
 class ClientFunctionalDomain(FunctionalDomain):
     """Define functional domain object used client-side."""
 
@@ -109,6 +100,12 @@ class ClientFunctionalDomain(FunctionalDomain):
         """Configure class."""
 
         extra = Extra.forbid
+
+
+class ClientRegulatoryElement(RegulatoryElement):
+    """Define regulatory element object used client-side."""
+
+    display_class: str
 
 
 class Response(BaseModel):
@@ -287,3 +284,9 @@ class RegulatoryElementResponse(Response):
     """Response model for regulatory element constructor."""
 
     regulatory_element: RegulatoryElement
+
+
+class DemoResponse(Response):
+    """Response model for demo fusion object retrieval endpoints."""
+
+    fusion: Union[ClientAssayedFusion, ClientCategoricalFusion]

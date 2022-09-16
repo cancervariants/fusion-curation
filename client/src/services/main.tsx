@@ -36,6 +36,8 @@ import {
   RegulatoryElement,
   RegulatoryClass,
   RegulatoryElementResponse,
+  FunctionalDomain,
+  ClientFunctionalDomain,
 } from "./ResponseModels";
 
 export type ClientElementUnion =
@@ -386,4 +388,54 @@ export const getRegulatoryElement = async (
   );
   const responseJson = await response.json();
   return responseJson;
+};
+
+type DemoFusionName =
+  | "alk"
+  | "ewsr1"
+  | "bcr_abl1"
+  | "tpm3_ntrk1"
+  | "tpm3_pdgfrb"
+  | "igh_myc";
+
+/**
+ * Fetch an individual demo fusion object
+ * @param fusionName name of demo fusion to fetch
+ * @returns client-ready fusion object
+ */
+export const getDemoObject = async (
+  fusionName: DemoFusionName
+): Promise<ClientFusion> => {
+  const response = await fetch(`/demo/${fusionName}`);
+  const responseJson = await response.json();
+  return responseJson.fusion;
+};
+
+type DemoData = {
+  alk: ClientCategoricalFusion;
+  ewsr1: ClientAssayedFusion;
+  bcr_abl1: ClientCategoricalFusion;
+  tpm3_ntrk1: ClientAssayedFusion;
+  tpm3_pdgfrb: ClientAssayedFusion;
+  igh_myc: ClientCategoricalFusion;
+};
+
+/**
+ * Get all demo fusion object data
+ * @returns object mapping fusion names to completed client-ready fusion objects
+ */
+export const getDemoObjects = async (): Promise<DemoData> => {
+  const objectNames: DemoFusionName[] = [
+    "alk",
+    "ewsr1",
+    "bcr_abl1",
+    "tpm3_ntrk1",
+    "tpm3_pdgfrb",
+    "igh_myc",
+  ];
+  const demoData = Object.assign(
+    {},
+    ...objectNames.map((fusion) => ({ [fusion]: getDemoObject(fusion) }))
+  );
+  return demoData;
 };

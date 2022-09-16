@@ -92,7 +92,7 @@ export type DomainStatus = "lost" | "preserved";
  */
 export interface AssayedFusion {
   type?: "AssayedFusion";
-  regulatory_elements?: RegulatoryElement[];
+  regulatory_element?: RegulatoryElement;
   structural_elements: (
     | TranscriptSegmentElement
     | GeneElement
@@ -104,14 +104,18 @@ export interface AssayedFusion {
   assay: Assay;
 }
 /**
- * Define RegulatoryElement class
+ * Define RegulatoryElement class.
+ *
+ * `feature_id` would ideally be constrained as a CURIE, but Encode, our preferred
+ * feature ID source, doesn't currently have a registered CURIE structure for EH_
+ * identifiers. Consequently, we permit any kind of free text.
  */
 export interface RegulatoryElement {
   type?: "RegulatoryElement";
   regulatory_class: RegulatoryClass;
-  feature_id?: CURIE;
+  feature_id?: string;
   associated_gene?: GeneDescriptor;
-  genomic_location?: LocationDescriptor;
+  feature_location?: LocationDescriptor;
 }
 /**
  * This descriptor is intended to reference VRS Gene value objects.
@@ -350,7 +354,7 @@ export interface DomainParams {
  */
 export interface CategoricalFusion {
   type?: "CategoricalFusion";
-  regulatory_elements?: RegulatoryElement[];
+  regulatory_element?: RegulatoryElement;
   structural_elements: (
     | TranscriptSegmentElement
     | GeneElement
@@ -391,7 +395,7 @@ export interface FunctionalDomain {
  */
 export interface ClientAssayedFusion {
   type?: "AssayedFusion";
-  regulatory_elements?: RegulatoryElement[];
+  regulatory_element?: RegulatoryElement;
   structural_elements: (
     | ClientTranscriptSegmentElement
     | ClientGeneElement
@@ -426,6 +430,10 @@ export interface ClientTranscriptSegmentElement {
   input_chr?: string;
   input_genomic_start?: string;
   input_genomic_end?: string;
+  input_exon_start?: string;
+  input_exon_start_offset?: string;
+  input_exon_end?: string;
+  input_exon_end_offset?: string;
 }
 /**
  * Gene element used client-side.
@@ -480,7 +488,7 @@ export interface ClientUnknownGeneElement {
  */
 export interface ClientCategoricalFusion {
   type?: "CategoricalFusion";
-  regulatory_elements?: RegulatoryElement[];
+  regulatory_element?: RegulatoryElement;
   structural_elements: (
     | ClientTranscriptSegmentElement
     | ClientGeneElement
@@ -514,17 +522,15 @@ export interface ClientFunctionalDomain {
   domain_id: string;
 }
 /**
- * Regulatory element object used client-side.
+ * Define regulatory element object used client-side.
  */
 export interface ClientRegulatoryElement {
   type?: "RegulatoryElement";
   regulatory_class: RegulatoryClass;
-  feature_id?: CURIE;
+  feature_id?: string;
   associated_gene?: GeneDescriptor;
-  genomic_location?: LocationDescriptor;
-  element_id: string;
-  hr_class: string;
-  hr_name: string;
+  feature_location?: LocationDescriptor;
+  display_class: string;
 }
 /**
  * Abstract class to provide identification properties used by client.
@@ -556,6 +562,13 @@ export interface GenomicData {
   exon_end_offset?: number;
   transcript: string;
   strand: number;
+}
+/**
+ * Response model for demo fusion object retrieval endpoints.
+ */
+export interface DemoResponse {
+  warnings?: string[];
+  fusion: ClientAssayedFusion | ClientCategoricalFusion;
 }
 /**
  * Request model for genomic coordinates retrieval

@@ -6,13 +6,8 @@ import {
   Select,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
-import { useContext, useState, KeyboardEvent } from "react";
-import { v4 as uuid } from "uuid";
-import { FusionContext } from "../../../../global/contexts/FusionContext";
-import {
-  getRegElementNomenclature,
-  getRegulatoryElement,
-} from "../../../../services/main";
+import { KeyboardEvent } from "react";
+import { getRegulatoryElement } from "../../../../services/main";
 import {
   ClientRegulatoryElement,
   RegulatoryClass,
@@ -30,24 +25,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RegElementForm: React.FC = () => {
+interface Props {
+  regElement: ClientRegulatoryElement | undefined;
+  setRegElement: CallableFunction;
+  elementClass: RegulatoryClass | "default";
+  setElementClass: CallableFunction;
+  gene: string;
+  setGene: CallableFunction;
+  geneText: string;
+  setGeneText: CallableFunction;
+}
+
+const RegElementForm: React.FC<Props> = ({
+  regElement,
+  setRegElement,
+  elementClass,
+  setElementClass,
+  gene,
+  setGene,
+  geneText,
+  setGeneText,
+}) => {
   const classes = useStyles();
-
-  const { fusion, setFusion } = useContext(FusionContext);
-  const regElements = fusion.regulatory_elements;
-
-  const [elementClass, setElementClass] = useState<RegulatoryClass | "default">(
-    "default"
-  );
-  const [gene, setGene] = useState<string>("");
-  const [geneText, setGeneText] = useState<string>("");
 
   const inputComplete =
     elementClass !== "default" && gene !== "" && geneText === "";
-
-  const handleTypeChange = (event) => {
-    setElementClass(event.target.value);
-  };
 
   // const handleEnterKey = (e: KeyboardEvent) => {
   //   if (e.key == "Enter" && inputComplete) {
@@ -55,6 +57,10 @@ const RegElementForm: React.FC = () => {
   //   }
   // };
 
+  /**
+   * Handle user click on "add" button
+   * @returns nothing, but updates input fields and app fusion object
+   */
   const handleAdd = () => {
     if (elementClass === "default") return;
     getRegulatoryElement(elementClass, gene).then((reResponse) => {
@@ -62,35 +68,18 @@ const RegElementForm: React.FC = () => {
         throw new Error(reResponse.warnings[0]);
       }
 
-      getRegElementNomenclature(reResponse.regulatory_element)
-        .then((nomResponse) => {
-          if (nomResponse.warnings && nomResponse.warnings.length > 0) {
-            throw new Error(nomResponse.warnings[0]);
-          }
-
-          const newRegElement: ClientRegulatoryElement = {
-            ...reResponse.regulatory_element,
-            element_id: uuid(),
-            hr_class:
-              regulatoryClassItems[
-                reResponse.regulatory_element.regulatory_class
-              ],
-            hr_name: nomResponse.nomenclature as string,
-          };
-
-          const cloneArray = Array.from(regElements);
-          cloneArray.push(newRegElement);
-          setFusion({ ...fusion, ...{ regulatory_elements: cloneArray } });
-          setGene("");
-          setElementClass("default");
-        })
-        .catch((error) => console.log(error));
+      const newRegElement: ClientRegulatoryElement = {
+        ...reResponse.regulatory_element,
+        display_class: regulatoryClassItems[elementClass][1],
+      };
+      setRegElement(newRegElement);
     });
   };
 
   /**
    * Lookup table used to map raw regulatory class enum values to options for the class
-   * drop-down menu and for display purposes.
+   * drop-down menu and for display purposes. The boolean is for disabling selectability
+   * on the drop-down menu, and the string is the displayed value.
    * It's not clear to me if Typescript can check these values for correctness if they change,
    * so any changes to the Pydantic RegulatoryClass class need to be reflected in the keys here.
    */
@@ -141,7 +130,7 @@ const RegElementForm: React.FC = () => {
             labelId="regulatory-element-class-label"
             id="regulatory-element-class"
             value={elementClass}
-            onChange={handleTypeChange}
+            onChange={(e) => setElementClass(e.target.value as RegulatoryClass)}
           >
             {buildMenuItems()}
           </Select>
@@ -163,7 +152,7 @@ const RegElementForm: React.FC = () => {
           onClick={() => handleAdd()}
           disabled={!inputComplete}
         >
-          Add
+          {regElement === undefined ? "Add" : "Update"}
         </Button>
       </div>
     </div>
