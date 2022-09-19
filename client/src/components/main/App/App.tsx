@@ -55,12 +55,13 @@ type ClientElement =
 type GenesLookup = Record<string, GeneDescriptor>;
 type DomainOptionsLookup = Record<string, DomainParams[]>;
 
-const path = window.location.pathname
+const path = window.location.pathname;
 
 const defaultFusion: ClientFusion = {
   structural_elements: [],
-  regulatory_elements: [],
-  type: path.includes("/assayed-fusion") ? "AssayedFusion" : "CategoricalFusion"
+  type: path.includes("/assayed-fusion")
+    ? "AssayedFusion"
+    : "CategoricalFusion",
 };
 
 const App = (): JSX.Element => {
@@ -75,7 +76,7 @@ const App = (): JSX.Element => {
   );
   const [open, setOpen] = React.useState(true);
 
-  const leftMarginOffset = open ? "240px" : "0"
+  const leftMarginOffset = open ? "240px" : "0";
 
   /**
    * Update global genes contexts.
@@ -101,14 +102,19 @@ const App = (): JSX.Element => {
         }
       }
     });
-    fusion.regulatory_elements?.forEach((re: RegulatoryElement) => {
-      if (re.associated_gene?.gene_id) {
-        remainingGeneIds.push(re.associated_gene.gene_id);
-        if (!(re.associated_gene.gene_id in globalGenes)) {
-          newGenes[re.associated_gene.gene_id] = re.associated_gene;
+    if (fusion.regulatory_element) {
+      if (fusion.regulatory_element.associated_gene?.gene_id) {
+        remainingGeneIds.push(
+          fusion.regulatory_element.associated_gene.gene_id
+        );
+        if (
+          !(fusion.regulatory_element.associated_gene.gene_id in globalGenes)
+        ) {
+          newGenes[fusion.regulatory_element.associated_gene.gene_id] =
+            fusion.regulatory_element.associated_gene;
         }
       }
-    });
+    }
     const uniqueRemainingGeneIds: Array<string> = remainingGeneIds.filter(
       (geneId, index) => remainingGeneIds.indexOf(geneId) === index
     );
@@ -156,10 +162,7 @@ const App = (): JSX.Element => {
       return false;
     } else if (fusion.structural_elements.length > 0) {
       return false;
-    } else if (
-      fusion.regulatory_elements &&
-      fusion.regulatory_elements.length > 0
-    ) {
+    } else if (fusion.regulatory_element) {
       return false;
     } else if (fusion.type == "AssayedFusion") {
       if (
@@ -231,21 +234,21 @@ const App = (): JSX.Element => {
 
   document.title = "VICC Fusion Curation";
 
-  let title = ""
-  let displayTool = false
+  let title = "";
+  let displayTool = false;
   switch (path) {
     case "/assayed-fusion":
-      title = "Assayed Fusion"
-      displayTool = true
-      break
+      title = "Assayed Fusion";
+      displayTool = true;
+      break;
     case "/categorical-fusion":
-      title = "Categorical Fusion"
-      displayTool = true
-      break
+      title = "Categorical Fusion";
+      displayTool = true;
+      break;
     case "/utilities":
-      title = "Utilities"
-      displayTool = true
-      break
+      title = "Utilities";
+      displayTool = true;
+      break;
   }
 
   const fusionsComponent = (
@@ -255,9 +258,7 @@ const App = (): JSX.Element => {
           <DomainOptionsContext.Provider
             value={{ domainOptions, setDomainOptions }}
           >
-            <SuggestionContext.Provider
-              value={[suggestions, setSuggestions]}
-            >
+            <SuggestionContext.Provider value={[suggestions, setSuggestions]}>
               <FusionContext.Provider value={{ fusion, setFusion }}>
                 <NavTabs handleClear={handleClear} />
               </FusionContext.Provider>
@@ -267,58 +268,67 @@ const App = (): JSX.Element => {
       ) : (
         <UtilitiesNavTabs />
       )}
-  </Box>
-  )
+    </Box>
+  );
 
   return (
     <>
-    <ThemeProvider theme={theme}>
-      <div
-        className="app-main"
-        style={
-          {
-            ...colorTheme,
-          } as React.CSSProperties
-        }
-      >
-        <AppBar style={{ width: "100%", height: "50px", marginLeft: "225px", display: title === "" ? "none" : "", backgroundColor: "#2980b9" }}>
-          <Box ml={leftMarginOffset}><h3>{title}</h3></Box>
-        </AppBar>
-        <AppMenu handleDemo={handleDemo}/>
-        <Box ml={leftMarginOffset} mr="15px" width="100%">
-          {displayTool ? fusionsComponent : <LandingPage />}
-        </Box>
-        
-      </div>
-      <About show={showServiceInfo} setShow={setShowServiceInfo} />
-      <Dialog
-        open={dialogOpen}
-        onClose={() => handleDialogResponse(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Clear existing data?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Warning: This action will clear all existing data.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => handleDialogResponse(true)} color="primary">
-            Proceed
-          </Button>
-          <Button
-            onClick={() => handleDialogResponse(false)}
-            color="primary"
-            autoFocus
+      <ThemeProvider theme={theme}>
+        <div
+          className="app-main"
+          style={
+            {
+              ...colorTheme,
+            } as React.CSSProperties
+          }
+        >
+          <AppBar
+            style={{
+              width: "100%",
+              height: "50px",
+              marginLeft: "225px",
+              display: title === "" ? "none" : "",
+              backgroundColor: "#2980b9",
+            }}
           >
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </ThemeProvider>
+            <Box ml={leftMarginOffset}>
+              <h3>{title}</h3>
+            </Box>
+          </AppBar>
+          <AppMenu handleDemo={handleDemo} />
+          <Box ml={leftMarginOffset} mr="15px" width="100%">
+            {displayTool ? fusionsComponent : <LandingPage />}
+          </Box>
+        </div>
+        <About show={showServiceInfo} setShow={setShowServiceInfo} />
+        <Dialog
+          open={dialogOpen}
+          onClose={() => handleDialogResponse(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Clear existing data?"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Warning: This action will clear all existing data.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => handleDialogResponse(true)} color="primary">
+              Proceed
+            </Button>
+            <Button
+              onClick={() => handleDialogResponse(false)}
+              color="primary"
+              autoFocus
+            >
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </ThemeProvider>
     </>
   );
 };
