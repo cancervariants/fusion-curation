@@ -65,8 +65,8 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
 
   const inputElements = (
     <GeneAutocomplete
-      selectedGene={gene}
-      setSelectedGene={setGene}
+      gene={gene}
+      setGene={setGene}
       geneText={geneText}
       setGeneText={setGeneText}
       style={{ width: 125 }}
