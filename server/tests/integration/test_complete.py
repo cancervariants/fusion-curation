@@ -35,6 +35,6 @@ async def test_normalize_gene(async_client: AsyncClient):
     assert response.json() == {
         "term": "a",
         "warnings": [
-            "Exceeds max matches: Got 6605 possible matches for a (limit: 50)"
+            "Exceeds max matches: Got 6645 possible matches for a (limit: 50)"
         ],
     }
