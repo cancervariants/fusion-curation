@@ -6,13 +6,15 @@ import {
   Select,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
-import { KeyboardEvent } from "react";
 import { getRegulatoryElement } from "../../../../services/main";
 import {
   ClientRegulatoryElement,
   RegulatoryClass,
 } from "../../../../services/ResponseModels";
-import { GeneAutocomplete } from "../../../main/shared/GeneAutocomplete/GeneAutocomplete";
+import {
+  GeneAutocomplete,
+  SuggestedGeneOption,
+} from "../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import "./RegElementForm.scss";
 
 const useStyles = makeStyles((theme) => ({
@@ -30,7 +32,7 @@ interface Props {
   setRegElement: CallableFunction;
   elementClass: RegulatoryClass | "default";
   setElementClass: CallableFunction;
-  gene: string;
+  gene: SuggestedGeneOption;
   setGene: CallableFunction;
   geneText: string;
   setGeneText: CallableFunction;
@@ -49,7 +51,7 @@ const RegElementForm: React.FC<Props> = ({
   const classes = useStyles();
 
   const inputComplete =
-    elementClass !== "default" && gene !== "" && geneText === "";
+    elementClass !== "default" && gene.value !== "" && geneText === "";
 
   // const handleEnterKey = (e: KeyboardEvent) => {
   //   if (e.key == "Enter" && inputComplete) {
@@ -63,7 +65,7 @@ const RegElementForm: React.FC<Props> = ({
    */
   const handleAdd = () => {
     if (elementClass === "default") return;
-    getRegulatoryElement(elementClass, gene).then((reResponse) => {
+    getRegulatoryElement(elementClass, gene.value).then((reResponse) => {
       if (reResponse.warnings && reResponse.warnings.length > 0) {
         throw new Error(reResponse.warnings[0]);
       }
@@ -139,7 +141,7 @@ const RegElementForm: React.FC<Props> = ({
       <div className="formInput">
         <GeneAutocomplete
           selectedGene={gene}
-          setSelectedGene={setGene}
+          setSelectedGene={(s) => setGene(s.value)}
           geneText={geneText}
           setGeneText={setGeneText}
           style={{ width: 440 }}

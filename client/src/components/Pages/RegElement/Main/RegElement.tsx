@@ -8,6 +8,10 @@ import {
   ClientRegulatoryElement,
   RegulatoryClass,
 } from "../../../../services/ResponseModels";
+import {
+  GeneSuggestionType,
+  SuggestedGeneOption,
+} from "../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 
 interface Props {
   index: number;
@@ -23,9 +27,18 @@ export const RegElement: React.FC<Props> = ({ index }) => {
   const [elementClass, setElementClass] = useState<RegulatoryClass | "default">(
     regElement?.regulatory_class || "default"
   );
-  const [gene, setGene] = useState<string>(
-    regElement?.associated_gene?.label || ""
-  );
+
+  const getDefaultGeneValue = (): SuggestedGeneOption => {
+    if (regElement?.associated_gene?.label) {
+      return {
+        value: regElement.associated_gene.label,
+        type: GeneSuggestionType.none,
+      };
+    } else {
+      return { value: "", type: GeneSuggestionType.none };
+    }
+  };
+  const [gene, setGene] = useState<SuggestedGeneOption>(getDefaultGeneValue());
   const [geneText, setGeneText] = useState<string>("");
 
   /**
@@ -37,7 +50,7 @@ export const RegElement: React.FC<Props> = ({ index }) => {
     setRegElement(undefined);
     setFusion(cloneFusion);
     setElementClass("default");
-    setGene("");
+    setGene({ value: "", type: GeneSuggestionType.none });
     setGeneText("");
   };
 
