@@ -141,7 +141,7 @@ const RegElementForm: React.FC<Props> = ({
       <div className="formInput">
         <GeneAutocomplete
           selectedGene={gene}
-          setSelectedGene={(s) => setGene(s.value)}
+          setSelectedGene={setGene}
           geneText={geneText}
           setGeneText={setGeneText}
           style={{ width: 440 }}

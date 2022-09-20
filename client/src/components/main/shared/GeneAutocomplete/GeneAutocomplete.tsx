@@ -32,14 +32,14 @@ export const GeneAutocomplete: React.FC<Props> = ({
   style,
 }) => {
   const [geneOptions, setGeneOptions] = useState<SuggestedGeneOption[]>([]);
-  const [inputValue, setInputValue] = useState(selectedGene.value);
+  const [inputValue, setInputValue] = useState(selectedGene);
 
   useEffect(() => {
-    if (inputValue === "") {
+    if (inputValue.value === "") {
       setGeneText("");
       setGeneOptions([]);
     } else {
-      getGeneSuggestions(inputValue).then((suggestResponseJson) => {
+      getGeneSuggestions(inputValue.value).then((suggestResponseJson) => {
         if (suggestResponseJson.warnings) {
           // max matches exceeded is currently the only possible warning
           if (
@@ -70,20 +70,25 @@ export const GeneAutocomplete: React.FC<Props> = ({
    * No return value, but updates dropdown options if successful.
    */
   const tryExactMatch = () => {
-    getGeneId(inputValue).then((geneResponseJson: NormalizeGeneResponse) => {
-      if (geneResponseJson.warnings && geneResponseJson.warnings.length > 0) {
-        setGeneText("Unrecognized term");
-        setGeneOptions([]);
-      } else {
-        // just provide entered term, but correctly-cased
-        setGeneText("");
-        if (geneResponseJson.cased) {
-          setGeneOptions([
-            { value: geneResponseJson.cased, type: GeneSuggestionType.symbol },
-          ]);
+    getGeneId(inputValue.value).then(
+      (geneResponseJson: NormalizeGeneResponse) => {
+        if (geneResponseJson.warnings && geneResponseJson.warnings.length > 0) {
+          setGeneText("Unrecognized term");
+          setGeneOptions([]);
+        } else {
+          // just provide entered term, but correctly-cased
+          setGeneText("");
+          if (geneResponseJson.cased) {
+            setGeneOptions([
+              {
+                value: geneResponseJson.cased,
+                type: GeneSuggestionType.symbol,
+              },
+            ]);
+          }
         }
       }
-    });
+    );
   };
 
   /**
@@ -116,22 +121,23 @@ export const GeneAutocomplete: React.FC<Props> = ({
     return options;
   };
 
-  // TODO resolve Typescript warning about `value` field
-  // ALSO remove doesn't work?
+  // TODO remove doesn't work?
   return (
     <Autocomplete
-      value={selectedGene.value}
+      value={selectedGene}
       onChange={(event, newValue) => {
         setSelectedGene(newValue);
       }}
-      inputValue={inputValue}
+      inputValue={inputValue.value}
       onInputChange={(event, newInputValue) => {
-        setInputValue(newInputValue);
+        setInputValue({ ...inputValue, value: newInputValue });
       }}
       options={geneOptions}
       groupBy={(option) => (option ? option.type : "")}
-      getOptionLabel={(option) => (option ? option.value : "")}
-      getOptionSelected={(option, selected) => option.value === selected.value}
+      getOptionLabel={(option) => (option.value ? option.value : "")}
+      getOptionSelected={(option, selected) => {
+        return option.value === selected.value;
+      }}
       disableClearable
       renderInput={(params) => (
         <TextField

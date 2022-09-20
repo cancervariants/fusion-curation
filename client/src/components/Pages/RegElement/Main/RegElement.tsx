@@ -32,7 +32,7 @@ export const RegElement: React.FC<Props> = ({ index }) => {
     if (regElement?.associated_gene?.label) {
       return {
         value: regElement.associated_gene.label,
-        type: GeneSuggestionType.none,
+        type: GeneSuggestionType.symbol,
       };
     } else {
       return { value: "", type: GeneSuggestionType.none };
