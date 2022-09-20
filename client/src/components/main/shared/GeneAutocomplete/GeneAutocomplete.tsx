@@ -4,7 +4,6 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getGeneId, getGeneSuggestions } from "../../../../services/main";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import {
-  GeneDescriptor,
   NormalizeGeneResponse,
   SuggestGeneResponse,
 } from "../../../../services/ResponseModels";
@@ -16,24 +15,6 @@ export enum GeneSuggestionType {
   none = "",
 }
 export type SuggestedGeneOption = { value: string; type: GeneSuggestionType };
-
-/**
- * Helper function for retrieving initial gene value for parent useState() calls.
- * @param geneDescriptor
- * @returns
- */
-export const getDefaultGeneValue = (
-  geneDescriptor: GeneDescriptor | undefined
-): SuggestedGeneOption => {
-  if (geneDescriptor?.label) {
-    return {
-      value: geneDescriptor.label,
-      type: GeneSuggestionType.symbol,
-    };
-  } else {
-    return { value: "", type: GeneSuggestionType.none };
-  }
-};
 
 const defaultGeneOption: SuggestedGeneOption = {
   value: "",
