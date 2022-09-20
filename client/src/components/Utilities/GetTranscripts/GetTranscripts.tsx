@@ -23,8 +23,8 @@ export const GetTranscripts: React.FC = () => {
   const [gene, setGene] = useState("");
   const [geneText, setGeneText] = useState("");
 
-  const [transcripts, setTranscripts] = useState([]);
-  const [transcriptWarnings, setTranscriptWarnings] = useState([]);
+  const [transcripts, setTranscripts] = useState<string[]>([]);
+  const [transcriptWarnings, setTranscriptWarnings] = useState<string[]>([]);
 
   useEffect(() => {
     if (gene !== "" && !geneText) {
@@ -128,8 +128,8 @@ export const GetTranscripts: React.FC = () => {
           <div className="blurb">Enter a gene:</div>
           <div>
             <GeneAutocomplete
-              selectedGene={gene}
-              setSelectedGene={setGene}
+              gene={gene}
+              setGene={setGene}
               geneText={geneText}
               setGeneText={setGeneText}
               style={{ width: 200 }}

@@ -138,7 +138,7 @@ const GetCoordinates: React.FC = () => {
       });
     } else {
       clearWarnings();
-      setResults(coordsResponse.coordinates_data);
+      setResults(coordsResponse.coordinates_data as GenomicData);
     }
   };
 
@@ -214,8 +214,8 @@ const GetCoordinates: React.FC = () => {
           <>
             <div className="inputs fields-pair">
               <GeneAutocomplete
-                selectedGene={gene}
-                setSelectedGene={setGene}
+                gene={gene}
+                setGene={setGene}
                 geneText={geneText}
                 setGeneText={setGeneText}
                 style={{ width: 125 }}
