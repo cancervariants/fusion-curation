@@ -11,10 +11,7 @@ import {
   ClientRegulatoryElement,
   RegulatoryClass,
 } from "../../../../services/ResponseModels";
-import {
-  GeneAutocomplete,
-  SuggestedGeneOption,
-} from "../../../main/shared/GeneAutocomplete/GeneAutocomplete";
+import { GeneAutocomplete } from "../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import "./RegElementForm.scss";
 
 const useStyles = makeStyles((theme) => ({
@@ -32,7 +29,7 @@ interface Props {
   setRegElement: CallableFunction;
   elementClass: RegulatoryClass | "default";
   setElementClass: CallableFunction;
-  gene: SuggestedGeneOption;
+  gene: string;
   setGene: CallableFunction;
   geneText: string;
   setGeneText: CallableFunction;
@@ -51,7 +48,7 @@ const RegElementForm: React.FC<Props> = ({
   const classes = useStyles();
 
   const inputComplete =
-    elementClass !== "default" && gene.value !== "" && geneText === "";
+    elementClass !== "default" && gene !== "" && geneText === "";
 
   /**
    * Handle user click on "add" button
@@ -59,7 +56,7 @@ const RegElementForm: React.FC<Props> = ({
    */
   const handleAdd = () => {
     if (elementClass === "default") return;
-    getRegulatoryElement(elementClass, gene.value).then((reResponse) => {
+    getRegulatoryElement(elementClass, gene).then((reResponse) => {
       if (reResponse.warnings && reResponse.warnings.length > 0) {
         throw new Error(reResponse.warnings[0]);
       }
@@ -134,8 +131,8 @@ const RegElementForm: React.FC<Props> = ({
       </div>
       <div className="formInput">
         <GeneAutocomplete
-          selectedGene={gene}
-          setSelectedGene={setGene}
+          gene={gene}
+          setGene={setGene}
           geneText={geneText}
           setGeneText={setGeneText}
           style={{ width: 440 }}
