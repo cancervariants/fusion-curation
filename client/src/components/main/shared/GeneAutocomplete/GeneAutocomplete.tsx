@@ -9,14 +9,6 @@ import {
   SuggestGeneResponse,
 } from "../../../../services/ResponseModels";
 
-interface Props {
-  selectedGene: SuggestedGeneOption;
-  setSelectedGene: CallableFunction;
-  geneText: string;
-  setGeneText: CallableFunction;
-  style: CSSProperties;
-}
-
 export enum GeneSuggestionType {
   alias = "Alias",
   symbol = "Symbol",
@@ -43,16 +35,45 @@ export const getDefaultGeneValue = (
   }
 };
 
+const defaultGeneOption: SuggestedGeneOption = {
+  value: "",
+  type: GeneSuggestionType.none,
+};
+
+interface Props {
+  gene: string;
+  setGene: CallableFunction;
+  geneText: string;
+  setGeneText: CallableFunction;
+  style: CSSProperties;
+}
+
 export const GeneAutocomplete: React.FC<Props> = ({
-  selectedGene,
-  setSelectedGene,
+  gene,
+  setGene,
   geneText,
   setGeneText,
   style,
 }) => {
   const [geneOptions, setGeneOptions] = useState<SuggestedGeneOption[]>([]);
-  const [inputValue, setInputValue] = useState(selectedGene);
+  const [geneValue, setGeneValue] = useState(
+    gene ? { value: gene, type: GeneSuggestionType.symbol } : defaultGeneOption
+  );
+  const [inputValue, setInputValue] = useState(
+    gene ? { value: gene, type: GeneSuggestionType.symbol } : defaultGeneOption
+  );
 
+  /**
+   * Simple wrapper around state setters to ensure updates to local selected value are reflected
+   * in the parent's copy
+   * @param selection selected gene option
+   */
+  const updateSelection = (selection: SuggestedGeneOption) => {
+    setGene(selection.value);
+    setGeneValue(selection);
+  };
+
+  // Update options
   useEffect(() => {
     if (inputValue.value === "") {
       setGeneText("");
@@ -80,6 +101,13 @@ export const GeneAutocomplete: React.FC<Props> = ({
       });
     }
   }, [inputValue]);
+
+  useEffect(() => {
+    if (!gene) {
+      setGeneValue(defaultGeneOption);
+      setInputValue(defaultGeneOption);
+    }
+  }, [gene]);
 
   /**
    * Attempt exact match for entered text. Should be called if user-submitted text
@@ -143,9 +171,13 @@ export const GeneAutocomplete: React.FC<Props> = ({
   return (
     <Autocomplete
       debug
-      value={selectedGene}
+      value={geneValue}
       onChange={(_, newValue) => {
-        setSelectedGene(newValue);
+        if (newValue) {
+          updateSelection(newValue);
+        } else {
+          updateSelection(defaultGeneOption);
+        }
       }}
       inputValue={inputValue.value}
       onInputChange={(_, newInputValue) => {
