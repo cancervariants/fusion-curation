@@ -23,9 +23,8 @@ export const RegElement: React.FC<Props> = ({ index }) => {
   const [elementClass, setElementClass] = useState<RegulatoryClass | "default">(
     regElement?.regulatory_class || "default"
   );
-
   const [gene, setGene] = useState<string>(
-    regElement?.associated_gene?.label ? regElement?.associated_gene.label : ""
+    regElement?.associated_gene?.label || ""
   );
   const [geneText, setGeneText] = useState<string>("");
 
@@ -55,11 +54,11 @@ export const RegElement: React.FC<Props> = ({ index }) => {
     <div className="reg-element-tab-container">
       <div className="left">
         <div className="blurb-container">
-          {regElement !== undefined ? (
-            <div className="blurb">
-              This transcript structure appears to be associated with a
-              <p />
-              {regElement !== undefined ? (
+          <div className="blurb">
+            {regElement !== undefined ? (
+              <>
+                This transcript structure appears to be associated with a
+                <p />
                 <span key={index} className="bold">
                   {regElement.associated_gene &&
                     regElement.associated_gene.label &&
@@ -67,14 +66,12 @@ export const RegElement: React.FC<Props> = ({ index }) => {
                   {regElement.display_class}
                   {"."}
                 </span>
-              ) : (
-                <></>
-              )}
-              <p />
-            </div>
-          ) : (
-            <div className="blurb">No regulatory element found.</div>
-          )}
+                <p />
+              </>
+            ) : (
+              <>No regulatory element found.</>
+            )}
+          </div>
           <div className="sub-blurb">
             {regElement !== undefined
               ? "You can remove or replace this regulatory element."
@@ -82,8 +79,8 @@ export const RegElement: React.FC<Props> = ({ index }) => {
           </div>
 
           {regElement !== undefined ? (
-            <div className="regel" key={index}>
-              <div>remove element</div>
+            <div className="regel">
+              <div>Remove</div>
               <div className="close-button-reg" onClick={() => handleRemove()}>
                 <Close />
               </div>
