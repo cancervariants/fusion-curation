@@ -10,6 +10,7 @@ import {
 } from "../../../../services/ResponseModels";
 import {
   GeneSuggestionType,
+  getDefaultGeneValue,
   SuggestedGeneOption,
 } from "../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 
@@ -28,17 +29,9 @@ export const RegElement: React.FC<Props> = ({ index }) => {
     regElement?.regulatory_class || "default"
   );
 
-  const getDefaultGeneValue = (): SuggestedGeneOption => {
-    if (regElement?.associated_gene?.label) {
-      return {
-        value: regElement.associated_gene.label,
-        type: GeneSuggestionType.symbol,
-      };
-    } else {
-      return { value: "", type: GeneSuggestionType.none };
-    }
-  };
-  const [gene, setGene] = useState<SuggestedGeneOption>(getDefaultGeneValue());
+  const [gene, setGene] = useState<SuggestedGeneOption>(
+    getDefaultGeneValue(regElement?.associated_gene)
+  );
   const [geneText, setGeneText] = useState<string>("");
 
   /**

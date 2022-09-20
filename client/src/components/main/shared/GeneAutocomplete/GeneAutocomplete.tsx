@@ -4,6 +4,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getGeneId, getGeneSuggestions } from "../../../../services/main";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import {
+  GeneDescriptor,
   NormalizeGeneResponse,
   SuggestGeneResponse,
 } from "../../../../services/ResponseModels";
@@ -23,6 +24,24 @@ export enum GeneSuggestionType {
   none = "",
 }
 export type SuggestedGeneOption = { value: string; type: GeneSuggestionType };
+
+/**
+ * Helper function for retrieving initial gene value for parent useState() calls.
+ * @param geneDescriptor
+ * @returns
+ */
+export const getDefaultGeneValue = (
+  geneDescriptor: GeneDescriptor | undefined
+): SuggestedGeneOption => {
+  if (geneDescriptor?.label) {
+    return {
+      value: geneDescriptor.label,
+      type: GeneSuggestionType.symbol,
+    };
+  } else {
+    return { value: "", type: GeneSuggestionType.none };
+  }
+};
 
 export const GeneAutocomplete: React.FC<Props> = ({
   selectedGene,
@@ -121,15 +140,15 @@ export const GeneAutocomplete: React.FC<Props> = ({
     return options;
   };
 
-  // TODO remove doesn't work?
   return (
     <Autocomplete
+      debug
       value={selectedGene}
-      onChange={(event, newValue) => {
+      onChange={(_, newValue) => {
         setSelectedGene(newValue);
       }}
       inputValue={inputValue.value}
-      onInputChange={(event, newInputValue) => {
+      onInputChange={(_, newInputValue) => {
         setInputValue({ ...inputValue, value: newInputValue });
       }}
       options={geneOptions}
@@ -138,7 +157,8 @@ export const GeneAutocomplete: React.FC<Props> = ({
       getOptionSelected={(option, selected) => {
         return option.value === selected.value;
       }}
-      disableClearable
+      clearOnBlur={false}
+      clearOnEscape
       renderInput={(params) => (
         <TextField
           {...params}
