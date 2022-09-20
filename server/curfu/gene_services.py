@@ -117,7 +117,7 @@ class GeneService:
             logger.warning(warn)
             raise ServiceWarning(warn)
 
-    def suggest_genes(self, query: str) -> List[Tuple[str, str, str, str]]:
+    def suggest_genes(self, query: str) -> Dict[str, List[Tuple[str, str, str]]]:
         """Provide autocomplete suggestions based on submitted term.
 
         Outstanding questions:
@@ -126,37 +126,47 @@ class GeneService:
          * how to safely reduce redundant suggestions
 
         :param str query: text entered by user
-        :returns: list containing any number of suggestion tuples, where each is the
-        correctly-cased term, normalized ID, normalized label, and item type
+        :returns: dict returning list containing any number of suggestion tuples, where
+        each is the correctly-cased term, normalized ID, normalized label, for each
+        item type
         :raises ServiceWarning: if number of matching suggestions exceeds
         MAX_SUGGESTIONS
         """
         # tentatively, just search terms
         q_lower = query.lower()
-        symbols = [
-            (v[0], v[1], v[2], "symbol")
-            for t, v in self.symbols_map.items()
-            if t.startswith(q_lower)
-        ]
-        aliases = [
-            (v[0], v[1], v[2], "alias")
-            for t, v in self.aliases_map.items()
-            if t.startswith(q_lower)
-        ]
-        prev_symbols = [
-            (v[0], v[1], v[2], "prev_symbol")
-            for t, v in self.prev_symbols_map.items()
-            if t.startswith(q_lower)
-        ]
+        suggestions = {}
+        suggestions["symbols"] = sorted(
+            [
+                (v[2], v[1], v[2])
+                for t, v in self.symbols_map.items()
+                if t.startswith(q_lower)
+            ],
+            key=lambda s: s[0],
+        )
+        suggestions["prev_symbols"] = sorted(
+            [
+                (v[0], v[1], v[2])
+                for t, v in self.prev_symbols_map.items()
+                if t.startswith(q_lower)
+            ],
+            key=lambda s: s[0],
+        )
+        suggestions["aliases"] = sorted(
+            [
+                (v[0], v[1], v[2])
+                for t, v in self.aliases_map.items()
+                if t.startswith(q_lower)
+            ],
+            key=lambda s: s[0],
+        )
 
-        suggestions = symbols + aliases + prev_symbols  # type: ignore
-
-        n = len(suggestions)
+        n = (
+            len(suggestions["symbols"])
+            + len(suggestions["prev_symbols"])
+            + len(suggestions["aliases"])
+        )
         if n > MAX_SUGGESTIONS:
-            warn = (
-                f"Exceeds max matches: "
-                f"Got {n} possible matches for {query} (limit: {MAX_SUGGESTIONS})"
-            )
+            warn = f"Exceeds max matches: Got {n} possible matches for {query} (limit: {MAX_SUGGESTIONS})"  # noqa: E501
             logger.warning(warn)
             raise ServiceWarning(warn)
         else:
