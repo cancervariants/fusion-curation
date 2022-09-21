@@ -144,8 +144,9 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
         if fusion.critical_functional_domains:
             client_domains = []
             for domain in fusion.critical_functional_domains:
-                domain.domain_id = uuid4()
-                client_domains.append(domain)
+                client_domain = domain.dict()
+                client_domain["domain_id"] = str(uuid4())
+                client_domains.append(client_domain)
             fusion_args["critical_functional_domains"] = client_domains
         return ClientCategoricalFusion(**fusion_args)
     elif fusion.type == FUSORTypes.ASSAYED_FUSION:

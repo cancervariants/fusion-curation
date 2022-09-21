@@ -110,7 +110,7 @@ async def test_regulatory_element_nomenclature(
         "nomenclature/regulatory_element", json=regulatory_element
     )
     assert response.status_code == 200
-    assert response.json().get("nomenclature", "") == "reg_promoter@G1(hgnc:9339)"
+    assert response.json().get("nomenclature", "") == "reg_p@G1(hgnc:9339)"
 
 
 @pytest.mark.asyncio
@@ -125,7 +125,7 @@ async def test_tx_segment_nomenclature(
         json=ntrk1_tx_element_start,
     )
     assert response.status_code == 200
-    assert response.json().get("nomenclature", "") == "refseq:NM_002529.3(NTRK1):e.21"
+    assert response.json().get("nomenclature", "") == "refseq:NM_002529.3(NTRK1):e.2+1"
 
     response = await async_client.post(
         "/nomenclature/transcript_segment?first=true&last=false", json=epcam_invalid
