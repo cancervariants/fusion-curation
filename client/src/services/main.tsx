@@ -36,8 +36,6 @@ import {
   RegulatoryElement,
   RegulatoryClass,
   RegulatoryElementResponse,
-  FunctionalDomain,
-  ClientFunctionalDomain,
 } from "./ResponseModels";
 
 export type ClientElementUnion =

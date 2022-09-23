@@ -1,7 +1,6 @@
-// define w/ EventType
 import "./CausativeEvent.scss";
 import { FusionContext } from "../../../global/contexts/FusionContext";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   FormControl,
   FormControlLabel,
@@ -17,55 +16,55 @@ interface Props {
 export const CausativeEvent: React.FC<Props> = () => {
   const { fusion, setFusion } = useContext(FusionContext);
 
-  // initialize event field
-  useEffect(() => {
-    if (fusion.causative_event == undefined) {
+  const [eventType, setEventType] = useState<string>(
+    fusion.causative_event?.event_type || ""
+  );
+  const [eventDescription, setEventDescription] = useState<string>(
+    fusion.causative_event?.event_type || ""
+  );
+
+  /**
+   * Ensure that causative event object exists for getter/setter purposes
+   */
+  const ensureEventInitialized = () => {
+    if (!fusion.causative_event) {
       setFusion({ ...fusion, causative_event: {} });
     }
-  }, []);
-
-  const [causativeEventType, setCausativeEventType] = useState(
-    fusion.causative_event?.event_type !== undefined
-      ? fusion.causative_event?.event_type
-      : null
-  );
-
-  const [causativeEventDescription, setCausativeEventDescription] = useState(
-    fusion.causative_event?.event_description !== undefined
-      ? fusion.causative_event?.event_description
-      : ""
-  );
-
-  // ensure live updates
-  useEffect(() => {
-    if (fusion?.causative_event?.event_type !== causativeEventType) {
-      setCausativeEventType(fusion?.causative_event?.event_type);
-    }
-    if (
-      fusion?.causative_event?.event_description !== causativeEventDescription
-    ) {
-      setCausativeEventDescription(fusion?.causative_event?.event_description);
-    }
-  }, [fusion]);
-
-  const handleCauseChange = (event) => {
-    const value = event.target.value;
-    setCausativeEventType(value);
-    const causativeEvent = {
-      ...fusion.causative_event,
-      event_type: event.target.value,
-    };
-    setFusion({ ...fusion, causative_event: causativeEvent });
   };
 
-  const handleEnterDescription = (event) => {
-    const value = event.target.value;
-    setCausativeEventDescription(value);
-    const causativeEvent = {
+  /**
+   * Update form value and fusion causative event object upon event type change
+   * @param htmlEvent form data input
+   */
+  const handleEventTypeChange = (
+    htmlEvent: React.FormEvent<HTMLInputElement>
+  ) => {
+    const value = htmlEvent.currentTarget.value;
+    if (value === eventType) return;
+    ensureEventInitialized();
+    if (eventType !== value) {
+      setEventType(value);
+    }
+    const newCausativeEvent = { event_type: value, ...fusion.causative_event };
+    setFusion({ causative_event: newCausativeEvent, ...fusion });
+  };
+
+  /**
+   * Update description form value and causative event object with user-entered text
+   * @param htmlEvent form data input
+   */
+  const handleDescriptionChange = (htmlEvent) => {
+    const value = htmlEvent.currentTarget.value;
+    if (value === eventDescription) return;
+    ensureEventInitialized();
+    if (eventDescription !== value) {
+      setEventDescription(value);
+    }
+    const newCausativeEvent = {
+      event_description: value,
       ...fusion.causative_event,
-      event_description: event.target.value,
     };
-    setFusion({ ...fusion, causative_event: causativeEvent });
+    setFusion({ causative_event: newCausativeEvent, ...fusion });
   };
 
   return (
@@ -75,8 +74,8 @@ export const CausativeEvent: React.FC<Props> = () => {
         <RadioGroup
           aria-label="Causative event?"
           name="controlled-radio-buttons-group"
-          value={causativeEventType}
-          onChange={handleCauseChange}
+          value={eventType}
+          onChange={handleEventTypeChange}
         >
           <FormControlLabel
             value="rearrangement"
@@ -103,8 +102,8 @@ export const CausativeEvent: React.FC<Props> = () => {
         maxRows={4}
         label="Provide a free-text description"
         size="medium"
-        value={causativeEventDescription}
-        onChange={handleEnterDescription}
+        value={eventDescription}
+        onChange={handleDescriptionChange}
       />
     </div>
   );

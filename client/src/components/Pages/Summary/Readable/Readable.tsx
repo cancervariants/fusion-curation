@@ -1,63 +1,81 @@
-import {
-  CategoricalFusion,
-  AssayedFusion,
-  RegulatoryElement,
-} from "../../../../services/ResponseModels";
+import { NomenclatureResponse } from "../../../../services/ResponseModels";
 import "./Readable.scss";
 import React, { useEffect, useState } from "react";
 import {
+  ElementUnion,
   getGeneNomenclature,
   getRegElementNomenclature,
   getTemplatedSequenceNomenclature,
   getTxSegmentNomenclature,
 } from "../../../../services/main";
+import { FusionType } from "../Main/Summary";
 
 interface Props {
-  fusion: AssayedFusion | CategoricalFusion;
+  fusion: FusionType;
 }
 
 export const Readable: React.FC<Props> = ({ fusion }) => {
-  const [structureNomenclature, setStructureNomencalture] = useState("");
-  const [regulatoryElementsNomenclature, setRegulatoryElementsNomenclature] =
-    useState<any[]>([]);
+  const [structureNomenclature, setStructureNomencalture] =
+    useState<string>("");
+  const [regulatoryElementNomenclature, setRegulatoryElementNomenclature] =
+    useState<string>("");
 
-  async function generateStructureNomenclature(fusion) {
-    const promises = fusion.structural_elements.map((el, index) => {
-      if (el.type === "TranscriptSegmentElement") {
-        return getTxSegmentNomenclature(
-          el,
-          index === 0,
-          index === fusion.structural_elements.length - 1
-        ).then((resp) => resp.nomenclature);
-      } else if (el.type === "TemplatedSequenceElement") {
-        return getTemplatedSequenceNomenclature(el).then(
-          (resp) => resp.nomenclature
-        );
-      } else if (el.type === "GeneElement") {
-        return getGeneNomenclature(el).then((resp) => resp.nomenclature);
-      } else if (el.type === "LinkerSequenceElement") {
-        return el.linker_sequence.sequence;
-      } else if (el.type === "UnknownGeneElement") {
-        return "?";
+  /**
+   * Create nomenclature for structural elements
+   * @param fusion validated fusion object
+   */
+  async function generateStructureNomenclature(fusion: FusionType) {
+    const promises = fusion.structural_elements.map(
+      (el: ElementUnion, index: number) => {
+        if (el.type === "TranscriptSegmentElement") {
+          return getTxSegmentNomenclature(
+            el,
+            index === 0,
+            index === fusion.structural_elements.length - 1
+          ).then((resp) => resp.nomenclature);
+        } else if (el.type === "TemplatedSequenceElement") {
+          return getTemplatedSequenceNomenclature(el).then(
+            (resp) => resp.nomenclature
+          );
+        } else if (el.type === "GeneElement") {
+          return getGeneNomenclature(el).then((resp) => resp.nomenclature);
+        } else if (el.type === "LinkerSequenceElement") {
+          return el.linker_sequence.sequence;
+        } else if (el.type === "UnknownGeneElement") {
+          return "?";
+        } else if (el.type === "MultiplePossibleGenesElement") {
+          return "v";
+        }
       }
-    });
+    );
     const resolved = await Promise.all(promises);
     setStructureNomencalture(resolved.join("::"));
   }
 
-  async function generateRegulatoryElementsNomenclature(fusion) {
-    const promises = fusion.regulatory_elements.map((el) => {
-      return getRegElementNomenclature(el).then((resp) => resp.nomenclature);
-    });
-    const resolved = await Promise.all(promises);
-    setRegulatoryElementsNomenclature(resolved);
+  /**
+   * Basic wrapper around the regulatory element nomenclature retrieval method
+   * @param fusion validated fusion object
+   */
+  async function generateRegulatoryElementNomenclature(fusion: FusionType) {
+    if (fusion.regulatory_element) {
+      getRegElementNomenclature(fusion.regulatory_element).then(
+        (response: NomenclatureResponse) => {
+          if (!response.warnings) {
+            setRegulatoryElementNomenclature(response.nomenclature as string);
+          }
+        }
+      );
+    }
   }
 
+  /**
+   * Get updated nomenclature values
+   */
   useEffect(() => {
     const getStructureNomenclature = async () =>
       await generateStructureNomenclature(fusion);
     const getRegulatoryElementsNomenclature = async () =>
-      await generateRegulatoryElementsNomenclature(fusion);
+      await generateRegulatoryElementNomenclature(fusion);
     getStructureNomenclature();
     getRegulatoryElementsNomenclature();
   }, []);
@@ -75,11 +93,11 @@ export const Readable: React.FC<Props> = ({ fusion }) => {
         </div>
         <hr />
         <div className="row">
-          <span className="left-item">Regulatory Elements </span>
+          <span className="left-item">Regulatory Element</span>
           <span className="right-list-item">
-            {regulatoryElementsNomenclature.map((rem) => (
-              <div className="right-sub-list-item">{rem}</div>
-            ))}
+            <div className="right-sub-list-item">
+              {regulatoryElementNomenclature}
+            </div>
           </span>
         </div>
         <hr />
