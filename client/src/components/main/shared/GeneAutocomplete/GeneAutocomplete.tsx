@@ -36,13 +36,12 @@ export const GeneAutocomplete: React.FC<Props> = ({
   setGeneText,
   style,
 }) => {
+  const existingGeneOption = gene
+    ? { value: gene, type: GeneSuggestionType.symbol }
+    : defaultGeneOption;
   const [geneOptions, setGeneOptions] = useState<SuggestedGeneOption[]>([]);
-  const [geneValue, setGeneValue] = useState(
-    gene ? { value: gene, type: GeneSuggestionType.symbol } : defaultGeneOption
-  );
-  const [inputValue, setInputValue] = useState(
-    gene ? { value: gene, type: GeneSuggestionType.symbol } : defaultGeneOption
-  );
+  const [geneValue, setGeneValue] = useState(existingGeneOption);
+  const [inputValue, setInputValue] = useState(existingGeneOption);
 
   /**
    * Simple wrapper around state setters to ensure updates to local selected value are reflected
