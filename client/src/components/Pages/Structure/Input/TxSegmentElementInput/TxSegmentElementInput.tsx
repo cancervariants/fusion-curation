@@ -12,7 +12,7 @@ import {
   TranscriptSegmentElement,
   TxSegmentElementResponse,
 } from "../../../../../services/ResponseModels";
-import { useEffect, useState, KeyboardEvent } from "react";
+import React, { useEffect, useState, KeyboardEvent } from "react";
 import {
   getTxSegmentElementECT,
   getTxSegmentElementGCG,
@@ -390,8 +390,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           <div>
             <div className="mid-inputs">
               <GeneAutocomplete
-                selectedGene={txGene}
-                setSelectedGene={setTxGene}
+                gene={txGene}
+                setGene={setTxGene}
                 geneText={txGeneText}
                 setGeneText={setTxGeneText}
                 style={{ width: 125 }}

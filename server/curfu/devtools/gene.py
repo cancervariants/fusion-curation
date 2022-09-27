@@ -43,8 +43,8 @@ class GeneSuggestionBuilder:
         :param outfile_path Path: path to save mapping at
         """
         with open(outfile_path, "w") as fp:
-            for key, normed in mapping.items():
-                fp.write(f"{key}\t{normed[0]}\t{normed[1]}\t{normed[2]}\n")
+            for normed in mapping.values():
+                fp.write(f"{normed[0]}\t{normed[1]}\t{normed[2]}\n")
 
     def update_maps(self, record: Dict) -> None:
         """Add map entries for relevant data in given DB record.
@@ -55,10 +55,10 @@ class GeneSuggestionBuilder:
         norm_id = record["concept_id"]
         norm_symbol = record["symbol"]
 
-        for concept_id in [norm_id] + record.get("xrefs", []):
-            self.xrefs_map[concept_id.lower()] = (concept_id, norm_id, norm_symbol)
+        for xref in [norm_id] + record.get("xrefs", []):
+            self.xrefs_map[xref.lower()] = (xref, norm_id, norm_symbol)
 
-        self.symbol_map[norm_symbol.lower()] = ("", norm_id, norm_symbol)
+        self.symbol_map[norm_symbol.lower()] = (norm_symbol, norm_id, "")
 
         for prev_symbol in record.get("previous_symbols", []):
             self.prev_symbol_map[prev_symbol.lower()] = (

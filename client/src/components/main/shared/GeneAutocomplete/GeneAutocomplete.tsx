@@ -2,84 +2,183 @@ import React, { useState, useEffect } from "react";
 import { TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getGeneId, getGeneSuggestions } from "../../../../services/main";
+import { CSSProperties } from "@material-ui/core/styles/withStyles";
+import {
+  NormalizeGeneResponse,
+  SuggestGeneResponse,
+} from "../../../../services/ResponseModels";
+
+export enum GeneSuggestionType {
+  alias = "Alias",
+  symbol = "Symbol",
+  prevSymbol = "Previous Symbol",
+  none = "",
+}
+export type SuggestedGeneOption = { value: string; type: GeneSuggestionType };
+
+const defaultGeneOption: SuggestedGeneOption = {
+  value: "",
+  type: GeneSuggestionType.none,
+};
 
 interface Props {
-  selectedGene: string;
-  setSelectedGene: CallableFunction;
+  gene: string;
+  setGene: CallableFunction;
   geneText: string;
   setGeneText: CallableFunction;
-  style: unknown;
+  style: CSSProperties;
 }
 
 export const GeneAutocomplete: React.FC<Props> = ({
-  selectedGene,
-  setSelectedGene,
+  gene,
+  setGene,
   geneText,
   setGeneText,
   style,
 }) => {
-  const [geneOptions, setGeneOptions] = useState([]);
+  const existingGeneOption = gene
+    ? { value: gene, type: GeneSuggestionType.symbol }
+    : defaultGeneOption;
+  const [geneOptions, setGeneOptions] = useState<SuggestedGeneOption[]>([]);
+  const [geneValue, setGeneValue] = useState(existingGeneOption);
+  const [inputValue, setInputValue] = useState(existingGeneOption);
 
+  /**
+   * Simple wrapper around state setters to ensure updates to local selected value are reflected
+   * in the parent's copy
+   * @param selection selected gene option
+   */
+  const updateSelection = (selection: SuggestedGeneOption) => {
+    setGene(selection.value);
+    setGeneValue(selection);
+  };
+
+  // Update options
   useEffect(() => {
-    if (selectedGene === "") {
+    if (inputValue.value === "") {
       setGeneText("");
       setGeneOptions([]);
     } else {
-      getGeneSuggestions(selectedGene).then((suggestResponseJson) => {
+      getGeneSuggestions(inputValue.value).then((suggestResponseJson) => {
         if (suggestResponseJson.warnings) {
           // max matches exceeded is currently the only possible warning
           if (
             suggestResponseJson.warnings[0].startsWith("Exceeds max matches")
           ) {
-            // try exact match
-            getGeneId(selectedGene).then((geneResponseJson) => {
-              if (geneResponseJson.warnings) {
-                setGeneText("Unrecognized term");
-                setGeneOptions([]);
-              } else {
-                setGeneText("");
-                setGeneOptions([]);
-              }
-            });
+            tryExactMatch();
           }
-        } else if (suggestResponseJson.suggestions.length === 0) {
+        } else if (
+          !suggestResponseJson.symbols &&
+          !suggestResponseJson.prev_symbols &&
+          !suggestResponseJson.aliases
+        ) {
           setGeneText("Unrecognized term");
           setGeneOptions([]);
         } else {
           setGeneText("");
-          setGeneOptions(
-            suggestResponseJson.suggestions.map((s) =>
-              s[0] !== "" ? s[0] : s[2]
-            )
-          );
+          setGeneOptions(buildOptions(suggestResponseJson));
         }
       });
     }
-  }, [selectedGene]);
+  }, [inputValue]);
+
+  useEffect(() => {
+    if (!gene) {
+      setGeneValue(defaultGeneOption);
+      setInputValue(defaultGeneOption);
+    }
+  }, [gene]);
+
+  /**
+   * Attempt exact match for entered text. Should be called if user-submitted text
+   * isn't specific enough to narrow options down to a reasonable number (the
+   * `MAX_SUGGESTIONS` value set server-side), in case their entered value
+   * happens to match a real gene term.
+   * No return value, but updates dropdown options if successful.
+   */
+  const tryExactMatch = () => {
+    getGeneId(inputValue.value).then(
+      (geneResponseJson: NormalizeGeneResponse) => {
+        if (geneResponseJson.warnings && geneResponseJson.warnings.length > 0) {
+          setGeneText("Unrecognized term");
+          setGeneOptions([]);
+        } else {
+          // just provide entered term, but correctly-cased
+          setGeneText("");
+          if (geneResponseJson.cased) {
+            setGeneOptions([
+              {
+                value: geneResponseJson.cased,
+                type: GeneSuggestionType.symbol,
+              },
+            ]);
+          }
+        }
+      }
+    );
+  };
+
+  /**
+   * Construct options for use in MUI Autocomplete GroupBy
+   * @param suggestResponse response from suggestions API received from server
+   * @returns array of option objects
+   */
+  const buildOptions = (
+    suggestResponse: SuggestGeneResponse
+  ): SuggestedGeneOption[] => {
+    const options: SuggestedGeneOption[] = [];
+    if (suggestResponse.symbols) {
+      suggestResponse.symbols.map((suggestion) =>
+        options.push({ value: suggestion[0], type: GeneSuggestionType.symbol })
+      );
+    }
+    if (suggestResponse.prev_symbols) {
+      suggestResponse.prev_symbols.map((suggestion) =>
+        options.push({
+          value: suggestion[0],
+          type: GeneSuggestionType.prevSymbol,
+        })
+      );
+    }
+    if (suggestResponse.aliases) {
+      suggestResponse.aliases.map((suggestion) =>
+        options.push({ value: suggestion[0], type: GeneSuggestionType.alias })
+      );
+    }
+    return options;
+  };
 
   return (
     <Autocomplete
-      freeSolo
-      options={geneOptions}
-      getOptionLabel={(option) => option}
-      onChange={(event, value) => {
-        setSelectedGene(value);
-        if (value === "") {
-          setGeneOptions([]);
+      debug
+      value={geneValue}
+      onChange={(_, newValue) => {
+        if (newValue) {
+          updateSelection(newValue);
+        } else {
+          updateSelection(defaultGeneOption);
         }
       }}
-      value={selectedGene}
-      disableClearable
+      inputValue={inputValue.value}
+      onInputChange={(_, newInputValue) => {
+        setInputValue({ ...inputValue, value: newInputValue });
+      }}
+      options={geneOptions}
+      groupBy={(option) => (option ? option.type : "")}
+      getOptionLabel={(option) => (option.value ? option.value : "")}
+      getOptionSelected={(option, selected) => {
+        return option.value === selected.value;
+      }}
+      clearOnBlur={false}
+      clearOnEscape
       renderInput={(params) => (
         <TextField
           {...params}
+          variant="standard"
           label="Gene Symbol"
           margin="dense"
           style={style}
-          variant="standard"
-          value={selectedGene}
           error={geneText !== ""}
-          onChange={(event) => setSelectedGene(event.target.value)}
           helperText={geneText ? geneText : null}
         />
       )}

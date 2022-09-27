@@ -6,7 +6,6 @@ import {
   Select,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
-import { KeyboardEvent } from "react";
 import { getRegulatoryElement } from "../../../../services/main";
 import {
   ClientRegulatoryElement,
@@ -132,8 +131,8 @@ const RegElementForm: React.FC<Props> = ({
       </div>
       <div className="formInput">
         <GeneAutocomplete
-          selectedGene={gene}
-          setSelectedGene={setGene}
+          gene={gene}
+          setGene={setGene}
           geneText={geneText}
           setGeneText={setGeneText}
           style={{ width: 440 }}

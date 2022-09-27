@@ -27,7 +27,7 @@ def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
     response: ResponseDict = {"term": term}
     try:
         possible_matches = request.app.state.genes.suggest_genes(term)
-        response["suggestions"] = possible_matches
+        response.update(possible_matches)
     except ServiceWarning as e:
         response["warnings"] = [str(e)]
     return response

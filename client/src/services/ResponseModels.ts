@@ -619,6 +619,7 @@ export interface NormalizeGeneResponse {
   term: string;
   concept_id?: CURIE;
   symbol?: string;
+  cased?: string;
 }
 /**
  * Response model for regulatory element constructor.
@@ -657,7 +658,9 @@ export interface ServiceInfoResponse {
 export interface SuggestGeneResponse {
   warnings?: string[];
   term: string;
-  suggestions?: [string, string, string, string][];
+  symbols?: [string, string, string][];
+  prev_symbols?: [string, string, string][];
+  aliases?: [string, string, string][];
 }
 /**
  * Response model for transcript segment element construction endpoint.
