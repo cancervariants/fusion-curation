@@ -13,6 +13,12 @@ interface Props {
   index: number;
 }
 
+export const eventDisplayMap = {
+  rearrangement: "Rearrangement",
+  "trans-splicing": "Trans-splicing",
+  "read-through": "Read-through",
+};
+
 export const CausativeEvent: React.FC<Props> = () => {
   const { fusion, setFusion } = useContext(FusionContext);
 
@@ -77,21 +83,16 @@ export const CausativeEvent: React.FC<Props> = () => {
           value={eventType}
           onChange={handleEventTypeChange}
         >
-          <FormControlLabel
-            value="rearrangement"
-            control={<Radio />}
-            label="Rearrangement"
-          />
-          <FormControlLabel
-            value="trans-splicing"
-            control={<Radio />}
-            label="Trans-splicing"
-          />
-          <FormControlLabel
-            value="read-through"
-            control={<Radio />}
-            label="Read-through"
-          />
+          {["rearrangement", "trans-splicing", "read-through"].map(
+            (value, index) => (
+              <FormControlLabel
+                value={value}
+                control={<Radio />}
+                label={eventDisplayMap[value]}
+                key={index}
+              />
+            )
+          )}
         </RadioGroup>
       </FormControl>
       <h3></h3>
