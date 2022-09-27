@@ -104,6 +104,7 @@ class ClientRegulatoryElement(RegulatoryElement):
     """Define regulatory element object used client-side."""
 
     display_class: str
+    nomenclature: str
 
 
 class Response(BaseModel):
