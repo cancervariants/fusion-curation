@@ -519,6 +519,7 @@ export interface ClientRegulatoryElement {
   associated_gene?: GeneDescriptor;
   feature_location?: LocationDescriptor;
   display_class: string;
+  nomenclature: string;
 }
 /**
  * Abstract class to provide identification properties used by client.
