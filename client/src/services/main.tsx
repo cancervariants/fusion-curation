@@ -398,6 +398,9 @@ type DemoFusionName =
   | "tpm3_pdgfrb"
   | "igh_myc";
 
+export const assayedDemoList = [ {name: "EWSR1", endpoint: "ewsr1"}, {name: "TPM3-NTRK1", endpoint: "tpm3_ntrk1"}, {name: "TPM3-PDGFRB", endpoint: "tpm3_pdgfrb"} ]
+export const categoricalDemoList = [{name: "ALK", endpoint: "alk"}, {name: "BCR-ABL1", endpoint: "bcr_abl1"}, {name: "IGH-MYC", endpoint: "igh_myc"}]
+
 /**
  * Fetch an individual demo fusion object
  * @param fusionName name of demo fusion to fetch

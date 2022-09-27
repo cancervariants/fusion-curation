@@ -260,7 +260,7 @@ const App = (): JSX.Element => {
           >
             <SuggestionContext.Provider value={[suggestions, setSuggestions]}>
               <FusionContext.Provider value={{ fusion, setFusion }}>
-                <NavTabs handleClear={handleClear} />
+                <NavTabs handleClear={handleClear} handleDemo={handleDemo} />
               </FusionContext.Provider>
             </SuggestionContext.Provider>
           </DomainOptionsContext.Provider>

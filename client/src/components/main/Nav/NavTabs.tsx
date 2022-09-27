@@ -74,10 +74,11 @@ function LinkTab(props: LinkTabProps) {
 
 interface NavTabsProps {
   handleClear: () => void;
+  handleDemo: (fusion) => void;
 }
 
 export default function NavTabs(props: NavTabsProps): React.ReactElement {
-  const { handleClear } = props
+  const { handleClear, handleDemo } = props
   const { fusion } = useContext(FusionContext);
   const [visibleTab, setVisibleTab] = React.useState(0);
 
@@ -154,7 +155,7 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
         </div>
       <div className="tab-panel">
         <TabPanel value={visibleTab} index={0}>
-          <Structure index={0} />
+          <Structure index={0} handleDemo={handleDemo} />
         </TabPanel>
         <TabPanel value={visibleTab} index={1}>
           <RegElement index={1} />

@@ -22,7 +22,7 @@ export const Readable: React.FC<Props> = ({ fusion }) => {
     useState<any[]>([]);
 
   async function generateStructureNomenclature(fusion) {
-    const promises = fusion.structural_elements.map((el, index) => {
+    const promises = fusion.structural_elements?.map((el, index) => {
       if (el.type === "TranscriptSegmentElement") {
         return getTxSegmentNomenclature(
           el,
@@ -46,7 +46,7 @@ export const Readable: React.FC<Props> = ({ fusion }) => {
   }
 
   async function generateRegulatoryElementsNomenclature(fusion) {
-    const promises = fusion.regulatory_elements.map((el) => {
+    const promises = fusion.regulatory_elements?.map((el) => {
       return getRegElementNomenclature(el).then((resp) => resp.nomenclature);
     });
     const resolved = await Promise.all(promises);
