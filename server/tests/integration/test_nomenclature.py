@@ -3,6 +3,7 @@ from typing import Dict
 
 import pytest
 from httpx import AsyncClient
+from fusor.examples import bcr_abl1
 
 
 @pytest.fixture(scope="module")
@@ -192,3 +193,14 @@ async def test_templated_sequence_nomenclature(
     assert response.json().get("warnings", []) == [
         "1 validation error for TemplatedSequenceElement\nstrand\n  field required (type=value_error.missing)"  # noqa: E501
     ]
+
+
+@pytest.mark.asyncio
+async def test_fusion_nomenclature(async_client: AsyncClient):
+    """Test correctness of fusion nomneclature endpoint."""
+    response = await async_client.post("/nomenclature/fusion", json=bcr_abl1.dict())
+    assert response.status_code == 200
+    assert (
+        response.json().get("nomenclature", "")
+        == "refseq:NM_004327.3(BCR):e.2+182::ACTAAAGCG::refseq:NM_005157.5(ABL1):e.2-173"
+    )

@@ -32,9 +32,7 @@ class ClientStructuralElement(BaseModel):
     """Abstract class to provide identification properties used by client."""
 
     element_id: StrictStr
-    element_name: StrictStr  # TODO: pretty sure we can remove this
-    hr_name: StrictStr
-    shorthand: Optional[StrictStr]
+    nomenclature: StrictStr
 
 
 class ClientTranscriptSegmentElement(TranscriptSegmentElement, ClientStructuralElement):
