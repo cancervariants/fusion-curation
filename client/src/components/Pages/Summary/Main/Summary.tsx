@@ -10,11 +10,11 @@ import {
 import {
   AssayedFusion,
   CategoricalFusion,
-  ClientRegulatoryElement,
   FunctionalDomain,
   GeneElement,
   LinkerElement,
   MultiplePossibleGenesElement,
+  RegulatoryElement,
   TemplatedSequenceElement,
   TranscriptSegmentElement,
   UnknownGeneElement,
@@ -121,7 +121,7 @@ export const Summary: React.FC<Props> = ({ index }) => {
     const structuralElements: ElementUnion[] = fusion.structural_elements?.map(
       (element: ClientElementUnion) => fusorifyStructuralElement(element)
     );
-    let regulatoryElement;
+    let regulatoryElement: RegulatoryElement | null = null;
     if (fusion.regulatory_element) {
       regulatoryElement = {
         type: fusion.regulatory_element.type,
@@ -159,7 +159,8 @@ export const Summary: React.FC<Props> = ({ index }) => {
 
   return (
     <>
-      {!validationErrors || validationErrors.length === 0 ? (
+      {(!validationErrors || validationErrors.length === 0) &&
+      validatedFusion ? (
         <Success fusion={validatedFusion} />
       ) : (
         <Invalid validationErrors={validationErrors} />

@@ -1,7 +1,12 @@
-import { NomenclatureResponse } from "../../../../services/ResponseModels";
-import "./Readable.scss";
-import React, { useEffect, useState } from "react";
 import {
+  ClientStructuralElement,
+  NomenclatureResponse,
+} from "../../../../services/ResponseModels";
+import "./Readable.scss";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  ClientFusion,
+  ElementType,
   ElementUnion,
   getGeneNomenclature,
   getRegElementNomenclature,
@@ -9,76 +14,89 @@ import {
   getTxSegmentNomenclature,
 } from "../../../../services/main";
 import { FusionType } from "../Main/Summary";
+import Chip from "@material-ui/core/Chip";
+import { FusionContext } from "../../../../global/contexts/FusionContext";
+import { Typography } from "@material-ui/core";
 
-interface Props {
-  fusion: FusionType;
-}
+export const Readable: React.FC = () => {
+  const { fusion } = useContext(FusionContext);
+  // const [elements, setElements] = useState<ElementChipParts[]>([]);
+  // const [nomenclature, setNomenclature] = useState<string>("");
+  // const [structureNomenclature, setStructureNomencalture] =
+  //   useState<string>("");
+  // const [regulatoryElementNomenclature, setRegulatoryElementNomenclature] =
+  //   useState<string>("");
 
-export const Readable: React.FC<Props> = ({ fusion }) => {
-  const [structureNomenclature, setStructureNomencalture] =
-    useState<string>("");
-  const [regulatoryElementNomenclature, setRegulatoryElementNomenclature] =
-    useState<string>("");
+  // useEffect(() => {
+  //   createStructuralElementsNomenclature();
+  // }, [fusion]);
 
   /**
-   * Create nomenclature for structural elements
-   * @param fusion validated fusion object
+   * Create nomenclature chips for structural elements
    */
-  async function generateStructureNomenclature(fusion: FusionType) {
-    const promises = fusion.structural_elements.map(
-      (el: ElementUnion, index: number) => {
-        if (el.type === "TranscriptSegmentElement") {
-          return getTxSegmentNomenclature(
-            el,
-            index === 0,
-            index === fusion.structural_elements.length - 1
-          ).then((resp) => resp.nomenclature);
-        } else if (el.type === "TemplatedSequenceElement") {
-          return getTemplatedSequenceNomenclature(el).then(
-            (resp) => resp.nomenclature
-          );
-        } else if (el.type === "GeneElement") {
-          return getGeneNomenclature(el).then((resp) => resp.nomenclature);
-        } else if (el.type === "LinkerSequenceElement") {
-          return el.linker_sequence.sequence;
-        } else if (el.type === "UnknownGeneElement") {
-          return "?";
-        } else if (el.type === "MultiplePossibleGenesElement") {
-          return "v";
-        }
-      }
-    );
-    const resolved = await Promise.all(promises);
-    setStructureNomencalture(resolved.join("::"));
-  }
+  // const createStructuralElementsNomenclature = async () => {
+  //   const promises = fusion.structural_elements.map(
+  //     (el: ElementUnion, index: number) => {
+  //       if (el.type === "TranscriptSegmentElement") {
+  //         getTxSegmentNomenclature(
+  //           el,
+  //           index === 0,
+  //           index === fusion.structural_elements.length - 1
+  //         ).then((resp) => ({
+  //           elementType: ElementType.transcriptSegmentElement,
+  //           nomenclature: resp.nomenclature,
+  //         }));
+  //       } else if (el.type === "TemplatedSequenceElement") {
+  //         getTemplatedSequenceNomenclature(el).then((resp) => ({
+  //           elementType: ElementType.templatedSequenceElement,
+  //           nomenclature: resp.nomenclature,
+  //         }));
+  //       } else if (el.type === "GeneElement") {
+  //         getGeneNomenclature(el).then((resp) => ({
+  //           elementType: ElementType.geneElement,
+  //           nomenclature: resp.nomenclature,
+  //         }));
+  //       } else if (el.type === "LinkerSequenceElement") {
+  //         return {nomenclature: el.linker_sequence.sequence, elementType: ElementType.linkerSequenceElement}
+  //       } else if (el.type === "UnknownGeneElement") {
+  //         return {nomenclature: "?", elementType: ElementType.unknownGeneElement}
+  //       } else if (el.type === "MultiplePossibleGenesElement") {
+  //         return {nomenclature: "v", elementType: ElementType.multiplePossibleGenesElement}
+  //       } else {
+  //         throw "Unrecognized element type";
+  //       }
+  //     }
+  //   );
+  //   const resolved = await Promise.all(promises);
+  //   setStructuralElements(resolved);
+  // };
 
   /**
    * Basic wrapper around the regulatory element nomenclature retrieval method
-   * @param fusion validated fusion object
    */
-  async function generateRegulatoryElementNomenclature(fusion: FusionType) {
-    if (fusion.regulatory_element) {
-      getRegElementNomenclature(fusion.regulatory_element).then(
-        (response: NomenclatureResponse) => {
-          if (!response.warnings) {
-            setRegulatoryElementNomenclature(response.nomenclature as string);
-          }
-        }
-      );
-    }
-  }
+  // const renderRegulatoryElementNomenclature = async () => {
+  //   if (fusion.regulatory_element) {
+  //     getRegElementNomenclature(fusion.regulatory_element).then(
+  //       (response: NomenclatureResponse) => {
+  //         if (!response.warnings) {
+  //           return <Chip label={response.nomenclature} />;
+  //         }
+  //       }
+  //     );
+  //   }
+  // };
 
   /**
    * Get updated nomenclature values
    */
-  useEffect(() => {
-    const getStructureNomenclature = async () =>
-      await generateStructureNomenclature(fusion);
-    const getRegulatoryElementsNomenclature = async () =>
-      await generateRegulatoryElementNomenclature(fusion);
-    getStructureNomenclature();
-    getRegulatoryElementsNomenclature();
-  }, []);
+  // useEffect(() => {
+  //   const getStructureNomenclature = async () =>
+  //     await generateStructureNomenclature(fusion);
+  //   const getRegulatoryElementsNomenclature = async () =>
+  //     await generateRegulatoryElementNomenclature(fusion);
+  //   getStructureNomenclature();
+  //   getRegulatoryElementsNomenclature();
+  // }, []);
 
   return (
     <div className="readable-items-container">
@@ -86,18 +104,18 @@ export const Readable: React.FC<Props> = ({ fusion }) => {
         <div className="row">
           <span className="left-item">Structure </span>
           <div className="right-item">
-            <span className="right-sub-item" key={1}>
-              {structureNomenclature}
-            </span>
+            {fusion.structural_elements.map(
+              (element: ClientStructuralElement, index: number) => (
+                <Chip key={index} label={element.nomenclature} />
+              )
+            )}
           </div>
         </div>
         <hr />
         <div className="row">
           <span className="left-item">Regulatory Element</span>
           <span className="right-list-item">
-            <div className="right-sub-list-item">
-              {regulatoryElementNomenclature}
-            </div>
+            <div className="right-sub-list-item"></div>
           </span>
         </div>
         <hr />
