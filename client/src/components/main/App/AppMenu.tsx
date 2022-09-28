@@ -26,14 +26,12 @@ const demoAssayedFusion: ClientAssayedFusion = {
         gene_id: "hgnc:3508",
       },
       element_id: uuid(),
-      element_name: "EWSR1(hgnc:3508)",
-      hr_name: "EWSR1(hgnc:3508)",
+      nomenclature: "EWSR1(hgnc:3508)",
     },
     {
       type: "UnknownGeneElement",
       element_id: uuid(),
-      element_name: "?",
-      hr_name: "?",
+      nomenclature: "?",
     },
   ],
   causative_event: {
@@ -56,8 +54,7 @@ const demoCategoricalFusion: ClientCategoricalFusion = {
     {
       type: "TranscriptSegmentElement",
       element_id: uuid(),
-      element_name: "NM_152263.3 TPM3",
-      hr_name: "NM_002529.3(TPM3):e.8",
+      nomenclature: "NM_002529.3(TPM3):e.8",
       input_type: "exon_coords_tx",
       transcript: "refseq:NM_152263.3",
       input_tx: "NM_152263.3",
@@ -93,8 +90,7 @@ const demoCategoricalFusion: ClientCategoricalFusion = {
     {
       type: "TranscriptSegmentElement",
       element_id: uuid(),
-      element_name: "NM_002609.3 PDGFRB",
-      hr_name: "NM_002609.3(PDGFRB):e.11",
+      nomenclature: "NM_002609.3(PDGFRB):e.11",
       input_type: "exon_coords_tx",
       transcript: "refseq:NM_002609.3",
       input_tx: "NM_002609.3",
