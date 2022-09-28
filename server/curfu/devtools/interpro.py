@@ -233,7 +233,6 @@ def get_protein_accessions(
                     cur_molecule_id = tmp_molecule_id
             else:
                 # TODO does this happen?
-                breakpoint()
                 cur_molecule_id = tmp_molecule_id
         elif (
             cur_ac

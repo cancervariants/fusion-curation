@@ -26,31 +26,20 @@ import UtilitiesNavTabs from "../../../components/Utilities/UtilitiesNavTabs/Uti
 import NavTabs from "../Nav/NavTabs";
 import About from "../About/About";
 // services things
-import { getAssociatedDomains } from "../../../services/main";
+import {
+  ClientElementUnion,
+  getAssociatedDomains,
+} from "../../../services/main";
 import {
   ClientAssayedFusion,
   ClientCategoricalFusion,
-  ClientGeneElement,
-  ClientLinkerElement,
-  ClientMultiplePossibleGenesElement,
-  ClientTemplatedSequenceElement,
-  ClientTranscriptSegmentElement,
-  ClientUnknownGeneElement,
   DomainParams,
   GeneDescriptor,
-  RegulatoryElement,
 } from "../../../services/ResponseModels";
 import LandingPage from "../Landing/LandingPage";
 import AppMenu from "./AppMenu";
 
 type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
-type ClientElement =
-  | ClientTranscriptSegmentElement
-  | ClientGeneElement
-  | ClientUnknownGeneElement
-  | ClientMultiplePossibleGenesElement
-  | ClientLinkerElement
-  | ClientTemplatedSequenceElement;
 
 type GenesLookup = Record<string, GeneDescriptor>;
 type DomainOptionsLookup = Record<string, DomainParams[]>;
@@ -86,7 +75,7 @@ const App = (): JSX.Element => {
   useEffect(() => {
     const newGenes = {};
     const remainingGeneIds: Array<string> = [];
-    fusion.structural_elements.forEach((comp: ClientElement) => {
+    fusion.structural_elements.forEach((comp: ClientElementUnion) => {
       if (
         comp.type &&
         (comp.type === "GeneElement" ||

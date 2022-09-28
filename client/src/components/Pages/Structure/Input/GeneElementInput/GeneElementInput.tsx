@@ -52,8 +52,7 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
               const clientGeneElement: ClientGeneElement = {
                 ...geneElementResponse.element,
                 element_id: element.element_id,
-                element_name: nomenclatureResponse.nomenclature,
-                hr_name: nomenclatureResponse.nomenclature,
+                nomenclature: nomenclatureResponse.nomenclature,
               };
               handleSave(index, clientGeneElement);
             }

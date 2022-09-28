@@ -6,7 +6,10 @@ import {
   Select,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
-import { getRegulatoryElement } from "../../../../services/main";
+import {
+  getRegElementNomenclature,
+  getRegulatoryElement,
+} from "../../../../services/main";
 import {
   ClientRegulatoryElement,
   RegulatoryClass,
@@ -60,12 +63,22 @@ const RegElementForm: React.FC<Props> = ({
       if (reResponse.warnings && reResponse.warnings.length > 0) {
         throw new Error(reResponse.warnings[0]);
       }
-
-      const newRegElement: ClientRegulatoryElement = {
-        ...reResponse.regulatory_element,
-        display_class: regulatoryClassItems[elementClass][1],
-      };
-      setRegElement(newRegElement);
+      getRegElementNomenclature(reResponse.regulatory_element).then(
+        (nomenclatureResponse) => {
+          if (
+            nomenclatureResponse.warnings &&
+            nomenclatureResponse.warnings.length > 0
+          ) {
+            throw new Error(nomenclatureResponse.warnings[0]);
+          }
+          const newRegElement: ClientRegulatoryElement = {
+            ...reResponse.regulatory_element,
+            display_class: regulatoryClassItems[elementClass][1],
+            nomenclature: nomenclatureResponse.nomenclature,
+          };
+          setRegElement(newRegElement);
+        }
+      );
     });
   };
 
