@@ -57,7 +57,9 @@ const StructuralElementInputAccordion: React.FC<
             />
           </Tooltip>
         )}
-        <Typography>{element.hr_name ? element.hr_name : null}</Typography>
+        <Typography>
+          {element.nomenclature ? element.nomenclature : null}
+        </Typography>
         <div>
           <Tooltip title="Delete element">
             <DeleteIcon
