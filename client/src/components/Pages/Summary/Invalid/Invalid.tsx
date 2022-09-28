@@ -64,21 +64,21 @@ export const Invalid: React.FC<Props> = ({ validationErrors }) => {
     return (
       <>
         <Typography>
-          Some required object properties appear to be missing -- look over the
-          documentation for the{" "}
+          Some required object properties appear to be missing or
+          incorrectly-formed -- look over the documentation for the{" "}
           <Link href="https://fusions.cancervariants.org/en/latest/information_model.html">
             Minimum Information Model
           </Link>{" "}
-          for details:
+          for details.
         </Typography>
-        <>
+        <div className="errorContainer">
           {rawErrors.map((err, index) => (
             <>
               <code key={index}>{err}</code>
               <p />
             </>
           ))}
-        </>
+        </div>
       </>
     );
   };
