@@ -78,8 +78,7 @@ const TemplatedSequenceElementInput: React.FC<
             const templatedSequenceElement: ClientTemplatedSequenceElement = {
               ...templatedSequenceResponse.element,
               element_id: element.element_id,
-              element_name: nomenclatureResponse.nomenclature,
-              hr_name: nomenclatureResponse.nomenclature,
+              nomenclature: nomenclatureResponse.nomenclature,
               input_chromosome: chromosome,
               input_start: startPosition,
               input_end: endPosition,

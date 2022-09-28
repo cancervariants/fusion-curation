@@ -14,6 +14,7 @@ from fusor.nomenclature import (
     templated_seq_nomenclature,
     tx_segment_nomenclature,
 )
+from fusor.exceptions import FUSORParametersException
 from pydantic import ValidationError
 
 from curfu import logger
@@ -164,4 +165,28 @@ def generate_gene_nomenclature(gene_element: Dict = Body()) -> ResponseDict:
                 f"Unable to validate gene element with provided parameters: {gene_element}"
             ]
         }
+    return {"nomenclature": nomenclature}
+
+
+@router.post(
+    "/nomenclature/fusion",
+    operation_id="fusionNomenclature",
+    response_model=NomenclatureResponse,
+    response_model_exclude_none=True,
+)
+def generate_fusion_nomenclature(
+    request: Request, fusion: Dict = Body()
+) -> ResponseDict:
+    """
+    Generate nomenclature for complete fusion.
+    :param request: the HTTP request context, supplied by FastAPI. Use to access
+        FUSOR and UTA-associated tools.
+    :param fusion: provided fusion object (should be validly constructed)
+    :return: response with fusion nomenclature
+    """
+    try:
+        valid_fusion = request.app.state.fusor.fusion(**fusion)
+    except FUSORParametersException as e:
+        return {"warnings": [str(e)]}
+    nomenclature = request.app.state.fusor.generate_nomenclature(valid_fusion)
     return {"nomenclature": nomenclature}

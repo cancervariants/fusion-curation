@@ -12,7 +12,7 @@ import {
   TranscriptSegmentElement,
   TxSegmentElementResponse,
 } from "../../../../../services/ResponseModels";
-import React, { useEffect, useState, KeyboardEvent } from "react";
+import React, { useEffect, useState, KeyboardEvent, useContext } from "react";
 import {
   getTxSegmentElementECT,
   getTxSegmentElementGCG,
@@ -22,16 +22,18 @@ import {
 import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import CompInputAccordion from "../StructuralElementInputAccordion";
+import { FusionContext } from "../../../../../global/contexts/FusionContext";
 
 interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
 }
 
-type InputType =
-  | "default"
-  | "genomic_coords_gene"
-  | "genomic_coords_tx"
-  | "exon_coords_tx";
+export enum InputType {
+  default = "default",
+  gcg = "genomic_coords_gene",
+  gct = "genomic_coords_tx",
+  ect = "exon_coords_tx",
+}
 
 const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   element,
@@ -39,8 +41,10 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   handleSave,
   handleDelete,
 }) => {
+  const { fusion } = useContext(FusionContext);
+
   const [txInputType, setTxInputType] = useState<InputType>(
-    element.input_type || "default"
+    (element.input_type as InputType) || InputType.default
   );
 
   // "Text" variables refer to helper or warning text to set under input fields
@@ -77,24 +81,38 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   );
   const [endingExonOffsetText, setEndingExonOffsetText] = useState("");
 
+  /*
+  Depending on this element's location in the structure array, the user
+  needs to provide some kind of coordinate input for either one or both ends
+  of the element. This can change as the user drags the element around the structure
+  array, or adds other elements to the array.
+  */
+  const hasRequiredEnds =
+    index !== 0 && index < fusion.length
+      ? (txStartingGenomic && txEndingGenomic) || (startingExon && endingExon)
+      : index === 0
+      ? txEndingGenomic || endingExon
+      : txStartingGenomic || startingExon;
+
   // programming horror
   const inputComplete =
-    (txInputType === "genomic_coords_gene" &&
+    (txInputType === InputType.gcg &&
       txGene !== "" &&
       txChrom !== "" &&
       txStrand !== "default" &&
       (txStartingGenomic !== "" || txEndingGenomic !== "")) ||
-    (txInputType === "genomic_coords_tx" &&
+    (txInputType === InputType.gct &&
       txAc !== "" &&
       txChrom !== "" &&
       txStrand !== "default" &&
       (txStartingGenomic !== "" || txEndingGenomic !== "")) ||
-    (txInputType === "exon_coords_tx" &&
+    (txInputType === InputType.ect &&
       txAc !== "" &&
       (startingExon !== "" || endingExon !== ""));
 
   const validated =
     inputComplete &&
+    hasRequiredEnds &&
     txGeneText === "" &&
     txChromText === "" &&
     txAcText === "" &&
@@ -122,6 +140,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     endingExon,
     startingExonOffset,
     endingExonOffset,
+    index,
   ]);
 
   const handleTxElementResponse = (
@@ -136,23 +155,25 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       ...inputParams,
     };
 
-    const responseGeneSymbol = finishedElement.gene_descriptor.label;
-    const txAcName = finishedElement.transcript.split(":")[1];
-
-    finishedElement.element_name = `${txAcName} ${responseGeneSymbol}`;
-
-    // TODO get element position
-    getTxSegmentNomenclature(responseElement, false, false).then(
-      (nomenclatureResponse) => {
+    if (!hasRequiredEnds) {
+      finishedElement.nomenclature = "ERROR";
+    } else {
+      // console.log(index);
+      // console.log(fusion.structural_elements.length);
+      getTxSegmentNomenclature(
+        responseElement,
+        index === 0,
+        index !== 0 && index >= fusion.structural_elements.length - 1
+      ).then((nomenclatureResponse) => {
         if (
           !nomenclatureResponse.warnings &&
           nomenclatureResponse.nomenclature
         ) {
-          finishedElement.hr_name = nomenclatureResponse.nomenclature;
+          finishedElement.nomenclature = nomenclatureResponse.nomenclature;
           handleSave(index, finishedElement);
         }
-      }
-    );
+      });
+    }
   };
 
   /**
@@ -211,7 +232,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   const buildTranscriptSegmentElement = () => {
     // fire constructor request
     switch (txInputType) {
-      case "genomic_coords_gene":
+      case InputType.gcg:
         clearGenomicCoordWarnings();
         getTxSegmentElementGCG(
           txGene,
@@ -239,7 +260,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           }
         });
         break;
-      case "genomic_coords_tx":
+      case InputType.gct:
         clearGenomicCoordWarnings();
         getTxSegmentElementGCT(
           txAc,
@@ -268,7 +289,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           }
         });
         break;
-      case "exon_coords_tx":
+      case InputType.ect:
         getTxSegmentElementECT(
           txAc,
           startingExon as string,
@@ -385,7 +406,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
 
   const renderTxOptions = () => {
     switch (txInputType) {
-      case "genomic_coords_gene":
+      case InputType.gcg:
         return (
           <div>
             <div className="mid-inputs">
@@ -414,7 +435,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             <div className="bottom-inputs">{renderTxGenomicCoords()}</div>
           </div>
         );
-      case "genomic_coords_tx":
+      case InputType.gct:
         return (
           <div>
             <div className="mid-inputs">
@@ -446,7 +467,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             <div className="bottom-inputs">{renderTxGenomicCoords()}</div>
           </div>
         );
-      case "exon_coords_tx":
+      case InputType.ect:
         return (
           <div>
             <div className="mid-inputs">

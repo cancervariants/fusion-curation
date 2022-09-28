@@ -36,9 +36,16 @@ import {
   RegulatoryElement,
   RegulatoryClass,
   RegulatoryElementResponse,
-  FunctionalDomain,
-  ClientFunctionalDomain,
 } from "./ResponseModels";
+
+export enum ElementType {
+  transcriptSegmentElement = "TranscriptSegmentElement",
+  geneElement = "GeneElement",
+  templatedSequenceElement = "TemplatedSequenceElement",
+  multiplePossibleGenesElement = "MultiplePossibleGenesElement",
+  unknownGeneElement = "UnknownGeneElement",
+  linkerSequenceElement = "LinkerSequenceElement",
+}
 
 export type ClientElementUnion =
   | ClientMultiplePossibleGenesElement
@@ -371,6 +378,26 @@ export const getGeneNomenclature = async (
   });
   const responseJson = await response.json();
   return responseJson;
+};
+
+/**
+ * Get nomenclature for fusion
+ * @param fusion object to submit
+ * @returns nomenclature if successful
+ */
+export const getFusionNomenclature = async (
+  fusion: AssayedFusion | CategoricalFusion
+): Promise<NomenclatureResponse> => {
+  const response = await fetch("/nomenclature/fusion", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(fusion),
+  });
+  const nomenclatureResponse = await response.json();
+  return nomenclatureResponse;
 };
 
 /**

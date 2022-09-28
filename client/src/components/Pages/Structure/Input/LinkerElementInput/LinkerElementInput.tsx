@@ -36,8 +36,7 @@ const LinkerElementInput: React.FC<LinkerElementInputProps> = ({
         sequence: sequence,
         residue_type: "SO:0000348",
       },
-      element_name: sequence,
-      hr_name: sequence,
+      nomenclature: sequence,
     };
     handleSave(index, linkerElement);
   };

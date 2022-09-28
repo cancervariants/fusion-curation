@@ -1,5 +1,5 @@
 import copy from "clipboard-copy";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ClientElementUnion,
   ClientFusion,
@@ -17,10 +17,11 @@ import {
   TranscriptSegmentElement,
   UnknownGeneElement,
 } from "../../../../services/ResponseModels";
+import { FusionType } from "../Main/Summary";
 import "./SummaryJSON.scss";
 
 interface Props {
-  fusion: ClientFusion;
+  fusion: FusionType;
 }
 
 export const SummaryJSON: React.FC<Props> = ({ fusion }) => {

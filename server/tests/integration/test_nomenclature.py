@@ -3,6 +3,7 @@ from typing import Dict
 
 import pytest
 from httpx import AsyncClient
+from fusor.examples import bcr_abl1
 
 
 @pytest.fixture(scope="module")
@@ -19,8 +20,8 @@ def regulatory_element():
 
 
 @pytest.fixture(scope="module")
-def epcam():
-    """Provide EPCAM transcript segment element."""
+def epcam_5_prime():
+    """Provide EPCAM transcript segment element for 5' end of a fusion."""
     return {
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_002354.2",
@@ -33,6 +34,37 @@ def epcam():
             "gene_id": "hgnc:11529",
         },
         "element_genomic_end": {
+            "id": "fusor.location_descriptor:NC_000002.12",
+            "type": "LocationDescriptor",
+            "label": "NC_000002.12",
+            "location": {
+                "type": "SequenceLocation",
+                "sequence_id": "refseq:NC_000002.12",
+                "interval": {
+                    "type": "SequenceInterval",
+                    "start": {"type": "Number", "value": 47377013},
+                    "end": {"type": "Number", "value": 47377014},
+                },
+            },
+        },
+    }
+
+
+@pytest.fixture(scope="module")
+def epcam_3_prime():
+    """Provide EPCAM transcript segment element for 3' end of a fusion."""
+    return {
+        "type": "TranscriptSegmentElement",
+        "transcript": "refseq:NM_002354.2",
+        "exon_start": 5,
+        "exon_start_offset": 0,
+        "gene_descriptor": {
+            "id": "normalize.gene:EPCAM",
+            "type": "GeneDescriptor",
+            "label": "EPCAM",
+            "gene_id": "hgnc:11529",
+        },
+        "element_genomic_start": {
             "id": "fusor.location_descriptor:NC_000002.12",
             "type": "LocationDescriptor",
             "label": "NC_000002.12",
@@ -110,13 +142,15 @@ async def test_regulatory_element_nomenclature(
         "nomenclature/regulatory_element", json=regulatory_element
     )
     assert response.status_code == 200
-    assert response.json().get("nomenclature", "") == "reg_promoter@G1(hgnc:9339)"
+    assert response.json().get("nomenclature", "") == "reg_p@G1(hgnc:9339)"
 
 
 @pytest.mark.asyncio
 async def test_tx_segment_nomenclature(
     async_client: AsyncClient,
     ntrk1_tx_element_start: Dict,
+    epcam_5_prime: Dict,
+    epcam_3_prime: Dict,
     epcam_invalid: Dict,
 ):
     """Test correctness of transcript segment nomenclature response."""
@@ -125,12 +159,23 @@ async def test_tx_segment_nomenclature(
         json=ntrk1_tx_element_start,
     )
     assert response.status_code == 200
-    assert response.json().get("nomenclature", "") == "refseq:NM_002529.3(NTRK1):e.21"
+    assert response.json().get("nomenclature", "") == "refseq:NM_002529.3(NTRK1):e.2+1"
+
+    response = await async_client.post(
+        "/nomenclature/transcript_segment?first=true&last=false", json=epcam_5_prime
+    )
+    assert response.status_code == 200
+    assert response.json().get("nomenclature", "") == "refseq:NM_002354.2(EPCAM):e.5"
+
+    response = await async_client.post(
+        "/nomenclature/transcript_segment?first=false&last=true", json=epcam_3_prime
+    )
+    assert response.status_code == 200
+    assert response.json().get("nomenclature", "") == "refseq:NM_002354.2(EPCAM):e.5"
 
     response = await async_client.post(
         "/nomenclature/transcript_segment?first=true&last=false", json=epcam_invalid
     )
-    print(response.json())
     assert response.status_code == 200
     assert response.json().get("warnings", []) == [
         "1 validation error for TranscriptSegmentElement\ntranscript\n  field required (type=value_error.missing)"  # noqa: E501
@@ -192,3 +237,14 @@ async def test_templated_sequence_nomenclature(
     assert response.json().get("warnings", []) == [
         "1 validation error for TemplatedSequenceElement\nstrand\n  field required (type=value_error.missing)"  # noqa: E501
     ]
+
+
+@pytest.mark.asyncio
+async def test_fusion_nomenclature(async_client: AsyncClient):
+    """Test correctness of fusion nomneclature endpoint."""
+    response = await async_client.post("/nomenclature/fusion", json=bcr_abl1.dict())
+    assert response.status_code == 200
+    assert (
+        response.json().get("nomenclature", "")
+        == "refseq:NM_004327.3(BCR):e.2+182::ACTAAAGCG::refseq:NM_005157.5(ABL1):e.2-173"
+    )

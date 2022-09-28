@@ -76,26 +76,18 @@ def clientify_structural_element(
     element_args["element_id"] = str(uuid4())
 
     if element.type == StructuralElementType.UNKNOWN_GENE_ELEMENT:
-        element_args["element_name"] = "?"
-        element_args["hr_name"] = "?"
-        element_args["shorthand"] = "?"
+        element_args["nomenclature"] = "?"
         return ClientUnknownGeneElement(**element_args)
     elif element.type == StructuralElementType.MULTIPLE_POSSIBLE_GENES_ELEMENT:
-        element_args["element_name"] = "v"
-        element_args["hr_name"] = "v"
-        element_args["shorthand"] = "v"
+        element_args["nomenclature"] = "v"
         return ClientMultiplePossibleGenesElement(**element_args)
     elif element.type == StructuralElementType.LINKER_SEQUENCE_ELEMENT:
         nm = element.linker_sequence.sequence
-        element_args["element_name"] = nm
-        element_args["hr_name"] = nm
-        element_args["shorthand"] = nm
+        element_args["nomenclature"] = nm
         return ClientLinkerElement(**element_args)
     elif element.type == StructuralElementType.TEMPLATED_SEQUENCE_ELEMENT:
         nm = templated_seq_nomenclature(element, fusor_instance.seqrepo)
-        element_args["element_name"] = nm
-        element_args["hr_name"] = nm
-        element_args["shorthand"] = nm
+        element_args["nomenclature"] = nm
         element_args["input_chromosome"] = element.region.location.sequence_id.split(
             ":"
         )[1]
@@ -104,15 +96,11 @@ def clientify_structural_element(
         return ClientTemplatedSequenceElement(**element_args)
     elif element.type == StructuralElementType.GENE_ELEMENT:
         nm = gene_nomenclature(element)
-        element_args["element_name"] = nm
-        element_args["hr_name"] = nm
-        element_args["shorthand"] = nm
+        element_args["nomenclature"] = nm
         return ClientGeneElement(**element_args)
     elif element.type == StructuralElementType.TRANSCRIPT_SEGMENT_ELEMENT:
         nm = tx_segment_nomenclature(element, first, last)
-        element_args["element_name"] = nm
-        element_args["hr_name"] = nm
-        element_args["shorthand"] = nm
+        element_args["nomenclature"] = nm
         element_args["input_type"] = "exon_coords_tx"
         element_args["input_tx"] = element.transcript.split(":")[1]
         element_args["input_exon_start"] = element.exon_start
@@ -144,8 +132,9 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
         if fusion.critical_functional_domains:
             client_domains = []
             for domain in fusion.critical_functional_domains:
-                domain.domain_id = uuid4()
-                client_domains.append(domain)
+                client_domain = domain.dict()
+                client_domain["domain_id"] = str(uuid4())
+                client_domains.append(client_domain)
             fusion_args["critical_functional_domains"] = client_domains
         return ClientCategoricalFusion(**fusion_args)
     elif fusion.type == FUSORTypes.ASSAYED_FUSION:

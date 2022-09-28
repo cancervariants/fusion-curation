@@ -411,9 +411,7 @@ export interface ClientAssayedFusion {
  */
 export interface ClientTranscriptSegmentElement {
   element_id: string;
-  element_name: string;
-  hr_name: string;
-  shorthand?: string;
+  nomenclature: string;
   type?: "TranscriptSegmentElement";
   transcript: CURIE;
   exon_start?: number;
@@ -440,9 +438,7 @@ export interface ClientTranscriptSegmentElement {
  */
 export interface ClientGeneElement {
   element_id: string;
-  element_name: string;
-  hr_name: string;
-  shorthand?: string;
+  nomenclature: string;
   type?: "GeneElement";
   gene_descriptor: GeneDescriptor;
 }
@@ -451,9 +447,7 @@ export interface ClientGeneElement {
  */
 export interface ClientTemplatedSequenceElement {
   element_id: string;
-  element_name: string;
-  hr_name: string;
-  shorthand?: string;
+  nomenclature: string;
   type?: "TemplatedSequenceElement";
   region: LocationDescriptor;
   strand: Strand;
@@ -466,9 +460,7 @@ export interface ClientTemplatedSequenceElement {
  */
 export interface ClientLinkerElement {
   element_id: string;
-  element_name: string;
-  hr_name: string;
-  shorthand?: string;
+  nomenclature: string;
   type?: "LinkerSequenceElement";
   linker_sequence: SequenceDescriptor;
 }
@@ -477,9 +469,7 @@ export interface ClientLinkerElement {
  */
 export interface ClientUnknownGeneElement {
   element_id: string;
-  element_name: string;
-  hr_name: string;
-  shorthand?: string;
+  nomenclature: string;
   type?: "UnknownGeneElement";
 }
 /**
@@ -504,9 +494,7 @@ export interface ClientCategoricalFusion {
  */
 export interface ClientMultiplePossibleGenesElement {
   element_id: string;
-  element_name: string;
-  hr_name: string;
-  shorthand?: string;
+  nomenclature: string;
   type?: "MultiplePossibleGenesElement";
 }
 /**
@@ -531,15 +519,14 @@ export interface ClientRegulatoryElement {
   associated_gene?: GeneDescriptor;
   feature_location?: LocationDescriptor;
   display_class: string;
+  nomenclature: string;
 }
 /**
  * Abstract class to provide identification properties used by client.
  */
 export interface ClientStructuralElement {
   element_id: string;
-  element_name: string;
-  hr_name: string;
-  shorthand?: string;
+  nomenclature: string;
 }
 /**
  * Response model for genomic coordinates retrieval

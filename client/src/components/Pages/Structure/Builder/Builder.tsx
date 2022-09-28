@@ -10,7 +10,7 @@ import { v4 as uuid } from "uuid";
 // global fusion
 import { FusionContext } from "../../../../global/contexts/FusionContext";
 // elements
-import { ClientElementUnion } from "../../../../services/main";
+import { ClientElementUnion, ElementType } from "../../../../services/main";
 import {
   ClientMultiplePossibleGenesElement,
   ClientUnknownGeneElement,
@@ -24,18 +24,23 @@ import TxSegmentElementInput from "../Input/TxSegmentElementInput/TxSegmentEleme
 import "./Builder.scss";
 
 const EDITABLE_ELEMENT_TYPES = [
-  "GeneElement",
-  "LinkerSequenceElement",
-  "TemplatedSequenceElement",
-  "TranscriptSegmentElement",
+  ElementType.geneElement,
+  ElementType.templatedSequenceElement,
+  ElementType.linkerSequenceElement,
+  ElementType.transcriptSegmentElement,
+];
+
+const STATIC_ELEMENT_TYPES = [
+  ElementType.multiplePossibleGenesElement,
+  ElementType.unknownGeneElement,
 ];
 
 // these are the empty object templates the user drags into the array
 // TODO: should be dynamic (?)
 const ELEMENT_TEMPLATE = [
   {
-    type: "GeneElement",
-    element_name: "",
+    type: ElementType.geneElement,
+    nomenclature: "",
     element_id: uuid(),
     gene_descriptor: {
       id: "",
@@ -45,8 +50,8 @@ const ELEMENT_TEMPLATE = [
     },
   },
   {
-    type: "TranscriptSegmentElement",
-    element_name: "",
+    type: ElementType.transcriptSegmentElement,
+    nomenclature: "",
     element_id: uuid(),
     exon_start: null,
     exon_start_offset: null,
@@ -60,13 +65,13 @@ const ELEMENT_TEMPLATE = [
     },
   },
   {
-    element_name: "",
-    type: "LinkerSequenceElement",
+    nomenclature: "",
+    type: ElementType.linkerSequenceElement,
     element_id: uuid(),
   },
   {
-    element_name: "",
-    type: "TemplatedSequenceElement",
+    nomenclature: "",
+    type: ElementType.templatedSequenceElement,
     element_id: uuid(),
     id: "",
     location: {
@@ -86,16 +91,14 @@ const ELEMENT_TEMPLATE = [
     },
   },
   {
-    element_name: "?",
-    type: "UnknownGeneElement",
+    type: ElementType.unknownGeneElement,
     element_id: uuid(),
-    hr_name: "?",
+    nomenclature: "?",
   },
   {
-    element_name: "v",
-    type: "MultiplePossibleGenesElement",
+    type: ElementType.multiplePossibleGenesElement,
     element_id: uuid(),
-    hr_name: "v",
+    nomenclature: "v",
   },
 ];
 
@@ -125,7 +128,7 @@ const Builder: React.FC = () => {
 
     // auto-save elements that don't need any additional input
     // TODO shouldn't need explicit autosave
-    if (["AnyGeneElement", "UnknownGeneElement"].includes(newItem.type)) {
+    if (STATIC_ELEMENT_TYPES.includes(newItem.type)) {
       handleSave(
         destination.index,
         newItem as ClientMultiplePossibleGenesElement | ClientUnknownGeneElement
@@ -144,7 +147,9 @@ const Builder: React.FC = () => {
   // Update global fusion object
   const handleSave = (index: number, newElement: ClientElementUnion) => {
     const items = Array.from(fusion.structural_elements);
-    const spliceLength = EDITABLE_ELEMENT_TYPES.includes(newElement.type)
+    const spliceLength = EDITABLE_ELEMENT_TYPES.includes(
+      newElement.type as ElementType
+    )
       ? 1
       : 0;
     items.splice(index, spliceLength, newElement);
@@ -178,32 +183,51 @@ const Builder: React.FC = () => {
     }
   };
 
+  /**
+   * Render nomenclature preview footer underneath builder interface
+   * @returns completed footer element
+   */
+  const renderFooterBar = () => (
+    <div className="hr-section">
+      {fusion.structural_elements
+        ?.filter(
+          (element: ClientElementUnion) =>
+            Boolean(element) && element.nomenclature
+        )
+        .map((element: ClientElementUnion, index: number) => (
+          <div key={element.element_id}>{`${index ? "::" : ""}${
+            element.nomenclature
+          }`}</div>
+        ))}
+    </div>
+  );
+
   const renderElement = (element: ClientElementUnion, index: number) => {
     switch (element.type) {
-      case "GeneElement":
+      case ElementType.geneElement:
         return (
           <GeneElementInput {...{ element, index, handleDelete, handleSave }} />
         );
-      case "LinkerSequenceElement":
+      case ElementType.linkerSequenceElement:
         return (
           <LinkerElementInput
             {...{ element, index, handleDelete, handleSave }}
           />
         );
-      case "TemplatedSequenceElement":
+      case ElementType.templatedSequenceElement:
         return (
           <TemplatedSequenceElementInput
             {...{ element, index, handleDelete, handleSave }}
           />
         );
-      case "TranscriptSegmentElement":
+      case ElementType.transcriptSegmentElement:
         return (
           <TxSegmentElementInput
             {...{ element, index, handleDelete, handleSave }}
           />
         );
-      case "MultiplePossibleGenesElement":
-      case "UnknownGeneElement":
+      case ElementType.multiplePossibleGenesElement:
+      case ElementType.unknownGeneElement:
         return <StaticElement {...{ element, index, handleDelete }} />;
     }
   };
@@ -217,15 +241,15 @@ const Builder: React.FC = () => {
               className="options"
               {...provided.droppableProps}
               ref={provided.innerRef}
-              style={{display: "flex" }}
+              style={{ display: "flex" }}
             >
               <div className="options-container">
                 {ELEMENT_TEMPLATE.map(({ element_id, type }, index) => {
                   if (
                     (fusion.type === "AssayedFusion" &&
-                      type !== "MultiplePossibleGenesElement") ||
+                      type !== ElementType.multiplePossibleGenesElement) ||
                     (fusion.type === "CategoricalFusion" &&
-                      type !== "UnknownGeneElement")
+                      type !== ElementType.unknownGeneElement)
                   ) {
                     return (
                       <Draggable
@@ -312,18 +336,7 @@ const Builder: React.FC = () => {
               </div>
             )}
           </Droppable>
-          <div className="hr-section">
-            {fusion.structural_elements
-              ?.filter(
-                (element: ClientElementUnion) =>
-                  Boolean(element) && element.hr_name
-              )
-              .map((element: ClientElementUnion, index: number) => (
-                <div key={element.element_id}>{`${index ? "::" : ""}${
-                  element.hr_name
-                }`}</div>
-              ))}
-          </div>
+          {renderFooterBar()}
         </div>
       </DragDropContext>
     </div>
