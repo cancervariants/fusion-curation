@@ -1,7 +1,9 @@
 """Provide FastAPI application and route declarations."""
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from starlette.templating import _TemplateResponse as TemplateResponse
 from fusor import FUSOR, __version__ as fusor_version
 from uta_tools.version import __version__ as uta_tools_version
 
@@ -21,30 +23,68 @@ from curfu.routers import (
 )
 
 
-app = FastAPI(
+fastapi_app = FastAPI(
     version=curfu_version,
     swagger_ui_parameters={"tryItOutEnabled": True},
     docs_url="/docs",
     openapi_url="/openapi.json",
 )
 
-app.include_router(utilities.router)
-app.include_router(constructors.router)
-app.include_router(lookup.router)
-app.include_router(complete.router)
-app.include_router(validate.router)
-app.include_router(nomenclature.router)
-app.include_router(demo.router)
+fastapi_app.include_router(utilities.router)
+fastapi_app.include_router(constructors.router)
+fastapi_app.include_router(lookup.router)
+fastapi_app.include_router(complete.router)
+fastapi_app.include_router(validate.router)
+fastapi_app.include_router(nomenclature.router)
+fastapi_app.include_router(demo.router)
 
 origins = ["http://localhost", "http://localhost:3000"]
 
-app.add_middleware(
+fastapi_app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+BUILD_DIR = APP_ROOT / "build"
+
+
+def serve_react_app(app: FastAPI) -> FastAPI:
+    """
+    Wrap application initialization in Starlette route param converter.
+
+    :param app: FastAPI application instance
+    :return: application with React frontend mounted
+    """
+    app.mount(
+        "/static/",
+        StaticFiles(directory=BUILD_DIR / "static"),
+        name="React application static files",
+    )
+    templates = Jinja2Templates(directory=BUILD_DIR.as_posix())
+
+    @app.get("/{full_path:path}")
+    async def serve_react_app(request: Request, full_path: str) -> TemplateResponse:
+        """
+        Add arbitrary path support to FastAPI service.
+
+        React-router provides something akin to client-side routing based out
+        of the Javascript embedded in index.html. However, FastAPI will intercede
+        and handle all client requests, and will 404 on any non-server-defined paths.
+        This function reroutes those otherwise failed requests against the React-Router
+        client, allowing it to redirect the client to the appropriate location.
+        :param request: client request object
+        :param full_path: request path
+        :return: Starlette template response object
+        """
+        return templates.TemplateResponse("index.html", {"request": request})
+
+    return app
+
+
+app = serve_react_app(fastapi_app)
 
 
 async def start_fusor() -> FUSOR:
@@ -107,4 +147,4 @@ def get_service_info() -> ServiceInfoResponse:
     )
 
 
-app.mount("/", StaticFiles(html=True, directory=APP_ROOT / "build"))
+# app.mount("/", StaticFiles(html=True, directory=APP_ROOT / "build"))
