@@ -1,150 +1,170 @@
-import './Summary.scss'
-import { FusionContext } from '../../../../global/contexts/FusionContext';
-import React, { useContext, useState, useEffect } from 'react';
-import {Button, Tabs, Tab} from '@material-ui/core/';
-import { Readable } from '../Readable/Readable';
-import { SummaryJSON } from '../JSON/SummaryJSON';
-import { useColorTheme } from '../../../../global/contexts/Theme/ColorThemeContext';
+import "./Summary.scss";
+import { FusionContext } from "../../../../global/contexts/FusionContext";
+import React, { useContext, useEffect, useState } from "react";
 
-import { Success } from '../Success/Success';
+import {
+  ClientElementUnion,
+  ElementUnion,
+  validateFusion,
+} from "../../../../services/main";
+import {
+  AssayedFusion,
+  CategoricalFusion,
+  FunctionalDomain,
+  GeneElement,
+  LinkerElement,
+  MultiplePossibleGenesElement,
+  RegulatoryElement,
+  TemplatedSequenceElement,
+  TranscriptSegmentElement,
+  UnknownGeneElement,
+} from "../../../../services/ResponseModels";
+import { Success } from "../Success/Success";
+import { Invalid } from "../Invalid/Invalid";
 
-import {validateFusion} from '../../../../services/main';
+export type FusionType = AssayedFusion | CategoricalFusion;
 
 interface Props {
-  index: number
+  index: number;
 }
 
+export const Summary: React.FC<Props> = ({ index }) => {
+  const [validatedFusion, setValidatedFusion] = useState<
+    AssayedFusion | CategoricalFusion | null
+  >(null);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const { fusion } = useContext(FusionContext);
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <div>
-          {children}
-        </div>
-      )}
-    </div>
-  );
-}
-
-
-
-
-export const Summary: React.FC<Props> = ( { index }) => {
-
-  const { colorTheme } = useColorTheme();
-
-  const [value, setValue] = useState(0);
-
-  const [saved, setSaved] = useState(false);
-  const [accepted, setAccepted] = useState(false);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  /**
+   * Drop structural element metadata fields used by client
+   * @param element clientside element to prune
+   * @returns FUSOR-compliant element object
+   */
+  const fusorifyStructuralElement = (
+    element: ClientElementUnion
+  ): ElementUnion => {
+    switch (element.type) {
+      case "GeneElement":
+        const geneElement: GeneElement = {
+          type: element.type,
+          gene_descriptor: element.gene_descriptor,
+        };
+        return geneElement;
+      case "LinkerSequenceElement":
+        const linkerElement: LinkerElement = {
+          type: element.type,
+          linker_sequence: element.linker_sequence,
+        };
+        return linkerElement;
+      case "TemplatedSequenceElement":
+        const templatedSequenceElement: TemplatedSequenceElement = {
+          type: element.type,
+          region: element.region,
+          strand: element.strand,
+        };
+        return templatedSequenceElement;
+      case "TranscriptSegmentElement":
+        const txSegmentElement: TranscriptSegmentElement = {
+          type: element.type,
+          transcript: element.transcript,
+          exon_start: element.exon_start,
+          exon_start_offset: element.exon_start_offset,
+          exon_end: element.exon_end,
+          exon_end_offset: element.exon_end_offset,
+          gene_descriptor: element.gene_descriptor,
+          element_genomic_start: element.element_genomic_start,
+          element_genomic_end: element.element_genomic_end,
+        };
+        return txSegmentElement;
+      case "MultiplePossibleGenesElement":
+      case "UnknownGeneElement":
+        const newElement: MultiplePossibleGenesElement | UnknownGeneElement = {
+          type: element.type,
+        };
+        return newElement;
+      default:
+        throw new Error("Unrecognized element type");
+    }
   };
 
-  const handleSubmit = () => {
-    setSaved(true)
-    validateFusion(fusion)
-      .then(fusionResponse => {
-        let {fusion, warnings} = fusionResponse
-      })
+  /**
+   * Send fusion validation request and update local state if successful
+   * @param formattedFusion fusion with client-oriented properties dropped
+   */
+  const requestValidatedFusion = (
+    formattedFusion: AssayedFusion | CategoricalFusion
+  ) => {
+    // make request
+    validateFusion(formattedFusion).then((response) => {
+      if (response.warnings && response.warnings?.length > 0) {
+        if (
+          validationErrors !== null &&
+          JSON.stringify(response.warnings.sort()) !==
+            JSON.stringify(validationErrors.sort())
+        ) {
+          setValidationErrors(response.warnings);
+        }
+      } else {
+        setValidationErrors([]);
+        setValidatedFusion(
+          response.fusion as CategoricalFusion | AssayedFusion
+        );
+      }
+    });
+  };
 
-  }
-  
-  let {fusion} = useContext(FusionContext);
-  let genes = [];
-  let proteinDomains = fusion.protein_domains || [];
-  let regulatoryElements = fusion.regulatory_elements|| [];
-  let transcriptComponents = fusion.transcript_components || [];
-  let rFramePreserved = fusion.r_frame_preserved || null;
-  let causativeEvent = fusion.causative_event || 'Unknown'
-
-  //TODO: fix this mess. formatting transcript stuff
-
-  // let transcriptGeneComponents = transcriptComponents.filter(obj => {
-  //   return obj.component_type === 'gene'
-  // })
-
-  // let transcriptOthers = transcriptComponents.map(obj => {
-  //   if(obj.component_type !== 'gene'){ 
-  //     return obj.component_name
-  //   }
-  // })
-
-  // let transcriptGenes = transcriptGeneComponents.map((comp, index) => {
-  //   return (`${index ? '::' : ''}${comp.gene_descriptor.label}`);
-  // })
-
-  // transcriptGenes = transcriptGenes.join('').toUpperCase();
-
-  // transcriptComponents = [transcriptGenes, ...transcriptOthers]
-
-  let regElementGenes = regulatoryElements.map((el)  => {
-    return (`, ${el.gene_descriptor.label}`);
-  })
-
-  
-
-  // let genes = [...transcriptGenes, ...regElementGenes]
+  /**
+   * On component render, restructure fusion to drop properties used for client state purposes,
+   * transmit to validation endpoint, and update local copy.
+   */
+  useEffect(() => {
+    const structuralElements: ElementUnion[] = fusion.structural_elements?.map(
+      (element: ClientElementUnion) => fusorifyStructuralElement(element)
+    );
+    let regulatoryElement: RegulatoryElement | null = null;
+    if (fusion.regulatory_element) {
+      regulatoryElement = {
+        type: fusion.regulatory_element.type,
+        associated_gene: fusion.regulatory_element.associated_gene,
+        regulatory_class: fusion.regulatory_element.regulatory_class,
+        feature_id: fusion.regulatory_element.feature_id,
+        feature_location: fusion.regulatory_element.feature_location,
+      };
+    }
+    let formattedFusion: AssayedFusion | CategoricalFusion;
+    if (fusion.type === "AssayedFusion") {
+      formattedFusion = {
+        ...fusion,
+        structural_elements: structuralElements,
+        regulatory_element: regulatoryElement,
+      };
+    } else {
+      const criticalDomains: FunctionalDomain[] =
+        fusion.critical_functional_domains?.map((domain: FunctionalDomain) => ({
+          _id: domain._id,
+          label: domain.label,
+          status: domain.status,
+          associated_gene: domain.associated_gene,
+          sequence_location: domain.sequence_location,
+        }));
+      formattedFusion = {
+        ...fusion,
+        structural_elements: structuralElements,
+        regulatory_element: regulatoryElement,
+        critical_functional_domains: criticalDomains,
+      };
+    }
+    requestValidatedFusion(formattedFusion);
+  }, [fusion]);
 
   return (
-    <div className="summary-tab-container">
-      <div className="summary-sub-tab-container">
-
-        {
-          (accepted || !saved) ? 
-          <>
-          <div className="summary-nav">
-        <Tabs TabIndicatorProps={{style: {backgroundColor: colorTheme['--primary']}}} value={value} onChange={handleChange} centered>
-        <Tab label="Summary" />
-        <Tab label="JSON" />
-      </Tabs>
-        </div>
-
-      <TabPanel value={value} index={0}>
-        <div className="summary-sub-tab">
-          <Readable 
-          genes={genes} 
-          proteinDomains={proteinDomains} 
-          regulatoryElements={regulatoryElements} 
-          transcriptComponents={transcriptComponents} 
-          rFramePreserved={rFramePreserved}
-          causativeEvent={causativeEvent}
-        />
-        </div>
-
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-      <div className="summary-sub-tab">
-        <SummaryJSON 
-          fusion={fusion}
-        />
-      </div>
-      </TabPanel>
-
-  
-      <div className="save-button-container">
-      <Button style={{width: '300px', marginTop: "30px"}} variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
-      </div>
-      </>
-      : 
-      <div className="success-confirmation">
-        <Success setAccepted={setAccepted} />
-      </div>
-        }
-        
-      </div>
-      
-      
-    </div>
-  )
-}
+    <>
+      {(!validationErrors || validationErrors.length === 0) &&
+      validatedFusion ? (
+        <Success fusion={validatedFusion} />
+      ) : (
+        <Invalid validationErrors={validationErrors} />
+      )}
+    </>
+  );
+};

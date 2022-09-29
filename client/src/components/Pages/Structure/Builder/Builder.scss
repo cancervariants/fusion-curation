@@ -1,166 +1,189 @@
 .builder {
-	display: flex;
-	align-items: stretch;
-	background: var(--light-gray);
-	flex-grow: 1;
+  display: flex;
+  align-items: stretch;
+  background: var(--light-gray);
+  flex-grow: 1;
+  height: 65vh;
 
-	.gene {
-		background: var(--gene);
-	}
+  .gene {
+    background: var(--gene);
+  }
 
-	.transcript_segment {
-		background-color: var(--transcript);
-	}
+  .transcript_segment {
+    background-color: var(--transcript);
+  }
 
-	.linker_sequence {
-		background-color: var(--linker);
-	}
+  .linker_sequence {
+    background-color: var(--linker);
+  }
 
-	.genomic_region {
-		background-color: var(--region);
-	}
+  .templated_sequence {
+    background-color: var(--region);
+  }
 
-	.block-container {
-		padding: 40px 90px;
-		text-align: center;
-		flex: 1;
-		overflow: scroll;
-	}
+  .any_gene {
+    background-color: var(--any-gene);
+  }
 
-	.comp-input {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		position: relative;
+  .unknown_gene {
+    background-color: var(--unknown-gene);
+  }
 
-		.hr-name {
-			text-align: center;
-		}
+  .block-container {
+    padding: 40px 90px;
+    text-align: center;
+    flex: 1;
+    overflow: scroll;
+  }
 
-		.button-trash {
-			position: absolute;
-			right: 0;
-			top: 1px;
-			cursor: pointer;
-		}
-	}
+  .comp-input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 
-	.block {
-		// display: flex;
-		text-align: center;
-		justify-content: center;
-		font-weight: 300;
-		padding: 10px;
-		margin: 0 50px 10px 50px;
-		font-size: 18px;
-		border-radius: 5px;
-	}
+    .hr-name {
+      text-align: center;
+    }
 
-	h3 {
-		text-align: center;
-		font-weight: 500;
-	}
+    .button-edit {
+      position: absolute;
+      right: 30px;
+      top: 1px;
+      cursor: pointer;
+    }
 
-	.options {
-		background-color: var(--medium-gray);
-		width: 30%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
+    .button-edit-disabled {
+      position: absolute;
+      right: 30px;
+      top: 1px;
+    }
 
-	.option-item {
-		display: flex;
-		text-align: center;
-		justify-content: center;
-		font-weight: 300;
-		padding: 10px;
-		margin: 0 50px 15px 50px;
-		font-size: 18px;
-		border-radius: 5px;
+    .button-trash {
+      position: absolute;
+      right: 0;
+      top: 1px;
+      cursor: pointer;
+    }
+  }
 
-		.gene {
-			border: 2px solid var(--gene-light) !important;
-			color: var(--dark-gray);
-			font-weight: 500;
-		}
+  .block {
+    // display: flex;
+    text-align: center;
+    justify-content: center;
+    font-weight: 300;
+    padding: 10px;
+    margin: 0 50px 10px 50px;
+    font-size: 18px;
+    border-radius: 5px;
+  }
 
-		.transcript_component {
-			border: 2px solid var(--transcript-light) !important;
-			color: var(--dark-gray);
-			font-weight: 500;
-		}
+  h3 {
+    text-align: center;
+    font-weight: 500;
+  }
 
-		.linker_sequence {
-			border: 2px solid var(--linker-light) !important;
-			color: var(--dark-gray);
-			font-weight: 500;
-		}
+  .options {
+    background-color: var(--medium-gray);
+    display: flex;
+  }
 
-		.genomic_region {
-			border: 2px solid var(--region-light) !important;
-			color: var(--dark-gray);
-			font-weight: 500;
-		}
-	}
+  .option-item {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    font-weight: 300;
+    padding: 1em;
+    font-size: 18px;
+    border-radius: 5px;
 
-	.card-parent {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-around;
-		width: 100%;
+    .gene {
+      border: 2px solid var(--gene-light) !important;
+      color: var(--dark-gray);
+      font-weight: 500;
+    }
 
-		.input-parent {
-			display: flex;
-			flex-direction: column;
-			width: 300px;
-		}
+    .structural_element {
+      border: 2px solid var(--transcript-light) !important;
+      color: var(--dark-gray);
+      font-weight: 500;
+    }
 
-		.buttons {
-			width: 40px;
-			margin-left: -15px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-	}
+    .linker_sequence {
+      border: 2px solid var(--linker-light) !important;
+      color: var(--dark-gray);
+      font-weight: 500;
+    }
 
-	.top-inputs {
-		display: flex;
-		justify-content: space-between;
-	}
+    .templated_sequence {
+      border: 2px solid var(--region-light) !important;
+      color: var(--dark-gray);
+      font-weight: 500;
+    }
+  }
 
-	.bottom-inputs {
-		display: flex;
-		justify-content: space-between;
-	}
+  .card-parent {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
 
-	.hidden {
-		display: none;
-	}
+    .input-parent {
+      display: flex;
+      flex-direction: column;
+      width: 300px;
+    }
 
-	.instruction {
-		display: flex;
-		margin-top: 150px;
-		margin-left: 150px;
-		font-weight: 300;
-		font-size: xx-large;
-	}
+    .buttons {
+      width: 40px;
+      margin-left: -15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 
-	.right-side {
-		display: flex;
-		flex-direction: column;
-		width: 75%;
+  .top-inputs {
+    display: flex;
+    justify-content: space-between;
+  }
 
-		.hr-section {
-			align-self: center;
-			background-color: #e1e7ed;
-			width: 100%;
-			height: 20%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin: 0 auto;
-		}
-	}
+  .mid-inputs {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .bottom-inputs {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .instruction {
+    display: flex;
+    margin-top: 150px;
+    margin-left: 150px;
+    font-weight: 300;
+    font-size: xx-large;
+  }
+
+  .right-side {
+    display: flex;
+    flex-direction: column;
+    width: 75%;
+
+    .hr-section {
+      align-self: center;
+      background-color: #e1e7ed;
+      width: 100%;
+      height: 10%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+  }
 }

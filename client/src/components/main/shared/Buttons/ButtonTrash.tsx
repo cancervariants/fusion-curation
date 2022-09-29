@@ -1,6 +1,9 @@
-import * as React from "react"
+/* eslint-disable max-len */
+import * as React from "react";
 
-function ButtonTrash(props: React.SVGProps<SVGSVGElement>) {
+const ButtonTrash = (
+  props: React.SVGProps<SVGSVGElement>
+): React.ReactElement => {
   return (
     <svg
       data-name="Layer 1"
@@ -13,7 +16,7 @@ function ButtonTrash(props: React.SVGProps<SVGSVGElement>) {
         fillRule="evenodd"
       />
     </svg>
-  )
-}
+  );
+};
 
-export default ButtonTrash
+export default ButtonTrash;

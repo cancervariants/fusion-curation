@@ -4,7 +4,7 @@
   padding: 20px;
   overflow-y: scroll;
   overflow-x: hidden;
-  border: .5px solid rgba(0, 0, 0, 0.1);
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
   text-overflow: clip;
   font-family: "Lucida Console", Monaco, monospace;
   font-size: x-small;
@@ -14,10 +14,13 @@
   cursor: pointer;
 }
 
+.summary-json-container-error {
+  color: red;
+}
+
 .clicking {
   background-color: var(--light-gray);
 }
-
 
 .copy-message {
   font-family: "Poppins", Arial, Helvetica, sans-serif;
@@ -34,6 +37,6 @@
 }
 ::-webkit-scrollbar-thumb {
   border-radius: 4px;
-  background-color: rgba(0,0,0,.5);
-  box-shadow: 0 0 1px rgba(255,255,255,.5);
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }

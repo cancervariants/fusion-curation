@@ -1,7 +1,9 @@
 [flake8]
-ignore = D205, D400
-max-line-length=100
+ignore = D205, D400, D301, W503
+max-line-length=88
 exclude =
   .git
   __pycache__
   curation/version.py
+per-file-ignores =
+  */tests/*:D403

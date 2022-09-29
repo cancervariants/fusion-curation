@@ -1,19 +1,28 @@
-import {useContext, useState, useEffect} from 'react';
-import {InputLabel, MenuItem, FormControl, Select, Button, TextField} from '@material-ui/core/';
-import {Autocomplete} from '@material-ui/lab/';
-import { makeStyles } from '@material-ui/core/styles';
-import { FusionContext } from '../../../../global/contexts/FusionContext';
-import { v4 as uuid } from 'uuid';
-import './DomainForm.scss'
-
-import { getDomainId } from '../../../../services/main';
-import { getGeneId } from '../../../../services/main';
-import { getDomainList } from '../../../../services/main';
+import { useContext, useState, useEffect } from "react";
+import {
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Select,
+  Button,
+} from "@material-ui/core/";
+import { makeStyles } from "@material-ui/core/styles";
+import { FusionContext } from "../../../../global/contexts/FusionContext";
+import { DomainOptionsContext } from "../../../../global/contexts/DomainOptionsContext";
+import { GeneContext } from "../../../../global/contexts/GeneContext";
+import { v4 as uuid } from "uuid";
+import "./DomainForm.scss";
+import {
+  ClientFunctionalDomain,
+  DomainParams,
+  DomainStatus,
+} from "../../../../services/ResponseModels";
+import { getFunctionalDomain } from "../../../../services/main";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
-    minWidth: '80%',
+    minWidth: "80%",
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
@@ -21,162 +30,150 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DomainForm: React.FC = () => {
-  // TODO: shouldn't be necessary
+  // // TODO: shouldn't be necessary
   useEffect(() => {
-    if (domains === undefined){
-      setFusion({ ...fusion, ...{ "protein_domains" :  []}});
+    if (fusion.critical_functional_domains === undefined) {
+      setFusion({ ...fusion, ...{ critical_functional_domains: [] } });
     }
-  }, [])
+  }, []);
 
   const classes = useStyles();
 
-  const {fusion, setFusion} = useContext(FusionContext);
-  const domains = fusion.protein_domains;
+  const { domainOptions } = useContext(DomainOptionsContext);
+  const { globalGenes } = useContext(GeneContext);
+  const { fusion, setFusion } = useContext(FusionContext);
 
-  const [domainList, setDomainList] = useState([]);
-
-  const [domain, setDomain] = useState(null);
-  const [gene, setGene] = useState(null);
-  const [status, setStatus] = useState(null);
-
-  const [geneWarning, setGeneWarning] = useState('');
-  const [domainWarning, setDomainWarning] = useState('');
-
-  const handleDomainInput = (value) => {
-
-    setDomainWarning('');
-
-    getDomainList(value).then(data => {
-      let suggestions = [];
-      data.suggestions?.forEach(suggestion => {
-        suggestions.push(suggestion[0]);
-      })
-      setDomainList(suggestions);
-      
-    })
-  };
+  // values for visible item
+  const [gene, setGene] = useState("");
+  const [domain, setDomain] = useState("");
+  const [status, setStatus] = useState("");
 
   const handleGeneChange = (event) => {
-    setGeneWarning('');
-    setGene(event.target.value.toUpperCase());
+    setGene(event.target.value);
   };
+
   const handleStatusChange = (event) => {
     setStatus(event.target.value);
   };
 
+  const handleDomainChange = (event) => {
+    setDomain(event.target.value);
+  };
 
   const handleAdd = () => {
-    //TODO: pull from model file
-    let newDomain = {
-      "status": "",
-      "name": "",
-      "id": "",
-      "domain_id": uuid(),
-      "gene_descriptor": {
-        "id": "",
-        "label": "",
-        "gene_id": ""
+    const domainParams = domainOptions[gene].find(
+      (domainOption: DomainParams) => domainOption.interpro_id == domain
+    );
+    getFunctionalDomain(domainParams, status as DomainStatus, gene).then(
+      (response) => {
+        if (response.domain) {
+          const newDomain: ClientFunctionalDomain = {
+            domain_id: uuid(),
+            ...response.domain,
+          };
+          const cloneArray = Array.from(fusion["critical_functional_domains"]);
+          cloneArray.push(newDomain);
+          setFusion({
+            ...fusion,
+            ...{ critical_functional_domains: cloneArray },
+          });
+
+          setStatus("default");
+          setDomain("");
+          setGene("");
+        }
       }
+    );
+  };
+
+  const renderGeneOptions = () => {
+    // concatenate default/unselectable option with all selectable genes
+    return [<MenuItem key={-1} value="" disabled></MenuItem>].concat(
+      Object.keys(domainOptions).map((geneId: string, index: number) => (
+        <MenuItem key={index} value={geneId}>
+          {`${globalGenes[geneId].label}(${geneId})`}
+        </MenuItem>
+      ))
+    );
+  };
+
+  const renderDomainOptions = () => {
+    const domainOptionMenuItems = [
+      <MenuItem key={-1} value="" disabled></MenuItem>,
+    ];
+    if (domainOptions[gene]) {
+      const uniqueInterproIds: Set<string> = new Set();
+      domainOptions[gene].forEach((domain: DomainParams, index: number) => {
+        if (!uniqueInterproIds.has(domain.interpro_id)) {
+          uniqueInterproIds.add(domain.interpro_id);
+          domainOptionMenuItems.push(
+            <MenuItem key={index} value={domain.interpro_id}>
+              {domain.domain_name}
+            </MenuItem>
+          );
+        }
+      });
     }
-
-    getDomainId(domain)
-      .then(domainResponse => {
-        let {domain, domain_id, warnings} = domainResponse;
-
-        if (domainResponse.statusCode > 400){
-          setDomainWarning(warnings);
-          throw new Error(warnings);
-        }
-        
-        newDomain.status = status;
-        newDomain.name = domain;
-        newDomain.id = domain_id;
-
-        return newDomain;
-      }
-    )
-    .then((newDomain) => {
-      getGeneId(gene).then(geneResponse => {
-        let {term, concept_id, warnings} = geneResponse;
-        if (concept_id === null){
-          setGeneWarning(warnings);
-          throw new Error(warnings);
-        }
-
-        newDomain.gene_descriptor.label = term;
-        newDomain.gene_descriptor.id = `gene:${term}`;
-        newDomain.gene_descriptor.gene_id = concept_id;
-
-        let cloneArray = Array.from(fusion['protein_domains']);
-        cloneArray.push(newDomain);
-        setFusion({ ...fusion, ...{ "protein_domains" :  cloneArray}});
-      }
-    )
-    .catch(error => {
-      console.error(`Error!!!! ${error}`)
-    })
-    })
-    .catch(error => {
-      console.error(`Error!!!! ${error}`)
-    })
-  }
+    return domainOptionMenuItems;
+  };
 
   return (
     <div className="form-container">
-        <div className="formInput">
-        <Autocomplete
-          className={classes.formControl}
-          id="combo-box-demo"
-          options={domainList}
-          getOptionLabel={(option) => option}
-          style={{ width: 300 }}
-          onChange={(event, value) => setDomain(value)}
-          renderInput={(params) => 
-            <TextField {...params}
-            id="standard-basic" 
-            label="Domain" 
-            variant="standard" 
-            value={domain}
-            error={domainWarning !== ''}
-            onChange={event => {
-              if (event.target.value !== "" && event.target.value !== null){
-                handleDomainInput(event.target.value)
-              }
-            }}
-            helperText={domainWarning !== '' ? domainWarning : null}
-          />
-          }
-        /> 
-        </div>
-        <div className="formInput"> 
-        <TextField 
-          className={classes.formControl} 
-          id="standard-basic" 
-          label="Gene" 
-          variant="standard" 
-          value={gene}
-          error={geneWarning !== ''}
-          onChange={handleGeneChange}
-          helperText={geneWarning !== '' ? geneWarning : null}
-        />
-        </div>
-        <div className="formInput">
+      <div className="formInput">
         <FormControl className={classes.formControl}>
-          <InputLabel>Status</InputLabel>
-          <Select value={status} onChange={handleStatusChange}>
-            <MenuItem value="Lost">Lost</MenuItem>
-            <MenuItem value="Preserved">Preserved</MenuItem>
+          <InputLabel id="demo-simple-select-label">Gene</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={gene}
+            onChange={handleGeneChange}
+            disabled={Object.keys(domainOptions).length === 0}
+          >
+            {renderGeneOptions()}
           </Select>
         </FormControl>
-        </div>
-        
-      <div className="add-button">
-            <Button variant="outlined" color="primary" onClick={() => handleAdd()}>
-            Add
-            </Button>
-          </div>
       </div>
-  )
-}
+
+      <div className="formInput">
+        <FormControl className={classes.formControl}>
+          <InputLabel>Domain</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={domain}
+            onChange={handleDomainChange}
+            disabled={gene === ""}
+          >
+            {renderDomainOptions()}
+          </Select>
+        </FormControl>
+      </div>
+      <div className="formInput">
+        <FormControl className={classes.formControl}>
+          <InputLabel>Status</InputLabel>
+          <Select
+            value={status}
+            onChange={handleStatusChange}
+            disabled={domain === ""}
+          >
+            <MenuItem value="default" disabled></MenuItem>
+            <MenuItem value="lost">Lost</MenuItem>
+            <MenuItem value="preserved">Preserved</MenuItem>
+          </Select>
+        </FormControl>
+      </div>
+      <div className="add-button">
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={handleAdd}
+          disabled={status === ""}
+        >
+          Add
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 export default DomainForm;

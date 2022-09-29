@@ -11,7 +11,7 @@
     width: 50%;
     align-items: center;
     justify-content: center;
-    }
+  }
 
   .left {
     width: 50%;
@@ -28,25 +28,21 @@
   }
 
   .bold {
-    font-weight: bold
+    font-weight: bold;
   }
 
-  .sub-blurb{
+  .sub-blurb {
     margin-top: 20px;
     width: 70%;
-    font-size:larger;
+    font-size: larger;
     font-weight: 200;
   }
-
-  
-
-
 
   .domain {
     display: flex;
     margin-top: 20px;
     // width: 38%;
-    font-size:medium;
+    font-size: medium;
     font-weight: 200;
     border: 1px solid rgba(0, 0, 0, 0.3);
     padding: 10px;
@@ -64,7 +60,4 @@
     align-items: center;
     padding-bottom: 40px;
   }
-
- 
-
 }

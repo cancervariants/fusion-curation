@@ -1,4 +1,5 @@
-import * as React from "react"
+/* eslint-disable max-len */
+import * as React from "react";
 
 function ButtonEdit(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -26,7 +27,7 @@ function ButtonEdit(props: React.SVGProps<SVGSVGElement>) {
         d="M409.33 258.85L347 196.53l17.67-17.67L427 241.18zm-228 90.89v12.46a12.46 12.46 0 0012.47 12.46h12.46v12.47a12.46 12.46 0 0012.46 12.46h12.52V412a12.46 12.46 0 0012.46 12.46h12.5v-37.33a12.47 12.47 0 00-12.47-12.47h-12.46V362.2a12.46 12.46 0 00-12.46-12.46z"
       />
     </svg>
-  )
+  );
 }
 
-export default ButtonEdit
+export default ButtonEdit;
