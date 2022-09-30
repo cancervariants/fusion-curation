@@ -7,7 +7,7 @@ repos:
         args: ["--config=server/.flake8"]
       - id: check-added-large-files
         args: ["--maxkb=2000"]
-        exclude: ^server/curfu/data/gene_(aliases_suggest|symbols_suggest|prev_symbols_suggest).*tsv$
+        exclude: ^server/curfu/data/(gene_aliases_suggest|gene_symbols_suggest|gene_prev_symbols_suggest|domain_lookup).*tsv$
       - id: detect-private-key
   - repo: https://github.com/psf/black
     rev: 22.6.0
