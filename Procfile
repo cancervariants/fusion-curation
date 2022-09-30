@@ -1,1 +1,1 @@
-web: pip install . && uvicorn curfu.main:app
+web: pip install server/ && uvicorn server.curfu.main:app
