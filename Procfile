@@ -1,1 +1,1 @@
-web: uvicorn curation.main:app
+web: uvicorn curfu.main:app
