@@ -1,1 +1,1 @@
-web: uvicorn server.curfu.main:app
+web: cd server && uvicorn server.curfu.main:app
