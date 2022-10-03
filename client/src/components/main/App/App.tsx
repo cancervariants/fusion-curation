@@ -38,6 +38,7 @@ import {
 } from "../../../services/ResponseModels";
 import LandingPage from "../Landing/LandingPage";
 import AppMenu from "./AppMenu";
+import DemoDropdown from "./DemoDropdown";
 
 type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 
@@ -280,8 +281,11 @@ const App = (): JSX.Element => {
               backgroundColor: "#2980b9",
             }}
           >
-            <Box ml={leftMarginOffset}>
+            <Box ml={leftMarginOffset} display="flex" justifyContent="space-between">
               <h3>{title}</h3>
+              <Box width="200px">
+              <DemoDropdown handleClear={handleClear} handleDemo={handleDemo} />
+            </Box>
             </Box>
           </AppBar>
           <AppMenu handleDemo={handleDemo} />

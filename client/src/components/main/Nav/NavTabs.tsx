@@ -20,11 +20,13 @@ import { Assay } from "../../Pages/Assay/Assay";
 
 // MUI Stuff
 import { makeStyles, Theme } from "@material-ui/core/styles";
-import { Tabs, Tab, Button } from "@material-ui/core";
+import { Tabs, Tab, Button, Box, FormControl, MenuItem, Select } from "@material-ui/core";
 
 // Styles
 import "./NavTabs.scss";
 import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
+import { getDemoObject, assayedDemoList, categoricalDemoList } from "../../../services/main";
+import DemoDropdown from "../App/DemoDropdown";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -103,6 +105,13 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
       color: colorTheme["--dark-gray"],
       borderBottom: `1px solid ${colorTheme["--medium-gray"]}`,
     },
+    demoMenu: {
+      width: "200px",
+      alignItems: "center",
+    },
+    demoMenuLabel: {
+      marginLeft: "20px",
+    },
   }));
   const classes = useStyles();
 
@@ -155,7 +164,7 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
         </div>
       <div className="tab-panel">
         <TabPanel value={visibleTab} index={0}>
-          <Structure index={0} handleDemo={handleDemo} />
+          <Structure index={0} />
         </TabPanel>
         <TabPanel value={visibleTab} index={1}>
           <RegElement index={1} />
