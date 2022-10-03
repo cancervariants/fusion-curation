@@ -145,6 +145,3 @@ def get_service_info() -> ServiceInfoResponse:
             "warnings": [],
         }
     )
-
-
-# app.mount("/", StaticFiles(html=True, directory=APP_ROOT / "build"))
