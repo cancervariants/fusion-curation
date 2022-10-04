@@ -8,7 +8,7 @@ from typing import List, Dict
 import csv
 
 from curfu import logger, ServiceWarning
-from curfu.utils import get_static_file
+from curfu.utils import get_data_file
 
 
 class DomainService:
@@ -29,7 +29,7 @@ class DomainService:
         * Stop coordinate
         * RefSeq protein accession
         """
-        domain_file = get_static_file("domain_lookup")
+        domain_file = get_data_file("domain_lookup")
         with open(domain_file, "r") as df:
             reader = csv.reader(df, delimiter="\t")
             for row in reader:

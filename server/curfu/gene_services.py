@@ -7,7 +7,7 @@ from gene.schemas import MatchType
 from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 
 from curfu import logger, ServiceWarning, MAX_SUGGESTIONS
-from curfu.utils import get_static_file
+from curfu.utils import get_data_file
 
 
 # term -> (normalized ID, normalized label)
@@ -29,7 +29,7 @@ class GeneService:
             ("aliases", self.aliases_map),
         )
         for name, map in map_pairs:
-            map_file = get_static_file(f"gene_{name}")
+            map_file = get_data_file(f"gene_{name}")
             with open(map_file, "r") as m:
                 reader = csv.reader(m, delimiter="\t")
                 for term, normalized_id, normalized_label in reader:

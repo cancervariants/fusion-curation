@@ -17,6 +17,7 @@ httptools = "*"
 urllib3 = ">=1.26.5"
 click = "*"
 jinja2 = "*"
+boto3 = "*"
 
 [dev-packages]
 curfu = {editable = true, path = "."}
