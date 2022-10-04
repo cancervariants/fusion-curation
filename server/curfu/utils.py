@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import TypeVar, List
 
 import boto3
-from boto3.exceptions import ResourceLoadException
+from boto3.exceptions import ResourceLoadException, ClientError
 
 from botocore.config import Config
 
@@ -47,7 +47,11 @@ def download_s3_file(bucket_object: ObjectSummary) -> Path:
     fname = os.path.basename(bucket_object.key)
     save_to = APP_ROOT / "data" / fname
     with open(save_to, "wb") as f:
-        bucket_object.Object().download_fileobj(f)
+        try:
+            bucket_object.Object().download_fileobj(f)
+        except ClientError as e:
+            logger.error(f"Failed to download {bucket_object.key}")
+            raise e
     logger.info(f"Downloaded {fname} successfully.")
     return save_to
 
