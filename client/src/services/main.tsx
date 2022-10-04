@@ -427,8 +427,8 @@ type DemoFusionName =
 
 export const assayedDemoList = [
   { name: "EWSR1 Inferred Fusion (Unknown Partner)", endpoint: "ewsr1" },
-  { name: "TPM3-NTRK1", endpoint: "tpm3_ntrk1" },
-  { name: "TPM3-PDGFRB", endpoint: "tpm3_pdgfrb" },
+  { name: "TPM3::NTRK1 Exon Junction", endpoint: "tpm3_ntrk1" },
+  { name: "TPM3::PDGFRB Segment Junction", endpoint: "tpm3_pdgfrb" },
 ];
 export const categoricalDemoList = [
   { name: "ALK Fusions", endpoint: "alk" },
