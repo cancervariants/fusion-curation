@@ -4,7 +4,8 @@ from pathlib import Path
 from typing import TypeVar, List
 
 import boto3
-from boto3.exceptions import ResourceLoadException, ClientError
+from boto3.exceptions import ResourceLoadException
+from botocore.exceptions import ClientError
 
 from botocore.config import Config
 
