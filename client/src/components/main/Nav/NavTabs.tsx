@@ -20,13 +20,11 @@ import { Assay } from "../../Pages/Assay/Assay";
 
 // MUI Stuff
 import { makeStyles, Theme } from "@material-ui/core/styles";
-import { Tabs, Tab, Button, Box, FormControl, MenuItem, Select } from "@material-ui/core";
+import { Tabs, Tab, Button } from "@material-ui/core";
 
 // Styles
 import "./NavTabs.scss";
 import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
-import { getDemoObject, assayedDemoList, categoricalDemoList } from "../../../services/main";
-import DemoDropdown from "../App/DemoDropdown";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -76,11 +74,10 @@ function LinkTab(props: LinkTabProps) {
 
 interface NavTabsProps {
   handleClear: () => void;
-  handleDemo: (fusion) => void;
 }
 
 export default function NavTabs(props: NavTabsProps): React.ReactElement {
-  const { handleClear, handleDemo } = props
+  const { handleClear } = props;
   const { fusion } = useContext(FusionContext);
   const [visibleTab, setVisibleTab] = React.useState(0);
 
@@ -161,7 +158,7 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
             {...a11yProps(5)}
           />
         </Tabs>
-        </div>
+      </div>
       <div className="tab-panel">
         <TabPanel value={visibleTab} index={0}>
           <Structure index={0} />
@@ -205,25 +202,29 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
             </Button>
           </div>
         ) : null}
-          <div className="buttons">
-            <Button
-              className="clear-all"
-              onClick={handleClear}
-              variant="contained"
-              color="secondary"
-              disabled={!fusion.type}>
-              Clear All
-            </Button>
-            <Button
-              onClick={(event) => updateVisibleTab(event, visibleTab + 1)}
-              variant="contained"
-              color="primary"
-              disabled={!fusion.type}
-              style={{ display: visibleTab === 5 ? "none" : "", marginLeft: "10px" }}
-            >
-              Continue
-            </Button>
-          </div>
+        <div className="buttons">
+          <Button
+            className="clear-all"
+            onClick={handleClear}
+            variant="contained"
+            color="secondary"
+            disabled={!fusion.type}
+          >
+            Clear All
+          </Button>
+          <Button
+            onClick={(event) => updateVisibleTab(event, visibleTab + 1)}
+            variant="contained"
+            color="primary"
+            disabled={!fusion.type}
+            style={{
+              display: visibleTab === 5 ? "none" : "",
+              marginLeft: "10px",
+            }}
+          >
+            Continue
+          </Button>
+        </div>
       </div>
     </div>
   );

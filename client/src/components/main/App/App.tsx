@@ -64,8 +64,8 @@ const App = (): JSX.Element => {
   const [dialogCallback, setDialogCallback] = useState<CallableFunction | null>(
     null
   );
-  const [open, setOpen] = React.useState(true);
-
+  // TODO: implement open/closing of AppMenu. This variable will become a state variable
+  const open = true;
   const leftMarginOffset = open ? "240px" : "0";
 
   /**
@@ -213,15 +213,6 @@ const App = (): JSX.Element => {
     setDialogCallback(null);
   };
 
-  //TODO: implement drawer in AppMenu ability to collapse/expand
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
   document.title = "VICC Fusion Curation";
 
   let title = "";
@@ -250,7 +241,7 @@ const App = (): JSX.Element => {
           >
             <SuggestionContext.Provider value={[suggestions, setSuggestions]}>
               <FusionContext.Provider value={{ fusion, setFusion }}>
-                <NavTabs handleClear={handleClear} handleDemo={handleDemo} />
+                <NavTabs handleClear={handleClear} />
               </FusionContext.Provider>
             </SuggestionContext.Provider>
           </DomainOptionsContext.Provider>
@@ -281,14 +272,21 @@ const App = (): JSX.Element => {
               backgroundColor: "#2980b9",
             }}
           >
-            <Box ml={leftMarginOffset} display="flex" justifyContent="space-between">
+            <Box
+              ml={leftMarginOffset}
+              display="flex"
+              justifyContent="space-between"
+            >
               <h3>{title}</h3>
-              <Box width="200px">
-              <DemoDropdown handleClear={handleClear} handleDemo={handleDemo} />
-            </Box>
+              <Box>
+                <DemoDropdown
+                  handleClear={handleClear}
+                  handleDemo={handleDemo}
+                />
+              </Box>
             </Box>
           </AppBar>
-          <AppMenu handleDemo={handleDemo} />
+          <AppMenu />
           <Box ml={leftMarginOffset} mr="15px" width="100%">
             {displayTool ? fusionsComponent : <LandingPage />}
           </Box>

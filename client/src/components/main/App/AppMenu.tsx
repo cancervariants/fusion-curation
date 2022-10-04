@@ -1,12 +1,6 @@
 import React from "react";
 import "./App.scss";
-import {
-  Box,
-  Typography,
-  makeStyles,
-  Link,
-  Drawer,
-} from "@material-ui/core";
+import { Box, Typography, makeStyles, Link, Drawer } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
   menuLink: {
@@ -19,7 +13,6 @@ const useStyles = makeStyles(() => ({
 
 interface AppMenuProps {
   open?: boolean;
-  handleDemo?: any;
 }
 
 export default function AppMenu(props: AppMenuProps): React.ReactElement {
