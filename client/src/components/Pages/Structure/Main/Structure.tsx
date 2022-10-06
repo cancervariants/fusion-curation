@@ -20,7 +20,7 @@ export const Structure: React.FC<Props> = () => {
             // TODO -- how to interact w/ reg element count?
             fusion.structural_elements?.length +
               (fusion.regulatory_element !== undefined) >=
-              2 ? null : (
+            2 ? null : (
               <span className="error-banner">
                 Must provide at least 2 structural or regulatory elements.
               </span>

@@ -191,22 +191,23 @@ const App = (): JSX.Element => {
       setFusion(defaultFusion);
     } else {
       setDialogCallback(() => () => {
-        setFusion(defaultFusion)
-        setSelectedDemo("none")
+        setFusion(defaultFusion);
+        setSelectedDemo("none");
       });
       setDialogOpen(true);
     }
   };
 
   const handleDemo = (
-    fusion: ClientAssayedFusion | ClientCategoricalFusion, userSelectedFusion: string
+    fusion: ClientAssayedFusion | ClientCategoricalFusion,
+    userSelectedFusion: string
   ) => {
     if (fusionIsEmpty()) {
       setFusion(fusion);
     } else {
-      setDialogCallback(() => () => { 
-        setFusion(fusion)
-        setSelectedDemo(userSelectedFusion)
+      setDialogCallback(() => () => {
+        setFusion(fusion);
+        setSelectedDemo(userSelectedFusion);
       });
       setDialogOpen(true);
     }

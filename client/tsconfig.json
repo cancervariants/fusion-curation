@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -22,6 +18,8 @@
     "checkJs": true
   },
   "include": [
-    "./src/**/*.ts"
-, "global/ResponseModels.ts", "src/services/main.tsx"  ]
+    "./src/**/*.ts",
+    "global/ResponseModels.ts",
+    "src/services/main.tsx"
+  ]
 }

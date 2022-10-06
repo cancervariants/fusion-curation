@@ -23,7 +23,10 @@ const useStyles = makeStyles(() => ({
 
 interface DemoDropdownProps {
   handleClear: () => void;
-  handleDemo: (fusion: ClientAssayedFusion | ClientCategoricalFusion, userSelectedFusion: string) => void;
+  handleDemo: (
+    fusion: ClientAssayedFusion | ClientCategoricalFusion,
+    userSelectedFusion: string
+  ) => void;
   selectedDemo: string;
 }
 
@@ -61,17 +64,17 @@ export default function DemoDropdown(
         onChange={handleChange}
         className={classes.demoMenu}
       >
-        {demoIsSelected ? 
-        <MenuItem value="none">
-        <em style={{ color: "black" }}>
-          Clear
-        </em>
-      </MenuItem> :
-        <MenuItem value="none">
-          <em style={{ color: `${demoIsSelected ? "black" : "grey"}` }}>
-            Select demo...
-          </em>
-        </MenuItem>}
+        {demoIsSelected ? (
+          <MenuItem value="none">
+            <em style={{ color: "black" }}>Clear</em>
+          </MenuItem>
+        ) : (
+          <MenuItem value="none">
+            <em style={{ color: `${demoIsSelected ? "black" : "grey"}` }}>
+              Select demo...
+            </em>
+          </MenuItem>
+        )}
         {demoData.map((el) => (
           <MenuItem value={el.endpoint}>{el.name}</MenuItem>
         ))}
