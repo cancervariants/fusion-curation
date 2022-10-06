@@ -23,15 +23,15 @@ const useStyles = makeStyles(() => ({
 
 interface DemoDropdownProps {
   handleClear: () => void;
-  handleDemo: (fusion: ClientAssayedFusion | ClientCategoricalFusion) => void;
+  handleDemo: (fusion: ClientAssayedFusion | ClientCategoricalFusion, userSelectedFusion: string) => void;
+  selectedDemo: string;
 }
 
 export default function DemoDropdown(
   props: DemoDropdownProps
 ): React.ReactElement {
   const classes = useStyles();
-  const { handleClear, handleDemo } = props;
-  const [selectedDemo, setSelectedDemo] = React.useState("");
+  const { handleClear, handleDemo, selectedDemo } = props;
   const demoIsSelected = selectedDemo && selectedDemo !== "none";
 
   const path = window.location.pathname;
@@ -42,10 +42,10 @@ export default function DemoDropdown(
 
   const handleChange = (event) => {
     const value = event.target.value;
-    setSelectedDemo(value as string);
+    // setSelectedDemo(value as string);
     if (value !== "none") {
       getDemoObject(value).then((demoObject) => {
-        handleDemo(demoObject);
+        handleDemo(demoObject, value);
       });
     } else if (value === "none") {
       handleClear();
@@ -61,11 +61,17 @@ export default function DemoDropdown(
         onChange={handleChange}
         className={classes.demoMenu}
       >
+        {demoIsSelected ? 
+        <MenuItem value="none">
+        <em style={{ color: "black" }}>
+          Clear
+        </em>
+      </MenuItem> :
         <MenuItem value="none">
           <em style={{ color: `${demoIsSelected ? "black" : "grey"}` }}>
             Select demo...
           </em>
-        </MenuItem>
+        </MenuItem>}
         {demoData.map((el) => (
           <MenuItem value={el.endpoint}>{el.name}</MenuItem>
         ))}

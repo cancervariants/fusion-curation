@@ -64,6 +64,7 @@ const App = (): JSX.Element => {
   const [dialogCallback, setDialogCallback] = useState<CallableFunction | null>(
     null
   );
+  const [selectedDemo, setSelectedDemo] = React.useState("");
   // TODO: implement open/closing of AppMenu. This variable will become a state variable
   const open = true;
   const leftMarginOffset = open ? "240px" : "0";
@@ -189,18 +190,24 @@ const App = (): JSX.Element => {
     if (fusionIsEmpty()) {
       setFusion(defaultFusion);
     } else {
-      setDialogCallback(() => () => setFusion(defaultFusion));
+      setDialogCallback(() => () => {
+        setFusion(defaultFusion)
+        setSelectedDemo("none")
+      });
       setDialogOpen(true);
     }
   };
 
   const handleDemo = (
-    fusion: ClientAssayedFusion | ClientCategoricalFusion
+    fusion: ClientAssayedFusion | ClientCategoricalFusion, userSelectedFusion: string
   ) => {
     if (fusionIsEmpty()) {
       setFusion(fusion);
     } else {
-      setDialogCallback(() => () => setFusion(fusion));
+      setDialogCallback(() => () => { 
+        setFusion(fusion)
+        setSelectedDemo(userSelectedFusion)
+      });
       setDialogOpen(true);
     }
   };
@@ -278,10 +285,11 @@ const App = (): JSX.Element => {
               justifyContent="space-between"
             >
               <h3>{title}</h3>
-              <Box>
+              <Box display={path === "/utilities" ? "none" : ""}>
                 <DemoDropdown
                   handleClear={handleClear}
                   handleDemo={handleDemo}
+                  selectedDemo={selectedDemo}
                 />
               </Box>
             </Box>
