@@ -59,26 +59,18 @@ export const GeneAutocomplete: React.FC<Props> = ({
       setGeneText("");
       setGeneOptions([]);
     } else {
-      getGeneSuggestions(inputValue.value).then((suggestResponseJson) => {
-        if (suggestResponseJson.warnings) {
-          // max matches exceeded is currently the only possible warning
-          if (
-            suggestResponseJson.warnings[0].startsWith("Exceeds max matches")
-          ) {
-            tryExactMatch();
+      const delayDebounce = setTimeout(() => {
+        getGeneSuggestions(inputValue.value).then((suggestResponseJson) => {
+          if (!suggestResponseJson.symbols && !suggestResponseJson.prev_symbols && !suggestResponseJson.aliases) {
+            setGeneText("Unrecognized term");
+            setGeneOptions([]);
+          } else {
+            setGeneText("");
+            setGeneOptions(buildOptions(suggestResponseJson));
           }
-        } else if (
-          !suggestResponseJson.symbols &&
-          !suggestResponseJson.prev_symbols &&
-          !suggestResponseJson.aliases
-        ) {
-          setGeneText("Unrecognized term");
-          setGeneOptions([]);
-        } else {
-          setGeneText("");
-          setGeneOptions(buildOptions(suggestResponseJson));
-        }
       });
+      }, 300)
+      return () => clearTimeout(delayDebounce)
     }
   }, [inputValue]);
 
@@ -96,13 +88,9 @@ export const GeneAutocomplete: React.FC<Props> = ({
    * happens to match a real gene term.
    * No return value, but updates dropdown options if successful.
    */
-  const tryExactMatch = () => {
-    getGeneId(inputValue.value).then(
+  const tryExactMatch = (input: string) => {
+    getGeneId(input).then(
       (geneResponseJson: NormalizeGeneResponse) => {
-        if (geneResponseJson.warnings && geneResponseJson.warnings.length > 0) {
-          setGeneText("Unrecognized term");
-          setGeneOptions([]);
-        } else {
           // just provide entered term, but correctly-cased
           setGeneText("");
           if (geneResponseJson.cased) {
@@ -113,10 +101,16 @@ export const GeneAutocomplete: React.FC<Props> = ({
               },
             ]);
           }
-        }
       }
     );
   };
+
+  // if geneOptions is empty, try an exact match (note: keep this useEffect separately, as we want to do this after all of the autocomplete lookups)
+  useEffect(() => {
+    if (!geneOptions.length) {
+      tryExactMatch(inputValue.value);
+    }
+  }, [geneOptions]);
 
   /**
    * Construct options for use in MUI Autocomplete GroupBy
