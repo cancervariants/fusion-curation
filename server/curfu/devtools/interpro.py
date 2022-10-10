@@ -22,7 +22,7 @@ UniprotRefs = Dict[str, Tuple[str, str]]
 UniprotAcRefs = Dict[Tuple[str, str], str]
 
 # consistent formatting for saved files
-DATE_FMT = "%Y-%m-%d"
+DATE_FMT = "%Y%m%d"
 
 
 def download_protein2ipr(output_dir: Path) -> None:

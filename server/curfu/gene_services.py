@@ -6,7 +6,8 @@ from gene.query import QueryHandler
 from gene.schemas import MatchType
 from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 
-from curfu import logger, ServiceWarning, MAX_SUGGESTIONS, APP_ROOT
+from curfu import logger, ServiceWarning, MAX_SUGGESTIONS
+from curfu.utils import get_data_file
 
 
 # term -> (normalized ID, normalized label)
@@ -20,31 +21,15 @@ class GeneService:
     prev_symbols_map: Map = {}
     aliases_map: Map = {}
 
-    # not currently used
-    # labels_map: Map = {}
-    # xrefs_map: Map = {}
-    # assoc_with_map: Map = {}
-
     def load_mapping(self) -> None:
         """Load mapping files for use in autocomplete."""
-        data_dir = APP_ROOT / "data"
         map_pairs = (
             ("symbols", self.symbols_map),
             ("prev_symbols", self.prev_symbols_map),
             ("aliases", self.aliases_map),
-            # ("assoc_with", self.assoc_with_map),
-            # ("xrefs", self.xrefs_map),
-            # ("labels", self.labels_map),
         )
         for name, map in map_pairs:
-            map_files = list(data_dir.glob(f"gene_{name}_*.tsv"))
-            if not map_files:
-                msg = f"No gene {name} mappings found."
-                print("Warning: " + msg)
-                logger.warning(msg)
-                continue
-            map_files.sort(key=lambda f: f.name, reverse=True)
-            map_file = map_files[0]
+            map_file = get_data_file(f"gene_{name}")
             with open(map_file, "r") as m:
                 reader = csv.reader(m, delimiter="\t")
                 for term, normalized_id, normalized_label in reader:
