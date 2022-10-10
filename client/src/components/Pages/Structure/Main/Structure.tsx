@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { FusionContext } from "../../../../global/contexts/FusionContext";
 import Builder from "../Builder/Builder";
 import "./Structure.scss";

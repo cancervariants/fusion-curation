@@ -38,6 +38,7 @@ import {
 } from "../../../services/ResponseModels";
 import LandingPage from "../Landing/LandingPage";
 import AppMenu from "./AppMenu";
+import DemoDropdown from "./DemoDropdown";
 
 type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 
@@ -63,8 +64,9 @@ const App = (): JSX.Element => {
   const [dialogCallback, setDialogCallback] = useState<CallableFunction | null>(
     null
   );
-  const [open, setOpen] = React.useState(true);
-
+  const [selectedDemo, setSelectedDemo] = React.useState("");
+  // TODO: implement open/closing of AppMenu. This variable will become a state variable
+  const open = true;
   const leftMarginOffset = open ? "240px" : "0";
 
   /**
@@ -188,18 +190,25 @@ const App = (): JSX.Element => {
     if (fusionIsEmpty()) {
       setFusion(defaultFusion);
     } else {
-      setDialogCallback(() => () => setFusion(defaultFusion));
+      setDialogCallback(() => () => {
+        setFusion(defaultFusion);
+        setSelectedDemo("none");
+      });
       setDialogOpen(true);
     }
   };
 
   const handleDemo = (
-    fusion: ClientAssayedFusion | ClientCategoricalFusion
+    fusion: ClientAssayedFusion | ClientCategoricalFusion,
+    userSelectedFusion: string
   ) => {
     if (fusionIsEmpty()) {
       setFusion(fusion);
     } else {
-      setDialogCallback(() => () => setFusion(fusion));
+      setDialogCallback(() => () => {
+        setFusion(fusion);
+        setSelectedDemo(userSelectedFusion);
+      });
       setDialogOpen(true);
     }
   };
@@ -210,15 +219,6 @@ const App = (): JSX.Element => {
       dialogCallback();
     }
     setDialogCallback(null);
-  };
-
-  //TODO: implement drawer in AppMenu ability to collapse/expand
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
   };
 
   document.title = "VICC Fusion Curation";
@@ -280,11 +280,22 @@ const App = (): JSX.Element => {
               backgroundColor: "#2980b9",
             }}
           >
-            <Box ml={leftMarginOffset}>
+            <Box
+              ml={leftMarginOffset}
+              display="flex"
+              justifyContent="space-between"
+            >
               <h3>{title}</h3>
+              <Box display={path === "/utilities" ? "none" : ""}>
+                <DemoDropdown
+                  handleClear={handleClear}
+                  handleDemo={handleDemo}
+                  selectedDemo={selectedDemo}
+                />
+              </Box>
             </Box>
           </AppBar>
-          <AppMenu handleDemo={handleDemo} />
+          <AppMenu />
           <Box ml={leftMarginOffset} mr="15px" width="100%">
             {displayTool ? fusionsComponent : <LandingPage />}
           </Box>
