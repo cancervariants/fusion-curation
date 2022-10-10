@@ -61,16 +61,20 @@ export const GeneAutocomplete: React.FC<Props> = ({
     } else {
       const delayDebounce = setTimeout(() => {
         getGeneSuggestions(inputValue.value).then((suggestResponseJson) => {
-          if (!suggestResponseJson.symbols && !suggestResponseJson.prev_symbols && !suggestResponseJson.aliases) {
+          if (
+            !suggestResponseJson.symbols &&
+            !suggestResponseJson.prev_symbols &&
+            !suggestResponseJson.aliases
+          ) {
             setGeneText("Unrecognized term");
             setGeneOptions([]);
           } else {
             setGeneText("");
             setGeneOptions(buildOptions(suggestResponseJson));
           }
-      });
-      }, 300)
-      return () => clearTimeout(delayDebounce)
+        });
+      }, 300);
+      return () => clearTimeout(delayDebounce);
     }
   }, [inputValue]);
 
@@ -89,20 +93,18 @@ export const GeneAutocomplete: React.FC<Props> = ({
    * No return value, but updates dropdown options if successful.
    */
   const tryExactMatch = (input: string) => {
-    getGeneId(input).then(
-      (geneResponseJson: NormalizeGeneResponse) => {
-          // just provide entered term, but correctly-cased
-          setGeneText("");
-          if (geneResponseJson.cased) {
-            setGeneOptions([
-              {
-                value: geneResponseJson.cased,
-                type: GeneSuggestionType.symbol,
-              },
-            ]);
-          }
+    getGeneId(input).then((geneResponseJson: NormalizeGeneResponse) => {
+      // just provide entered term, but correctly-cased
+      setGeneText("");
+      if (geneResponseJson.cased) {
+        setGeneOptions([
+          {
+            value: geneResponseJson.cased,
+            type: GeneSuggestionType.symbol,
+          },
+        ]);
       }
-    );
+    });
   };
 
   // if geneOptions is empty, try an exact match (note: keep this useEffect separately, as we want to do this after all of the autocomplete lookups)
