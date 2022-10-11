@@ -20,6 +20,7 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
   index,
   handleSave,
   handleDelete,
+  icon,
 }) => {
   const [gene, setGene] = useState<string>(
     element.gene_descriptor?.label || ""
@@ -79,6 +80,7 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
     handleDelete,
     inputElements,
     validated,
+    icon,
   });
 };
 

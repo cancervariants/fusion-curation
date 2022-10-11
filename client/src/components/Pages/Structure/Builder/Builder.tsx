@@ -22,6 +22,12 @@ import TemplatedSequenceElementInput from "../Input/TemplatedSequenceElementInpu
 import TxSegmentElementInput from "../Input/TxSegmentElementInput/TxSegmentElementInput";
 // style
 import "./Builder.scss";
+import BlurCircularOutlinedIcon from "@mui/icons-material/BlurCircularOutlined";
+import StarsIcon from "@mui/icons-material/Stars";
+import ContrastIcon from "@mui/icons-material/Contrast";
+import DeblurIcon from "@mui/icons-material/Deblur";
+import HelpIcon from "@mui/icons-material/Help";
+import { Box } from "@material-ui/core";
 
 const EDITABLE_ELEMENT_TYPES = [
   ElementType.geneElement,
@@ -126,8 +132,8 @@ const Builder: React.FC = () => {
     destClone.splice(destination.index, 0, newItem);
     setFusion({ ...fusion, ...{ structural_elements: destClone } });
 
-    // auto-save elements that don't need any additional input
-    // TODO shouldn't need explicit autosave
+    // auto-save elements that don"t need any additional input
+    // TODO shouldn"t need explicit autosave
     if (STATIC_ELEMENT_TYPES.includes(newItem.type)) {
       handleSave(
         destination.index,
@@ -165,12 +171,54 @@ const Builder: React.FC = () => {
   };
 
   const elementNameMap = {
-    GeneElement: "Gene",
-    TranscriptSegmentElement: "Transcript Segment",
-    LinkerSequenceElement: "Linker Sequence",
-    TemplatedSequenceElement: "Templated Sequence",
-    MultiplePossibleGenesElement: "Multiple Possible Genes",
-    UnknownGeneElement: "Unknown Gene",
+    GeneElement: {
+      name: "Gene",
+      icon: (
+        <>
+          <StarsIcon />
+        </>
+      ),
+    },
+    TranscriptSegmentElement: {
+      name: "Transcript Segment",
+      icon: (
+        <>
+          <ContrastIcon />
+        </>
+      ),
+    },
+    LinkerSequenceElement: {
+      name: "Linker Sequence",
+      icon: (
+        <>
+          <DeblurIcon />
+        </>
+      ),
+    },
+    TemplatedSequenceElement: {
+      name: "Templated Sequence",
+      icon: (
+        <>
+          <BlurCircularOutlinedIcon />
+        </>
+      ),
+    },
+    MultiplePossibleGenesElement: {
+      name: "Multiple Possible Genes",
+      icon: (
+        <>
+          <HelpIcon />
+        </>
+      ),
+    },
+    UnknownGeneElement: {
+      name: "Unknown Gene",
+      icon: (
+        <>
+          <HelpIcon />
+        </>
+      ),
+    },
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -206,29 +254,40 @@ const Builder: React.FC = () => {
     switch (element.type) {
       case ElementType.geneElement:
         return (
-          <GeneElementInput {...{ element, index, handleDelete, handleSave }} />
+          <GeneElementInput
+            icon={elementNameMap[ElementType.geneElement].icon}
+            {...{ element, index, handleDelete, handleSave }}
+          />
         );
       case ElementType.linkerSequenceElement:
         return (
           <LinkerElementInput
+            icon={elementNameMap[ElementType.linkerSequenceElement].icon}
             {...{ element, index, handleDelete, handleSave }}
           />
         );
       case ElementType.templatedSequenceElement:
         return (
           <TemplatedSequenceElementInput
+            icon={elementNameMap[ElementType.templatedSequenceElement].icon}
             {...{ element, index, handleDelete, handleSave }}
           />
         );
       case ElementType.transcriptSegmentElement:
         return (
           <TxSegmentElementInput
+            icon={elementNameMap[ElementType.transcriptSegmentElement].icon}
             {...{ element, index, handleDelete, handleSave }}
           />
         );
       case ElementType.multiplePossibleGenesElement:
       case ElementType.unknownGeneElement:
-        return <StaticElement {...{ element, index, handleDelete }} />;
+        return (
+          <StaticElement
+            icon={elementNameMap[ElementType.unknownGeneElement].icon}
+            {...{ element, index, handleDelete }}
+          />
+        );
     }
   };
 
@@ -272,7 +331,8 @@ const Builder: React.FC = () => {
                                     : "translate(0px, 0px)",
                                 }}
                               >
-                                {elementNameMap[type]}
+                                {elementNameMap[type].icon}{" "}
+                                <Box ml="8px">{elementNameMap[type].name}</Box>
                               </div>
                               {snapshot.isDragging && (
                                 <div
@@ -280,7 +340,10 @@ const Builder: React.FC = () => {
                                   key={element_id}
                                   className={`option-item clone ${type}`}
                                 >
-                                  {elementNameMap[type]}
+                                  {elementNameMap[type].icon}{" "}
+                                  <Box ml="8px">
+                                    {elementNameMap[type].name}
+                                  </Box>
                                 </div>
                               )}
                             </React.Fragment>

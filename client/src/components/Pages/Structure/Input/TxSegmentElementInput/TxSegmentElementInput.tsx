@@ -40,6 +40,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   index,
   handleSave,
   handleDelete,
+  icon,
 }) => {
   const { fusion } = useContext(FusionContext);
 
@@ -614,6 +615,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     handleDelete,
     inputElements,
     validated,
+    icon,
   });
 };
 

@@ -21,7 +21,7 @@ interface TemplatedSequenceElementInputProps
 
 const TemplatedSequenceElementInput: React.FC<
   TemplatedSequenceElementInputProps
-> = ({ element, index, handleSave, handleDelete }) => {
+> = ({ element, index, handleSave, handleDelete, icon }) => {
   const [chromosome, setChromosome] = useState<string>(
     element.input_chromosome || ""
   );
@@ -141,6 +141,7 @@ const TemplatedSequenceElementInput: React.FC<
     handleDelete,
     inputElements,
     validated,
+    icon,
   });
 };
 
