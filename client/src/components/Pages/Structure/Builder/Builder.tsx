@@ -1,5 +1,5 @@
 // core components
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   DragDropContext,
   Draggable,
@@ -113,6 +113,17 @@ const ELEMENT_TEMPLATE = [
 const Builder: React.FC = () => {
   // Fusion object constructed throughout app lifecycle
   const { fusion, setFusion } = useContext(FusionContext);
+  // calculate window width and rerender component upon window resize for proper styling
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+  const setWindowDimensions = () => {
+    setWindowWidth(window.innerWidth)
+  }
+  useEffect(() => {
+    window.addEventListener("resize", setWindowDimensions);
+    return () => {
+      window.removeEventListener("resize", setWindowDimensions)
+    }
+  }, [])
 
   useEffect(() => {
     if (!("structural_elements" in fusion)) {
@@ -366,7 +377,7 @@ const Builder: React.FC = () => {
             </div>
           )}
         </Droppable>
-        <Box className="right-side" maxWidth={window.innerWidth - MARGIN_OFFSETS.structureBlocks}>
+        <Box className="right-side" maxWidth={windowWidth - MARGIN_OFFSETS.structureBlocks}>
           <Droppable droppableId="structure" direction="horizontal">
             {(provided) => (
               <div
