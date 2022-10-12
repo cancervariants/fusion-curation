@@ -134,8 +134,8 @@ const Builder: React.FC = () => {
     destClone.splice(destination.index, 0, newItem);
     setFusion({ ...fusion, ...{ structural_elements: destClone } });
 
-    // auto-save elements that don"t need any additional input
-    // TODO shouldn"t need explicit autosave
+    // auto-save elements that don't need any additional input
+    // TODO shouldn't need explicit autosave
     if (STATIC_ELEMENT_TYPES.includes(newItem.type)) {
       handleSave(
         destination.index,
