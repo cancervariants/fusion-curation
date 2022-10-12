@@ -17,6 +17,10 @@ declare module "@material-ui/core/styles/createTheme" {
       enabledtabs?: string;
       disabledtabs?: string;
     };
+    marginOffsets?: {
+      appContent?: number;
+      structureBlocks?: number;
+    };
   }
 }
 
@@ -33,5 +37,10 @@ const theme = createTheme({
     },
   },
 });
+
+export const MARGIN_OFFSETS = {
+  appContent: 175,
+  structureBlocks: 450,
+}
 
 export default theme;

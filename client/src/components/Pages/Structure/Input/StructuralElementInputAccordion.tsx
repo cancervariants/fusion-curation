@@ -48,7 +48,7 @@ const StructuralElementInputAccordion: React.FC<
       }
     >
       <div className="comp-bar">
-        <Box>
+        <Box display="flex">
           {validated ? (
             <Tooltip title="Validation successful">
               <DoneIcon

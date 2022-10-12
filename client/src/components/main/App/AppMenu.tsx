@@ -5,9 +5,11 @@ import { Box, Typography, makeStyles, Link, Drawer } from "@material-ui/core";
 const useStyles = makeStyles(() => ({
   menuLink: {
     marginBottom: "15px",
+    fontSize: "14px",
   },
   menuHeader: {
     marginTop: "30px",
+    fontSize: "20px",
   },
 }));
 
@@ -29,8 +31,8 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
           <h3>VICC Fusion Curation</h3>
         </Link>
         <Box className={`${classes.menuHeader} ${classes.menuLink}`}>
-          <Typography variant="h6" color="inherit">
-            <b>Tools</b>
+          <Typography color="inherit">
+            <h3><b>Tools</b></h3>
           </Typography>
         </Box>
         <Box ml="10px">
@@ -52,8 +54,8 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
         </Box>
 
         <Box className={`${classes.menuHeader} ${classes.menuLink}`}>
-          <Typography variant="h6" color="inherit">
-            <b>Resources</b>
+          <Typography color="inherit">
+            <h3><b>Resources</b></h3>
           </Typography>
         </Box>
         <Box ml="10px">

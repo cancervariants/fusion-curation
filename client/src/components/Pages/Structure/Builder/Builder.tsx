@@ -25,9 +25,11 @@ import "./Builder.scss";
 import BlurCircularOutlinedIcon from "@mui/icons-material/BlurCircularOutlined";
 import StarsIcon from "@mui/icons-material/Stars";
 import ContrastIcon from "@mui/icons-material/Contrast";
-import DeblurIcon from "@mui/icons-material/Deblur";
 import HelpIcon from "@mui/icons-material/Help";
+import WorkspacesIcon from "@mui/icons-material/Workspaces";
+import LinkIcon from "@mui/icons-material/Link";
 import { Box } from "@material-ui/core";
+import { MARGIN_OFFSETS } from "../../../../global/styles/theme";
 
 const EDITABLE_ELEMENT_TYPES = [
   ElementType.geneElement,
@@ -191,7 +193,7 @@ const Builder: React.FC = () => {
       name: "Linker Sequence",
       icon: (
         <>
-          <DeblurIcon />
+          <LinkIcon />
         </>
       ),
     },
@@ -207,7 +209,7 @@ const Builder: React.FC = () => {
       name: "Multiple Possible Genes",
       icon: (
         <>
-          <HelpIcon />
+          <WorkspacesIcon />
         </>
       ),
     },
@@ -281,6 +283,12 @@ const Builder: React.FC = () => {
           />
         );
       case ElementType.multiplePossibleGenesElement:
+        return (
+          <StaticElement
+            icon={elementNameMap[ElementType.multiplePossibleGenesElement].icon}
+            {...{ element, index, handleDelete }}
+          />
+        );
       case ElementType.unknownGeneElement:
         return (
           <StaticElement
@@ -293,8 +301,9 @@ const Builder: React.FC = () => {
 
   return (
     <div className="builder">
+      <Box className="drag-and-drop-section" display="flex">
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="OPTIONS" isDropDisabled={true}>
+        <Droppable droppableId="OPTIONS">
           {(provided) => (
             <div
               className="options"
@@ -357,8 +366,8 @@ const Builder: React.FC = () => {
             </div>
           )}
         </Droppable>
-        <div className="right-side">
-          <Droppable droppableId="structure">
+        <Box className="right-side" maxWidth={window.innerWidth - MARGIN_OFFSETS.structureBlocks}>
+          <Droppable droppableId="structure" direction="horizontal">
             {(provided) => (
               <div
                 className="block-container"
@@ -399,9 +408,10 @@ const Builder: React.FC = () => {
               </div>
             )}
           </Droppable>
-          {renderFooterBar()}
-        </div>
+        </Box>
       </DragDropContext>
+      </Box>
+      {renderFooterBar()}
     </div>
   );
 };

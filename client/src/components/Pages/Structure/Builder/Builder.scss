@@ -1,9 +1,8 @@
 .builder {
-  display: flex;
+  // display: flex;
   align-items: stretch;
   background: var(--light-gray);
   flex-grow: 1;
-  height: 65vh;
 
   .gene {
     background: var(--gene);
@@ -30,9 +29,9 @@
   }
 
   .block-container {
-    padding: 40px 90px;
+    height: 100%;
+    display: flex;
     text-align: center;
-    flex: 1;
     overflow: scroll;
   }
 
@@ -68,12 +67,11 @@
   }
 
   .block {
-    // display: flex;
+    height: fit-content;
+    display: flex;
     text-align: center;
-    justify-content: center;
     font-weight: 300;
     padding: 10px;
-    margin: 0 50px 10px 50px;
     font-size: 18px;
     border-radius: 5px;
   }
@@ -94,6 +92,8 @@
     padding: 1em;
     font-size: 18px;
     border-radius: 5px;
+    border: 1px solid darkgrey;
+    background-color: var(--medium-gray);
 
     .gene {
       border: 2px solid var(--gene-light) !important;
@@ -169,7 +169,7 @@
   .right-side {
     display: flex;
     flex-direction: column;
-    width: 75%;
+    width: 100%;
 
     .hr-section {
       align-self: center;
@@ -184,6 +184,6 @@
   }
 
   .options-container {
-    width: 210px;
+    width: 190px;
   }
 }

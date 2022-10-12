@@ -19,7 +19,7 @@ import { SuggestionContext } from "../../../global/contexts/SuggestionContext";
 // style things
 import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
 import "../../../global/styles/global.scss";
-import theme from "../../../global/styles/theme";
+import theme, { MARGIN_OFFSETS } from "../../../global/styles/theme";
 import "./App.scss";
 // other components
 import UtilitiesNavTabs from "../../../components/Utilities/UtilitiesNavTabs/UtilitiesNavTabs";
@@ -67,7 +67,7 @@ const App = (): JSX.Element => {
   const [selectedDemo, setSelectedDemo] = React.useState("");
   // TODO: implement open/closing of AppMenu. This variable will become a state variable
   const open = true;
-  const leftMarginOffset = open ? "240px" : "0";
+  const leftMarginOffset = open ? `${MARGIN_OFFSETS.appContent}px` : "0";
 
   /**
    * Update global genes contexts.
