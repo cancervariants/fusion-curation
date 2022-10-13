@@ -148,7 +148,6 @@ pytest.ini
 
 # ignore data dir
 data/*
-therapy/data/
 
 # IDE stuff
 .idea/

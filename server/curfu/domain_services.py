@@ -6,10 +6,9 @@ TODO
 """
 from typing import List, Dict
 import csv
-import os
-from pathlib import Path
 
-from curfu import APP_ROOT, logger, ServiceWarning
+from curfu import logger, ServiceWarning
+from curfu.utils import get_data_file
 
 
 class DomainService:
@@ -19,10 +18,6 @@ class DomainService:
 
     def load_mapping(self) -> None:
         """Load mapping file.
-
-        Checks the environment variable FUSION_CURATION_DOMAIN_FILE for a valid path.
-        If that fails, checks APP_ROOT/data for a file matching the glob
-        `domain_lookup_*.tsv`.
 
         Domain map file should be tab separated with a column for each:
         * UniProt accession
@@ -34,16 +29,7 @@ class DomainService:
         * Stop coordinate
         * RefSeq protein accession
         """
-        domain_file = os.environ.get("FUSION_CURATION_DOMAIN_FILE")
-        if not domain_file or not Path(domain_file).exists():
-            domain_files = list((APP_ROOT / "data").glob("domain_lookup_*.tsv"))
-            if not domain_files:
-                msg = "No domain lookup mappings found."
-                print("Warning: " + msg)
-                logger.warning(msg)
-                return
-            domain_files.sort(key=lambda f: f.name, reverse=True)
-            domain_file = domain_files[0]
+        domain_file = get_data_file("domain_lookup")
         with open(domain_file, "r") as df:
             reader = csv.reader(df, delimiter="\t")
             for row in reader:

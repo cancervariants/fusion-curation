@@ -425,6 +425,17 @@ type DemoFusionName =
   | "tpm3_pdgfrb"
   | "igh_myc";
 
+export const assayedDemoList = [
+  { name: "EWSR1 Inferred Fusion (Unknown Partner)", endpoint: "ewsr1" },
+  { name: "TPM3::NTRK1 Exon Junction", endpoint: "tpm3_ntrk1" },
+  { name: "TPM3::PDGFRB Segment Junction", endpoint: "tpm3_pdgfrb" },
+];
+export const categoricalDemoList = [
+  { name: "ALK Fusions", endpoint: "alk" },
+  { name: "BCR::ABL1 Fusions", endpoint: "bcr_abl1" },
+  { name: "IGH Enhancer w/ MYC Fusions", endpoint: "igh_myc" },
+];
+
 /**
  * Fetch an individual demo fusion object
  * @param fusionName name of demo fusion to fetch
