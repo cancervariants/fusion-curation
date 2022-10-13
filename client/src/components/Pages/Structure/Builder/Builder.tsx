@@ -244,11 +244,7 @@ const Builder: React.FC = () => {
     }
   };
 
-  /**
-   * Render nomenclature preview footer underneath builder interface
-   * @returns completed footer element
-   */
-  const renderFooterBar = () => (
+  const nomenclatureElement = (
     <div className="hr-section">
       {fusion.structural_elements
         ?.filter(
@@ -312,6 +308,7 @@ const Builder: React.FC = () => {
 
   return (
     <div className="builder">
+      {nomenclatureElement}
       <Box className="drag-and-drop-section" display="flex">
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="OPTIONS">
@@ -422,7 +419,6 @@ const Builder: React.FC = () => {
         </Box>
       </DragDropContext>
       </Box>
-      {renderFooterBar()}
     </div>
   );
 };
