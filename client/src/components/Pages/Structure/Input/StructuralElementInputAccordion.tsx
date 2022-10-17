@@ -1,11 +1,11 @@
-import {
-  Accordion,
-  Typography,
-  Tooltip,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-} from "@material-ui/core";
+import { Typography, Tooltip, Box } from "@material-ui/core";
+import { styled } from "@mui/material/styles";
+import IconButton, { IconButtonProps } from "@mui/material/IconButton";
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import Collapse from "@mui/material/Collapse";
 import DeleteIcon from "@material-ui/icons/Delete";
 import DoneIcon from "@material-ui/icons/Done";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -23,6 +23,20 @@ interface StructuralElementInputAccordionProps
   icon: JSX.Element;
 }
 
+interface ExpandMoreProps extends IconButtonProps {
+  expand: boolean;
+}
+const ExpandMore = styled((props: ExpandMoreProps) => {
+  const { expand, ...other } = props;
+  return <IconButton {...other} />;
+})(({ theme, expand }) => ({
+  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
+  marginLeft: "auto",
+  transition: theme.transitions.create("transform", {
+    duration: theme.transitions.duration.shortest,
+  }),
+}));
+
 const StructuralElementInputAccordion: React.FC<
   StructuralElementInputAccordionProps
 > = ({
@@ -34,60 +48,47 @@ const StructuralElementInputAccordion: React.FC<
   validated,
   icon,
 }) => (
-  <Accordion
-    defaultExpanded={!validated}
-    expanded={expanded}
-    onChange={() => (setExpanded ? setExpanded(!expanded) : null)}
-    className="comp-input-accordion"
-  >
-    <AccordionSummary
-      expandIcon={
-        inputElements ? (
-          <EditIcon className="edit-icon" style={{ fontSize: 23 }} />
-        ) : null
+  <Card>
+    <CardHeader
+      avatar={icon}
+      action={
+        <Tooltip title="Delete element">
+          <DeleteIcon
+            onClick={(event) => {
+              event.stopPropagation();
+              handleDelete(element.element_id);
+            }}
+            onFocus={(event) => event.stopPropagation()}
+          />
+        </Tooltip>
       }
-    >
-      <div className="comp-bar">
-        <Box display="flex">
-          {validated ? (
-            <Tooltip title="Validation successful">
-              <DoneIcon
-                className="input-correct"
-                style={{ color: green[500] }}
-              />
-            </Tooltip>
-          ) : (
-            <Tooltip title="Invalid component">
-              <ClearIcon
-                className="input-incorrect"
-                style={{ color: red[500] }}
-              />
-            </Tooltip>
-          )}
-          {icon}
-        </Box>
-        <Typography>
-          {element.nomenclature ? element.nomenclature : null}
-        </Typography>
-        <div>
-          <Tooltip title="Delete element">
-            <DeleteIcon
-              onClick={(event) => {
-                event.stopPropagation();
-                handleDelete(element.element_id);
-              }}
-              onFocus={(event) => event.stopPropagation()}
-            />
-          </Tooltip>
-        </div>
-      </div>
-    </AccordionSummary>
-    <AccordionDetails>
-      <div className="card-parent">
-        <div className="input-parent">{inputElements}</div>
-      </div>
-    </AccordionDetails>
-  </Accordion>
+      title={element.nomenclature ? element.nomenclature : null}
+    />
+    <CardActions>
+      {validated ? (
+        <Tooltip title="Validation successful">
+          <DoneIcon className="input-correct" style={{ color: green[500] }} />
+        </Tooltip>
+      ) : (
+        <Tooltip title="Invalid component">
+          <ClearIcon className="input-incorrect" style={{ color: red[500] }} />
+        </Tooltip>
+      )}
+      <ExpandMore
+        expand={expanded}
+        onClick={() => setExpanded(!expanded)}
+        aria-expanded={expanded}
+        aria-label="show more"
+      >
+        {inputElements ? (
+          <EditIcon className="edit-icon" style={{ fontSize: 23 }} />
+        ) : null}
+      </ExpandMore>
+    </CardActions>
+    <Collapse in={expanded} timeout="auto" unmountOnExit>
+      <CardContent>{inputElements}</CardContent>
+    </Collapse>
+  </Card>
 );
 
 export default StructuralElementInputAccordion;
