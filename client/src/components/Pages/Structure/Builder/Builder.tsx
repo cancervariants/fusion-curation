@@ -244,7 +244,7 @@ const Builder: React.FC = () => {
     }
   };
 
-  const nomenclatureString = fusion.structural_elements.filter(
+  const nomenclatureContent = fusion.structural_elements.filter(
     (element: ClientElementUnion) =>
       Boolean(element) && element.nomenclature
   ).map((element: ClientElementUnion, index: number) => (`${index ? "::" : ""}${
@@ -253,15 +253,8 @@ const Builder: React.FC = () => {
   ))
 
   const nomenclatureElement = (
-    <Box className="hr-section" py={1} display={nomenclatureString.length > 0 ? "" : "none"}>
-      {fusion.structural_elements.filter(
-          (element: ClientElementUnion) =>
-            Boolean(element) && element.nomenclature
-        )
-        .map((element: ClientElementUnion, index: number) => (
-          <Box key={element.element_id}>{nomenclatureString}</Box>
-        ))
-      }
+    <Box className="hr-section" py={1} display={nomenclatureContent.length > 0 ? "" : "none"}>
+      {<Box>{nomenclatureContent}</Box>}
     </Box>
   );
 
