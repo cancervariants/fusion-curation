@@ -2,7 +2,6 @@ import copy from "clipboard-copy";
 import React, { useEffect, useState } from "react";
 import {
   ClientElementUnion,
-  ClientFusion,
   ElementUnion,
   validateFusion,
 } from "../../../../services/main";
