@@ -1,4 +1,4 @@
-import { Typography, Tooltip, Box } from "@material-ui/core";
+import { Typography, Tooltip, Box, makeStyles } from "@material-ui/core";
 import { styled } from "@mui/material/styles";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import Card from "@mui/material/Card";
@@ -13,6 +13,27 @@ import EditIcon from "@material-ui/icons/Edit";
 import { red, green } from "@material-ui/core/colors";
 import "./StructuralElementInputAccordion.scss";
 import { BaseStructuralElementProps } from "./StructuralElementInputProps";
+
+const useStyles = makeStyles((theme) => ({
+  cardHeaderAction: {
+    margin: "auto !important",
+    display: "flex",
+  },
+  cardHeaderTitleRoot: {
+    textAlign: "center",
+    fontSize: "15px !important",
+    marginRight: "10px !important",
+  },
+  cardHeaderSubTitleRoot: {
+    textAlign: "center",
+  },
+  cardAvatar: {
+    marginRight: "10px !important",
+  },
+  cardActionsRoot: {
+    padding: "0 8px 0 16px !important",
+  },
+}));
 
 interface StructuralElementInputAccordionProps
   extends BaseStructuralElementProps {
@@ -47,48 +68,73 @@ const StructuralElementInputAccordion: React.FC<
   inputElements,
   validated,
   icon,
-}) => (
-  <Card>
-    <CardHeader
-      avatar={icon}
-      action={
-        <Tooltip title="Delete element">
-          <DeleteIcon
-            onClick={(event) => {
-              event.stopPropagation();
-              handleDelete(element.element_id);
-            }}
-            onFocus={(event) => event.stopPropagation()}
-          />
-        </Tooltip>
-      }
-      title={element.nomenclature ? element.nomenclature : null}
-    />
-    <CardActions>
-      {validated ? (
-        <Tooltip title="Validation successful">
-          <DoneIcon className="input-correct" style={{ color: green[500] }} />
-        </Tooltip>
-      ) : (
-        <Tooltip title="Invalid component">
-          <ClearIcon className="input-incorrect" style={{ color: red[500] }} />
-        </Tooltip>
-      )}
-      <ExpandMore
-        expand={expanded}
-        onClick={() => setExpanded(!expanded)}
-        aria-expanded={expanded}
-        aria-label="show more"
+}) => {
+  const classes = useStyles();
+
+  return (
+    <Card>
+      <CardHeader
+        avatar={icon}
+        action={
+          <Tooltip title="Delete element">
+            <DeleteIcon
+              onClick={(event) => {
+                event.stopPropagation();
+                handleDelete(element.element_id);
+              }}
+              onFocus={(event) => event.stopPropagation()}
+            />
+          </Tooltip>
+        }
+        title={element.nomenclature ? element.nomenclature : null}
+        classes={{
+          action: classes.cardHeaderAction,
+          avatar: classes.cardAvatar,
+        }}
+        titleTypographyProps={{
+          classes: {
+            root: classes.cardHeaderTitleRoot,
+          },
+        }}
+        subheaderTypographyProps={{
+          classes: {
+            root: classes.cardHeaderSubTitleRoot,
+          },
+        }}
+      />
+      <CardActions
+        classes={{
+          root: classes.cardActionsRoot,
+        }}
       >
+        {validated ? (
+          <Tooltip title="Validation successful">
+            <DoneIcon className="input-correct" style={{ color: green[500] }} />
+          </Tooltip>
+        ) : (
+          <Tooltip title="Invalid component">
+            <ClearIcon
+              className="input-incorrect"
+              style={{ color: red[500] }}
+            />
+          </Tooltip>
+        )}
         {inputElements ? (
-          <EditIcon className="edit-icon" style={{ fontSize: 23 }} />
+          <ExpandMore
+            expand={expanded}
+            onClick={() => setExpanded(!expanded)}
+            aria-expanded={expanded}
+            aria-label="show more"
+          >
+            <EditIcon className="edit-icon" style={{ fontSize: 23 }} />
+          </ExpandMore>
         ) : null}
-      </ExpandMore>
-    </CardActions>
-    <Collapse in={expanded} timeout="auto" unmountOnExit>
-      <CardContent>{inputElements}</CardContent>
-    </Collapse>
-  </Card>
-);
+      </CardActions>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CardContent>{inputElements}</CardContent>
+      </Collapse>
+    </Card>
+  );
+};
 
 export default StructuralElementInputAccordion;

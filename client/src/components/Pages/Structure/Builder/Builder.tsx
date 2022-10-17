@@ -179,7 +179,7 @@ const Builder: React.FC = () => {
     let items: Array<ClientElementUnion> = Array.from(
       fusion.structural_elements
     );
-    items = items.filter((item) => item.element_id !== uuid);
+    items = items.filter((item) => item?.element_id !== uuid);
     setFusion({ ...fusion, ...{ structural_elements: items } });
   };
 
@@ -404,22 +404,24 @@ const Builder: React.FC = () => {
                   {fusion.structural_elements?.map(
                     (element: ClientElementUnion, index: number) => {
                       return (
-                        <Draggable
-                          key={element.element_id}
-                          draggableId={element.element_id}
-                          index={index}
-                        >
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              className={`block ${element.type}`}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              {renderElement(element, index)}
-                            </div>
-                          )}
-                        </Draggable>
+                        element && (
+                          <Draggable
+                            key={element.element_id}
+                            draggableId={element.element_id}
+                            index={index}
+                          >
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                className={`block ${element.type}`}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                {renderElement(element, index)}
+                              </div>
+                            )}
+                          </Draggable>
+                        )
                       );
                     }
                   )}
