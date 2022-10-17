@@ -14,7 +14,7 @@ import { red, green } from "@material-ui/core/colors";
 import "./StructuralElementInputAccordion.scss";
 import { BaseStructuralElementProps } from "./StructuralElementInputProps";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   cardHeaderAction: {
     margin: "auto !important",
     display: "flex",

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext } from "react";
 import Close from "./Close";
 import { FusionContext } from "../../../../global/contexts/FusionContext";
 
