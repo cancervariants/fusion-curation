@@ -244,19 +244,25 @@ const Builder: React.FC = () => {
     }
   };
 
+  const nomenclatureString = fusion.structural_elements.filter(
+    (element: ClientElementUnion) =>
+      Boolean(element) && element.nomenclature
+  ).map((element: ClientElementUnion, index: number) => (`${index ? "::" : ""}${
+      element.nomenclature
+    }`
+  ))
+
   const nomenclatureElement = (
-    <div className="hr-section">
-      {fusion.structural_elements
-        ?.filter(
+    <Box className="hr-section" py={1} display={nomenclatureString.length > 0 ? "" : "none"}>
+      {fusion.structural_elements.filter(
           (element: ClientElementUnion) =>
             Boolean(element) && element.nomenclature
         )
         .map((element: ClientElementUnion, index: number) => (
-          <div key={element.element_id}>{`${index ? "::" : ""}${
-            element.nomenclature
-          }`}</div>
-        ))}
-    </div>
+          <Box key={element.element_id}>{nomenclatureString}</Box>
+        ))
+      }
+    </Box>
   );
 
   const renderElement = (element: ClientElementUnion, index: number) => {

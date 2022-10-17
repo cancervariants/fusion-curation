@@ -188,7 +188,6 @@ const App = (): JSX.Element => {
 
   const handleClear = () => {
     if (fusionIsEmpty()) {
-      console.log("fusion empty")
       setFusion(defaultFusion);
     } else {
       setDialogCallback(() => () => {
@@ -203,7 +202,6 @@ const App = (): JSX.Element => {
     fusion: ClientAssayedFusion | ClientCategoricalFusion,
     userSelectedFusion: string
   ) => {
-    console.log("IN DEMO HANDLER")
     if (fusionIsEmpty()) {
       setFusion(fusion);
     } else {
@@ -211,7 +209,6 @@ const App = (): JSX.Element => {
         setFusion(fusion);
         setSelectedDemo(userSelectedFusion);
       });
-      console.log("setting dialog open to true")
       setDialogOpen(true);
     }
   };

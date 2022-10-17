@@ -30,7 +30,6 @@
   .block-container {
     height: 100%;
     display: flex;
-    text-align: center;
     overflow: scroll;
   }
 
@@ -161,6 +160,7 @@
 
   .instruction {
     display: flex;
+    margin-left: 20px;
     font-weight: 300;
     font-size: xx-large;
   }
