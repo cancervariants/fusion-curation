@@ -41,6 +41,6 @@ const theme = createTheme({
 export const MARGIN_OFFSETS = {
   appContent: 175,
   structureBlocks: 450,
-}
+};
 
 export default theme;

@@ -79,6 +79,7 @@ const App = (): JSX.Element => {
     const remainingGeneIds: Array<string> = [];
     fusion.structural_elements.forEach((comp: ClientElementUnion) => {
       if (
+        comp &&
         comp.type &&
         (comp.type === "GeneElement" ||
           comp.type === "TranscriptSegmentElement") &&

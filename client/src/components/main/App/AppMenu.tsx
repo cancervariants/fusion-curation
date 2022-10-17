@@ -32,7 +32,9 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
         </Link>
         <Box className={`${classes.menuHeader} ${classes.menuLink}`}>
           <Typography color="inherit">
-            <h3><b>Tools</b></h3>
+            <h3>
+              <b>Tools</b>
+            </h3>
           </Typography>
         </Box>
         <Box ml="10px">
@@ -55,7 +57,9 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
 
         <Box className={`${classes.menuHeader} ${classes.menuLink}`}>
           <Typography color="inherit">
-            <h3><b>Resources</b></h3>
+            <h3>
+              <b>Resources</b>
+            </h3>
           </Typography>
         </Box>
         <Box ml="10px">

@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "10px !important",
   },
   cardActionsRoot: {
-    padding: "0 8px 0 16px !important",
+    padding: "0 8px 8px 16px !important",
   },
 }));
 
