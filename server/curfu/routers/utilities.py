@@ -1,7 +1,12 @@
 """Provide routes for app utility endpoints"""
 from typing import Dict, Optional, List, Any
+import tempfile
+import os
+from pathlib import Path
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Query, HTTPException
+from fastapi.responses import FileResponse
+from starlette.background import BackgroundTasks
 from gene import schemas as GeneSchemas
 
 from curfu import logger
@@ -190,14 +195,60 @@ async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse
     params: Dict[str, Any] = {"sequence": sequence}
     sr = request.app.state.fusor.uta_tools.seqrepo_access.seqrepo_client
     try:
-        aliases = sr.translate_identifier(sequence)
+        aliases_dict: Dict[str, str] = {
+            sr_id.split(":")[0]: sr_id for sr_id in sr.translate_identifier(sequence)
+        }
     except KeyError:
         params["warnings"] = [f"Identifier {sequence} could not be retrieved"]
-        aliases = []
+        return SequenceIDResponse(**params)
     try:
-        params["ga4gh_sequence_id"] = [i for i in aliases if i.startswith("ga4gh")][0]
-    except IndexError:
+        params["ga4gh_id"] = aliases_dict["ga4gh"]
+    except KeyError:
         logger.warning(f"No available ga4gh ID for {sequence}")
-        params["ga4gh_sequence_id"] = None
-    params["aliases"] = [i for i in aliases if not i.startswith("ga4gh")]
+        params["ga4gh_id"] = None
+    finally:
+        del aliases_dict["ga4gh"]
+    try:
+        params["refseq_id"] = aliases_dict["refseq"]
+    except KeyError:
+        logger.warning(f"No available refseq ID for {sequence}")
+        params["refseq_id"] = None
+    finally:
+        del aliases_dict["refseq"]
+        if "NCBI" in aliases_dict:
+            del aliases_dict["NCBI"]
+    params["aliases"] = list(aliases_dict.values())
     return SequenceIDResponse(**params)
+
+
+@router.get(
+    "/api/utilities/download_sequence",
+    summary="Get sequence for ID",
+    description="Given a known accession identifier, retrieve sequence data and return"
+    "as a FASTA file",
+    response_class=FileResponse,
+)
+async def get_sequence(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    sequence_id: str = Query(
+        ..., description="ID of sequence to retrieve, sans namespace"
+    ),
+) -> FileResponse:
+    """Get sequence for requested sequence ID.
+    :param Request request: the HTTP request context, supplied by FastAPI. Use
+        to access FUSOR and UTA-associated tools.
+    :param background_tasks: Starlette background tasks object. Use to clean up
+        tempfile after get method returns.
+    :param sequence_id: accession ID, sans namespace, eg `NM_152263.3`
+    :return: FASTA file if successful, or 404 if unable to find matching resource
+    """
+    _, path = tempfile.mkstemp(suffix=".fasta")
+    try:
+        request.app.state.fusor.uta_tools.get_fasta_file(sequence_id, Path(path))
+    except KeyError:
+        raise HTTPException(
+            status_code=404, detail="No sequence available for requested identifier"
+        )
+    background_tasks.add_task(lambda p: os.unlink(p), path)
+    return FileResponse(path, filename=f"{sequence_id}.FASTA")
