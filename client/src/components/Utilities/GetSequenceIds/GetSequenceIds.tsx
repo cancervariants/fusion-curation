@@ -6,7 +6,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import "./GetSequenceIds.scss";
 import { getSequenceIds } from "../../../services/main";
 import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
 
