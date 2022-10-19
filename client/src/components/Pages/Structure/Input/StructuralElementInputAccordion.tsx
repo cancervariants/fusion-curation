@@ -49,6 +49,8 @@ interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
 }
 const ExpandMore = styled((props: ExpandMoreProps) => {
+  // this is a bad practice, but here is necessary because the linter is wrong
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { expand, ...other } = props;
   return <IconButton {...other} />;
 })(({ theme, expand }) => ({

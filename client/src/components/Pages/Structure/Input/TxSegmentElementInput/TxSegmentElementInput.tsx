@@ -1,12 +1,4 @@
-import {
-  TextField,
-  MenuItem,
-  FormLabel,
-  Select,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-} from "@material-ui/core";
+import { TextField, MenuItem, Select } from "@material-ui/core";
 import {
   ClientTranscriptSegmentElement,
   TranscriptSegmentElement,
@@ -23,6 +15,7 @@ import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneA
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import CompInputAccordion from "../StructuralElementInputAccordion";
 import { FusionContext } from "../../../../../global/contexts/FusionContext";
+import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 
 interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
@@ -49,13 +42,14 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   );
 
   // "Text" variables refer to helper or warning text to set under input fields
+  // TODO: this needs refactored so badly
   const [txAc, setTxAc] = useState(element.input_tx || "");
   const [txAcText, setTxAcText] = useState("");
 
   const [txGene, setTxGene] = useState(element.input_gene || "");
   const [txGeneText, setTxGeneText] = useState("");
 
-  const [txStrand, setTxStrand] = useState(element.input_strand || "default");
+  const [txStrand, setTxStrand] = useState<string>(element.input_strand || "+");
 
   const [txChrom, setTxChrom] = useState(element.input_chr || "");
   const [txChromText, setTxChromText] = useState("");
@@ -100,12 +94,10 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     (txInputType === InputType.gcg &&
       txGene !== "" &&
       txChrom !== "" &&
-      txStrand !== "default" &&
       (txStartingGenomic !== "" || txEndingGenomic !== "")) ||
     (txInputType === InputType.gct &&
       txAc !== "" &&
       txChrom !== "" &&
-      txStrand !== "default" &&
       (txStartingGenomic !== "" || txEndingGenomic !== "")) ||
     (txInputType === InputType.ect &&
       txAc !== "" &&
@@ -159,8 +151,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     if (!hasRequiredEnds) {
       finishedElement.nomenclature = "ERROR";
     } else {
-      // console.log(index);
-      // console.log(fusion.structural_elements.length);
       getTxSegmentNomenclature(
         responseElement,
         index === 0,
@@ -421,17 +411,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             </div>
             <div className="mid-inputs">
               {renderTxChrom()}
-              <FormLabel component="legend">Strand</FormLabel>
-              <RadioGroup
-                aria-label="strand"
-                name="strand"
-                value={txStrand}
-                onChange={(event) => setTxStrand(event.target.value as string)}
-                row
-              >
-                <FormControlLabel value="+" control={<Radio />} label="+" />
-                <FormControlLabel value="-" control={<Radio />} label="-" />
-              </RadioGroup>
+              <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
             </div>
             <div className="bottom-inputs">{renderTxGenomicCoords()}</div>
           </div>
@@ -453,17 +433,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             </div>
             <div className="mid-inputs">
               {renderTxChrom()}
-              <FormLabel component="legend">Strand</FormLabel>
-              <RadioGroup
-                aria-label="strand"
-                name="strand"
-                value={txStrand}
-                onChange={(event) => setTxStrand(event.target.value as string)}
-                row
-              >
-                <FormControlLabel value="+" control={<Radio />} label="+" />
-                <FormControlLabel value="-" control={<Radio />} label="-" />
-              </RadioGroup>
+              <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
             </div>
             <div className="bottom-inputs">{renderTxGenomicCoords()}</div>
           </div>

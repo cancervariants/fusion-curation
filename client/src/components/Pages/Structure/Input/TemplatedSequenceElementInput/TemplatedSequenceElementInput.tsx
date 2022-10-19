@@ -1,11 +1,5 @@
 import React, { useState, useEffect, KeyboardEvent } from "react";
-import {
-  TextField,
-  FormControlLabel,
-  Switch,
-  makeStyles,
-  Box,
-} from "@material-ui/core";
+import { TextField, Box } from "@material-ui/core";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import {
   getTemplatedSequenceElement,
@@ -13,18 +7,7 @@ import {
 } from "../../../../../services/main";
 import { ClientTemplatedSequenceElement } from "../../../../../services/ResponseModels";
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-
-const useStyles = makeStyles({
-  switchLabel: {
-    color: "rgba(0, 0, 0, 0.54)",
-  },
-  track: {
-    backgroundColor: "grey !important",
-    marginTop: "2px",
-  },
-});
+import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 
 interface TemplatedSequenceElementInputProps
   extends StructuralElementInputProps {
@@ -34,7 +17,6 @@ interface TemplatedSequenceElementInputProps
 const TemplatedSequenceElementInput: React.FC<
   TemplatedSequenceElementInputProps
 > = ({ element, index, handleSave, handleDelete, icon }) => {
-  const classes = useStyles();
   const [chromosome, setChromosome] = useState<string>(
     element.input_chromosome || ""
   );
@@ -66,10 +48,6 @@ const TemplatedSequenceElementInput: React.FC<
     if (e.key == "Enter" && validated) {
       setExpanded(false);
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStrand(e.target.checked ? "-" : "+");
   };
 
   const buildTemplatedSequenceElement = () => {
@@ -119,21 +97,7 @@ const TemplatedSequenceElementInput: React.FC<
           onKeyDown={handleEnterKey}
         />
         <Box mt="18px">
-          <FormControlLabel
-            control={
-              <Switch
-                onChange={handleChange}
-                classes={{ track: classes.track }}
-                checked={strand === "-"}
-                icon={<AddCircleIcon color="primary" />}
-                checkedIcon={<RemoveCircleIcon />}
-                disableRipple
-              />
-            }
-            label="Strand"
-            labelPlacement="start"
-            classes={{ label: classes.switchLabel }}
-          />
+          <StrandSwitch setStrand={setStrand} selectedStrand={strand} />
         </Box>
       </div>
       <div className="bottom-inputs">

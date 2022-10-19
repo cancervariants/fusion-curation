@@ -2,10 +2,6 @@ import {
   Select,
   MenuItem,
   TextField,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  FormLabel,
   Table,
   TableRow,
   TableCell,
@@ -21,6 +17,7 @@ import {
   CoordsUtilsResponse,
   GenomicData,
 } from "../../../services/ResponseModels";
+import StrandSwitch from "../../main/shared/StrandSwitch/StrandSwitch";
 
 const GetCoordinates: React.FC = () => {
   const [inputType, setInputType] = useState<string>("default");
@@ -31,7 +28,7 @@ const GetCoordinates: React.FC = () => {
   const [gene, setGene] = useState<string>("");
   const [geneText, setGeneText] = useState<string>("");
 
-  const [strand, setStrand] = useState<string>("default");
+  const [strand, setStrand] = useState<string>("+");
 
   const [chromosome, setChromosome] = useState<string>("");
   const [chromosomeText, setChromosomeText] = useState<string>("");
@@ -56,12 +53,10 @@ const GetCoordinates: React.FC = () => {
     (inputType === "genomic_coords_gene" &&
       gene !== "" &&
       chromosome !== "" &&
-      strand !== "default" &&
       (start !== "" || end !== "")) ||
     (inputType === "genomic_coords_tx" &&
       txAc !== "" &&
       chromosome !== "" &&
-      strand !== "default" &&
       (start !== "" || end !== "")) ||
     (inputType === "exon_coords_tx" &&
       txAc !== "" &&
@@ -234,19 +229,7 @@ const GetCoordinates: React.FC = () => {
             </div>
             <div className="inputs">
               <div className="strand">
-                <FormLabel component="legend" className="strand-label">
-                  Strand
-                </FormLabel>
-                <RadioGroup
-                  aria-label="strand"
-                  name="strand"
-                  value={strand}
-                  onChange={(event) => setStrand(event.target.value as string)}
-                  row
-                >
-                  <FormControlLabel value="+" control={<Radio />} label="+" />
-                  <FormControlLabel value="-" control={<Radio />} label="-" />
-                </RadioGroup>
+                <StrandSwitch setStrand={setStrand} selectedStrand={strand} />
               </div>
             </div>
             <div className="inputs fields-pair">
@@ -294,19 +277,7 @@ const GetCoordinates: React.FC = () => {
             </div>
             <div className="inputs">
               <div className="strand">
-                <FormLabel component="legend" className="strand-label">
-                  Strand
-                </FormLabel>
-                <RadioGroup
-                  aria-label="strand"
-                  name="strand"
-                  value={strand}
-                  onChange={(event) => setStrand(event.target.value as string)}
-                  row
-                >
-                  <FormControlLabel value="+" control={<Radio />} label="+" />
-                  <FormControlLabel value="-" control={<Radio />} label="-" />
-                </RadioGroup>
+                <StrandSwitch setStrand={setStrand} selectedStrand={strand} />
               </div>
             </div>
             <div className="inputs fields-pair">
