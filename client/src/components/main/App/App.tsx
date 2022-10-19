@@ -205,6 +205,7 @@ const App = (): JSX.Element => {
   ) => {
     if (fusionIsEmpty()) {
       setFusion(fusion);
+      setSelectedDemo(userSelectedFusion);
     } else {
       setDialogCallback(() => () => {
         setFusion(fusion);
