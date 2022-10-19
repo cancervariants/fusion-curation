@@ -257,9 +257,9 @@ const Builder: React.FC = () => {
     <Box
       className="hr-section"
       py={1}
-      display={nomenclatureContent.length > 0 ? "" : "none"}
+      minHeight="35px"
     >
-      {<Box>{nomenclatureContent}</Box>}
+      {nomenclatureContent}
     </Box>
   );
 
@@ -311,19 +311,19 @@ const Builder: React.FC = () => {
   };
 
   return (
-    <div className="builder">
+    <Box className="builder">
       {nomenclatureElement}
       <Box className="drag-and-drop-section" display="flex">
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="OPTIONS">
             {(provided) => (
-              <div
+              <Box
                 className="options"
                 {...provided.droppableProps}
                 ref={provided.innerRef}
                 style={{ display: "flex" }}
               >
-                <div className="options-container">
+                <Box className="options-container">
                   {ELEMENT_TEMPLATE.map(({ element_id, type }, index) => {
                     if (
                       (fusion.type === "AssayedFusion" &&
@@ -340,7 +340,7 @@ const Builder: React.FC = () => {
                           {(provided, snapshot) => {
                             return (
                               <React.Fragment>
-                                <div
+                                <Box
                                   ref={provided.innerRef}
                                   className={`option-item ${type}`}
                                   {...provided.draggableProps}
@@ -356,9 +356,9 @@ const Builder: React.FC = () => {
                                   <Box ml="8px">
                                     {elementNameMap[type].name}
                                   </Box>
-                                </div>
+                                </Box>
                                 {snapshot.isDragging && (
-                                  <div
+                                  <Box
                                     style={{ transform: "none !important" }}
                                     key={element_id}
                                     className={`option-item clone ${type}`}
@@ -367,7 +367,7 @@ const Builder: React.FC = () => {
                                     <Box ml="8px">
                                       {elementNameMap[type].name}
                                     </Box>
-                                  </div>
+                                  </Box>
                                 )}
                               </React.Fragment>
                             );
@@ -376,8 +376,8 @@ const Builder: React.FC = () => {
                       );
                     }
                   })}
-                </div>
-              </div>
+                </Box>
+              </Box>
             )}
           </Droppable>
           <Box
@@ -411,14 +411,14 @@ const Builder: React.FC = () => {
                             index={index}
                           >
                             {(provided) => (
-                              <div
+                              <Box
                                 ref={provided.innerRef}
                                 className={`block ${element.type}`}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
                               >
                                 {renderElement(element, index)}
-                              </div>
+                              </Box>
                             )}
                           </Draggable>
                         )
@@ -431,7 +431,7 @@ const Builder: React.FC = () => {
           </Box>
         </DragDropContext>
       </Box>
-    </div>
+    </Box>
   );
 };
 

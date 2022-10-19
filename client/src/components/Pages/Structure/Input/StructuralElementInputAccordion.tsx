@@ -32,6 +32,7 @@ const useStyles = makeStyles(() => ({
   },
   cardActionsRoot: {
     padding: "0 8px 8px 16px !important",
+    minHeight: "40px",
   },
 }));
 
