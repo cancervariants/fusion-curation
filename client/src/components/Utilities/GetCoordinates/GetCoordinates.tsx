@@ -7,6 +7,7 @@ import {
   TableCell,
   Card,
   Typography,
+  makeStyles,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
@@ -19,11 +20,18 @@ import {
 } from "../../../services/ResponseModels";
 import StrandSwitch from "../../main/shared/StrandSwitch/StrandSwitch";
 
+const useStyles = makeStyles(() => ({
+  strandSwitchLabel: {
+    marginLeft: "0 !important",
+  },
+}));
+
 const GetCoordinates: React.FC = () => {
+  const classes = useStyles();
   const [inputType, setInputType] = useState<string>("default");
 
   const [txAc, setTxAc] = useState<string>("");
-  const [txAcText, setTxAcText] = useState<string>("");
+  const [txAcText, setTxAcText] = useState("");
 
   const [gene, setGene] = useState<string>("");
   const [geneText, setGeneText] = useState<string>("");
@@ -229,7 +237,13 @@ const GetCoordinates: React.FC = () => {
             </div>
             <div className="inputs">
               <div className="strand">
-                <StrandSwitch setStrand={setStrand} selectedStrand={strand} />
+                <StrandSwitch
+                  setStrand={setStrand}
+                  selectedStrand={strand}
+                  switchClasses={{
+                    labelPlacementStart: classes.strandSwitchLabel,
+                  }}
+                />
               </div>
             </div>
             <div className="inputs fields-pair">
@@ -277,7 +291,13 @@ const GetCoordinates: React.FC = () => {
             </div>
             <div className="inputs">
               <div className="strand">
-                <StrandSwitch setStrand={setStrand} selectedStrand={strand} />
+                <StrandSwitch
+                  setStrand={setStrand}
+                  selectedStrand={strand}
+                  switchClasses={{
+                    labelPlacementStart: classes.strandSwitchLabel,
+                  }}
+                />
               </div>
             </div>
             <div className="inputs fields-pair">

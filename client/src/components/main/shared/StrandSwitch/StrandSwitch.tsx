@@ -14,15 +14,16 @@ const useStyles = makeStyles({
 });
 
 interface StrandSwitchProps {
-  setStrand: (arg0: string) => void;
+  setStrand: (strand: string) => void;
   selectedStrand: string;
+  switchClasses?;
 }
 
 export default function StrandSwitch(
   props: StrandSwitchProps
 ): React.ReactElement {
   const classes = useStyles();
-  const { setStrand, selectedStrand } = props;
+  const { setStrand, selectedStrand, switchClasses } = props;
   const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setStrand(e.target.checked ? "-" : "+");
   };
@@ -41,7 +42,7 @@ export default function StrandSwitch(
       }
       label="Strand"
       labelPlacement="start"
-      classes={{ label: classes.switchLabel }}
+      classes={{ label: classes.switchLabel, ...switchClasses }}
     />
   );
 }
