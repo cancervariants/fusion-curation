@@ -254,11 +254,7 @@ const Builder: React.FC = () => {
     );
 
   const nomenclatureElement = (
-    <Box
-      className="hr-section"
-      py={1}
-      minHeight="35px"
-    >
+    <Box className="hr-section" py={1} minHeight="35px">
       {nomenclatureContent}
     </Box>
   );

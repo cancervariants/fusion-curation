@@ -22,8 +22,8 @@ const useStyles = makeStyles({
   },
   track: {
     backgroundColor: "grey !important",
-    marginTop: "2px"
-  }
+    marginTop: "2px",
+  },
 });
 
 interface TemplatedSequenceElementInputProps
@@ -69,7 +69,7 @@ const TemplatedSequenceElementInput: React.FC<
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStrand(e.target.checked ? "-" : "+")
+    setStrand(e.target.checked ? "-" : "+");
   };
 
   const buildTemplatedSequenceElement = () => {
@@ -119,17 +119,20 @@ const TemplatedSequenceElementInput: React.FC<
           onKeyDown={handleEnterKey}
         />
         <Box mt="18px">
-        <FormControlLabel control={
-          <Switch onChange={handleChange} 
-            classes={{track: classes.track}}
-            checked={strand === "-"}
-            icon={<AddCircleIcon color="primary" />}
-            checkedIcon={<RemoveCircleIcon />}
-            disableRipple
-          />} 
-          label="Strand"
-          labelPlacement="start"
-          classes={{label: classes.switchLabel}}
+          <FormControlLabel
+            control={
+              <Switch
+                onChange={handleChange}
+                classes={{ track: classes.track }}
+                checked={strand === "-"}
+                icon={<AddCircleIcon color="primary" />}
+                checkedIcon={<RemoveCircleIcon />}
+                disableRipple
+              />
+            }
+            label="Strand"
+            labelPlacement="start"
+            classes={{ label: classes.switchLabel }}
           />
         </Box>
       </div>
@@ -139,7 +142,7 @@ const TemplatedSequenceElementInput: React.FC<
           style={{ height: 38, width: 125 }}
           label="Start Position"
           value={startPosition}
-          onChange={handleChange}
+          onChange={(event) => setStartPosition(event.target.value)}
           onKeyDown={handleEnterKey}
         />
         <TextField

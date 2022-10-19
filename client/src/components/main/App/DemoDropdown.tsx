@@ -75,8 +75,10 @@ export default function DemoDropdown(
             </em>
           </MenuItem>
         )}
-        {demoData.map((el) => (
-          <MenuItem value={el.endpoint}>{el.name}</MenuItem>
+        {demoData.map((el, index) => (
+          <MenuItem key={index} value={el.endpoint}>
+            {el.name}
+          </MenuItem>
         ))}
       </Select>
     </FormControl>
