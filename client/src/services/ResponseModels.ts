@@ -627,7 +627,8 @@ export interface Response {
 export interface SequenceIDResponse {
   warnings?: string[];
   sequence: string;
-  ga4gh_sequence_id?: string;
+  refseq_id?: string;
+  ga4gh_id?: string;
   aliases?: string[];
 }
 /**

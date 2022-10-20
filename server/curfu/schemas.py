@@ -219,7 +219,8 @@ class SequenceIDResponse(Response):
     """Response model for sequence ID retrieval endpoint."""
 
     sequence: StrictStr
-    ga4gh_sequence_id: Optional[StrictStr] = ""
+    refseq_id: Optional[StrictStr]
+    ga4gh_id: Optional[StrictStr]
     aliases: Optional[List[StrictStr]]
 
 
