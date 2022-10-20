@@ -279,7 +279,7 @@ const App = (): JSX.Element => {
               height: "50px",
               marginLeft: "225px",
               display: title === "" ? "none" : "",
-              backgroundColor: "#2980b9",
+              backgroundColor: theme.colors.viccBlue,
             }}
           >
             <Box

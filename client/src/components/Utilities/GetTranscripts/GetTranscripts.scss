@@ -16,16 +16,16 @@
   .left {
     width: 40%;
     display: flex;
-    align-items: center;
     justify-content: center;
     background-color: var(--light-gray);
   }
 
   .blurb {
-    width: 70%;
+    width: 100%;
     font-size: xx-large;
     font-weight: 200;
     padding-bottom: 20px;
+    margin-top: 10px;
   }
 
   .bold {
@@ -58,5 +58,11 @@
   .tx-accordion {
     width: 90%;
     padding-bottom: 1px;
+    font-weight: bold;
+    color: var(--primary);
+  }
+
+  .tx-accordion-top {
+    color: var(--primary);
   }
 }
