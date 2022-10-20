@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Link,
   makeStyles,
@@ -46,24 +47,24 @@ const GetSequenceIds: React.FC = () => {
       display: "flex",
       width: "100%",
       height: "100%",
-      "min-height": "39vh",
-      "align-items": "stretch",
+      alignItems: "stretch",
       flex: 1,
-      padding: "10px",
     },
     left: {
-      width: "30%",
-      "background-color": colorTheme["--light-gray"],
+      height: "40%",
+      minHeight: "85px",
+      width: "40%",
+      backgroundColor: colorTheme["--light-gray"],
       display: "flex",
-      "justify-content": "center",
-      "align-items": "center",
+      justifyContent: "center",
+      alignContent: "center",
     },
     right: { width: "70%" },
     sequenceIdResult: {
       height: "100%",
       display: "flex",
-      "flex-direction": "column",
-      "justify-content": "space-between",
+      flexDirection: "column",
+      justifyContent: "space-between",
     },
     idsContainer: {
       padding: "20px",
@@ -89,32 +90,32 @@ const GetSequenceIds: React.FC = () => {
   const classes = useStyles();
 
   const renderIdInfo = () => (
-    <div className={classes.sequenceIdResult}>
-      <div className={classes.idsContainer}>
-        <div className={classes.refseqId}>
+    <Box className={classes.sequenceIdResult}>
+      <Box className={classes.idsContainer}>
+        <Box className={classes.refseqId}>
           <Typography variant="h4">
             <span className={classes.namespaceText}>refseq:</span>
             <span className={classes.identifier}>{refseqId.split(":")[1]}</span>
           </Typography>
-        </div>
-        <div className={classes.ga4ghId}>
+        </Box>
+        <Box className={classes.ga4ghId}>
           <Typography variant="h6">
             <span className={classes.namespaceText}>ga4gh:</span>
             <span className={classes.identifier}>{ga4ghId.split(":")[1]}</span>
           </Typography>
-        </div>
-        <div className={classes.aliasContainer}>
-          <div className={classes.aliasHeader}>
+        </Box>
+        <Box className={classes.aliasContainer}>
+          <Box className={classes.aliasHeader}>
             <Typography variant="h6">Aliases</Typography>
-          </div>
+          </Box>
           {aliases.map((alias, i) => (
             <Typography variant="body2" key={i}>
               {alias}
             </Typography>
           ))}
-        </div>
-      </div>
-      <div className={classes.downloadContainer}>
+        </Box>
+      </Box>
+      <Box className={classes.downloadContainer}>
         <Link
           href={`${process.env.REACT_APP_DEV_PROXY}/api/utilities/download_sequence?sequence_id=${inputSequence}`}
           target="_blank"
@@ -124,13 +125,13 @@ const GetSequenceIds: React.FC = () => {
             Download FASTA
           </Button>
         </Link>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 
   return (
-    <div className={classes.tabContainer}>
-      <div className={classes.left}>
+    <Box className={classes.tabContainer}>
+      <Box className={classes.left}>
         <TextField
           margin="dense"
           style={{ height: 38, width: 200 }}
@@ -140,11 +141,11 @@ const GetSequenceIds: React.FC = () => {
           error={helperText.length > 0}
           helperText={helperText}
         />
-      </div>
-      <div className={classes.right}>
+      </Box>
+      <Box className={classes.right}>
         {refseqId && ga4ghId ? renderIdInfo() : <></>}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 
