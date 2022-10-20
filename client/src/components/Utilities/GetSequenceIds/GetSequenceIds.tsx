@@ -110,12 +110,12 @@ const GetSequenceIds: React.FC = () => {
           </Box>
           <Box ml="20px">
             {aliases.map((alias, i) => (
-            <Box mb="5px">
-              <Typography variant="body2" key={i}>
-              {alias}
-            </Typography>
-            </Box>
-          ))}
+              <Box mb="5px">
+                <Typography variant="body2" key={i}>
+                  {alias}
+                </Typography>
+              </Box>
+            ))}
           </Box>
         </Box>
       </Box>

@@ -224,16 +224,16 @@ const GetCoordinates: React.FC = () => {
           label="Chromosome"
         />
         <Box className="inputs" mt="18px">
-        <Box className="strand" width="125px">
-          <StrandSwitch
-            setStrand={setStrand}
-            selectedStrand={strand}
-            switchClasses={{
-              labelPlacementStart: classes.strandSwitchLabel,
-            }}
-          />
+          <Box className="strand" width="125px">
+            <StrandSwitch
+              setStrand={setStrand}
+              selectedStrand={strand}
+              switchClasses={{
+                labelPlacementStart: classes.strandSwitchLabel,
+              }}
+            />
+          </Box>
         </Box>
-      </Box>
       </Box>
     </>
   );
