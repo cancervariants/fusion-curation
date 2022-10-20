@@ -88,7 +88,7 @@ const UtilitiesNavTabs = (): React.ReactElement => {
   };
 
   return (
-    <div className="nav-tabs">
+    <div className="utilities-nav-tabs">
       <AppBar elevation={0} position="static">
         <Tabs
           classes={{
