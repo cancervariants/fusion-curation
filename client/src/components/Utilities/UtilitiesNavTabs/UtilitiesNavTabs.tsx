@@ -103,7 +103,7 @@ const UtilitiesNavTabs = (): React.ReactElement => {
         >
           <LinkTab label="Get MANE Transcripts" {...a11yProps(0)} />
           <LinkTab label="Convert Coordinates" {...a11yProps(1)} />
-          <LinkTab label="Get Sequence ID" {...a11yProps(2)} />
+          <LinkTab label="Sequence ID Lookup" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
       <Box className="utilities-tab-panel">

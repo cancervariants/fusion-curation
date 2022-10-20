@@ -77,7 +77,7 @@ const GetSequenceIds: React.FC = () => {
       padding: "0 2px 0 0",
     },
     aliasHeader: {
-      margin: "15px 0 0 0",
+      margin: "15px 0 5px 0",
     },
     aliasContainer: {},
     identifier: {},
@@ -98,7 +98,7 @@ const GetSequenceIds: React.FC = () => {
             <span className={classes.identifier}>{refseqId.split(":")[1]}</span>
           </Typography>
         </Box>
-        <Box className={classes.ga4ghId}>
+        <Box className={classes.ga4ghId} ml="20px">
           <Typography variant="h6">
             <span className={classes.namespaceText}>ga4gh:</span>
             <span className={classes.identifier}>{ga4ghId.split(":")[1]}</span>
@@ -108,11 +108,15 @@ const GetSequenceIds: React.FC = () => {
           <Box className={classes.aliasHeader}>
             <Typography variant="h6">Aliases</Typography>
           </Box>
-          {aliases.map((alias, i) => (
-            <Typography variant="body2" key={i}>
+          <Box ml="20px">
+            {aliases.map((alias, i) => (
+            <Box mb="5px">
+              <Typography variant="body2" key={i}>
               {alias}
             </Typography>
+            </Box>
           ))}
+          </Box>
         </Box>
       </Box>
       <Box className={classes.downloadContainer}>
