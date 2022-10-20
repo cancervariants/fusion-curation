@@ -1,4 +1,4 @@
-import { TextField, MenuItem, Select } from "@material-ui/core";
+import { TextField, MenuItem, Select, Box } from "@material-ui/core";
 import {
   ClientTranscriptSegmentElement,
   TranscriptSegmentElement,
@@ -395,12 +395,24 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     </>
   );
 
+  const commonElements = (
+    <>
+      <Box className="mid-inputs">
+        {renderTxChrom()}
+        <Box mt="18px" width="125px">
+          <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
+        </Box>
+      </Box>
+      <Box className="bottom-inputs">{renderTxGenomicCoords()}</Box>
+    </>
+  );
+
   const renderTxOptions = () => {
     switch (txInputType) {
       case InputType.gcg:
         return (
-          <div>
-            <div className="mid-inputs">
+          <Box>
+            <Box className="mid-inputs" minWidth="255px">
               <GeneAutocomplete
                 gene={txGene}
                 setGene={setTxGene}
@@ -408,18 +420,14 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 setGeneText={setTxGeneText}
                 style={{ width: 125 }}
               />
-            </div>
-            <div className="mid-inputs">
-              {renderTxChrom()}
-              <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
-            </div>
-            <div className="bottom-inputs">{renderTxGenomicCoords()}</div>
-          </div>
+            </Box>
+            {commonElements}
+          </Box>
         );
       case InputType.gct:
         return (
-          <div>
-            <div className="mid-inputs">
+          <Box>
+            <Box className="mid-inputs" minWidth="255px">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -430,18 +438,14 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 error={txAcText !== ""}
                 helperText={txAcText}
               />
-            </div>
-            <div className="mid-inputs">
-              {renderTxChrom()}
-              <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
-            </div>
-            <div className="bottom-inputs">{renderTxGenomicCoords()}</div>
-          </div>
+            </Box>
+            {commonElements}
+          </Box>
         );
       case InputType.ect:
         return (
-          <div>
-            <div className="mid-inputs">
+          <Box>
+            <Box className="mid-inputs">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -452,8 +456,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 error={txAcText !== ""}
                 helperText={txAcText}
               />
-            </div>
-            <div className="bottom-inputs">
+            </Box>
+            <Box className="bottom-inputs">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -488,9 +492,9 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 error={endingExonText !== ""}
                 helperText={endingExonText !== "" ? endingExonText : null}
               />
-            </div>
+            </Box>
             {startingExon !== "" || endingExon !== "" ? (
-              <div className="bottom-inputs">
+              <Box className="bottom-inputs">
                 <TextField
                   margin="dense"
                   style={{ width: 125 }}
@@ -531,9 +535,9 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                     endingExonOffsetText !== "" ? endingExonOffsetText : null
                   }
                 />
-              </div>
+              </Box>
             ) : null}
-          </div>
+          </Box>
         );
     }
   };
@@ -555,7 +559,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
 
   const inputElements = (
     <>
-      <div className="top-inputs">
+      <Box className="top-inputs">
         <Select
           value={txInputType}
           onChange={(event) => selectInputType(event.target.value as InputType)}
@@ -573,7 +577,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             Exon coordinates, transcript
           </MenuItem>
         </Select>
-      </div>
+      </Box>
       {renderTxOptions()}
     </>
   );
