@@ -395,7 +395,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     </>
   );
 
-  const commonElements = (
+  const genomicCoordinateInfo = (
     <>
       <Box className="mid-inputs">
         {renderTxChrom()}
@@ -421,7 +421,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 style={{ width: 125 }}
               />
             </Box>
-            {commonElements}
+            {genomicCoordinateInfo}
           </Box>
         );
       case InputType.gct:
@@ -439,7 +439,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 helperText={txAcText}
               />
             </Box>
-            {commonElements}
+            {genomicCoordinateInfo}
           </Box>
         );
       case InputType.ect:
