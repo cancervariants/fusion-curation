@@ -1,0 +1,40 @@
+.colorkey-container {
+  position: absolute;
+  top: 7%;
+  right: 2%;
+  background: white;
+  font-size: small;
+}
+
+.key-row {
+  display: flex;
+  align-items: center;
+  margin: 5px 8px;
+}
+
+.color-block {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.gene-block {
+  background-color: var(--gene);
+}
+
+.transcript-segment-block {
+  background-color: var(--transcript);
+}
+
+.region-block {
+  background-color: var(--region);
+}
+
+.linker-block {
+  background-color: var(--linker);
+}
+
+.regulatory-element-block {
+  background-color: var(--medium-gray);
+}

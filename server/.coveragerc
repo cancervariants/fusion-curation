@@ -1,0 +1,8 @@
+[run]
+source =
+    curator/
+omit =
+    setup.py
+    tests
+    curation/version.py
+    curation/cli.py

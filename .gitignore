@@ -148,7 +148,6 @@ pytest.ini
 
 # ignore data dir
 data/*
-therapy/data/
 
 # IDE stuff
 .idea/
@@ -181,5 +180,5 @@ frontend/node_modules
 node_modules/
 
 # Data
-curation/data
-node_modules
+server/curfu/data
+client/node_modules

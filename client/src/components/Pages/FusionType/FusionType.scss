@@ -1,0 +1,22 @@
+.fusion-type-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: stretch;
+
+  .assayed {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .categorical {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+}

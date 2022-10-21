@@ -1,0 +1,21 @@
+.gene-results {
+  background-color: var(--light-gray);
+  flex-grow: 1;
+  position: relative;
+
+  h1 {
+    display: flex;
+    justify-content: center;
+  }
+
+  h4 {
+    display: flex;
+    justify-content: center;
+    font-weight: 300;
+    font-size: large;
+  }
+
+  .diagrams {
+    margin-top: 45px;
+  }
+}

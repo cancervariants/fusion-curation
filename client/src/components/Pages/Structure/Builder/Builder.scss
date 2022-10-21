@@ -1,0 +1,189 @@
+.builder {
+  align-items: stretch;
+  background: var(--light-gray);
+  flex-grow: 1;
+
+  .gene {
+    background: var(--gene);
+  }
+
+  .transcript_segment {
+    background-color: var(--transcript);
+  }
+
+  .linker_sequence {
+    background-color: var(--linker);
+  }
+
+  .templated_sequence {
+    background-color: var(--region);
+  }
+
+  .any_gene {
+    background-color: var(--any-gene);
+  }
+
+  .unknown_gene {
+    background-color: var(--unknown-gene);
+  }
+
+  .block-container {
+    height: 100%;
+    display: flex;
+    overflow: scroll;
+  }
+
+  .comp-input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    .hr-name {
+      text-align: center;
+    }
+
+    .button-edit {
+      position: absolute;
+      right: 30px;
+      top: 1px;
+      cursor: pointer;
+    }
+
+    .button-edit-disabled {
+      position: absolute;
+      right: 30px;
+      top: 1px;
+    }
+
+    .button-trash {
+      position: absolute;
+      right: 0;
+      top: 1px;
+      cursor: pointer;
+    }
+  }
+
+  .block {
+    height: fit-content;
+    display: flex;
+    text-align: center;
+    font-weight: 300;
+    padding: 10px;
+    font-size: 18px;
+    border-radius: 5px;
+  }
+
+  h3 {
+    text-align: center;
+    font-weight: 500;
+  }
+
+  .options {
+    background-color: var(--medium-gray);
+    display: flex;
+  }
+
+  .option-item {
+    display: flex;
+    font-weight: 300;
+    padding: 1em;
+    font-size: 18px;
+    border-radius: 5px;
+    border: 1px solid darkgrey;
+    background-color: var(--medium-gray);
+
+    .gene {
+      border: 2px solid var(--gene-light) !important;
+      color: var(--dark-gray);
+      font-weight: 500;
+    }
+
+    .structural_element {
+      border: 2px solid var(--transcript-light) !important;
+      color: var(--dark-gray);
+      font-weight: 500;
+    }
+
+    .linker_sequence {
+      border: 2px solid var(--linker-light) !important;
+      color: var(--dark-gray);
+      font-weight: 500;
+    }
+
+    .templated_sequence {
+      border: 2px solid var(--region-light) !important;
+      color: var(--dark-gray);
+      font-weight: 500;
+    }
+  }
+
+  .card-parent {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+
+    .input-parent {
+      display: flex;
+      flex-direction: column;
+      width: 300px;
+    }
+
+    .buttons {
+      width: 40px;
+      margin-left: -15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .top-inputs {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .mid-inputs {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .bottom-inputs {
+    min-width: 255px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .instruction {
+    display: flex;
+    margin-left: 20px;
+    font-weight: 300;
+    font-size: xx-large;
+  }
+
+  .right-side {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .options-container {
+    width: 150px;
+  }
+}
+
+.hr-section {
+  align-self: center;
+  background-color: #e1e7ed;
+  width: 100%;
+  height: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}

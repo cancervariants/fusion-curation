@@ -1,0 +1,56 @@
+%app {
+  min-height: 100vh;
+  display: flex;
+  margin: 0 auto;
+  overflow: scroll;
+}
+
+.app-main {
+  @extend %app;
+  background-color: #edf0f2;
+}
+
+.app-utils {
+  @extend %app;
+  background: linear-gradient(
+    45deg,
+    var(--gradient-1) 40%,
+    var(--gradient-3) 130%
+  );
+}
+
+.main-component {
+  flex-grow: 1;
+}
+
+.menu-container {
+  margin: 1em;
+}
+
+h2 {
+  font-weight: normal;
+}
+
+h3 {
+  margin-top: 15px;
+}
+
+.menu-drawer {
+  .MuiDrawer-paper {
+    width: 160px;
+    overflow-x: hidden !important;
+    background-color: #343131;
+    color: white !important;
+  }
+}
+
+.menu-link {
+  font-size: 15px;
+  a {
+    color: inherit !important;
+  }
+}
+
+#demo-simple-select-standard {
+  margin-left: 5px;
+}
