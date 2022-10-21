@@ -1,12 +1,4 @@
-import {
-  TextField,
-  MenuItem,
-  FormLabel,
-  Select,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-} from "@material-ui/core";
+import { TextField, MenuItem, Select, Box } from "@material-ui/core";
 import {
   ClientTranscriptSegmentElement,
   TranscriptSegmentElement,
@@ -23,6 +15,7 @@ import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneA
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import CompInputAccordion from "../StructuralElementInputAccordion";
 import { FusionContext } from "../../../../../global/contexts/FusionContext";
+import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 
 interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
@@ -40,6 +33,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   index,
   handleSave,
   handleDelete,
+  icon,
 }) => {
   const { fusion } = useContext(FusionContext);
 
@@ -48,13 +42,14 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   );
 
   // "Text" variables refer to helper or warning text to set under input fields
+  // TODO: this needs refactored so badly
   const [txAc, setTxAc] = useState(element.input_tx || "");
   const [txAcText, setTxAcText] = useState("");
 
   const [txGene, setTxGene] = useState(element.input_gene || "");
   const [txGeneText, setTxGeneText] = useState("");
 
-  const [txStrand, setTxStrand] = useState(element.input_strand || "default");
+  const [txStrand, setTxStrand] = useState<string>(element.input_strand || "+");
 
   const [txChrom, setTxChrom] = useState(element.input_chr || "");
   const [txChromText, setTxChromText] = useState("");
@@ -99,12 +94,10 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     (txInputType === InputType.gcg &&
       txGene !== "" &&
       txChrom !== "" &&
-      txStrand !== "default" &&
       (txStartingGenomic !== "" || txEndingGenomic !== "")) ||
     (txInputType === InputType.gct &&
       txAc !== "" &&
       txChrom !== "" &&
-      txStrand !== "default" &&
       (txStartingGenomic !== "" || txEndingGenomic !== "")) ||
     (txInputType === InputType.ect &&
       txAc !== "" &&
@@ -158,8 +151,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     if (!hasRequiredEnds) {
       finishedElement.nomenclature = "ERROR";
     } else {
-      // console.log(index);
-      // console.log(fusion.structural_elements.length);
       getTxSegmentNomenclature(
         responseElement,
         index === 0,
@@ -404,12 +395,24 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     </>
   );
 
+  const genomicCoordinateInfo = (
+    <>
+      <Box className="mid-inputs">
+        {renderTxChrom()}
+        <Box mt="18px" width="125px">
+          <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
+        </Box>
+      </Box>
+      <Box className="bottom-inputs">{renderTxGenomicCoords()}</Box>
+    </>
+  );
+
   const renderTxOptions = () => {
     switch (txInputType) {
       case InputType.gcg:
         return (
-          <div>
-            <div className="mid-inputs">
+          <Box>
+            <Box className="mid-inputs" minWidth="255px">
               <GeneAutocomplete
                 gene={txGene}
                 setGene={setTxGene}
@@ -417,28 +420,14 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 setGeneText={setTxGeneText}
                 style={{ width: 125 }}
               />
-            </div>
-            <div className="mid-inputs">
-              {renderTxChrom()}
-              <FormLabel component="legend">Strand</FormLabel>
-              <RadioGroup
-                aria-label="strand"
-                name="strand"
-                value={txStrand}
-                onChange={(event) => setTxStrand(event.target.value as string)}
-                row
-              >
-                <FormControlLabel value="+" control={<Radio />} label="+" />
-                <FormControlLabel value="-" control={<Radio />} label="-" />
-              </RadioGroup>
-            </div>
-            <div className="bottom-inputs">{renderTxGenomicCoords()}</div>
-          </div>
+            </Box>
+            {genomicCoordinateInfo}
+          </Box>
         );
       case InputType.gct:
         return (
-          <div>
-            <div className="mid-inputs">
+          <Box>
+            <Box className="mid-inputs" minWidth="255px">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -449,28 +438,14 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 error={txAcText !== ""}
                 helperText={txAcText}
               />
-            </div>
-            <div className="mid-inputs">
-              {renderTxChrom()}
-              <FormLabel component="legend">Strand</FormLabel>
-              <RadioGroup
-                aria-label="strand"
-                name="strand"
-                value={txStrand}
-                onChange={(event) => setTxStrand(event.target.value as string)}
-                row
-              >
-                <FormControlLabel value="+" control={<Radio />} label="+" />
-                <FormControlLabel value="-" control={<Radio />} label="-" />
-              </RadioGroup>
-            </div>
-            <div className="bottom-inputs">{renderTxGenomicCoords()}</div>
-          </div>
+            </Box>
+            {genomicCoordinateInfo}
+          </Box>
         );
       case InputType.ect:
         return (
-          <div>
-            <div className="mid-inputs">
+          <Box>
+            <Box className="mid-inputs">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -481,8 +456,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 error={txAcText !== ""}
                 helperText={txAcText}
               />
-            </div>
-            <div className="bottom-inputs">
+            </Box>
+            <Box className="bottom-inputs">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -517,9 +492,9 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 error={endingExonText !== ""}
                 helperText={endingExonText !== "" ? endingExonText : null}
               />
-            </div>
+            </Box>
             {startingExon !== "" || endingExon !== "" ? (
-              <div className="bottom-inputs">
+              <Box className="bottom-inputs">
                 <TextField
                   margin="dense"
                   style={{ width: 125 }}
@@ -560,9 +535,9 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                     endingExonOffsetText !== "" ? endingExonOffsetText : null
                   }
                 />
-              </div>
+              </Box>
             ) : null}
-          </div>
+          </Box>
         );
     }
   };
@@ -584,7 +559,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
 
   const inputElements = (
     <>
-      <div className="top-inputs">
+      <Box className="top-inputs">
         <Select
           value={txInputType}
           onChange={(event) => selectInputType(event.target.value as InputType)}
@@ -602,7 +577,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             Exon coordinates, transcript
           </MenuItem>
         </Select>
-      </div>
+      </Box>
       {renderTxOptions()}
     </>
   );
@@ -614,6 +589,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     handleDelete,
     inputElements,
     validated,
+    icon,
   });
 };
 

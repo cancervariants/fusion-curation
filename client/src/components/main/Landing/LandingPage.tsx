@@ -1,8 +1,9 @@
 import React from "react";
 import { Box, Typography, makeStyles, Link, Paper } from "@material-ui/core";
 import Carousel from "react-material-ui-carousel";
+import theme from "../../../global/styles/theme";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   landingContent: {
     width: "100%",
     height: "100%",
@@ -11,7 +12,7 @@ const useStyles = makeStyles(() => ({
   carouselContainer: {
     width: "100%",
     height: "200px",
-    backgroundColor: "#2980b9",
+    backgroundColor: theme.colors.viccBlue,
     color: "white",
   },
   carouselItem: {
@@ -35,7 +36,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function LandingPage(): React.ReactElement {
-  const classes = useStyles();
+  const classes = useStyles(theme);
 
   return (
     <Box className={classes.landingContent}>

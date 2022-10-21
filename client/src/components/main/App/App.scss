@@ -2,6 +2,7 @@
   min-height: 100vh;
   display: flex;
   margin: 0 auto;
+  overflow: scroll;
 }
 
 .app-main {
@@ -36,7 +37,7 @@ h3 {
 
 .menu-drawer {
   .MuiDrawer-paper {
-    width: 225px;
+    width: 160px;
     overflow-x: hidden !important;
     background-color: #343131;
     color: white !important;

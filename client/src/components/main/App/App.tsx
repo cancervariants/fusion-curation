@@ -19,7 +19,7 @@ import { SuggestionContext } from "../../../global/contexts/SuggestionContext";
 // style things
 import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
 import "../../../global/styles/global.scss";
-import theme from "../../../global/styles/theme";
+import theme, { MARGIN_OFFSETS } from "../../../global/styles/theme";
 import "./App.scss";
 // other components
 import UtilitiesNavTabs from "../../../components/Utilities/UtilitiesNavTabs/UtilitiesNavTabs";
@@ -67,7 +67,7 @@ const App = (): JSX.Element => {
   const [selectedDemo, setSelectedDemo] = React.useState("");
   // TODO: implement open/closing of AppMenu. This variable will become a state variable
   const open = true;
-  const leftMarginOffset = open ? "240px" : "0";
+  const leftMarginOffset = open ? `${MARGIN_OFFSETS.appContent}px` : "0";
 
   /**
    * Update global genes contexts.
@@ -79,6 +79,7 @@ const App = (): JSX.Element => {
     const remainingGeneIds: Array<string> = [];
     fusion.structural_elements.forEach((comp: ClientElementUnion) => {
       if (
+        comp &&
         comp.type &&
         (comp.type === "GeneElement" ||
           comp.type === "TranscriptSegmentElement") &&
@@ -149,8 +150,8 @@ const App = (): JSX.Element => {
    * readability.
    */
   const fusionIsEmpty = () => {
-    if (fusion.type) {
-      return false;
+    if (fusion?.structural_elements.length === 0) {
+      return true;
     } else if (fusion.structural_elements.length > 0) {
       return false;
     } else if (fusion.regulatory_element) {
@@ -204,6 +205,7 @@ const App = (): JSX.Element => {
   ) => {
     if (fusionIsEmpty()) {
       setFusion(fusion);
+      setSelectedDemo(userSelectedFusion);
     } else {
       setDialogCallback(() => () => {
         setFusion(fusion);
@@ -277,7 +279,7 @@ const App = (): JSX.Element => {
               height: "50px",
               marginLeft: "225px",
               display: title === "" ? "none" : "",
-              backgroundColor: "#2980b9",
+              backgroundColor: theme.colors.viccBlue,
             }}
           >
             <Box

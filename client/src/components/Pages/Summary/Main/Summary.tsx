@@ -28,7 +28,7 @@ interface Props {
   index: number;
 }
 
-export const Summary: React.FC<Props> = ({ index }) => {
+export const Summary: React.FC<Props> = () => {
   const [validatedFusion, setValidatedFusion] = useState<
     AssayedFusion | CategoricalFusion | null
   >(null);

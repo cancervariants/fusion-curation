@@ -8,6 +8,7 @@ declare module "@material-ui/core/styles/createTheme" {
       navbutton: string;
       enabledtabs: string;
       disabledtabs: string;
+      viccBlue: string;
     };
   }
   // allow configuration using `createTheme`
@@ -16,6 +17,11 @@ declare module "@material-ui/core/styles/createTheme" {
       navbutton?: string;
       enabledtabs?: string;
       disabledtabs?: string;
+      viccBlue?: string;
+    };
+    marginOffsets?: {
+      appContent?: number;
+      structureBlocks?: number;
     };
   }
 }
@@ -25,6 +31,7 @@ const theme = createTheme({
     navbutton: "#0BD3D3",
     enabledtabs: "#FFFFFF",
     disabledtabs: "#F5F5FA",
+    viccBlue: "#2980b9",
   },
   palette: {
     primary: {
@@ -33,5 +40,10 @@ const theme = createTheme({
     },
   },
 });
+
+export const MARGIN_OFFSETS = {
+  appContent: 175,
+  structureBlocks: 450,
+};
 
 export default theme;

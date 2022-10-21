@@ -13,6 +13,7 @@ const LinkerElementInput: React.FC<LinkerElementInputProps> = ({
   index,
   handleSave,
   handleDelete,
+  icon,
 }) => {
   // bases
   const [sequence, setSequence] = useState<string>(
@@ -64,6 +65,7 @@ const LinkerElementInput: React.FC<LinkerElementInputProps> = ({
     handleDelete,
     inputElements,
     validated,
+    icon,
   });
 };
 

@@ -6,17 +6,16 @@
   flex: 1;
 
   .left {
-    width: 50%;
+    width: 40%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     background-color: var(--light-gray);
     padding-bottom: 40px;
 
     .input-selector {
       width: 100%;
-      height: 20%;
+      min-height: 50px;
       font-size: xx-large;
       font-weight: 200;
 
@@ -29,9 +28,8 @@
     }
 
     .input-params {
-      height: 90%;
-      width: 55%;
       display: flex;
+      width: 80%;
       flex-direction: column;
       justify-content: center;
       align-items: flex-start;
@@ -47,10 +45,6 @@
       }
 
       .inputs {
-        margin-top: 15px;
-        margin-bottom: 15px;
-        width: 100%;
-
         &.fields-pair {
           width: 100%;
           display: flex;

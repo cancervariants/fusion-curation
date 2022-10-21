@@ -1,11 +1,5 @@
 import React, { useState, useEffect, KeyboardEvent } from "react";
-import {
-  TextField,
-  RadioGroup,
-  FormLabel,
-  FormControlLabel,
-  Radio,
-} from "@material-ui/core";
+import { TextField, Box } from "@material-ui/core";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import {
   getTemplatedSequenceElement,
@@ -13,6 +7,7 @@ import {
 } from "../../../../../services/main";
 import { ClientTemplatedSequenceElement } from "../../../../../services/ResponseModels";
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
+import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 
 interface TemplatedSequenceElementInputProps
   extends StructuralElementInputProps {
@@ -21,11 +16,11 @@ interface TemplatedSequenceElementInputProps
 
 const TemplatedSequenceElementInput: React.FC<
   TemplatedSequenceElementInputProps
-> = ({ element, index, handleSave, handleDelete }) => {
+> = ({ element, index, handleSave, handleDelete, icon }) => {
   const [chromosome, setChromosome] = useState<string>(
     element.input_chromosome || ""
   );
-  const [strand, setStrand] = useState<string>(element.strand || "");
+  const [strand, setStrand] = useState<string>(element.strand || "+");
   const [startPosition, setStartPosition] = useState<string>(
     element.input_start || ""
   );
@@ -101,17 +96,9 @@ const TemplatedSequenceElementInput: React.FC<
           onChange={(event) => setChromosome(event.target.value)}
           onKeyDown={handleEnterKey}
         />
-        <FormLabel component="legend">Strand</FormLabel>
-        <RadioGroup
-          aria-label="strand"
-          name="strand"
-          value={strand}
-          onChange={(event) => setStrand(event.target.value as string)}
-          row
-        >
-          <FormControlLabel value="+" control={<Radio />} label="+" />
-          <FormControlLabel value="-" control={<Radio />} label="-" />
-        </RadioGroup>
+        <Box mt="18px">
+          <StrandSwitch setStrand={setStrand} selectedStrand={strand} />
+        </Box>
       </div>
       <div className="bottom-inputs">
         <TextField
@@ -141,6 +128,7 @@ const TemplatedSequenceElementInput: React.FC<
     handleDelete,
     inputElements,
     validated,
+    icon,
   });
 };
 

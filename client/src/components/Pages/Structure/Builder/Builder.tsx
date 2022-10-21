@@ -1,5 +1,5 @@
 // core components
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   DragDropContext,
   Draggable,
@@ -22,6 +22,14 @@ import TemplatedSequenceElementInput from "../Input/TemplatedSequenceElementInpu
 import TxSegmentElementInput from "../Input/TxSegmentElementInput/TxSegmentElementInput";
 // style
 import "./Builder.scss";
+import BlurCircularOutlinedIcon from "@mui/icons-material/BlurCircularOutlined";
+import StarsIcon from "@mui/icons-material/Stars";
+import ContrastIcon from "@mui/icons-material/Contrast";
+import HelpIcon from "@mui/icons-material/Help";
+import WorkspacesIcon from "@mui/icons-material/Workspaces";
+import LinkIcon from "@mui/icons-material/Link";
+import { Box } from "@material-ui/core";
+import { MARGIN_OFFSETS } from "../../../../global/styles/theme";
 
 const EDITABLE_ELEMENT_TYPES = [
   ElementType.geneElement,
@@ -105,6 +113,17 @@ const ELEMENT_TEMPLATE = [
 const Builder: React.FC = () => {
   // Fusion object constructed throughout app lifecycle
   const { fusion, setFusion } = useContext(FusionContext);
+  // calculate window width and rerender component upon window resize for proper styling
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const setWindowDimensions = () => {
+    setWindowWidth(window.innerWidth);
+  };
+  useEffect(() => {
+    window.addEventListener("resize", setWindowDimensions);
+    return () => {
+      window.removeEventListener("resize", setWindowDimensions);
+    };
+  }, []);
 
   useEffect(() => {
     if (!("structural_elements" in fusion)) {
@@ -160,17 +179,59 @@ const Builder: React.FC = () => {
     let items: Array<ClientElementUnion> = Array.from(
       fusion.structural_elements
     );
-    items = items.filter((item) => item.element_id !== uuid);
+    items = items.filter((item) => item?.element_id !== uuid);
     setFusion({ ...fusion, ...{ structural_elements: items } });
   };
 
   const elementNameMap = {
-    GeneElement: "Gene",
-    TranscriptSegmentElement: "Transcript Segment",
-    LinkerSequenceElement: "Linker Sequence",
-    TemplatedSequenceElement: "Templated Sequence",
-    MultiplePossibleGenesElement: "Multiple Possible Genes",
-    UnknownGeneElement: "Unknown Gene",
+    GeneElement: {
+      name: "Gene",
+      icon: (
+        <>
+          <StarsIcon />
+        </>
+      ),
+    },
+    TranscriptSegmentElement: {
+      name: "Transcript Segment",
+      icon: (
+        <>
+          <ContrastIcon />
+        </>
+      ),
+    },
+    LinkerSequenceElement: {
+      name: "Linker Sequence",
+      icon: (
+        <>
+          <LinkIcon />
+        </>
+      ),
+    },
+    TemplatedSequenceElement: {
+      name: "Templated Sequence",
+      icon: (
+        <>
+          <BlurCircularOutlinedIcon />
+        </>
+      ),
+    },
+    MultiplePossibleGenesElement: {
+      name: "Multiple Possible Genes",
+      icon: (
+        <>
+          <WorkspacesIcon />
+        </>
+      ),
+    },
+    UnknownGeneElement: {
+      name: "Unknown Gene",
+      icon: (
+        <>
+          <HelpIcon />
+        </>
+      ),
+    },
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -183,163 +244,190 @@ const Builder: React.FC = () => {
     }
   };
 
-  /**
-   * Render nomenclature preview footer underneath builder interface
-   * @returns completed footer element
-   */
-  const renderFooterBar = () => (
-    <div className="hr-section">
-      {fusion.structural_elements
-        ?.filter(
-          (element: ClientElementUnion) =>
-            Boolean(element) && element.nomenclature
-        )
-        .map((element: ClientElementUnion, index: number) => (
-          <div key={element.element_id}>{`${index ? "::" : ""}${
-            element.nomenclature
-          }`}</div>
-        ))}
-    </div>
+  const nomenclatureContent = fusion.structural_elements
+    .filter(
+      (element: ClientElementUnion) => Boolean(element) && element.nomenclature
+    )
+    .map(
+      (element: ClientElementUnion, index: number) =>
+        `${index ? "::" : ""}${element.nomenclature}`
+    );
+
+  const nomenclatureElement = (
+    <Box className="hr-section" py={1} minHeight="35px">
+      {nomenclatureContent}
+    </Box>
   );
 
   const renderElement = (element: ClientElementUnion, index: number) => {
     switch (element.type) {
       case ElementType.geneElement:
         return (
-          <GeneElementInput {...{ element, index, handleDelete, handleSave }} />
+          <GeneElementInput
+            icon={elementNameMap[ElementType.geneElement].icon}
+            {...{ element, index, handleDelete, handleSave }}
+          />
         );
       case ElementType.linkerSequenceElement:
         return (
           <LinkerElementInput
+            icon={elementNameMap[ElementType.linkerSequenceElement].icon}
             {...{ element, index, handleDelete, handleSave }}
           />
         );
       case ElementType.templatedSequenceElement:
         return (
           <TemplatedSequenceElementInput
+            icon={elementNameMap[ElementType.templatedSequenceElement].icon}
             {...{ element, index, handleDelete, handleSave }}
           />
         );
       case ElementType.transcriptSegmentElement:
         return (
           <TxSegmentElementInput
+            icon={elementNameMap[ElementType.transcriptSegmentElement].icon}
             {...{ element, index, handleDelete, handleSave }}
           />
         );
       case ElementType.multiplePossibleGenesElement:
+        return (
+          <StaticElement
+            icon={elementNameMap[ElementType.multiplePossibleGenesElement].icon}
+            {...{ element, index, handleDelete }}
+          />
+        );
       case ElementType.unknownGeneElement:
-        return <StaticElement {...{ element, index, handleDelete }} />;
+        return (
+          <StaticElement
+            icon={elementNameMap[ElementType.unknownGeneElement].icon}
+            {...{ element, index, handleDelete }}
+          />
+        );
     }
   };
 
   return (
-    <div className="builder">
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="OPTIONS" isDropDisabled={true}>
-          {(provided) => (
-            <div
-              className="options"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              style={{ display: "flex" }}
-            >
-              <div className="options-container">
-                {ELEMENT_TEMPLATE.map(({ element_id, type }, index) => {
-                  if (
-                    (fusion.type === "AssayedFusion" &&
-                      type !== ElementType.multiplePossibleGenesElement) ||
-                    (fusion.type === "CategoricalFusion" &&
-                      type !== ElementType.unknownGeneElement)
-                  ) {
-                    return (
-                      <Draggable
-                        key={element_id}
-                        draggableId={element_id}
-                        index={index}
-                      >
-                        {(provided, snapshot) => {
-                          return (
-                            <React.Fragment>
-                              <div
-                                ref={provided.innerRef}
-                                className={`option-item ${type}`}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={{
-                                  ...provided.draggableProps.style,
-                                  transform: snapshot.isDragging
-                                    ? provided.draggableProps.style?.transform
-                                    : "translate(0px, 0px)",
-                                }}
-                              >
-                                {elementNameMap[type]}
-                              </div>
-                              {snapshot.isDragging && (
-                                <div
-                                  style={{ transform: "none !important" }}
-                                  key={element_id}
-                                  className={`option-item clone ${type}`}
-                                >
-                                  {elementNameMap[type]}
-                                </div>
-                              )}
-                            </React.Fragment>
-                          );
-                        }}
-                      </Draggable>
-                    );
-                  }
-                })}
-              </div>
-            </div>
-          )}
-        </Droppable>
-        <div className="right-side">
-          <Droppable droppableId="structure">
+    <Box className="builder">
+      {nomenclatureElement}
+      <Box className="drag-and-drop-section" display="flex">
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="OPTIONS">
             {(provided) => (
-              <div
-                className="block-container"
+              <Box
+                className="options"
                 {...provided.droppableProps}
                 ref={provided.innerRef}
+                style={{ display: "flex" }}
               >
-                <h2
-                  className={`${
-                    fusion.structural_elements?.length === 0
-                      ? "instruction"
-                      : "hidden"
-                  }`}
-                >
-                  Drag elements here
-                </h2>
-                {fusion.structural_elements?.map(
-                  (element: ClientElementUnion, index: number) => {
-                    return (
-                      <Draggable
-                        key={element.element_id}
-                        draggableId={element.element_id}
-                        index={index}
-                      >
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            className={`block ${element.type}`}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            {renderElement(element, index)}
-                          </div>
-                        )}
-                      </Draggable>
-                    );
-                  }
-                )}
-              </div>
+                <Box className="options-container">
+                  {ELEMENT_TEMPLATE.map(({ element_id, type }, index) => {
+                    if (
+                      (fusion.type === "AssayedFusion" &&
+                        type !== ElementType.multiplePossibleGenesElement) ||
+                      (fusion.type === "CategoricalFusion" &&
+                        type !== ElementType.unknownGeneElement)
+                    ) {
+                      return (
+                        <Draggable
+                          key={element_id}
+                          draggableId={element_id}
+                          index={index}
+                        >
+                          {(provided, snapshot) => {
+                            return (
+                              <React.Fragment>
+                                <Box
+                                  ref={provided.innerRef}
+                                  className={`option-item ${type}`}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  style={{
+                                    ...provided.draggableProps.style,
+                                    transform: snapshot.isDragging
+                                      ? provided.draggableProps.style?.transform
+                                      : "translate(0px, 0px)",
+                                  }}
+                                >
+                                  {elementNameMap[type].icon}{" "}
+                                  <Box ml="8px">
+                                    {elementNameMap[type].name}
+                                  </Box>
+                                </Box>
+                                {snapshot.isDragging && (
+                                  <Box
+                                    style={{ transform: "none !important" }}
+                                    key={element_id}
+                                    className={`option-item clone ${type}`}
+                                  >
+                                    {elementNameMap[type].icon}{" "}
+                                    <Box ml="8px">
+                                      {elementNameMap[type].name}
+                                    </Box>
+                                  </Box>
+                                )}
+                              </React.Fragment>
+                            );
+                          }}
+                        </Draggable>
+                      );
+                    }
+                  })}
+                </Box>
+              </Box>
             )}
           </Droppable>
-          {renderFooterBar()}
-        </div>
-      </DragDropContext>
-    </div>
+          <Box
+            className="right-side"
+            maxWidth={windowWidth - MARGIN_OFFSETS.structureBlocks}
+          >
+            <Droppable droppableId="structure" direction="horizontal">
+              {(provided) => (
+                <Box
+                  className="block-container"
+                  maxWidth={windowWidth - MARGIN_OFFSETS.structureBlocks}
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                >
+                  <h2
+                    className={`${
+                      fusion.structural_elements?.length === 0
+                        ? "instruction"
+                        : "hidden"
+                    }`}
+                  >
+                    Drag elements here
+                  </h2>
+                  {fusion.structural_elements?.map(
+                    (element: ClientElementUnion, index: number) => {
+                      return (
+                        element && (
+                          <Draggable
+                            key={element.element_id}
+                            draggableId={element.element_id}
+                            index={index}
+                          >
+                            {(provided) => (
+                              <Box
+                                ref={provided.innerRef}
+                                className={`block ${element.type}`}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                {renderElement(element, index)}
+                              </Box>
+                            )}
+                          </Draggable>
+                        )
+                      );
+                    }
+                  )}
+                </Box>
+              )}
+            </Droppable>
+          </Box>
+        </DragDropContext>
+      </Box>
+    </Box>
   );
 };
 
