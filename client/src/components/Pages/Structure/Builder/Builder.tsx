@@ -134,8 +134,6 @@ const Builder: React.FC = () => {
     }
   }, [fusion]);
 
-  console.log(fusion.structural_elements)
-
   // drop new element into structure
   const createNew = (result: DropResult) => {
     const { source, destination } = result;
@@ -238,8 +236,6 @@ const Builder: React.FC = () => {
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
-    console.log(destination)
-    console.log(source)
     if (!destination) return; // dropped outside the list
     if (destination.droppableId === source.droppableId) {
       reorder(result);
