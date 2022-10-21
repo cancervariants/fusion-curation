@@ -8,6 +8,7 @@ import {
   Card,
   Typography,
   makeStyles,
+  Box,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
@@ -210,12 +211,39 @@ const GetCoordinates: React.FC = () => {
     }
   };
 
+  const genomicCoordinateInfo = (
+    <>
+      <Box display="flex" justifyContent="space-between" width="100%">
+        <TextField
+          margin="dense"
+          style={{ height: 38, width: 125 }}
+          value={chromosome}
+          onChange={(event) => setChromosome(event.target.value)}
+          error={chromosome && chromosomeText !== ""}
+          helperText={chromosome && chromosomeText ? chromosomeText : null}
+          label="Chromosome"
+        />
+        <Box className="inputs" mt="18px">
+          <Box className="strand" width="125px">
+            <StrandSwitch
+              setStrand={setStrand}
+              selectedStrand={strand}
+              switchClasses={{
+                labelPlacementStart: classes.strandSwitchLabel,
+              }}
+            />
+          </Box>
+        </Box>
+      </Box>
+    </>
+  );
+
   const renderInputOptions = () => {
     switch (inputType) {
       case "genomic_coords_gene":
         return (
           <>
-            <div className="inputs fields-pair">
+            <Box className="inputs fields-pair">
               <GeneAutocomplete
                 gene={gene}
                 setGene={setGene}
@@ -223,30 +251,9 @@ const GetCoordinates: React.FC = () => {
                 setGeneText={setGeneText}
                 style={{ width: 125 }}
               />
-              <TextField
-                margin="dense"
-                style={{ height: 38, width: 125 }}
-                value={chromosome}
-                onChange={(event) => setChromosome(event.target.value)}
-                error={chromosome && chromosomeText !== ""}
-                helperText={
-                  chromosome && chromosomeText ? chromosomeText : null
-                }
-                label="Chromosome"
-              />
-            </div>
-            <div className="inputs">
-              <div className="strand">
-                <StrandSwitch
-                  setStrand={setStrand}
-                  selectedStrand={strand}
-                  switchClasses={{
-                    labelPlacementStart: classes.strandSwitchLabel,
-                  }}
-                />
-              </div>
-            </div>
-            <div className="inputs fields-pair">
+            </Box>
+            {genomicCoordinateInfo}
+            <Box className="inputs fields-pair">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -261,13 +268,13 @@ const GetCoordinates: React.FC = () => {
                 value={end}
                 onChange={(event) => setEnd(event.target.value)}
               />
-            </div>
+            </Box>
           </>
         );
       case "genomic_coords_tx":
         return (
           <>
-            <div className="inputs fields-pair">
+            <Box className="inputs fields-pair">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -277,30 +284,9 @@ const GetCoordinates: React.FC = () => {
                 error={txAcText !== ""}
                 helperText={txAcText}
               />
-              <TextField
-                margin="dense"
-                style={{ height: 38, width: 125 }}
-                value={chromosome}
-                onChange={(event) => setChromosome(event.target.value)}
-                error={chromosome && chromosomeText !== ""}
-                helperText={
-                  chromosome && chromosomeText ? chromosomeText : null
-                }
-                label="Chromosome"
-              />
-            </div>
-            <div className="inputs">
-              <div className="strand">
-                <StrandSwitch
-                  setStrand={setStrand}
-                  selectedStrand={strand}
-                  switchClasses={{
-                    labelPlacementStart: classes.strandSwitchLabel,
-                  }}
-                />
-              </div>
-            </div>
-            <div className="inputs fields-pair">
+            </Box>
+            {genomicCoordinateInfo}
+            <Box className="inputs fields-pair">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -315,13 +301,13 @@ const GetCoordinates: React.FC = () => {
                 value={end}
                 onChange={(event) => setEnd(event.target.value)}
               />
-            </div>
+            </Box>
           </>
         );
       case "exon_coords_tx":
         return (
           <>
-            <div className="inputs">
+            <Box className="inputs">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -331,8 +317,8 @@ const GetCoordinates: React.FC = () => {
                 error={txAcText !== ""}
                 helperText={txAcText}
               />
-            </div>
-            <div className="inputs fields-pair">
+            </Box>
+            <Box className="inputs fields-pair">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -349,8 +335,8 @@ const GetCoordinates: React.FC = () => {
                 value={exonStartOffset}
                 onChange={(event) => setExonStartOffset(event.target.value)}
               />
-            </div>
-            <div className="inputs fields-pair">
+            </Box>
+            <Box className="inputs fields-pair">
               <TextField
                 margin="dense"
                 style={{ width: 125 }}
@@ -367,17 +353,17 @@ const GetCoordinates: React.FC = () => {
                 value={exonEndOffset}
                 onChange={(event) => setExonEndOffset(event.target.value)}
               />
-            </div>
+            </Box>
           </>
         );
     }
   };
 
   return (
-    <div className="get-coordinates-tab-container">
-      <div className="left">
-        <div className="input-selector">
-          <div className="input-selector-child">
+    <Box className="get-coordinates-tab-container">
+      <Box className="left">
+        <Box className="input-selector">
+          <Box className="input-selector-child">
             <Select
               value={inputType}
               onChange={(event) => setInputType(event.target.value as string)}
@@ -395,19 +381,19 @@ const GetCoordinates: React.FC = () => {
                 Exon coordinates, transcript
               </MenuItem>
             </Select>
-          </div>
-        </div>
-        <div className="input-params">{renderInputOptions()}</div>
-      </div>
-      <div className="right">
-        <div className="coords-response-container">
+          </Box>
+        </Box>
+        <Box className="input-params">{renderInputOptions()}</Box>
+      </Box>
+      <Box className="right">
+        <Box className="coords-response-container">
           {
             // inputValid && results ?
             renderResults()
           }
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

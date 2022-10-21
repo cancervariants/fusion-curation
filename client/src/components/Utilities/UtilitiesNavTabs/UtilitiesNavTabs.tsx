@@ -1,7 +1,7 @@
 import React from "react";
 import { GetTranscripts } from "../GetTranscripts/GetTranscripts";
 import { makeStyles, Theme } from "@material-ui/core/styles";
-import { AppBar, Tabs, Tab } from "@material-ui/core";
+import { AppBar, Tabs, Tab, Box } from "@material-ui/core";
 import "./UtilitiesNavTabs.scss";
 import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
 import GetCoordinates from "../GetCoordinates/GetCoordinates";
@@ -17,14 +17,15 @@ interface TabPanelProps {
 const TabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
   return (
-    <div
+    <Box
+      height="100%"
       hidden={value !== index}
       className="sub-tab"
       aria-labelledby={`nav-tab-${index}`}
       {...other}
     >
       {value === index && <>{children}</>}
-    </div>
+    </Box>
   );
 };
 
@@ -88,7 +89,7 @@ const UtilitiesNavTabs = (): React.ReactElement => {
   };
 
   return (
-    <div className="nav-tabs">
+    <Box className="utilities-nav-tabs">
       <AppBar elevation={0} position="static">
         <Tabs
           classes={{
@@ -102,10 +103,10 @@ const UtilitiesNavTabs = (): React.ReactElement => {
         >
           <LinkTab label="Get MANE Transcripts" {...a11yProps(0)} />
           <LinkTab label="Convert Coordinates" {...a11yProps(1)} />
-          <LinkTab label="Get Sequence ID" {...a11yProps(2)} />
+          <LinkTab label="Sequence ID Lookup" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
-      <div className="tab-panel">
+      <Box className="utilities-tab-panel">
         <TabPanel value={value} index={0}>
           <GetTranscripts />
         </TabPanel>
@@ -115,8 +116,8 @@ const UtilitiesNavTabs = (): React.ReactElement => {
         <TabPanel value={value} index={2}>
           <GetSequenceIds />
         </TabPanel>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 
