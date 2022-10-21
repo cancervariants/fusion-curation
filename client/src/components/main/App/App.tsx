@@ -223,8 +223,6 @@ const App = (): JSX.Element => {
     setDialogCallback(null);
   };
 
-  document.title = "VICC Fusion Curation";
-
   let title = "";
   let displayTool = false;
   switch (path) {
