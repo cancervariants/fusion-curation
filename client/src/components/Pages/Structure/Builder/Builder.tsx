@@ -311,7 +311,7 @@ const Builder: React.FC = () => {
       {nomenclatureElement}
       <Box className="drag-and-drop-section" display="flex">
         <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="OPTIONS">
+          <Droppable droppableId="OPTIONS" isDropDisabled={true}>
             {(provided) => (
               <Box
                 className="options"
