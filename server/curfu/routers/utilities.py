@@ -247,8 +247,21 @@ async def get_sequence(
     try:
         request.app.state.fusor.uta_tools.get_fasta_file(sequence_id, Path(path))
     except KeyError:
-        raise HTTPException(
-            status_code=404, detail="No sequence available for requested identifier"
+        resp = request.app.state.fusor.uta_tools.seqrepo_access.translate_identifier(
+            sequence_id, "refseq"
         )
+        if len(resp[0]) < 1:
+            raise HTTPException(
+                status_code=404, detail="No sequence available for requested identifier"
+            )
+        else:
+            try:
+                new_seq_id = resp[0][0].split(":")[1]
+                request.app.state.fusor.uta_tools.get_fasta_file(new_seq_id, Path(path))
+            except KeyError:
+                raise HTTPException(
+                    status_code=404,
+                    detail="No sequence available for requested identifier",
+                )
     background_tasks.add_task(lambda p: os.unlink(p), path)
     return FileResponse(path, filename=f"{sequence_id}.FASTA")

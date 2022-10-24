@@ -123,6 +123,12 @@ const GetSequenceIds: React.FC = () => {
         >
           GA4GH Demo
         </Button>
+        <Button
+          className={classes.demoButton}
+          onClick={() => setInputSequence("GRCh38:chr1")}
+        >
+          GRCh38 Demo
+        </Button>
       </Box>
     </Box>
   );
