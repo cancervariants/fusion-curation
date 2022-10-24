@@ -43,33 +43,42 @@ const GetSequenceIds: React.FC = () => {
 
   const { colorTheme } = useColorTheme();
   const useStyles = makeStyles(() => ({
-    tabContainer: {
+    utilContainer: {
       display: "flex",
       width: "100%",
       height: "100%",
       alignItems: "stretch",
       flex: 1,
     },
-    left: {
+    inputContainer: {
       height: "40%",
       minHeight: "85px",
       width: "40%",
       backgroundColor: colorTheme["--light-gray"],
-      display: "flex",
-      justifyContent: "center",
-      alignContent: "center",
     },
-    right: { width: "70%" },
+    inputOptions: {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "flex-start",
+      alignItems: "center",
+    },
+    sequenceInput: {
+      padding: "0 0 20px 0",
+    },
+    demoButton: {
+      padding: "10px",
+    },
+    resultContainer: { width: "70%" },
     sequenceIdResult: {
       height: "100%",
       display: "flex",
       flexDirection: "column",
       justifyContent: "space-between",
+      alignItems: "center",
     },
     idsContainer: {
       padding: "20px",
     },
-    refseqId: {},
     ga4ghId: {
       color: colorTheme["--dark-gray"],
     },
@@ -79,8 +88,6 @@ const GetSequenceIds: React.FC = () => {
     aliasHeader: {
       margin: "15px 0 5px 0",
     },
-    aliasContainer: {},
-    identifier: {},
     downloadContainer: {
       display: "flex",
       justifyContent: "center",
@@ -89,22 +96,59 @@ const GetSequenceIds: React.FC = () => {
   }));
   const classes = useStyles();
 
-  const renderIdInfo = () => (
+  const inputField = (
+    <Box className={classes.inputOptions}>
+      <TextField
+        margin="dense"
+        style={{ height: 38, width: 250 }}
+        value={inputSequence}
+        onChange={(event) => setInputSequence(event.target.value)}
+        label="Enter sequence ID"
+        error={helperText.length > 0}
+        helperText={helperText}
+        className={classes.sequenceInput}
+      />
+      <Box>
+        <Button
+          className={classes.demoButton}
+          onClick={() => setInputSequence("NM_002529.3")}
+        >
+          RefSeq Demo
+        </Button>
+        <Button
+          className={classes.demoButton}
+          onClick={() =>
+            setInputSequence("ga4gh:SQ.jkiXxxRjK7uTMiW2KQFjpgvF3VQi-HhX")
+          }
+        >
+          GA4GH Demo
+        </Button>
+        <Button
+          className={classes.demoButton}
+          onClick={() => setInputSequence("GRCh38:chr1")}
+        >
+          GRCh38 Demo
+        </Button>
+      </Box>
+    </Box>
+  );
+
+  const renderedIdInfo = (
     <Box className={classes.sequenceIdResult}>
       <Box className={classes.idsContainer}>
-        <Box className={classes.refseqId}>
+        <Box>
           <Typography variant="h4">
             <span className={classes.namespaceText}>refseq:</span>
-            <span className={classes.identifier}>{refseqId.split(":")[1]}</span>
+            <span>{refseqId.split(":")[1]}</span>
           </Typography>
         </Box>
         <Box className={classes.ga4ghId} ml="20px">
           <Typography variant="h6">
             <span className={classes.namespaceText}>ga4gh:</span>
-            <span className={classes.identifier}>{ga4ghId.split(":")[1]}</span>
+            <span>{ga4ghId.split(":")[1]}</span>
           </Typography>
         </Box>
-        <Box className={classes.aliasContainer}>
+        <Box>
           <Box className={classes.aliasHeader}>
             <Typography variant="h6">Aliases</Typography>
           </Box>
@@ -134,20 +178,10 @@ const GetSequenceIds: React.FC = () => {
   );
 
   return (
-    <Box className={classes.tabContainer}>
-      <Box className={classes.left}>
-        <TextField
-          margin="dense"
-          style={{ height: 38, width: 200 }}
-          value={inputSequence}
-          onChange={(event) => setInputSequence(event.target.value)}
-          label="Enter sequence ID"
-          error={helperText.length > 0}
-          helperText={helperText}
-        />
-      </Box>
-      <Box className={classes.right}>
-        {refseqId && ga4ghId ? renderIdInfo() : <></>}
+    <Box className={classes.utilContainer}>
+      <Box className={classes.inputContainer}>{inputField}</Box>
+      <Box className={classes.resultContainer}>
+        {refseqId && ga4ghId ? renderedIdInfo : <></>}
       </Box>
     </Box>
   );
