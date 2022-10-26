@@ -163,7 +163,13 @@ export const Summary: React.FC<Props> = () => {
       validatedFusion ? (
         <Success fusion={validatedFusion} />
       ) : (
-        <Invalid validationErrors={validationErrors} />
+        <>
+          {validationErrors && validationErrors.length > 0 ? (
+            <Invalid validationErrors={validationErrors} />
+          ) : (
+            <></>
+          )}
+        </>
       )}
     </>
   );
