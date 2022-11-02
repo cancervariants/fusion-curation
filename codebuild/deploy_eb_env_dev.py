@@ -4,7 +4,7 @@ import time
 
 elasticbeanstalk = boto3.client("elasticbeanstalk")
 servicecatalog = boto3.client("servicecatalog")
-terminate_time = 720
+terminate_time = 12
 eb_app_name = "FusionCuration"
 eb_env_name = "FusionCuration-dev-env"
 sc_product_id = "prod-m4b65t5jgmcm4"
