@@ -17,7 +17,7 @@ from fusor.models import (
     FunctionalDomain,
     Strand,
 )
-from uta_tools.schemas import GenomicData
+from cool_seq_tool.schemas import GenomicData
 
 
 ResponseWarnings = Optional[List[StrictStr]]
@@ -235,10 +235,10 @@ class ServiceInfoResponse(Response):
 
     curfu_version: StrictStr
     fusor_version: StrictStr
-    uta_tools_version: StrictStr
+    cool_seq_tool_version: StrictStr
 
     # consider additional tool versions:
-    # - UTA (https://github.com/GenomicMedLab/uta-tools/issues/98)
+    # - UTA (https://github.com/GenomicMedLab/cool-seq-tool/issues/98)
     # - vrs/vrs-python
     # - the gene normalizer
 

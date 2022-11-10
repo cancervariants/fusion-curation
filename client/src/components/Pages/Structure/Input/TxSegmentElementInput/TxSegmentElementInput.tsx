@@ -152,9 +152,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       finishedElement.nomenclature = "ERROR";
     } else {
       getTxSegmentNomenclature(
-        responseElement,
-        index === 0,
-        index !== 0 && index >= fusion.structural_elements.length - 1
+        responseElement
       ).then((nomenclatureResponse) => {
         if (
           !nomenclatureResponse.warnings &&
