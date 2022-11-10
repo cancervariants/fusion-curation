@@ -77,8 +77,6 @@ def generate_tx_segment_nomenclature(
     Build transcript segment element nomenclature.
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
-    :param first: if true, element is first in structure
-    :param last: if true, element is last in structure
     :param tx_segment: element to build nomenclature for
     :return: response with nomenclature if successful and warnings otherwise
     """
