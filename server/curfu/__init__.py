@@ -34,7 +34,6 @@ if "FUSION_EB_PROD" in environ:
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
     logger.addHandler(ch)
-    environ["UTA_DB_PROD"] = "TRUE"
 else:
     logging.getLogger("urllib3").setLevel(logging.INFO)
 
