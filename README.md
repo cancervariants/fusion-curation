@@ -19,7 +19,7 @@ Ensure that the following data sources are available:
 
 - the [VICC Gene Normalization](https://github.com/cancervariants/gene-normalization) database, accessible from a DynamoDB-compliant service. Set the endpoint address with environment variable `GENE_NORM_DB_URL`; default value is `http://localhost:8000`.
 - the [Biocommons SeqRepo](https://github.com/biocommons/biocommons.seqrepo) database. Provide local path with environment variable `SEQREPO_DATA_PATH`; default value is `/usr/local/share/seqrepo/latest`.
-- the [Biocommons Universal Transcript Archive](https://github.com/biocommons/uta), by way of VICC's [UTA Tools](https://github.com/GenomicMedLab/uta-tools) package. Connection parameters to the Postgres database are set most easily as a [Libpq-compliant URL](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) under the environment variable `UTA_DB_URL`.
+- the [Biocommons Universal Transcript Archive](https://github.com/biocommons/uta), by way of Genomic Med Lab's [Cool Seq Tool](https://github.com/GenomicMedLab/cool-seq-tool) package. Connection parameters to the Postgres database are set most easily as a [Libpq-compliant URL](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) under the environment variable `UTA_DB_URL`.
 
 Create a virtual environment for the server and install. Note: there's also a Pipfile so you can skip the virtualenv steps if you'd rather use a Pipenv instance instead of virtualenv/venv. I have been sticking with the latter because [Pipenv doesn't play well with entry points in development](https://stackoverflow.com/a/69225249), but if you aren't editing them in `setup.cfg`, then the former should be fine.
 

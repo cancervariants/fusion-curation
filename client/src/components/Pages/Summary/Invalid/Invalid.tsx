@@ -93,7 +93,7 @@ export const Invalid: React.FC<Props> = ({ validationErrors }) => {
    * Our error emitting is pretty shaky right now -- it's probably impossible
    * to get more than one validation error at a time, and the Pydantic
    * validationError objects get flattened into strings. We'd probably have
-   * to fix this at the top (UTA Tools, FUSOR) first, but this function
+   * to fix this at the top (Cool Seq Tool, FUSOR) first, but this function
    * is a stopgap in the meantime.
    * @param error error message from server
    */

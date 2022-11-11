@@ -40,7 +40,7 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
     elif not normalized.gene_descriptor.gene_id.lower().startswith("hgnc"):
         return {"warnings": [f"No HGNC symbol: {term}"]}
     symbol = normalized.gene_descriptor.label
-    transcripts = request.app.state.fusor.uta_tools.mane_transcript_mappings.get_gene_mane_data(  # noqa: E501
+    transcripts = request.app.state.fusor.cool_seq_tool.mane_transcript_mappings.get_gene_mane_data(  # noqa: E501
         symbol
     )
     if not transcripts:
@@ -105,7 +105,7 @@ async def get_genome_coords(
     if exon_end is not None and exon_end_offset is None:
         exon_end_offset = 0
 
-    response = await request.app.state.fusor.uta_tools.transcript_to_genomic_coordinates(  # noqa: E501
+    response = await request.app.state.fusor.cool_seq_tool.transcript_to_genomic_coordinates(  # noqa: E501
         gene=gene,
         transcript=transcript,
         exon_start=exon_start,
@@ -164,7 +164,7 @@ async def get_exon_coords(
             logger.warning(warning)
         return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    response = await request.app.state.fusor.uta_tools.genomic_to_transcript_exon_coordinates(  # noqa: E501
+    response = await request.app.state.fusor.cool_seq_tool.genomic_to_transcript_exon_coordinates(  # noqa: E501
         chromosome,
         start=start,
         end=end,
@@ -193,7 +193,7 @@ async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse
     :return: Response object with ga4gh ID and aliases
     """
     params: Dict[str, Any] = {"sequence": sequence}
-    sr = request.app.state.fusor.uta_tools.seqrepo_access.seqrepo_client
+    sr = request.app.state.fusor.cool_seq_tool.seqrepo_access.seqrepo_client
     try:
         aliases_dict: Dict[str, str] = {
             sr_id.split(":")[0]: sr_id for sr_id in sr.translate_identifier(sequence)
@@ -245,9 +245,9 @@ async def get_sequence(
     """
     _, path = tempfile.mkstemp(suffix=".fasta")
     try:
-        request.app.state.fusor.uta_tools.get_fasta_file(sequence_id, Path(path))
+        request.app.state.fusor.cool_seq_tool.get_fasta_file(sequence_id, Path(path))
     except KeyError:
-        resp = request.app.state.fusor.uta_tools.seqrepo_access.translate_identifier(
+        resp = request.app.state.fusor.cool_seq_tool.seqrepo_access.translate_identifier(
             sequence_id, "refseq"
         )
         if len(resp[0]) < 1:
@@ -257,7 +257,7 @@ async def get_sequence(
         else:
             try:
                 new_seq_id = resp[0][0].split(":")[1]
-                request.app.state.fusor.uta_tools.get_fasta_file(new_seq_id, Path(path))
+                request.app.state.fusor.cool_seq_tool.get_fasta_file(new_seq_id, Path(path))
             except KeyError:
                 raise HTTPException(
                     status_code=404,

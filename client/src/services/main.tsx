@@ -316,17 +316,13 @@ export const getRegElementNomenclature = async (
 /**
  * Get nomenclature subcomponent for a given Transcript Segment Element
  * @param txSegment
- * @param first true if element is first in structure
- * @param last true if element is last in structure
  * @returns nomenclature if successful
  */
 export const getTxSegmentNomenclature = async (
   txSegment: TranscriptSegmentElement,
-  first: boolean,
-  last: boolean
 ): Promise<NomenclatureResponse> => {
   const response = await fetch(
-    `/nomenclature/transcript_segment?first=${first}&last=${last}`,
+    `/nomenclature/transcript_segment`,
     {
       method: "POST",
       headers: {
