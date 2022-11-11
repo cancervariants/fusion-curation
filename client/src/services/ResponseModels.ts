@@ -638,7 +638,7 @@ export interface ServiceInfoResponse {
   warnings?: string[];
   curfu_version: string;
   fusor_version: string;
-  uta_tools_version: string;
+  cool_seq_tool_version: string;
 }
 /**
  * Response model for gene autocomplete suggestions endpoint.

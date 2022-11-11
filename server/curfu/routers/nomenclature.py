@@ -71,14 +71,12 @@ def generate_regulatory_element_nomenclature(
     response_model_exclude_none=True,
 )
 def generate_tx_segment_nomenclature(
-    first: bool, last: bool, tx_segment: Dict = Body()
+    tx_segment: Dict = Body()
 ) -> ResponseDict:
     """
     Build transcript segment element nomenclature.
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
-    :param first: if true, element is first in structure
-    :param last: if true, element is last in structure
     :param tx_segment: element to build nomenclature for
     :return: response with nomenclature if successful and warnings otherwise
     """
@@ -90,7 +88,7 @@ def generate_tx_segment_nomenclature(
             f"Encountered ValidationError: {error_msg} for tx segment: {tx_segment}"
         )
         return {"warnings": [error_msg]}
-    nomenclature = tx_segment_nomenclature(structured_tx_segment, first, last)
+    nomenclature = tx_segment_nomenclature(structured_tx_segment)
     return {"nomenclature": nomenclature}
 
 

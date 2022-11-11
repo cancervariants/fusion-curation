@@ -63,7 +63,6 @@ def get_uniprot_refs() -> UniprotRefs:
     start = timer()
 
     # scanning on DynamoDB_Local is extremely slow
-    os.environ["GENE_NORM_PROD"] = "TRUE"
     q = QueryHandler()
     genes = q.db.genes
 

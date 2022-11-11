@@ -99,7 +99,7 @@ def clientify_structural_element(
         element_args["nomenclature"] = nm
         return ClientGeneElement(**element_args)
     elif element.type == StructuralElementType.TRANSCRIPT_SEGMENT_ELEMENT:
-        nm = tx_segment_nomenclature(element, first, last)
+        nm = tx_segment_nomenclature(element)
         element_args["nomenclature"] = nm
         element_args["input_type"] = "exon_coords_tx"
         element_args["input_tx"] = element.transcript.split(":")[1]
