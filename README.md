@@ -108,3 +108,11 @@ In practice, Prettier and Black will do most of the formatting work for you to b
 ### Tests
 
 Backend tests require installation of `tests` dependencies. Run with `pytest`.
+
+### Generating requirements
+
+`requirements.txt` is used for Elastic Beanstalk to install the dependencies. Anytime you update package requirements, be sure to update `requirements.txt`. To generate run the below command from `server` directory (ensure you have started the venv):
+
+```commandline
+pip freeze --exclude-editable > ../requirements.txt
+```
