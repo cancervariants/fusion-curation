@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import Close from "../../Domains/Main/Close";
 import { FusionContext } from "../../../../global/contexts/FusionContext";
 
 import "./RegElement.scss";
@@ -8,13 +7,15 @@ import {
   ClientRegulatoryElement,
   RegulatoryClass,
 } from "../../../../services/ResponseModels";
+import { Typography, makeStyles, Link, Box } from "@material-ui/core";
+import { HelpPopover } from "../../../main/shared/HelpPopover/HelpPopover";
+import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
 
 interface Props {
   index: number;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const RegElement: React.FC<Props> = ({ index }) => {
+export const RegElement: React.FC<Props> = () => {
   const { fusion, setFusion } = useContext(FusionContext);
   const [regElement, setRegElement] = useState<
     ClientRegulatoryElement | undefined
@@ -27,6 +28,25 @@ export const RegElement: React.FC<Props> = ({ index }) => {
     regElement?.associated_gene?.label || ""
   );
   const [geneText, setGeneText] = useState<string>("");
+
+  const { colorTheme } = useColorTheme();
+  const useStyles = makeStyles(() => ({
+    popoverContainer: {
+      backgroundColor: colorTheme["--primary"],
+      color: colorTheme["--background"],
+      padding: "5px",
+      maxWidth: "300px",
+    },
+    popoverLink: {
+      color: colorTheme["--background"],
+      fontWeight: "bold",
+      textDecoration: "underline",
+    },
+    popoverParagraph: {
+      padding: "4px 0 4px 0",
+    },
+  }));
+  const classes = useStyles();
 
   /**
    * Remove regulatory element submitted by user and wipe input fields.
@@ -50,6 +70,46 @@ export const RegElement: React.FC<Props> = ({ index }) => {
     setFusion({ ...fusion, ...{ regulatory_element: element } });
   };
 
+  const renderPopoverText = () => (
+    <>
+      <Box className={classes.popoverContainer}>
+        <Typography variant="body2" className={classes.popoverParagraph}>
+          Regulatory elements include a Regulatory Feature used to describe an
+          enhancer, promoter, or other regulatory elements that constitute
+          Regulatory Fusions. Regulatory features may also be defined by a gene
+          with which the feature is associated (e.g. an IGH-associated enhancer
+          element).
+        </Typography>
+        <Typography variant="body2" className={classes.popoverParagraph}>
+          Our definitions of regulatory features follows the definitions
+          provided by the{" "}
+          <Link
+            href="https://www.insdc.org/submitting-standards/controlled-vocabulary-regulatoryclass/"
+            className={classes.popoverLink}
+            target="_blank"
+            rel="noopener"
+          >
+            INSDC regulatory class vocabulary
+          </Link>
+          . In gene fusions, these are typically either enhancer or promoter
+          features.
+        </Typography>
+        <Typography variant="body2" className={classes.popoverParagraph}>
+          See the{" "}
+          <Link
+            href="https://fusions.cancervariants.org/en/latest/information_model.html#regulatory-elements"
+            className={classes.popoverLink}
+            target="_blank"
+            rel="noopener"
+          >
+            specification
+          </Link>{" "}
+          for more information.
+        </Typography>
+      </Box>
+    </>
+  );
+
   return (
     <div className="reg-element-tab-container">
       <div className="left">
@@ -57,43 +117,39 @@ export const RegElement: React.FC<Props> = ({ index }) => {
           <div className="blurb">
             {regElement !== undefined ? (
               <>
-                This transcript structure appears to be associated with a
-                <p />
-                <span key={index} className="bold">
+                <Typography variant="h4">
+                  This transcript structure appears to be associated with a
+                </Typography>
+
+                <Typography variant="h3">
                   {regElement.associated_gene &&
                     regElement.associated_gene.label &&
                     regElement.associated_gene.label.toUpperCase()}{" "}
                   {regElement.display_class}
                   {"."}
-                </span>
-                <p />
+                </Typography>
               </>
             ) : (
-              <>No regulatory element found.</>
+              <Typography variant="h6">
+                No regulatory element specified.
+              </Typography>
             )}
           </div>
           <div className="sub-blurb">
-            {regElement !== undefined
-              ? "You can remove or replace this regulatory element."
-              : "You can add a regulatory element."}
+            <Typography>
+              {regElement !== undefined
+                ? "You can remove or update this regulatory element."
+                : "You can add a regulatory element."}
+              <HelpPopover content={renderPopoverText} />
+            </Typography>
           </div>
-
-          {regElement !== undefined ? (
-            <div className="regel">
-              <div>Remove</div>
-              <div className="close-button-reg" onClick={() => handleRemove()}>
-                <Close />
-              </div>
-            </div>
-          ) : (
-            <></>
-          )}
         </div>
       </div>
       <div className="right">
         <RegElementForm
           regElement={regElement}
           setRegElement={handleUpdate}
+          removeRegElement={handleRemove}
           elementClass={elementClass}
           setElementClass={setElementClass}
           gene={gene}

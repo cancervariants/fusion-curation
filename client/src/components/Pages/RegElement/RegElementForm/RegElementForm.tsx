@@ -16,6 +16,12 @@ import {
 } from "../../../../services/ResponseModels";
 import { GeneAutocomplete } from "../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import "./RegElementForm.scss";
+import AddIcon from "@material-ui/icons/Add";
+import UpdateIcon from "@material-ui/icons/Update";
+import DeleteIcon from "@material-ui/icons/Delete";
+import React from "react";
+import HelpTooltip from "../../../main/shared/HelpTooltip/HelpTooltip";
+import TooltipTypography from "../../../main/shared/HelpTooltip/TooltipTypography";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -30,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
 interface Props {
   regElement: ClientRegulatoryElement | undefined;
   setRegElement: CallableFunction;
+  removeRegElement: CallableFunction;
   elementClass: RegulatoryClass | "default";
   setElementClass: CallableFunction;
   gene: string;
@@ -41,6 +48,7 @@ interface Props {
 const RegElementForm: React.FC<Props> = ({
   regElement,
   setRegElement,
+  removeRegElement,
   elementClass,
   setElementClass,
   gene,
@@ -132,14 +140,27 @@ const RegElementForm: React.FC<Props> = ({
       <div className="formInput">
         <FormControl className={classes.formControl}>
           <InputLabel id="regulatory-element-class-label">Class</InputLabel>
-          <Select
-            labelId="regulatory-element-class-label"
-            id="regulatory-element-class"
-            value={elementClass}
-            onChange={(e) => setElementClass(e.target.value as RegulatoryClass)}
+          <HelpTooltip
+            placement="left"
+            title={
+              <>
+                <TooltipTypography>
+                  INSDC regulatory class vocabulary term.
+                </TooltipTypography>
+              </>
+            }
           >
-            {buildMenuItems()}
-          </Select>
+            <Select
+              labelId="regulatory-element-class-label"
+              id="regulatory-element-class"
+              value={elementClass}
+              onChange={(e) =>
+                setElementClass(e.target.value as RegulatoryClass)
+              }
+            >
+              {buildMenuItems()}
+            </Select>
+          </HelpTooltip>
         </FormControl>
       </div>
       <div className="formInput">
@@ -149,17 +170,45 @@ const RegElementForm: React.FC<Props> = ({
           geneText={geneText}
           setGeneText={setGeneText}
           style={{ width: 440 }}
+          tooltipDirection="left"
         />
       </div>
-      <div className="regel-add-button ">
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => handleAdd()}
-          disabled={!inputComplete}
-        >
-          {regElement === undefined ? "Add" : "Update"}
-        </Button>
+      <div className="regel-buttons ">
+        {regElement !== undefined ? (
+          <Button
+            startIcon={<DeleteIcon />}
+            variant="outlined"
+            color="secondary"
+            onClick={() => removeRegElement()}
+            className="regel-delete-button"
+          >
+            Remove
+          </Button>
+        ) : (
+          <></>
+        )}
+
+        {regElement === undefined ? (
+          <Button
+            startIcon={<AddIcon />}
+            variant="outlined"
+            color="primary"
+            onClick={() => handleAdd()}
+            disabled={!inputComplete}
+          >
+            Add
+          </Button>
+        ) : (
+          <Button
+            startIcon={<UpdateIcon />}
+            variant="outlined"
+            color="primary"
+            onClick={() => handleAdd()}
+            disabled={!inputComplete}
+          >
+            Update
+          </Button>
+        )}
       </div>
     </div>
   );
