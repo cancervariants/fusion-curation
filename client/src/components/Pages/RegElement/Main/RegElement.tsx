@@ -52,8 +52,8 @@ export const RegElement: React.FC<Props> = () => {
    * Remove regulatory element submitted by user and wipe input fields.
    */
   const handleRemove = () => {
-    const cloneFusion = { ...fusion };
     delete fusion.regulatory_element;
+    const cloneFusion = { ...fusion };
     setRegElement(undefined);
     setFusion(cloneFusion);
     setElementClass("default");
@@ -117,16 +117,13 @@ export const RegElement: React.FC<Props> = () => {
           <div className="blurb">
             {regElement !== undefined ? (
               <>
-                <Typography variant="h4">
-                  This transcript structure appears to be associated with a
-                </Typography>
-
-                <Typography variant="h3">
+                <Typography variant="h5">
+                  This fusion contains the <b>{regElement.display_class}</b>{" "}
+                  regulatory element via the{" "}
                   {regElement.associated_gene &&
                     regElement.associated_gene.label &&
                     regElement.associated_gene.label.toUpperCase()}{" "}
-                  {regElement.display_class}
-                  {"."}
+                  gene.
                 </Typography>
               </>
             ) : (
