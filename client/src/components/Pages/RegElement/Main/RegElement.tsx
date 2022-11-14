@@ -52,8 +52,8 @@ export const RegElement: React.FC<Props> = () => {
    * Remove regulatory element submitted by user and wipe input fields.
    */
   const handleRemove = () => {
-    const cloneFusion = { ...fusion };
     delete fusion.regulatory_element;
+    const cloneFusion = { ...fusion };
     setRegElement(undefined);
     setFusion(cloneFusion);
     setElementClass("default");
