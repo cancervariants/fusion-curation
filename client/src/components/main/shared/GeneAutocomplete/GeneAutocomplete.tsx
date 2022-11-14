@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField } from "@material-ui/core";
+import { TextField, Tooltip, Typography } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getGeneId, getGeneSuggestions } from "../../../../services/main";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
@@ -7,6 +7,15 @@ import {
   NormalizeGeneResponse,
   SuggestGeneResponse,
 } from "../../../../services/ResponseModels";
+import { makeStyles } from "@material-ui/core/styles";
+import HelpTooltip from "../HelpTooltip/HelpTooltip";
+import TooltipTypography from "../HelpTooltip/TooltipTypography";
+
+const useStyles = makeStyles(() => ({
+  tooltipParagraph: {
+    padding: "4px 0 4px 0",
+  },
+}));
 
 export enum GeneSuggestionType {
   alias = "Alias",
@@ -27,6 +36,18 @@ interface Props {
   geneText: string;
   setGeneText: CallableFunction;
   style: CSSProperties;
+  tooltipDirection: "bottom" | "left";
+  // | "right"
+  // | "top"
+  // | "bottom-end"
+  // | "bottom-start"
+  // | "left-end"
+  // | "left-start"
+  // | "right-end"
+  // | "right-start"
+  // | "top-end"
+  // | "top-start"
+  // | undefined;
 }
 
 export const GeneAutocomplete: React.FC<Props> = ({
@@ -35,6 +56,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
   geneText,
   setGeneText,
   style,
+  tooltipDirection,
 }) => {
   const existingGeneOption = gene
     ? { value: gene, type: GeneSuggestionType.symbol }
@@ -42,6 +64,8 @@ export const GeneAutocomplete: React.FC<Props> = ({
   const [geneOptions, setGeneOptions] = useState<SuggestedGeneOption[]>([]);
   const [geneValue, setGeneValue] = useState(existingGeneOption);
   const [inputValue, setInputValue] = useState(existingGeneOption);
+
+  const classes = useStyles();
 
   /**
    * Simple wrapper around state setters to ensure updates to local selected value are reflected
@@ -168,15 +192,29 @@ export const GeneAutocomplete: React.FC<Props> = ({
       clearOnBlur={false}
       clearOnEscape
       renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="standard"
-          label="Gene Symbol"
-          margin="dense"
-          style={style}
-          error={geneText !== ""}
-          helperText={geneText ? geneText : null}
-        />
+        <HelpTooltip
+          placement={tooltipDirection}
+          title={
+            <>
+              <TooltipTypography>Associated gene term.</TooltipTypography>
+              <TooltipTypography>
+                We recommend using an HUGO Gene Nomenclature Committee (HGNC)
+                symbol, but other kinds of referents (including aliases, full
+                names, deprecated terms, and concept IDs) are supported as well.
+              </TooltipTypography>
+            </>
+          }
+        >
+          <TextField
+            {...params}
+            variant="standard"
+            label="Gene Symbol"
+            margin="dense"
+            style={style}
+            error={geneText !== ""}
+            helperText={geneText ? geneText : null}
+          />
+        </HelpTooltip>
       )}
     />
   );
