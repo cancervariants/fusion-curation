@@ -81,30 +81,29 @@ export const CausativeEvent: React.FC<Props> = () => {
     setFusion({ causative_event: newCausativeEvent, ...fusion });
   };
 
-  const renderPopoverText = () => (
-    <PopoverBox>
-      <PopoverTypography>
-        The evaluation of a fusion may be influenced by the underlying mechanism
-        that generated the fusion. Often this will be a DNA rearrangement, but
-        it could also be a read-through or trans-splicing event.
-      </PopoverTypography>
-      <PopoverTypography>
-        See the{" "}
-        <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#causative-event">
-          specification
-        </PopoverLink>{" "}
-        for more information.
-      </PopoverTypography>
-    </PopoverBox>
-  );
-
   return (
     <div className="event-tab-container">
       <FormControl component="fieldset">
         <Box className="left column">
           <Typography variant="h5">
             What is the causative event?
-            <HelpPopover content={renderPopoverText} />
+            <HelpPopover>
+              <PopoverBox>
+                <PopoverTypography>
+                  The evaluation of a fusion may be influenced by the underlying
+                  mechanism that generated the fusion. Often this will be a DNA
+                  rearrangement, but it could also be a read-through or
+                  trans-splicing event.
+                </PopoverTypography>
+                <PopoverTypography>
+                  See the{" "}
+                  <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#causative-event">
+                    specification
+                  </PopoverLink>{" "}
+                  for more information.
+                </PopoverTypography>
+              </PopoverBox>
+            </HelpPopover>
           </Typography>
           <HelpTooltip
             placement="bottom"

@@ -112,30 +112,28 @@ export const Domain: React.FC<Props> = () => {
     );
   };
 
-  const renderPopoverText = () => {
-    return (
-      <>
-        <PopoverBox>
-          <PopoverTypography>
-            Categorical Gene Fusions are often characterized by the presence or
-            absence of critical functional domains within a gene fusion.
-          </PopoverTypography>
-          <PopoverTypography>
-            Given a gene previously provided in a structural or regulatory
-            element, select from its associated domains and indicate whether it
-            was lost or preserved in the fusion.
-          </PopoverTypography>
-          <PopoverTypography>
-            See the{" "}
-            <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#functional-domains">
-              specification
-            </PopoverLink>{" "}
-            for more information.
-          </PopoverTypography>
-        </PopoverBox>
-      </>
-    );
-  };
+  const popover = (
+    <HelpPopover>
+      <PopoverBox>
+        <PopoverTypography>
+          Categorical Gene Fusions are often characterized by the presence or
+          absence of critical functional domains within a gene fusion.
+        </PopoverTypography>
+        <PopoverTypography>
+          Given a gene previously provided in a structural or regulatory
+          element, select from its associated domains and indicate whether it
+          was lost or preserved in the fusion.
+        </PopoverTypography>
+        <PopoverTypography>
+          See the{" "}
+          <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#functional-domains">
+            specification
+          </PopoverLink>{" "}
+          for more information.
+        </PopoverTypography>
+      </PopoverBox>
+    </HelpPopover>
+  );
 
   return (
     <Box className={classes.container}>
@@ -144,7 +142,7 @@ export const Domain: React.FC<Props> = () => {
           {Object.keys(globalGenes).length > 0 ? (
             <Typography variant="h6" className={classes.enterDataPrompt}>
               You can add or remove domains.
-              <HelpPopover content={renderPopoverText} />
+              {popover}
             </Typography>
           ) : (
             <>
@@ -152,7 +150,7 @@ export const Domain: React.FC<Props> = () => {
               <Typography>
                 You must first provide gene-associated structure or regulatory
                 elements to specify lost or preserved functional domains.
-                <HelpPopover content={renderPopoverText} />
+                {popover}
               </Typography>
             </>
           )}

@@ -14,31 +14,6 @@ interface Props {
 export const Structure: React.FC<Props> = () => {
   const fusion = useContext(FusionContext).fusion;
 
-  const renderHelpContent = () => (
-    <PopoverBox>
-      <PopoverTypography>
-        The structural elements of a gene fusion represent the expressed gene
-        product, and are typically characterized at the gene level or the
-        transcript level. Chimeric Transcript Fusions must be represented by at
-        least two structural elements, and Regulatory Fusions must be
-        represented by at least one structural element and one Regulatory
-        Element.
-      </PopoverTypography>
-      <PopoverTypography>
-        The order of structural elements is important, and by convention
-        representations of structural components for gene fusions follow a
-        5&#39; -&gt; 3&#39; ordering.
-      </PopoverTypography>
-      <PopoverTypography>
-        See the{" "}
-        <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#structural-elements">
-          specification
-        </PopoverLink>{" "}
-        for more information.
-      </PopoverTypography>
-    </PopoverBox>
-  );
-
   return (
     <div className="structure-tab-container">
       <div className="structure-summary">
@@ -56,7 +31,30 @@ export const Structure: React.FC<Props> = () => {
               </span>
             )
           }
-          <HelpPopover content={renderHelpContent} />
+          <HelpPopover>
+            <PopoverBox>
+              <PopoverTypography>
+                The structural elements of a gene fusion represent the expressed
+                gene product, and are typically characterized at the gene level
+                or the transcript level. Chimeric Transcript Fusions must be
+                represented by at least two structural elements, and Regulatory
+                Fusions must be represented by at least one structural element
+                and one Regulatory Element.
+              </PopoverTypography>
+              <PopoverTypography>
+                The order of structural elements is important, and by convention
+                representations of structural components for gene fusions follow
+                a 5&#39; -&gt; 3&#39; ordering.
+              </PopoverTypography>
+              <PopoverTypography>
+                See the{" "}
+                <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#structural-elements">
+                  specification
+                </PopoverLink>{" "}
+                for more information.
+              </PopoverTypography>
+            </PopoverBox>
+          </HelpPopover>
         </h5>
       </div>
       <Builder />

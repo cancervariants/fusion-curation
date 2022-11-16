@@ -36,23 +36,6 @@ export const ReadingFrame: React.FC<Props> = ({ index }) => {
   }));
   const classes = useStyles();
 
-  const renderPopoverText = () => (
-    <PopoverBox>
-      <PopoverTypography>
-        A common attribute of a categorical gene fusion is whether the reading
-        frame is preserved in the expressed gene product. This is typical of
-        protein-coding gene fusions.
-      </PopoverTypography>
-      <PopoverTypography>
-        See the{" "}
-        <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#functional-domains">
-          specification
-        </PopoverLink>{" "}
-        for more information.
-      </PopoverTypography>
-    </PopoverBox>
-  );
-
   const { fusion, setFusion } = useContext(FusionContext);
 
   //TODO: do a useref here or something
@@ -106,7 +89,22 @@ export const ReadingFrame: React.FC<Props> = ({ index }) => {
       <FormControl component="fieldset">
         <Typography variant="h5" className={classes.prompt}>
           Is the reading frame expected to be preserved?
-          <HelpPopover content={renderPopoverText} />
+          <HelpPopover>
+            <PopoverBox>
+              <PopoverTypography>
+                A common attribute of a categorical gene fusion is whether the
+                reading frame is preserved in the expressed gene product. This
+                is typical of protein-coding gene fusions.
+              </PopoverTypography>
+              <PopoverTypography>
+                See the{" "}
+                <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#functional-domains">
+                  specification
+                </PopoverLink>{" "}
+                for more information.
+              </PopoverTypography>
+            </PopoverBox>
+          </HelpPopover>
         </Typography>
         <Box className={classes.inputField}>
           <RadioGroup

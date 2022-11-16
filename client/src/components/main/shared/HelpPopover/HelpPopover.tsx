@@ -3,7 +3,11 @@ import React from "react";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
 
-export const HelpPopover = ({ content }) => {
+interface HelpPopoverProps {
+  children: React.ReactFragment;
+}
+
+export const HelpPopover: React.FC<HelpPopoverProps> = ({ children }) => {
   const { colorTheme } = useColorTheme();
   const useStyles = makeStyles(() => ({
     helpIcon: {
@@ -59,7 +63,7 @@ export const HelpPopover = ({ content }) => {
           horizontal: "left",
         }}
       >
-        <Box className={classes.popoverContainer}>{content}</Box>
+        <Box className={classes.popoverContainer}>{children}</Box>
       </Popover>
     </>
   );

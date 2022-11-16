@@ -53,34 +53,6 @@ export const RegElement: React.FC<Props> = () => {
     setFusion({ ...fusion, ...{ regulatory_element: element } });
   };
 
-  const renderPopoverText = () => (
-    <PopoverBox>
-      <PopoverTypography>
-        Regulatory elements include a Regulatory Feature used to describe an
-        enhancer, promoter, or other regulatory elements that constitute
-        Regulatory Fusions. Regulatory features may also be defined by a gene
-        with which the feature is associated (e.g. an IGH-associated enhancer
-        element).
-      </PopoverTypography>
-      <PopoverTypography>
-        Our definitions of regulatory features follows the definitions provided
-        by the{" "}
-        <PopoverLink href="https://www.insdc.org/submitting-standards/controlled-vocabulary-regulatoryclass/">
-          INSDC regulatory class vocabulary
-        </PopoverLink>
-        . In gene fusions, these are typically either enhancer or promoter
-        features.
-      </PopoverTypography>
-      <PopoverTypography>
-        See the{" "}
-        <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#regulatory-elements">
-          specification
-        </PopoverLink>{" "}
-        for more information.
-      </PopoverTypography>
-    </PopoverBox>
-  );
-
   return (
     <div className="reg-element-tab-container">
       <div className="left">
@@ -108,7 +80,33 @@ export const RegElement: React.FC<Props> = () => {
               {regElement !== undefined
                 ? "You can remove or update this regulatory element."
                 : "You can add a regulatory element."}
-              <HelpPopover content={renderPopoverText} />
+              <HelpPopover>
+                <PopoverBox>
+                  <PopoverTypography>
+                    Regulatory elements include a Regulatory Feature used to
+                    describe an enhancer, promoter, or other regulatory elements
+                    that constitute Regulatory Fusions. Regulatory features may
+                    also be defined by a gene with which the feature is
+                    associated (e.g. an IGH-associated enhancer element).
+                  </PopoverTypography>
+                  <PopoverTypography>
+                    Our definitions of regulatory features follows the
+                    definitions provided by the{" "}
+                    <PopoverLink href="https://www.insdc.org/submitting-standards/controlled-vocabulary-regulatoryclass/">
+                      INSDC regulatory class vocabulary
+                    </PopoverLink>
+                    . In gene fusions, these are typically either enhancer or
+                    promoter features.
+                  </PopoverTypography>
+                  <PopoverTypography>
+                    See the{" "}
+                    <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#regulatory-elements">
+                      specification
+                    </PopoverLink>{" "}
+                    for more information.
+                  </PopoverTypography>
+                </PopoverBox>
+              </HelpPopover>
             </Typography>
           </div>
         </div>

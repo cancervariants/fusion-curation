@@ -2,7 +2,12 @@ import { Link } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
 import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
 
-const PopoverLink = (props) => {
+interface PopoverLinkProps {
+  children: React.ReactNode;
+  href: string;
+}
+
+const PopoverLink: React.FC<PopoverLinkProps> = (props) => {
   const { colorTheme } = useColorTheme();
 
   const StyledLink = styled(Link)({
