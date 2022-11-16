@@ -2,28 +2,56 @@ import "./ReadingFrame.scss";
 import { FusionContext } from "../../../global/contexts/FusionContext";
 import React, { FormEvent, useContext, useEffect, useState } from "react";
 import {
+  Box,
   FormControl,
   FormControlLabel,
   Radio,
   RadioGroup,
+  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
+import PopoverTypography from "../../main/shared/HelpPopover/PopoverTypography";
+import PopoverLink from "../../main/shared/HelpPopover/PopoverLink";
+import PopoverBox from "../../main/shared/HelpPopover/PopoverBox";
 
 interface Props {
   index: number;
 }
 
-// TODO merge theme with FormControl?
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    fontWeight: 300,
-  },
-}));
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const ReadingFrame: React.FC<Props> = ({ index }) => {
+  // TODO merge theme with FormControl?
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const useStyles = makeStyles((theme) => ({
+    formControl: {
+      fontWeight: 300,
+    },
+    prompt: {
+      margin: "40px 0 20px 0",
+    },
+    inputField: {
+      margin: "20px 0 40px 0",
+    },
+  }));
   const classes = useStyles();
+
+  const renderPopoverText = () => (
+    <PopoverBox>
+      <PopoverTypography>
+        A common attribute of a categorical gene fusion is whether the reading
+        frame is preserved in the expressed gene product. This is typical of
+        protein-coding gene fusions.
+      </PopoverTypography>
+      <PopoverTypography>
+        See the{" "}
+        <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#functional-domains">
+          specification
+        </PopoverLink>{" "}
+        for more information.
+      </PopoverTypography>
+    </PopoverBox>
+  );
 
   const { fusion, setFusion } = useContext(FusionContext);
 
@@ -76,22 +104,27 @@ export const ReadingFrame: React.FC<Props> = ({ index }) => {
   return (
     <div className="reading-frame-tab-container">
       <FormControl component="fieldset">
-        <h3>Is the reading frame expected to be preserved?</h3>
-        <RadioGroup
-          aria-label="Is the reading frame expected to be preserved?"
-          name="controlled-radio-buttons-group"
-          value={rFramePreserved}
-          onChange={handleRFrameChange}
-          className={classes.formControl}
-        >
-          <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-          <FormControlLabel value="no" control={<Radio />} label="No" />
-          <FormControlLabel
-            value="unspecified"
-            control={<Radio />}
-            label="Unspecified"
-          />
-        </RadioGroup>
+        <Typography variant="h5" className={classes.prompt}>
+          Is the reading frame expected to be preserved?
+          <HelpPopover content={renderPopoverText} />
+        </Typography>
+        <Box className={classes.inputField}>
+          <RadioGroup
+            aria-label="Is the reading frame expected to be preserved?"
+            name="controlled-radio-buttons-group"
+            value={rFramePreserved}
+            onChange={handleRFrameChange}
+            className={classes.formControl}
+          >
+            <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+            <FormControlLabel value="no" control={<Radio />} label="No" />
+            <FormControlLabel
+              value="unspecified"
+              control={<Radio />}
+              label="Unspecified"
+            />
+          </RadioGroup>
+        </Box>
       </FormControl>
     </div>
   );

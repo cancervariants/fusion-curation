@@ -1,22 +1,56 @@
 // TODO: enforce CURIE requirements in fields
-import "./Assay.scss";
 import { FusionContext } from "../../../global/contexts/FusionContext";
+import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
 import { FormEvent, useContext, useEffect, useState } from "react";
 import {
+  Box,
   FormControl,
   FormControlLabel,
   Radio,
   RadioGroup,
   TextField,
+  Typography,
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import { Assay as FusionAssay } from "../../../services/ResponseModels";
 import React from "react";
+import TooltipTypography from "../../main/shared/HelpTooltip/TooltipTypography";
+import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
 
 interface Props {
   index: number;
 }
 
 export const Assay: React.FC<Props> = () => {
+  const { colorTheme } = useColorTheme();
+  const useStyles = makeStyles(() => ({
+    assayTabContainer: {
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-evenly",
+      alignItems: "flex-start",
+      height: "100%",
+      backgroundColor: colorTheme["--light-gray"],
+      flexWrap: "wrap",
+    },
+    column: {
+      margin: "40px",
+    },
+    leftContainer: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    },
+    rightContainer: {
+      display: "flex",
+      flexDirection: "column",
+    },
+    prompt: {
+      paddingBottom: "5px",
+    },
+  }));
+  const classes = useStyles();
+
   const { fusion, setFusion } = useContext(FusionContext);
 
   // initialize assay object
@@ -90,49 +124,107 @@ export const Assay: React.FC<Props> = () => {
     }
   };
 
-  const evidenceText =
-    "Was the fusion directly detected by the assay, or inferred?";
+  const evidenceText = "How was the fusion detected?";
 
   return (
-    <div className="assay-tab-container">
-      <h3>{evidenceText}</h3>
-      <FormControl component="fieldset">
-        <RadioGroup
-          aria-label={evidenceText}
-          name="controlled-radio-buttons-group"
-          value={fusionDetection}
-          onChange={handleEvidenceChange}
+    <Box className={classes.assayTabContainer}>
+      <Box className={classes.leftContainer + " " + classes.column}>
+        <Typography variant="h5" className={classes.prompt}>
+          {evidenceText}
+        </Typography>
+        <FormControl component="fieldset">
+          <HelpTooltip
+            placement="bottom"
+            title={
+              <TooltipTypography>
+                Direct detection methods (e.g. RNA-seq, RT-PCR) directly
+                interrogate chimeric transcript junctions. Inferred detection
+                methods (e.g. WGS, FISH) infer the existence of a fusion in the
+                presence of compatible biomarkers (e.g. ALK rearrangements in
+                non-small cell lung cancers).
+              </TooltipTypography>
+            }
+          >
+            <RadioGroup
+              aria-label={evidenceText}
+              name="controlled-radio-buttons-group"
+              value={fusionDetection}
+              onChange={handleEvidenceChange}
+            >
+              <FormControlLabel
+                value="observed"
+                control={<Radio />}
+                label="Observed"
+              />
+              <FormControlLabel
+                value="inferred"
+                control={<Radio />}
+                label="Inferred"
+              />
+            </RadioGroup>
+          </HelpTooltip>
+        </FormControl>
+      </Box>
+      <Box className={classes.rightContainer + " " + classes.column}>
+        <Typography variant="h5" className={classes.prompt}>
+          Provide assay metadata:
+        </Typography>
+        <HelpTooltip
+          placement="left"
+          title={
+            <TooltipTypography>
+              A human-readable name for the assay. Should match the label for
+              the assay ID, e.g. <i>fluorescence in-situ hybridization assay</i>{" "}
+              for <Typography variant="overline">obi:OBI_0003094</Typography>.
+            </TooltipTypography>
+          }
         >
-          <FormControlLabel
-            value="observed"
-            control={<Radio />}
-            label="Observed"
+          <TextField
+            label="Assay name"
+            margin="dense"
+            value={assayName}
+            onChange={(event) =>
+              handleValueChange("assayName", event.target.value)
+            }
           />
-          <FormControlLabel
-            value="inferred"
-            control={<Radio />}
-            label="Inferred"
+        </HelpTooltip>
+        <HelpTooltip
+          placement="left"
+          title={
+            <TooltipTypography>
+              An ID for the assay concept, e.g.{" "}
+              <Typography variant="overline">obi:OBI_0003094</Typography> from
+              the Ontology for Biomedical Investigations.
+            </TooltipTypography>
+          }
+        >
+          <TextField
+            label="Assay ID"
+            margin="dense"
+            value={assayId}
+            onChange={(event) =>
+              handleValueChange("assayId", event.target.value)
+            }
           />
-        </RadioGroup>
-      </FormControl>
-      <TextField
-        label="Assay name"
-        margin="dense"
-        value={assayName}
-        onChange={(event) => handleValueChange("assayName", event.target.value)}
-      />
-      <TextField
-        label="Assay ID"
-        margin="dense"
-        value={assayId}
-        onChange={(event) => handleValueChange("assayId", event.target.value)}
-      />
-      <TextField
-        label="Method URI"
-        margin="dense"
-        value={methodUri}
-        onChange={(event) => handleValueChange("methodUri", event.target.value)}
-      />
-    </div>
+        </HelpTooltip>
+        <HelpTooltip
+          placement="left"
+          title={
+            <TooltipTypography>
+              A URI pointing to the methodological details of the assay.
+            </TooltipTypography>
+          }
+        >
+          <TextField
+            label="Method URI"
+            margin="dense"
+            value={methodUri}
+            onChange={(event) =>
+              handleValueChange("methodUri", event.target.value)
+            }
+          />
+        </HelpTooltip>
+      </Box>
+    </Box>
   );
 };

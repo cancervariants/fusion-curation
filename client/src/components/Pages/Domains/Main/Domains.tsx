@@ -1,10 +1,14 @@
 import React, { useContext } from "react";
-import Close from "./Close";
 import { FusionContext } from "../../../../global/contexts/FusionContext";
-
-import "./Domains.scss";
+import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
 import DomainForm from "../DomainForm/DomainForm";
 import { ClientFunctionalDomain } from "../../../../services/ResponseModels";
+import { GeneContext } from "../../../../global/contexts/GeneContext";
+import { Avatar, Box, Chip, makeStyles, Typography } from "@material-ui/core";
+import { HelpPopover } from "../../../main/shared/HelpPopover/HelpPopover";
+import PopoverTypography from "../../../main/shared/HelpPopover/PopoverTypography";
+import PopoverLink from "../../../main/shared/HelpPopover/PopoverLink";
+import PopoverBox from "../../../main/shared/HelpPopover/PopoverBox";
 
 interface Props {
   index: number;
@@ -13,17 +17,57 @@ interface Props {
 export const Domain: React.FC<Props> = () => {
   const { fusion, setFusion } = useContext(FusionContext);
 
+  const { globalGenes } = useContext(GeneContext);
   const domains = fusion.critical_functional_domains || [];
+
+  const { colorTheme } = useColorTheme();
+  const useStyles = makeStyles(() => ({
+    container: {
+      display: "flex",
+      width: "100%",
+      height: "100%",
+      alignItems: "stretch",
+      flex: "1",
+    },
+    leftColumn: {
+      width: "50%",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colorTheme["--light-gray"],
+    },
+    promptAndData: {
+      width: "70%",
+      margin: "20px 0 20px 0",
+    },
+    enterDataPrompt: {
+      paddingLeft: "5px",
+      marginBottom: "20px",
+    },
+    chipsList: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-start",
+    },
+    domainChip: {
+      margin: "4px",
+    },
+    rightColumn: {
+      display: "flex",
+      flexDirection: "column",
+      width: "50%",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+  }));
+  const classes = useStyles();
 
   // TODO working stuff related to domain suggestions
   // Don't want to change the suggested domain based on user entries
   // should maybe create a separate context of the unmutated selected suggestion
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // const initialDomains = useRef(domains);
-
-  const handleRemove = (domain) => {
-    //copy domain array, then remove the domain with the relevant ID
+  const handleRemove = (domain: ClientFunctionalDomain) => {
     let cloneArray: ClientFunctionalDomain[] = Array.from(
       fusion.critical_functional_domains
     );
@@ -36,31 +80,92 @@ export const Domain: React.FC<Props> = () => {
     });
   };
 
-  return (
-    <div className="domain-tab-container">
-      <div className="left">
-        <div className="blurb-container">
-          <div className="sub-blurb">You can add or remove domains.</div>
+  const renderDomainChip = (domain: ClientFunctionalDomain, index: number) => {
+    const MAX_DOMAIN_LABEL_LENGTH = 35;
+    let domainLabelString: string;
+    if (domain && domain.label) {
+      if (domain.label.length > MAX_DOMAIN_LABEL_LENGTH) {
+        domainLabelString = `${domain.label.slice(
+          0,
+          MAX_DOMAIN_LABEL_LENGTH
+        )}...`;
+      } else {
+        domainLabelString = domain.label;
+      }
+    } else {
+      // log error?
+      domainLabelString = "unidentified domain";
+    }
+    return (
+      <Chip
+        key={index}
+        className={classes.domainChip}
+        clickable={false}
+        avatar={<Avatar>{domain.status === "preserved" ? "P" : "L"}</Avatar>}
+        label={
+          <React.Fragment>
+            {domainLabelString} <b>{`(${domain.associated_gene.label})`}</b>
+          </React.Fragment>
+        }
+        onDelete={() => handleRemove(domain)}
+      />
+    );
+  };
 
-          {/* TODO: maybe create a two column list of lost vs preserved */}
-          {domains.map((domain: ClientFunctionalDomain, index: number) => (
-            <div className="domain" key={index}>
-              <span>
-                {domain.associated_gene.label} {domain.label} {domain.status}
-              </span>
-              <span
-                className="close-button-domain"
-                onClick={() => handleRemove(domain)}
-              >
-                <Close />
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="right">
+  const renderPopoverText = () => {
+    return (
+      <>
+        <PopoverBox>
+          <PopoverTypography>
+            Categorical Gene Fusions are often characterized by the presence or
+            absence of critical functional domains within a gene fusion.
+          </PopoverTypography>
+          <PopoverTypography>
+            Given a gene previously provided in a structural or regulatory
+            element, select from its associated domains and indicate whether it
+            was lost or preserved in the fusion.
+          </PopoverTypography>
+          <PopoverTypography>
+            See the{" "}
+            <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#functional-domains">
+              specification
+            </PopoverLink>{" "}
+            for more information.
+          </PopoverTypography>
+        </PopoverBox>
+      </>
+    );
+  };
+
+  return (
+    <Box className={classes.container}>
+      <Box className={classes.leftColumn}>
+        <Box className={classes.promptAndData}>
+          {Object.keys(globalGenes).length > 0 ? (
+            <Typography variant="h6" className={classes.enterDataPrompt}>
+              You can add or remove domains.
+              <HelpPopover content={renderPopoverText} />
+            </Typography>
+          ) : (
+            <>
+              <Typography variant="h6">No domains available.</Typography>
+              <Typography>
+                You must first provide gene-associated structure or regulatory
+                elements to specify lost or preserved functional domains.
+                <HelpPopover content={renderPopoverText} />
+              </Typography>
+            </>
+          )}
+          <Box>
+            {domains.map((domain: ClientFunctionalDomain, index: number) =>
+              renderDomainChip(domain, index)
+            )}
+          </Box>
+        </Box>
+      </Box>
+      <Box className={classes.rightColumn}>
         <DomainForm />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };

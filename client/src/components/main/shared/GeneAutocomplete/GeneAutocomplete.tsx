@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Tooltip, Typography } from "@material-ui/core";
+import { TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getGeneId, getGeneSuggestions } from "../../../../services/main";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
@@ -7,15 +7,8 @@ import {
   NormalizeGeneResponse,
   SuggestGeneResponse,
 } from "../../../../services/ResponseModels";
-import { makeStyles } from "@material-ui/core/styles";
 import HelpTooltip from "../HelpTooltip/HelpTooltip";
 import TooltipTypography from "../HelpTooltip/TooltipTypography";
-
-const useStyles = makeStyles(() => ({
-  tooltipParagraph: {
-    padding: "4px 0 4px 0",
-  },
-}));
 
 export enum GeneSuggestionType {
   alias = "Alias",
@@ -64,8 +57,6 @@ export const GeneAutocomplete: React.FC<Props> = ({
   const [geneOptions, setGeneOptions] = useState<SuggestedGeneOption[]>([]);
   const [geneValue, setGeneValue] = useState(existingGeneOption);
   const [inputValue, setInputValue] = useState(existingGeneOption);
-
-  const classes = useStyles();
 
   /**
    * Simple wrapper around state setters to ensure updates to local selected value are reflected

@@ -7,9 +7,11 @@ import {
   ClientRegulatoryElement,
   RegulatoryClass,
 } from "../../../../services/ResponseModels";
-import { Typography, makeStyles, Link, Box } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { HelpPopover } from "../../../main/shared/HelpPopover/HelpPopover";
-import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
+import PopoverTypography from "../../../main/shared/HelpPopover/PopoverTypography";
+import PopoverLink from "../../../main/shared/HelpPopover/PopoverLink";
+import PopoverBox from "../../../main/shared/HelpPopover/PopoverBox";
 
 interface Props {
   index: number;
@@ -28,25 +30,6 @@ export const RegElement: React.FC<Props> = () => {
     regElement?.associated_gene?.label || ""
   );
   const [geneText, setGeneText] = useState<string>("");
-
-  const { colorTheme } = useColorTheme();
-  const useStyles = makeStyles(() => ({
-    popoverContainer: {
-      backgroundColor: colorTheme["--primary"],
-      color: colorTheme["--background"],
-      padding: "5px",
-      maxWidth: "300px",
-    },
-    popoverLink: {
-      color: colorTheme["--background"],
-      fontWeight: "bold",
-      textDecoration: "underline",
-    },
-    popoverParagraph: {
-      padding: "4px 0 4px 0",
-    },
-  }));
-  const classes = useStyles();
 
   /**
    * Remove regulatory element submitted by user and wipe input fields.
@@ -71,43 +54,31 @@ export const RegElement: React.FC<Props> = () => {
   };
 
   const renderPopoverText = () => (
-    <>
-      <Box className={classes.popoverContainer}>
-        <Typography variant="body2" className={classes.popoverParagraph}>
-          Regulatory elements include a Regulatory Feature used to describe an
-          enhancer, promoter, or other regulatory elements that constitute
-          Regulatory Fusions. Regulatory features may also be defined by a gene
-          with which the feature is associated (e.g. an IGH-associated enhancer
-          element).
-        </Typography>
-        <Typography variant="body2" className={classes.popoverParagraph}>
-          Our definitions of regulatory features follows the definitions
-          provided by the{" "}
-          <Link
-            href="https://www.insdc.org/submitting-standards/controlled-vocabulary-regulatoryclass/"
-            className={classes.popoverLink}
-            target="_blank"
-            rel="noopener"
-          >
-            INSDC regulatory class vocabulary
-          </Link>
-          . In gene fusions, these are typically either enhancer or promoter
-          features.
-        </Typography>
-        <Typography variant="body2" className={classes.popoverParagraph}>
-          See the{" "}
-          <Link
-            href="https://fusions.cancervariants.org/en/latest/information_model.html#regulatory-elements"
-            className={classes.popoverLink}
-            target="_blank"
-            rel="noopener"
-          >
-            specification
-          </Link>{" "}
-          for more information.
-        </Typography>
-      </Box>
-    </>
+    <PopoverBox>
+      <PopoverTypography>
+        Regulatory elements include a Regulatory Feature used to describe an
+        enhancer, promoter, or other regulatory elements that constitute
+        Regulatory Fusions. Regulatory features may also be defined by a gene
+        with which the feature is associated (e.g. an IGH-associated enhancer
+        element).
+      </PopoverTypography>
+      <PopoverTypography>
+        Our definitions of regulatory features follows the definitions provided
+        by the{" "}
+        <PopoverLink href="https://www.insdc.org/submitting-standards/controlled-vocabulary-regulatoryclass/">
+          INSDC regulatory class vocabulary
+        </PopoverLink>
+        . In gene fusions, these are typically either enhancer or promoter
+        features.
+      </PopoverTypography>
+      <PopoverTypography>
+        See the{" "}
+        <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#regulatory-elements">
+          specification
+        </PopoverLink>{" "}
+        for more information.
+      </PopoverTypography>
+    </PopoverBox>
   );
 
   return (
