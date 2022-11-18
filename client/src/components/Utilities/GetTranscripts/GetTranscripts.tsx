@@ -78,13 +78,10 @@ export const GetTranscripts: React.FC = () => {
       <TooltipTypography>Per RefSeq:</TooltipTypography>
       <TooltipTypography>
         <i>
-          The MANE Select set consists of one transcript at each protein-coding
-          locus across the genome that is representative of biology at that
-          locus. This set is useful as a universal standard for clinical
-          reporting, as a default for display on browsers and key genomic
-          resources, and as a starting point for comparative or evolutionary
-          genomics. MANE Select transcripts are identified using computational
-          methods complemented by manual review and discussion.
+          The MANE Plus Clinical set includes additional transcripts for genes
+          where MANE Select alone is not sufficient to report all "Pathogenic
+          (P)" or "Likely Pathogenic (LP)" clinical variants available in public
+          resources.
         </i>
       </TooltipTypography>
     </>
@@ -95,10 +92,13 @@ export const GetTranscripts: React.FC = () => {
       <TooltipTypography>Per RefSeq:</TooltipTypography>
       <TooltipTypography>
         <i>
-          The MANE Plus Clinical set includes additional transcripts for genes
-          where MANE Select alone is not sufficient to report all "Pathogenic
-          (P)" or "Likely Pathogenic (LP)" clinical variants available in public
-          resources.
+          The MANE Select set consists of one transcript at each protein-coding
+          locus across the genome that is representative of biology at that
+          locus. This set is useful as a universal standard for clinical
+          reporting, as a default for display on browsers and key genomic
+          resources, and as a starting point for comparative or evolutionary
+          genomics. MANE Select transcripts are identified using computational
+          methods complemented by manual review and discussion.
         </i>
       </TooltipTypography>
     </>
