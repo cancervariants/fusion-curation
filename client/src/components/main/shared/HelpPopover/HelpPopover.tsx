@@ -5,28 +5,35 @@ import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeConte
 
 interface HelpPopoverProps {
   children: React.ReactFragment;
+  iconStyle?: object;
+  backgroundStyle?: object;
+  linkStyle?: object;
 }
 
-export const HelpPopover: React.FC<HelpPopoverProps> = ({ children }) => {
+export const HelpPopover: React.FC<HelpPopoverProps> = ({
+  children,
+  iconStyle,
+  backgroundStyle,
+  linkStyle,
+}) => {
   const { colorTheme } = useColorTheme();
+
   const useStyles = makeStyles(() => ({
     helpIcon: {
       verticalAlign: "sub",
       marginLeft: "3px",
+      color: colorTheme["--primary"],
+      ...iconStyle,
     },
     popoverContainer: {
       backgroundColor: colorTheme["--primary"],
       color: colorTheme["--background"],
       padding: "5px",
       maxWidth: "300px",
-    },
-    popoverLink: {
-      color: colorTheme["--background"],
-      fontWeight: "bold",
-      textDecoration: "underline",
-    },
-    popoverParagraph: {
-      padding: "4px 0 4px 0",
+      ...backgroundStyle,
+      "& p:not(:last-child)": {
+        paddingBottom: "4px",
+      },
     },
   }));
   const classes = useStyles();
@@ -45,7 +52,6 @@ export const HelpPopover: React.FC<HelpPopoverProps> = ({ children }) => {
   return (
     <>
       <HelpOutlineIcon
-        color="primary"
         className={classes.helpIcon}
         onClick={handleClick}
         fontSize="small"

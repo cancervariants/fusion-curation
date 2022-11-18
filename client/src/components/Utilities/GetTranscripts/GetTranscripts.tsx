@@ -4,6 +4,7 @@ import {
   AccordionSummary,
   Box,
   Container,
+  makeStyles,
   Paper,
   Table,
   TableContainer,
@@ -11,11 +12,15 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  Link,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import React, { useEffect, useState } from "react";
+import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
 import { getTranscripts } from "../../../services/main";
 import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
+import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
+import TooltipTypography from "../../main/shared/HelpTooltip/TooltipTypography";
 
 import "./GetTranscripts.scss";
 
@@ -25,6 +30,28 @@ export const GetTranscripts: React.FC = () => {
 
   const [transcripts, setTranscripts] = useState<string[]>([]);
   const [transcriptWarnings, setTranscriptWarnings] = useState<string[]>([]);
+
+  const { colorTheme } = useColorTheme();
+  const useStyles = makeStyles(() => ({
+    left: {
+      width: "40%",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "flex-start",
+      alignItems: "center",
+      backgroundColor: colorTheme["--light-gray"],
+      paddingBottom: "25px",
+    },
+    description: {
+      backgroundColor: colorTheme["--medium-gray"],
+      width: "100%",
+      marginBottom: "20px",
+    },
+    descriptionText: {
+      padding: "10px",
+    },
+  }));
+  const classes = useStyles();
 
   useEffect(() => {
     if (gene !== "" && !geneText) {
@@ -45,6 +72,37 @@ export const GetTranscripts: React.FC = () => {
       }
     });
   };
+
+  const maneClinicalDescription = (
+    <>
+      <TooltipTypography>Per RefSeq:</TooltipTypography>
+      <TooltipTypography>
+        <i>
+          The MANE Select set consists of one transcript at each protein-coding
+          locus across the genome that is representative of biology at that
+          locus. This set is useful as a universal standard for clinical
+          reporting, as a default for display on browsers and key genomic
+          resources, and as a starting point for comparative or evolutionary
+          genomics. MANE Select transcripts are identified using computational
+          methods complemented by manual review and discussion.
+        </i>
+      </TooltipTypography>
+    </>
+  );
+
+  const maneSelectDescription = (
+    <>
+      <TooltipTypography>Per RefSeq:</TooltipTypography>
+      <TooltipTypography>
+        <i>
+          The MANE Plus Clinical set includes additional transcripts for genes
+          where MANE Select alone is not sufficient to report all "Pathogenic
+          (P)" or "Likely Pathogenic (LP)" clinical variants available in public
+          resources.
+        </i>
+      </TooltipTypography>
+    </>
+  );
 
   const renderTranscripts = () => {
     if (transcriptWarnings.length > 0) {
@@ -86,12 +144,21 @@ export const GetTranscripts: React.FC = () => {
             return (
               <Container key={index} className="tx-accordion">
                 <Accordion>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    className="tx-accordion-top"
+                  <HelpTooltip
+                    placement="left"
+                    title={
+                      transcript.MANE_status === "MANE Plus Clinical"
+                        ? maneClinicalDescription
+                        : maneSelectDescription
+                    }
                   >
-                    {transcript.MANE_status}
-                  </AccordionSummary>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      className="tx-accordion-top"
+                    >
+                      {transcript.MANE_status}
+                    </AccordionSummary>
+                  </HelpTooltip>
                   <AccordionDetails className="tx-accordion-details">
                     <TableContainer component={Paper}>
                       <Table aria-label="transcript-info-table" size="small">
@@ -121,22 +188,35 @@ export const GetTranscripts: React.FC = () => {
     }
   };
 
+  // TODO: how to format/present the description
   return (
     <div className="get-transcripts-tab-container">
-      <div className="left">
-        <div className="blurb-container">
-          <div className="blurb">Enter a gene:</div>
-          <div>
-            <GeneAutocomplete
-              gene={gene}
-              setGene={setGene}
-              geneText={geneText}
-              setGeneText={setGeneText}
-              style={{ width: 200 }}
-            />
-          </div>
+      <Box className={classes.left}>
+        <Box className={classes.description}>
+          <Box className={classes.descriptionText}>
+            <Typography>
+              This tool provides known transcripts from the Matched Annotation
+              from the NCBI and EMBL-EMBI (MANE) project for a given gene term.{" "}
+              See the{" "}
+              <Link href="https://www.ncbi.nlm.nih.gov/refseq/MANE/">
+                RefSeq MANE page
+              </Link>{" "}
+              for more information.
+            </Typography>
+          </Box>
+        </Box>
+        <Typography variant="h4">Enter a gene:</Typography>
+        <div>
+          <GeneAutocomplete
+            gene={gene}
+            setGene={setGene}
+            geneText={geneText}
+            setGeneText={setGeneText}
+            style={{ width: 200 }}
+            tooltipDirection="top"
+          />
         </div>
-      </div>
+      </Box>
       <div className="right">
         <div className="tx-response-container">{renderTranscripts()}</div>
       </div>

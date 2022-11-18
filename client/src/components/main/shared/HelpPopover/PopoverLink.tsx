@@ -15,7 +15,11 @@ const PopoverLink: React.FC<PopoverLinkProps> = (props) => {
     fontWeight: "bold",
     textDecoration: "underline",
   });
-  return <StyledLink {...props}>{props.children}</StyledLink>;
+  return (
+    <StyledLink target="_blank" rel="noopener" {...props}>
+      {props.children}
+    </StyledLink>
+  );
 };
 
 export default PopoverLink;

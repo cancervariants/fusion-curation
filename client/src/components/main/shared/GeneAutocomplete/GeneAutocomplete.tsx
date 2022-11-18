@@ -29,18 +29,20 @@ interface Props {
   geneText: string;
   setGeneText: CallableFunction;
   style: CSSProperties;
-  tooltipDirection: "bottom" | "left";
-  // | "right"
-  // | "top"
-  // | "bottom-end"
-  // | "bottom-start"
-  // | "left-end"
-  // | "left-start"
-  // | "right-end"
-  // | "right-start"
-  // | "top-end"
-  // | "top-start"
-  // | undefined;
+  tooltipDirection:
+    | "bottom"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom-end"
+    | "bottom-start"
+    | "left-end"
+    | "left-start"
+    | "right-end"
+    | "right-start"
+    | "top-end"
+    | "top-start"
+    | undefined;
 }
 
 export const GeneAutocomplete: React.FC<Props> = ({

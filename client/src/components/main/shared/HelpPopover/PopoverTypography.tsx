@@ -5,9 +5,7 @@ interface PopoverTypographyProps {
   children: React.ReactNode;
 }
 
-const StyledTypography = styled(Typography)({
-  padding: "4px 0 4px 0",
-});
+const StyledTypography = styled(Typography)({});
 
 const PopoverTypography: React.FC<PopoverTypographyProps> = ({ children }) => (
   <StyledTypography variant="body2">{children}</StyledTypography>
