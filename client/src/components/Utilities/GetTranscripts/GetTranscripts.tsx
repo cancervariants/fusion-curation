@@ -22,8 +22,6 @@ import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocom
 import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
 import TooltipTypography from "../../main/shared/HelpTooltip/TooltipTypography";
 
-import "./GetTranscripts.scss";
-
 export const GetTranscripts: React.FC = () => {
   const [gene, setGene] = useState("");
   const [geneText, setGeneText] = useState("");
@@ -33,22 +31,58 @@ export const GetTranscripts: React.FC = () => {
 
   const { colorTheme } = useColorTheme();
   const useStyles = makeStyles(() => ({
-    left: {
+    titleContainer: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: "20px 0 20px 0",
+    },
+    descriptionBox: {
+      backgroundColor: colorTheme["--medium-gray"],
+      width: "100%",
+      display: "flex",
+      justifyContent: "center",
+    },
+    descriptionBoxTextContainer: {
+      width: "70%",
+      padding: "10px",
+    },
+    transcriptsBodyContainer: {
+      display: "flex",
+      width: "100%",
+      alignItems: "stretch",
+      flex: "1",
+    },
+    leftColumn: {
       width: "40%",
       display: "flex",
       flexDirection: "column",
       justifyContent: "flex-start",
       alignItems: "center",
       backgroundColor: colorTheme["--light-gray"],
-      paddingBottom: "25px",
+      padding: "25px",
     },
-    description: {
-      backgroundColor: colorTheme["--medium-gray"],
+    rightColumn: {
+      display: "flex",
+      flexDirection: "column",
+      width: "60%",
+      alignItems: "center",
+      justifyContent: "flex-start",
+    },
+    txResponseContainer: {
+      overflowX: "hidden",
+      overflowY: "scroll",
+      textOverflow: "clip",
+      padding: "20px 0 20px 0",
       width: "100%",
-      marginBottom: "20px",
     },
-    descriptionText: {
-      padding: "10px",
+    txAccordion: {
+      width: "90%",
+      paddingBottom: "1px",
+      fontWeight: "bold",
+    },
+    txAccordionTop: {
+      color: colorTheme["--primary"],
     },
   }));
   const classes = useStyles();
@@ -111,15 +145,15 @@ export const GetTranscripts: React.FC = () => {
     } else if (transcripts.length > 0) {
       return (
         <div>
-          <Container className="tx-accordion">
+          <Container className={classes.txAccordion}>
             <Accordion defaultExpanded>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
-                className="tx-accordion-top"
+                className={classes.txAccordionTop}
               >
                 {transcripts[0].symbol}
               </AccordionSummary>
-              <AccordionDetails className="tx-accordion-details">
+              <AccordionDetails>
                 <Typography>
                   <b>Name:</b> {transcripts[0].name} <br />
                   <b>NCBI ID:</b> ncbigene:
@@ -142,7 +176,7 @@ export const GetTranscripts: React.FC = () => {
               Strand: transcript.chr_strand,
             };
             return (
-              <Container key={index} className="tx-accordion">
+              <Container key={index} className={classes.txAccordion}>
                 <Accordion>
                   <HelpTooltip
                     placement="left"
@@ -154,12 +188,12 @@ export const GetTranscripts: React.FC = () => {
                   >
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
-                      className="tx-accordion-top"
+                      className={classes.txAccordionTop}
                     >
                       {transcript.MANE_status}
                     </AccordionSummary>
                   </HelpTooltip>
-                  <AccordionDetails className="tx-accordion-details">
+                  <AccordionDetails>
                     <TableContainer component={Paper}>
                       <Table aria-label="transcript-info-table" size="small">
                         <TableBody>
@@ -188,15 +222,17 @@ export const GetTranscripts: React.FC = () => {
     }
   };
 
-  // TODO: how to format/present the description
   return (
-    <div className="get-transcripts-tab-container">
-      <Box className={classes.left}>
-        <Box className={classes.description}>
-          <Box className={classes.descriptionText}>
+    <Box className={classes.pageContainer}>
+      <Box className={classes.header}>
+        <Box className={classes.titleContainer}>
+          <Typography variant="h4">Fetch MANE Transcripts</Typography>
+        </Box>
+        <Box className={classes.descriptionBox}>
+          <Box className={classes.descriptionBoxTextContainer}>
             <Typography>
               This tool provides known transcripts from the Matched Annotation
-              from the NCBI and EMBL-EMBI (MANE) project for a given gene term.{" "}
+              from the NCBI and EMBL-EMBI (MANE) project for a given gene term.
               See the{" "}
               <Link href="https://www.ncbi.nlm.nih.gov/refseq/MANE/">
                 RefSeq MANE page
@@ -205,21 +241,27 @@ export const GetTranscripts: React.FC = () => {
             </Typography>
           </Box>
         </Box>
-        <Typography variant="h4">Enter a gene:</Typography>
-        <div>
-          <GeneAutocomplete
-            gene={gene}
-            setGene={setGene}
-            geneText={geneText}
-            setGeneText={setGeneText}
-            style={{ width: 200 }}
-            tooltipDirection="top"
-          />
-        </div>
       </Box>
-      <div className="right">
-        <div className="tx-response-container">{renderTranscripts()}</div>
-      </div>
-    </div>
+      <Box className={classes.transcriptsBodyContainer}>
+        <Box className={classes.leftColumn}>
+          <Typography variant="h5">Enter a gene:</Typography>
+          <Box>
+            <GeneAutocomplete
+              gene={gene}
+              setGene={setGene}
+              geneText={geneText}
+              setGeneText={setGeneText}
+              style={{ width: 200 }}
+              tooltipDirection="top"
+            />
+          </Box>
+        </Box>
+        <Box className={classes.rightColumn}>
+          <Box className={classes.txResponseContainer}>
+            {renderTranscripts()}
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 };
