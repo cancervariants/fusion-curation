@@ -31,6 +31,9 @@ export const GetTranscripts: React.FC = () => {
 
   const { colorTheme } = useColorTheme();
   const useStyles = makeStyles(() => ({
+    pageContainer: {
+      paddingBottom: "32px",
+    },
     titleContainer: {
       display: "flex",
       flexDirection: "column",
@@ -44,7 +47,7 @@ export const GetTranscripts: React.FC = () => {
       justifyContent: "center",
     },
     descriptionBoxTextContainer: {
-      width: "70%",
+      width: "60%",
       padding: "10px",
     },
     transcriptsBodyContainer: {
@@ -224,7 +227,7 @@ export const GetTranscripts: React.FC = () => {
 
   return (
     <Box className={classes.pageContainer}>
-      <Box className={classes.header}>
+      <Box className>
         <Box className={classes.titleContainer}>
           <Typography variant="h4">Fetch MANE Transcripts</Typography>
         </Box>
