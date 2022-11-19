@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
   carouselItem: {
     marginLeft: "100px",
+    marginRight: "100px",
     marginTop: "50px",
   },
   landingSection: {
@@ -25,13 +26,13 @@ const useStyles = makeStyles((theme) => ({
   },
   fullSection: {
     width: "100%",
-    minHeight: "250px",
+    minHeight: "200px",
     marginTop: "50px",
   },
   splitSection: {
     width: "49%",
     minHeight: "300px",
-    marginTop: "30px",
+    marginTop: "20px",
   },
 }));
 
@@ -79,7 +80,7 @@ export default function LandingPage(): React.ReactElement {
           <h3>About the VICC Fusion Curation Interface</h3>
           <Typography>
             Maximizing the research and clinical value of genomic information
-            will require that clinicians, researchers, and testing laboratories
+            requires that clinicians, researchers, and testing laboratories
             capture and report genetic variation data reliably.{" "}
             <Link
               href="https://fusions.cancervariants.org/en/latest/index.html"
@@ -93,22 +94,10 @@ export default function LandingPage(): React.ReactElement {
           </Typography>
           <Box mt="15px">
             <Typography>
-              The Gene Fusion Specification is a collection of models and
-              guidance for the precise representation of gene fusions, assembled
-              by a cross-consortia initiative between members of the Clinical
-              Genome (ClinGen) Somatic Cancer Clinical Domain Working Group, the
-              Cancer Genomics Consortium, the Cytogenetics Committee of the
-              College of American Pathologists (CAP) and the American College of
-              Medical Genetics and Genomics (ACMG), and the Variant
-              Interpretation for Cancer Consortium.
-            </Typography>
-          </Box>
-          <Box mt="15px">
-            <Typography>
-              This web tool provides a user interface supporting gene fusion
-              curation. This tool is primarily an educational resource to
-              demonstrate the computable structure and associated nomenclature
-              for gene fusions constructed in the application.
+              This web tool provides a user interface to support gene fusion
+              curation. It is primarily an educational resource to demonstrate
+              the computable structure and associated nomenclature for gene
+              fusions constructed in accordance with the specification.
             </Typography>
           </Box>
         </Box>
@@ -116,10 +105,10 @@ export default function LandingPage(): React.ReactElement {
       <Box display="flex" justifyContent="space-between">
         <Paper className={classes.splitSection}>
           <Box className={classes.landingSection}>
-            <h3>Assayed and Categorical Fusion Tools</h3>
+            <h3>Assayed and Categorical Fusions</h3>
             <Typography>
               Determining the salient elements for a gene fusion is dependent
-              upon the context in which the gene fusion is being described.
+              upon its context.
             </Typography>
             <Box mt="15px">
               <Typography>
@@ -143,7 +132,7 @@ export default function LandingPage(): React.ReactElement {
         </Paper>
         <Paper className={classes.splitSection}>
           <Box className={classes.landingSection}>
-            <h3>Utilities Information</h3>
+            <h3>Utilities</h3>
             <Typography>
               The following standalone tools are provided to support curation
               efforts:
