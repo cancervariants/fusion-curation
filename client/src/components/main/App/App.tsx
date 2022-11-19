@@ -9,6 +9,8 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  makeStyles,
+  Popover,
   ThemeProvider,
 } from "@material-ui/core";
 // global contexts
@@ -39,6 +41,9 @@ import {
 import LandingPage from "../Landing/LandingPage";
 import AppMenu from "./AppMenu";
 import DemoDropdown from "./DemoDropdown";
+import { HelpPopover } from "../shared/HelpPopover/HelpPopover";
+import PopoverTypography from "../shared/HelpPopover/PopoverTypography";
+import PopoverLink from "../shared/HelpPopover/PopoverLink";
 
 type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 
@@ -65,6 +70,7 @@ const App = (): JSX.Element => {
     null
   );
   const [selectedDemo, setSelectedDemo] = React.useState("");
+
   // TODO: implement open/closing of AppMenu. This variable will become a state variable
   const open = true;
   const leftMarginOffset = open ? `${MARGIN_OFFSETS.appContent}px` : "0";
@@ -143,6 +149,12 @@ const App = (): JSX.Element => {
   // window["__react-beautiful-dnd-disable-dev-warnings"] = true;
 
   const { colorTheme } = useColorTheme();
+  const useStyles = makeStyles(() => ({
+    titleBox: {
+      display: "flex",
+    },
+  }));
+  const classes = useStyles();
 
   /**
    * Check if user has submitted any data.
@@ -241,7 +253,7 @@ const App = (): JSX.Element => {
   }
 
   const fusionsComponent = (
-    <Box mt="75px">
+    <Box mt="75px" style={{ minHeight: "100vh" }}>
       {path !== "/utilities" ? (
         <GeneContext.Provider value={{ globalGenes, setGlobalGenes }}>
           <DomainOptionsContext.Provider
@@ -258,6 +270,41 @@ const App = (): JSX.Element => {
         <UtilitiesNavTabs />
       )}
     </Box>
+  );
+  const categoricalHelpText = (
+    <>
+      <PopoverTypography>
+        Categorical gene fusions are generalized concepts representing a class
+        of fusions by their shared attributes, such as retained or lost
+        regulatory elements and/or functional domains, and are typically curated
+        from the biomedical literature for use in genomic knowledgebases.
+      </PopoverTypography>
+      <PopoverTypography>
+        See the{" "}
+        <PopoverLink href="https://fusions.cancervariants.org/en/latest/terminology.html#categorical-gene-fusions">
+          specification
+        </PopoverLink>{" "}
+        for more information.
+      </PopoverTypography>
+    </>
+  );
+
+  const assayedHelpText = (
+    <>
+      <PopoverTypography>
+        Assayed gene fusions from biological specimens are directly detected
+        using RNA-based gene fusion assays, or alternatively may be inferred
+        from genomic rearrangements detected by whole genome sequencing or
+        cytogenomic assays in the context of informative phenotypic biomarkers.
+      </PopoverTypography>
+      <PopoverTypography>
+        See the{" "}
+        <PopoverLink href="https://fusions.cancervariants.org/en/latest/terminology.html#assayed-gene-fusions">
+          specification
+        </PopoverLink>{" "}
+        for more information.
+      </PopoverTypography>
+    </>
   );
 
   return (
@@ -285,7 +332,25 @@ const App = (): JSX.Element => {
               display="flex"
               justifyContent="space-between"
             >
-              <h3>{title}</h3>
+              <Box className={classes.titleBox}>
+                <h3>{title}</h3>
+                {path.includes("utilities") ? (
+                  <></>
+                ) : (
+                  <Box mt="12px" ml="5px">
+                    <HelpPopover
+                      iconStyle={{ color: colorTheme["--background"] }}
+                      backgroundStyle={{
+                        backgroundColor: colorTheme["--drawer-background"],
+                      }}
+                    >
+                      {path.includes("/assayed-fusion")
+                        ? assayedHelpText
+                        : categoricalHelpText}
+                    </HelpPopover>
+                  </Box>
+                )}
+              </Box>
               <Box display={path === "/utilities" ? "none" : ""}>
                 <DemoDropdown
                   handleClear={handleClear}
