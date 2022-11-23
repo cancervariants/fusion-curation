@@ -1,14 +1,21 @@
 import {
   Box,
   Button,
+  Divider,
   Link,
   makeStyles,
+  Paper,
   TextField,
   Typography,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { getSequenceIds } from "../../../services/main";
 import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
+import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
+import TooltipTypography from "../../main/shared/HelpTooltip/TooltipTypography";
+import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
+import TabHeader from "../../main/shared/TabHeader/TabHeader";
+import TabPaper from "../../main/shared/TabPaper/TabPaper";
 
 const GetSequenceIds: React.FC = () => {
   const [inputSequence, setInputSequence] = useState<string>("");
@@ -43,18 +50,18 @@ const GetSequenceIds: React.FC = () => {
 
   const { colorTheme } = useColorTheme();
   const useStyles = makeStyles(() => ({
-    utilContainer: {
+    pageContainer: {
       display: "flex",
+      flexDirection: "column",
       width: "100%",
       height: "100%",
       alignItems: "stretch",
-      flex: 1,
+      flex: "1",
     },
     inputContainer: {
       height: "40%",
       minHeight: "85px",
-      width: "40%",
-      backgroundColor: colorTheme["--light-gray"],
+      width: "49%",
     },
     inputOptions: {
       display: "flex",
@@ -68,11 +75,11 @@ const GetSequenceIds: React.FC = () => {
     demoButton: {
       padding: "10px",
     },
-    resultContainer: { width: "70%" },
     sequenceIdResult: {
       height: "100%",
       display: "flex",
       flexDirection: "column",
+      flexWrap: "wrap",
       justifyContent: "space-between",
       alignItems: "center",
     },
@@ -81,6 +88,8 @@ const GetSequenceIds: React.FC = () => {
     },
     ga4ghId: {
       color: colorTheme["--dark-gray"],
+      overflowWrap: "anywhere",
+      inlineSize: "100%",
     },
     namespaceText: {
       padding: "0 2px 0 0",
@@ -96,6 +105,30 @@ const GetSequenceIds: React.FC = () => {
   }));
   const classes = useStyles();
 
+  const subHeader = (
+    <>
+      Retrieve related information for a sequence ID
+      <HelpPopover>
+        <Typography>
+          Sequence data is retrieved from the latest available public release of
+          SeqRepo, which includes both conventional identifiers from sources
+          like NCBI, and digest identifiers (e.g. md5, SEGUID, GA4GH).
+        </Typography>
+        <Typography>
+          See{" "}
+          <Link
+            target="_blank"
+            rel="noopener"
+            href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7714221/"
+          >
+            Hart et al. (2020)
+          </Link>{" "}
+          for more information.
+        </Typography>
+      </HelpPopover>
+    </>
+  );
+
   const inputField = (
     <Box className={classes.inputOptions}>
       <TextField
@@ -107,28 +140,54 @@ const GetSequenceIds: React.FC = () => {
         error={helperText.length > 0}
         helperText={helperText}
         className={classes.sequenceInput}
+        variant="outlined"
       />
       <Box>
-        <Button
-          className={classes.demoButton}
-          onClick={() => setInputSequence("NM_002529.3")}
-        >
-          RefSeq Demo
-        </Button>
-        <Button
-          className={classes.demoButton}
-          onClick={() =>
-            setInputSequence("ga4gh:SQ.jkiXxxRjK7uTMiW2KQFjpgvF3VQi-HhX")
+        <HelpTooltip
+          placement="bottom"
+          title={
+            <TooltipTypography>Example RefSeq ID for NTRK1</TooltipTypography>
           }
         >
-          GA4GH Demo
-        </Button>
-        <Button
-          className={classes.demoButton}
-          onClick={() => setInputSequence("GRCh38:chr1")}
+          <Button
+            className={classes.demoButton}
+            onClick={() => setInputSequence("NM_002529.3")}
+          >
+            RefSeq Demo
+          </Button>
+        </HelpTooltip>
+        <HelpTooltip
+          placement="bottom"
+          title={
+            <TooltipTypography>
+              Example GA4GH digest identifier for BRAF
+            </TooltipTypography>
+          }
         >
-          GRCh38 Demo
-        </Button>
+          <Button
+            className={classes.demoButton}
+            onClick={() =>
+              setInputSequence("ga4gh:SQ.jkiXxxRjK7uTMiW2KQFjpgvF3VQi-HhX")
+            }
+          >
+            GA4GH Demo
+          </Button>
+        </HelpTooltip>
+        <HelpTooltip
+          placement="bottom"
+          title={
+            <TooltipTypography>
+              Example GRCh38 identifier for chromosome 1
+            </TooltipTypography>
+          }
+        >
+          <Button
+            className={classes.demoButton}
+            onClick={() => setInputSequence("GRCh38:chr1")}
+          >
+            GRCh38 Demo
+          </Button>
+        </HelpTooltip>
       </Box>
     </Box>
   );
@@ -178,11 +237,12 @@ const GetSequenceIds: React.FC = () => {
   );
 
   return (
-    <Box className={classes.utilContainer}>
-      <Box className={classes.inputContainer}>{inputField}</Box>
-      <Box className={classes.resultContainer}>
-        {refseqId && ga4ghId ? renderedIdInfo : <></>}
-      </Box>
+    <Box className={classes.pageContainer}>
+      <TabHeader title="Sequence Lookup" subHeader={subHeader} />
+      <TabPaper
+        leftColumn={inputField}
+        rightColumn={refseqId && ga4ghId ? renderedIdInfo : <></>}
+      />
     </Box>
   );
 };
