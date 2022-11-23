@@ -43,6 +43,7 @@ interface Props {
     | "top-end"
     | "top-start"
     | undefined;
+  promptText: string | undefined;
 }
 
 export const GeneAutocomplete: React.FC<Props> = ({
@@ -52,6 +53,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
   setGeneText,
   style,
   tooltipDirection,
+  promptText,
 }) => {
   const existingGeneOption = gene
     ? { value: gene, type: GeneSuggestionType.symbol }
@@ -192,8 +194,8 @@ export const GeneAutocomplete: React.FC<Props> = ({
               <TooltipTypography>Associated gene term.</TooltipTypography>
               <TooltipTypography>
                 We recommend using an HUGO Gene Nomenclature Committee (HGNC)
-                symbol, but other kinds of referents (including aliases, full
-                names, deprecated terms, and concept IDs) are supported as well.
+                symbol, but other kinds of referents (including aliases,
+                deprecated terms, and concept IDs) are supported as well.
               </TooltipTypography>
             </>
           }
@@ -201,7 +203,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
           <TextField
             {...params}
             variant="standard"
-            label="Gene Symbol"
+            label={promptText ? promptText : "Gene Symbol"}
             margin="dense"
             style={style}
             error={geneText !== ""}
