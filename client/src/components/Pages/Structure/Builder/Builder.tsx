@@ -28,14 +28,17 @@ import ContrastIcon from "@mui/icons-material/Contrast";
 import HelpIcon from "@mui/icons-material/Help";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import LinkIcon from "@mui/icons-material/Link";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 import { Box } from "@material-ui/core";
 import { MARGIN_OFFSETS } from "../../../../global/styles/theme";
+import RegulatoryElementInput from "../Input/RegulatoryElementInput/RegulatoryElementInput";
 
 const EDITABLE_ELEMENT_TYPES = [
   ElementType.geneElement,
   ElementType.templatedSequenceElement,
   ElementType.linkerSequenceElement,
   ElementType.transcriptSegmentElement,
+  ElementType.regulatoryElement,
 ];
 
 const STATIC_ELEMENT_TYPES = [
@@ -107,6 +110,11 @@ const ELEMENT_TEMPLATE = [
     type: ElementType.multiplePossibleGenesElement,
     element_id: uuid(),
     nomenclature: "v",
+  },
+  {
+    type: ElementType.regulatoryElement,
+    nomenclature: "",
+    element_id: uuid(),
   },
 ];
 
@@ -232,6 +240,14 @@ const Builder: React.FC = () => {
         </>
       ),
     },
+    RegulatoryElement: {
+      name: "Regulatory Element",
+      icon: (
+        <>
+          <AutorenewIcon />
+        </>
+      ),
+    },
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -254,7 +270,7 @@ const Builder: React.FC = () => {
     );
 
   const nomenclatureElement = (
-    <Box className="hr-section" py={1} minHeight="35px">
+    <Box className="hr-section" minHeight="30px">
       {nomenclatureContent}
     </Box>
   );
@@ -301,6 +317,13 @@ const Builder: React.FC = () => {
           <StaticElement
             icon={elementNameMap[ElementType.unknownGeneElement].icon}
             {...{ element, index, handleDelete }}
+          />
+        );
+        case ElementType.regulatoryElement:
+        return (
+          <RegulatoryElementInput
+            icon={elementNameMap[ElementType.regulatoryElement].icon}
+            {...{ element, index, handleDelete, handleSave }}
           />
         );
     }

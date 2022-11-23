@@ -36,6 +36,7 @@ import {
   RegulatoryElement,
   RegulatoryClass,
   RegulatoryElementResponse,
+  ClientRegulatoryElement,
 } from "./ResponseModels";
 
 export enum ElementType {
@@ -45,10 +46,12 @@ export enum ElementType {
   multiplePossibleGenesElement = "MultiplePossibleGenesElement",
   unknownGeneElement = "UnknownGeneElement",
   linkerSequenceElement = "LinkerSequenceElement",
+  regulatoryElement = "RegulatoryElement",
 }
 
 export type ClientElementUnion =
   | ClientMultiplePossibleGenesElement
+  | ClientRegulatoryElement
   | ClientGeneElement
   | ClientLinkerElement
   | ClientTemplatedSequenceElement
@@ -60,6 +63,7 @@ export type ElementUnion =
   | GeneElement
   | LinkerElement
   | UnknownGeneElement
+  | RegulatoryElement
   | TemplatedSequenceElement
   | TranscriptSegmentElement;
 
