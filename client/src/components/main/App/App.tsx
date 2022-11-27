@@ -9,9 +9,10 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Link,
   makeStyles,
-  Popover,
   ThemeProvider,
+  Typography,
 } from "@material-ui/core";
 // global contexts
 import { DomainOptionsContext } from "../../../global/contexts/DomainOptionsContext";
@@ -42,8 +43,6 @@ import LandingPage from "../Landing/LandingPage";
 import AppMenu from "./AppMenu";
 import DemoDropdown from "./DemoDropdown";
 import { HelpPopover } from "../shared/HelpPopover/HelpPopover";
-import PopoverTypography from "../shared/HelpPopover/PopoverTypography";
-import PopoverLink from "../shared/HelpPopover/PopoverLink";
 
 type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 
@@ -273,37 +272,37 @@ const App = (): JSX.Element => {
   );
   const categoricalHelpText = (
     <>
-      <PopoverTypography>
+      <Typography>
         Categorical gene fusions are generalized concepts representing a class
         of fusions by their shared attributes, such as retained or lost
         regulatory elements and/or functional domains, and are typically curated
         from the biomedical literature for use in genomic knowledgebases.
-      </PopoverTypography>
-      <PopoverTypography>
+      </Typography>
+      <Typography>
         See the{" "}
-        <PopoverLink href="https://fusions.cancervariants.org/en/latest/terminology.html#categorical-gene-fusions">
+        <Link href="https://fusions.cancervariants.org/en/latest/terminology.html#categorical-gene-fusions">
           specification
-        </PopoverLink>{" "}
+        </Link>{" "}
         for more information.
-      </PopoverTypography>
+      </Typography>
     </>
   );
 
   const assayedHelpText = (
     <>
-      <PopoverTypography>
+      <Typography>
         Assayed gene fusions from biological specimens are directly detected
         using RNA-based gene fusion assays, or alternatively may be inferred
         from genomic rearrangements detected by whole genome sequencing or
         cytogenomic assays in the context of informative phenotypic biomarkers.
-      </PopoverTypography>
-      <PopoverTypography>
+      </Typography>
+      <Typography>
         See the{" "}
-        <PopoverLink href="https://fusions.cancervariants.org/en/latest/terminology.html#assayed-gene-fusions">
+        <Link href="https://fusions.cancervariants.org/en/latest/terminology.html#assayed-gene-fusions">
           specification
-        </PopoverLink>{" "}
+        </Link>{" "}
         for more information.
-      </PopoverTypography>
+      </Typography>
     </>
   );
 

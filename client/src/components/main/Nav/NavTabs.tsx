@@ -1,9 +1,3 @@
-/*
-TODO:
- * Style assayed/categorical buttons
- * better "disabled" styling for continue button when fusion type not selected,
-   and for restricted tabs
-*/
 import React, { useContext } from "react";
 
 // Global fusion

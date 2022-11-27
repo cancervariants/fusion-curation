@@ -28,11 +28,20 @@ export const HelpPopover: React.FC<HelpPopoverProps> = ({
     popoverContainer: {
       backgroundColor: colorTheme["--primary"],
       color: colorTheme["--background"],
-      padding: "5px",
+      padding: "7px",
       maxWidth: "300px",
       ...backgroundStyle,
       "& p:not(:last-child)": {
         paddingBottom: "4px",
+      },
+      "& p": {
+        fontSize: "0.875rem",
+        lineHeight: "1.43",
+        "& a": {
+          color: colorTheme["--background"],
+          fontWeight: "bold",
+          textDecoration: "underline",
+        },
       },
     },
   }));

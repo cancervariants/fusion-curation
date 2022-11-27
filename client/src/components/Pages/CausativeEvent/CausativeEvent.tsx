@@ -11,11 +11,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
-import PopoverTypography from "../../main/shared/HelpPopover/PopoverTypography";
-import PopoverLink from "../../main/shared/HelpPopover/PopoverLink";
-import PopoverBox from "../../main/shared/HelpPopover/PopoverBox";
 import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
-import TooltipTypography from "../../main/shared/HelpTooltip/TooltipTypography";
 
 interface Props {
   index: number;
@@ -88,29 +84,29 @@ export const CausativeEvent: React.FC<Props> = () => {
           <Typography variant="h5">
             What is the causative event?
             <HelpPopover>
-              <PopoverBox>
-                <PopoverTypography>
+              <Box>
+                <Typography>
                   The evaluation of a fusion may be influenced by the underlying
                   mechanism that generated the fusion. Often this will be a DNA
                   rearrangement, but it could also be a read-through or
                   trans-splicing event.
-                </PopoverTypography>
-                <PopoverTypography>
+                </Typography>
+                <Typography>
                   See the{" "}
-                  <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#causative-event">
+                  <Link href="https://fusions.cancervariants.org/en/latest/information_model.html#causative-event">
                     specification
-                  </PopoverLink>{" "}
+                  </Link>{" "}
                   for more information.
-                </PopoverTypography>
-              </PopoverBox>
+                </Typography>
+              </Box>
             </HelpPopover>
           </Typography>
           <HelpTooltip
             placement="bottom"
             title={
-              <TooltipTypography>
+              <Typography>
                 The type of event that generated the fusion.
-              </TooltipTypography>
+              </Typography>
             }
           >
             <RadioGroup
@@ -137,12 +133,12 @@ export const CausativeEvent: React.FC<Props> = () => {
         <HelpTooltip
           placement="bottom"
           title={
-            <TooltipTypography>
+            <Typography>
               For rearrangements, this field is useful for characterizing the
               rearrangement. This could be a string describing the rearrangement
               with an appropriate nomenclature (e.g. ISCN or HGVS), or an
               equivalent data structure.
-            </TooltipTypography>
+            </Typography>
           }
         >
           <TextField

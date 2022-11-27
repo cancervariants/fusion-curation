@@ -4,11 +4,15 @@ import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeConte
 import DomainForm from "../DomainForm/DomainForm";
 import { ClientFunctionalDomain } from "../../../../services/ResponseModels";
 import { GeneContext } from "../../../../global/contexts/GeneContext";
-import { Avatar, Box, Chip, makeStyles, Typography } from "@material-ui/core";
+import {
+  Avatar,
+  Box,
+  Chip,
+  Link,
+  makeStyles,
+  Typography,
+} from "@material-ui/core";
 import { HelpPopover } from "../../../main/shared/HelpPopover/HelpPopover";
-import PopoverTypography from "../../../main/shared/HelpPopover/PopoverTypography";
-import PopoverLink from "../../../main/shared/HelpPopover/PopoverLink";
-import PopoverBox from "../../../main/shared/HelpPopover/PopoverBox";
 
 interface Props {
   index: number;
@@ -114,24 +118,24 @@ export const Domain: React.FC<Props> = () => {
 
   const popover = (
     <HelpPopover>
-      <PopoverBox>
-        <PopoverTypography>
+      <Box>
+        <Typography>
           Categorical Gene Fusions are often characterized by the presence or
           absence of critical functional domains within a gene fusion.
-        </PopoverTypography>
-        <PopoverTypography>
+        </Typography>
+        <Typography>
           Given a gene previously provided in a structural or regulatory
           element, select from its associated domains and indicate whether it
           was lost or preserved in the fusion.
-        </PopoverTypography>
-        <PopoverTypography>
+        </Typography>
+        <Typography>
           See the{" "}
-          <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#functional-domains">
+          <Link href="https://fusions.cancervariants.org/en/latest/information_model.html#functional-domains">
             specification
-          </PopoverLink>{" "}
+          </Link>{" "}
           for more information.
-        </PopoverTypography>
-      </PopoverBox>
+        </Typography>
+      </Box>
     </HelpPopover>
   );
 

@@ -21,7 +21,6 @@ import UpdateIcon from "@material-ui/icons/Update";
 import DeleteIcon from "@material-ui/icons/Delete";
 import React from "react";
 import HelpTooltip from "../../../main/shared/HelpTooltip/HelpTooltip";
-import TooltipTypography from "../../../main/shared/HelpTooltip/TooltipTypography";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -144,9 +143,7 @@ const RegElementForm: React.FC<Props> = ({
             placement="left"
             title={
               <>
-                <TooltipTypography>
-                  INSDC regulatory class vocabulary term.
-                </TooltipTypography>
+                <Typography>INSDC regulatory class vocabulary term.</Typography>
               </>
             }
           >

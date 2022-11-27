@@ -1,33 +1,28 @@
-import {
-  Box,
-  Button,
-  Divider,
-  Link,
-  makeStyles,
-  Paper,
-  TextField,
-  Typography,
-} from "@material-ui/core";
+import { Box, Divider, makeStyles, Paper } from "@material-ui/core";
 import React from "react";
 import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
 
 interface Props {
   leftColumn: React.ReactFragment;
   rightColumn: React.ReactFragment;
+  leftColumnWidth: number | null;
 }
 
-const TabPaper: React.FC<Props> = ({ leftColumn, rightColumn }) => {
+const TabPaper: React.FC<Props> = ({
+  leftColumn,
+  rightColumn,
+  leftColumnWidth,
+}) => {
   const { colorTheme } = useColorTheme();
   const useStyles = makeStyles(() => ({
     pageContent: {
       display: "flex",
       backgroundColor: colorTheme["--light-gray"],
-      marginBottom: "32px",
     },
     leftColumn: {
       height: "40%",
       minHeight: "85px",
-      width: "50%",
+      width: leftColumnWidth ? `${leftColumnWidth}%` : "50%",
     },
     leftPadder: {
       padding: "25px",
@@ -37,7 +32,9 @@ const TabPaper: React.FC<Props> = ({ leftColumn, rightColumn }) => {
       display: "flex",
       justifyContent: "center",
     },
-    rightColumn: { width: "50%" },
+    rightColumn: {
+      width: leftColumnWidth ? `${100 - leftColumnWidth}%` : "50%",
+    },
     rightPadder: { padding: "25px" },
   }));
   const classes = useStyles();

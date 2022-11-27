@@ -18,15 +18,21 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import React, { useEffect, useState } from "react";
 import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
 import { getTranscripts } from "../../../services/main";
+import {
+  GetTranscriptsResponse,
+  ManeGeneTranscript,
+} from "../../../services/ResponseModels";
 import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
+import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
 import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
-import TooltipTypography from "../../main/shared/HelpTooltip/TooltipTypography";
+import TabHeader from "../../main/shared/TabHeader/TabHeader";
+import TabPaper from "../../main/shared/TabPaper/TabPaper";
 
 export const GetTranscripts: React.FC = () => {
   const [gene, setGene] = useState("");
   const [geneText, setGeneText] = useState("");
 
-  const [transcripts, setTranscripts] = useState<string[]>([]);
+  const [transcripts, setTranscripts] = useState<ManeGeneTranscript[]>([]);
   const [transcriptWarnings, setTranscriptWarnings] = useState<string[]>([]);
 
   const { colorTheme } = useColorTheme();
@@ -34,55 +40,23 @@ export const GetTranscripts: React.FC = () => {
     pageContainer: {
       paddingBottom: "32px",
     },
-    titleContainer: {
+    inputContainer: {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      padding: "20px 0 20px 0",
-    },
-    descriptionBox: {
-      backgroundColor: colorTheme["--medium-gray"],
-      width: "100%",
-      display: "flex",
-      justifyContent: "center",
-    },
-    descriptionBoxTextContainer: {
-      width: "60%",
-      padding: "10px",
-    },
-    transcriptsBodyContainer: {
-      display: "flex",
-      width: "100%",
-      alignItems: "stretch",
-      flex: "1",
-    },
-    leftColumn: {
-      width: "40%",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "flex-start",
-      alignItems: "center",
-      backgroundColor: colorTheme["--light-gray"],
       padding: "25px",
-    },
-    rightColumn: {
-      display: "flex",
-      flexDirection: "column",
-      width: "60%",
-      alignItems: "center",
-      justifyContent: "flex-start",
     },
     txResponseContainer: {
       overflowX: "hidden",
       overflowY: "scroll",
       textOverflow: "clip",
-      padding: "20px 0 20px 0",
       width: "100%",
     },
-    txAccordion: {
+    txAccordionContainer: {
       width: "90%",
       paddingBottom: "1px",
       fontWeight: "bold",
+      padding: "0px",
     },
     txAccordionTop: {
       color: colorTheme["--primary"],
@@ -99,35 +73,35 @@ export const GetTranscripts: React.FC = () => {
   }, [gene]);
 
   const handleGet = () => {
-    getTranscripts(gene).then((transcriptsResponse) => {
+    getTranscripts(gene).then((transcriptsResponse: GetTranscriptsResponse) => {
       if (transcriptsResponse.warnings) {
         setTranscriptWarnings(transcriptsResponse.warnings);
         setTranscripts([]);
       } else {
         setTranscriptWarnings([]);
-        setTranscripts(transcriptsResponse.transcripts);
+        setTranscripts(transcriptsResponse.transcripts as ManeGeneTranscript[]);
       }
     });
   };
 
   const maneClinicalDescription = (
     <>
-      <TooltipTypography>Per RefSeq:</TooltipTypography>
-      <TooltipTypography>
+      <Typography>Per RefSeq:</Typography>
+      <Typography>
         <i>
           The MANE Plus Clinical set includes additional transcripts for genes
           where MANE Select alone is not sufficient to report all "Pathogenic
           (P)" or "Likely Pathogenic (LP)" clinical variants available in public
           resources.
         </i>
-      </TooltipTypography>
+      </Typography>
     </>
   );
 
   const maneSelectDescription = (
     <>
-      <TooltipTypography>Per RefSeq:</TooltipTypography>
-      <TooltipTypography>
+      <Typography>Per RefSeq:</Typography>
+      <Typography>
         <i>
           The MANE Select set consists of one transcript at each protein-coding
           locus across the genome that is representative of biology at that
@@ -137,7 +111,7 @@ export const GetTranscripts: React.FC = () => {
           genomics. MANE Select transcripts are identified using computational
           methods complemented by manual review and discussion.
         </i>
-      </TooltipTypography>
+      </Typography>
     </>
   );
 
@@ -148,7 +122,7 @@ export const GetTranscripts: React.FC = () => {
     } else if (transcripts.length > 0) {
       return (
         <div>
-          <Container className={classes.txAccordion}>
+          <Container className={classes.txAccordionContainer}>
             <Accordion defaultExpanded>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
@@ -167,7 +141,7 @@ export const GetTranscripts: React.FC = () => {
               </AccordionDetails>
             </Accordion>
           </Container>
-          {transcripts.map((transcript, index) => {
+          {transcripts.map((transcript, index: number) => {
             const resultData = {
               "RefSeq Protein": transcript.RefSeq_nuc,
               "RefSeq Nucleotide": transcript.RefSeq_prot,
@@ -179,7 +153,7 @@ export const GetTranscripts: React.FC = () => {
               Strand: transcript.chr_strand,
             };
             return (
-              <Container key={index} className={classes.txAccordion}>
+              <Container key={index} className={classes.txAccordionContainer}>
                 <Accordion>
                   <HelpTooltip
                     placement="left"
@@ -225,46 +199,63 @@ export const GetTranscripts: React.FC = () => {
     }
   };
 
+  const transcriptsSubHeader = (
+    <>
+      Retrieve matching gene transcripts from the MANE project
+      <HelpPopover>
+        <Typography>
+          Matched Annotation from the NCBI and EMBL-EBI (MANE) defines
+          high-quality representative sets of transcripts matched to RefSeq and
+          Ensembl/GENCODE annotations and aligned perfectly to the GRCh38
+          reference assembly.
+        </Typography>
+        <Typography>
+          For more information, see the{" "}
+          <Link
+            target="_blank"
+            rel="noopener"
+            href="https://www.ncbi.nlm.nih.gov/refseq/MANE/"
+          >
+            RefSeq MANE project page
+          </Link>
+          .
+        </Typography>
+      </HelpPopover>
+    </>
+  );
+
+  const inputField = (
+    <Box className={classes.inputContainer}>
+      <Typography variant="h5">Enter a gene:</Typography>
+      <Box>
+        <GeneAutocomplete
+          gene={gene}
+          setGene={setGene}
+          geneText={geneText}
+          setGeneText={setGeneText}
+          style={{ width: 200 }}
+          tooltipDirection="right"
+          promptText="gene term"
+        />
+      </Box>
+    </Box>
+  );
+
   return (
     <Box className={classes.pageContainer}>
-      <Box className>
-        <Box className={classes.titleContainer}>
-          <Typography variant="h4">Fetch MANE Transcripts</Typography>
-        </Box>
-        <Box className={classes.descriptionBox}>
-          <Box className={classes.descriptionBoxTextContainer}>
-            <Typography>
-              This tool provides known transcripts from the Matched Annotation
-              from the NCBI and EMBL-EMBI (MANE) project for a given gene term.
-              See the{" "}
-              <Link href="https://www.ncbi.nlm.nih.gov/refseq/MANE/">
-                RefSeq MANE page
-              </Link>{" "}
-              for more information.
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
-      <Box className={classes.transcriptsBodyContainer}>
-        <Box className={classes.leftColumn}>
-          <Typography variant="h5">Enter a gene:</Typography>
-          <Box>
-            <GeneAutocomplete
-              gene={gene}
-              setGene={setGene}
-              geneText={geneText}
-              setGeneText={setGeneText}
-              style={{ width: 200 }}
-              tooltipDirection="top"
-            />
-          </Box>
-        </Box>
-        <Box className={classes.rightColumn}>
+      <TabHeader
+        title="Fetch MANE Transcripts"
+        subHeader={transcriptsSubHeader}
+      />
+      <TabPaper
+        leftColumn={inputField}
+        leftColumnWidth={30}
+        rightColumn={
           <Box className={classes.txResponseContainer}>
             {renderTranscripts()}
           </Box>
-        </Box>
-      </Box>
+        }
+      />
     </Box>
   );
 };

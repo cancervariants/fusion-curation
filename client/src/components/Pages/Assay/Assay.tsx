@@ -14,7 +14,6 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { Assay as FusionAssay } from "../../../services/ResponseModels";
 import React from "react";
-import TooltipTypography from "../../main/shared/HelpTooltip/TooltipTypography";
 import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
 
 interface Props {
@@ -136,13 +135,13 @@ export const Assay: React.FC<Props> = () => {
           <HelpTooltip
             placement="bottom"
             title={
-              <TooltipTypography>
+              <Typography>
                 Direct detection methods (e.g. RNA-seq, RT-PCR) directly
                 interrogate chimeric transcript junctions. Inferred detection
                 methods (e.g. WGS, FISH) infer the existence of a fusion in the
                 presence of compatible biomarkers (e.g. ALK rearrangements in
                 non-small cell lung cancers).
-              </TooltipTypography>
+              </Typography>
             }
           >
             <RadioGroup
@@ -172,11 +171,11 @@ export const Assay: React.FC<Props> = () => {
         <HelpTooltip
           placement="left"
           title={
-            <TooltipTypography>
+            <Typography>
               A human-readable name for the assay. Should match the label for
               the assay ID, e.g. <i>fluorescence in-situ hybridization assay</i>{" "}
               for <Typography variant="overline">obi:OBI_0003094</Typography>.
-            </TooltipTypography>
+            </Typography>
           }
         >
           <TextField
@@ -210,9 +209,9 @@ export const Assay: React.FC<Props> = () => {
         <HelpTooltip
           placement="left"
           title={
-            <TooltipTypography>
+            <Typography>
               A URI pointing to the methodological details of the assay.
-            </TooltipTypography>
+            </Typography>
           }
         >
           <TextField

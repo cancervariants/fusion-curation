@@ -1,10 +1,8 @@
 import {
   Box,
   Button,
-  Divider,
   Link,
   makeStyles,
-  Paper,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -12,7 +10,6 @@ import React, { useEffect, useState } from "react";
 import { getSequenceIds } from "../../../services/main";
 import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
 import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
-import TooltipTypography from "../../main/shared/HelpTooltip/TooltipTypography";
 import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
 import TabHeader from "../../main/shared/TabHeader/TabHeader";
 import TabPaper from "../../main/shared/TabPaper/TabPaper";
@@ -57,6 +54,7 @@ const GetSequenceIds: React.FC = () => {
       height: "100%",
       alignItems: "stretch",
       flex: "1",
+      paddingBottom: "32px",
     },
     inputContainer: {
       height: "40%",
@@ -145,9 +143,7 @@ const GetSequenceIds: React.FC = () => {
       <Box>
         <HelpTooltip
           placement="bottom"
-          title={
-            <TooltipTypography>Example RefSeq ID for NTRK1</TooltipTypography>
-          }
+          title={<Typography>Example RefSeq ID for NTRK1</Typography>}
         >
           <Button
             className={classes.demoButton}
@@ -159,9 +155,7 @@ const GetSequenceIds: React.FC = () => {
         <HelpTooltip
           placement="bottom"
           title={
-            <TooltipTypography>
-              Example GA4GH digest identifier for BRAF
-            </TooltipTypography>
+            <Typography>Example GA4GH digest identifier for BRAF</Typography>
           }
         >
           <Button
@@ -176,9 +170,7 @@ const GetSequenceIds: React.FC = () => {
         <HelpTooltip
           placement="bottom"
           title={
-            <TooltipTypography>
-              Example GRCh38 identifier for chromosome 1
-            </TooltipTypography>
+            <Typography>Example GRCh38 identifier for chromosome 1</Typography>
           }
         >
           <Button

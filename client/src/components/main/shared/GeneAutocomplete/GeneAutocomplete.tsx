@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField } from "@material-ui/core";
+import { TextField, Typography } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getGeneId, getGeneSuggestions } from "../../../../services/main";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
@@ -8,7 +8,6 @@ import {
   SuggestGeneResponse,
 } from "../../../../services/ResponseModels";
 import HelpTooltip from "../HelpTooltip/HelpTooltip";
-import TooltipTypography from "../HelpTooltip/TooltipTypography";
 
 export enum GeneSuggestionType {
   alias = "Alias",
@@ -191,12 +190,12 @@ export const GeneAutocomplete: React.FC<Props> = ({
           placement={tooltipDirection}
           title={
             <>
-              <TooltipTypography>Associated gene term.</TooltipTypography>
-              <TooltipTypography>
+              <Typography>Associated gene term.</Typography>
+              <Typography>
                 We recommend using an HUGO Gene Nomenclature Committee (HGNC)
                 symbol, but other kinds of referents (including aliases,
                 deprecated terms, and concept IDs) are supported as well.
-              </TooltipTypography>
+              </Typography>
             </>
           }
         >

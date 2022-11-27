@@ -6,11 +6,8 @@ import {
   ClientRegulatoryElement,
   RegulatoryClass,
 } from "../../../../services/ResponseModels";
-import { Typography, makeStyles, Box } from "@material-ui/core";
+import { Typography, makeStyles, Box, Link } from "@material-ui/core";
 import { HelpPopover } from "../../../main/shared/HelpPopover/HelpPopover";
-import PopoverTypography from "../../../main/shared/HelpPopover/PopoverTypography";
-import PopoverLink from "../../../main/shared/HelpPopover/PopoverLink";
-import PopoverBox from "../../../main/shared/HelpPopover/PopoverBox";
 
 interface Props {
   index: number;
@@ -111,31 +108,31 @@ export const RegElement: React.FC<Props> = () => {
         <Typography>
           Define a regulatory element.{" "}
           <HelpPopover>
-            <PopoverBox>
-              <PopoverTypography>
+            <Box>
+              <Typography>
                 Regulatory elements include a Regulatory Feature used to
                 describe an enhancer, promoter, or other regulatory elements
                 that constitute Regulatory Fusions. Regulatory features may also
                 be defined by a gene with which the feature is associated (e.g.
                 an IGH-associated enhancer element).
-              </PopoverTypography>
-              <PopoverTypography>
+              </Typography>
+              <Typography>
                 Our definitions of regulatory features follows the definitions
                 provided by the{" "}
-                <PopoverLink href="https://www.insdc.org/submitting-standards/controlled-vocabulary-regulatoryclass/">
+                <Link href="https://www.insdc.org/submitting-standards/controlled-vocabulary-regulatoryclass/">
                   INSDC regulatory class vocabulary
-                </PopoverLink>
+                </Link>
                 . In gene fusions, these are typically either enhancer or
                 promoter features.
-              </PopoverTypography>
-              <PopoverTypography>
+              </Typography>
+              <Typography>
                 See the{" "}
-                <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#regulatory-elements">
+                <Link href="https://fusions.cancervariants.org/en/latest/information_model.html#regulatory-elements">
                   specification
-                </PopoverLink>{" "}
+                </Link>{" "}
                 for more information.
-              </PopoverTypography>
-            </PopoverBox>
+              </Typography>
+            </Box>
           </HelpPopover>
         </Typography>
       </Box>

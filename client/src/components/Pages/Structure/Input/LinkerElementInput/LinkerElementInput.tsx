@@ -1,10 +1,9 @@
-import { TextField } from "@material-ui/core";
+import { TextField, Typography } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { ClientLinkerElement } from "../../../../../services/ResponseModels";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
 import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
-import TooltipTypography from "../../../../main/shared/HelpTooltip/TooltipTypography";
 
 interface LinkerElementInputProps extends StructuralElementInputProps {
   element: ClientLinkerElement;
@@ -47,11 +46,7 @@ const LinkerElementInput: React.FC<LinkerElementInputProps> = ({
   const inputElements = (
     <HelpTooltip
       placement="bottom"
-      title={
-        <TooltipTypography>
-          A literal sequence expressed as cDNA.
-        </TooltipTypography>
-      }
+      title={<Typography>A literal sequence expressed as cDNA.</Typography>}
     >
       <TextField
         margin="dense"

@@ -5,15 +5,13 @@ import {
   Box,
   FormControl,
   FormControlLabel,
+  Link,
   Radio,
   RadioGroup,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
-import PopoverTypography from "../../main/shared/HelpPopover/PopoverTypography";
-import PopoverLink from "../../main/shared/HelpPopover/PopoverLink";
-import PopoverBox from "../../main/shared/HelpPopover/PopoverBox";
 
 interface Props {
   index: number;
@@ -90,20 +88,20 @@ export const ReadingFrame: React.FC<Props> = ({ index }) => {
         <Typography variant="h5" className={classes.prompt}>
           Is the reading frame expected to be preserved?
           <HelpPopover>
-            <PopoverBox>
-              <PopoverTypography>
+            <Box>
+              <Typography>
                 A common attribute of a categorical gene fusion is whether the
                 reading frame is preserved in the expressed gene product. This
                 is typical of protein-coding gene fusions.
-              </PopoverTypography>
-              <PopoverTypography>
+              </Typography>
+              <Typography>
                 See the{" "}
-                <PopoverLink href="https://fusions.cancervariants.org/en/latest/information_model.html#functional-domains">
+                <Link href="https://fusions.cancervariants.org/en/latest/information_model.html#functional-domains">
                   specification
-                </PopoverLink>{" "}
+                </Link>{" "}
                 for more information.
-              </PopoverTypography>
-            </PopoverBox>
+              </Typography>
+            </Box>
           </HelpPopover>
         </Typography>
         <Box className={classes.inputField}>

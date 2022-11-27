@@ -23,7 +23,6 @@ import CompInputAccordion from "../StructuralElementInputAccordion";
 import { FusionContext } from "../../../../../global/contexts/FusionContext";
 import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
-import TooltipTypography from "../../../../main/shared/HelpTooltip/TooltipTypography";
 
 interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
@@ -326,14 +325,12 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       placement="bottom"
       title={
         <>
-          <TooltipTypography>
-            The chromosome on which the segment lies.
-          </TooltipTypography>
-          <TooltipTypography>
+          <Typography>The chromosome on which the segment lies.</Typography>
+          <Typography>
             RefSeq identifiers (e.g.{" "}
             <Typography variant="overline">NC_000001.11</Typography>) are
             preferred.
-          </TooltipTypography>
+          </Typography>
         </>
       }
     >
@@ -381,9 +378,9 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       <HelpTooltip
         placement="bottom"
         title={
-          <TooltipTypography>
+          <Typography>
             The starting genomic position of the segment. 1-indexed.
-          </TooltipTypography>
+          </Typography>
         }
       >
         <TextField
@@ -409,9 +406,9 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       <HelpTooltip
         placement="bottom"
         title={
-          <TooltipTypography>
+          <Typography>
             The ending genomic position of the segment. 1-indexed.
-          </TooltipTypography>
+          </Typography>
         }
       >
         <TextField
@@ -440,10 +437,10 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       <HelpTooltip
         placement="bottom"
         title={
-          <TooltipTypography>
+          <Typography>
             RefSeq transcript identifier, e.g.{" "}
             <Typography variant="overline">NM_0002529.3</Typography>.
-          </TooltipTypography>
+          </Typography>
         }
       >
         <TextField
@@ -505,10 +502,10 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
               <HelpTooltip
                 placement="bottom"
                 title={
-                  <TooltipTypography>
+                  <Typography>
                     The starting exon number counted from the 5&#39; end of the
                     transcript.
-                  </TooltipTypography>
+                  </Typography>
                 }
               >
                 <TextField
@@ -532,10 +529,10 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
               <HelpTooltip
                 placement="bottom"
                 title={
-                  <TooltipTypography>
+                  <Typography>
                     The ending exon number counted from the 5&#39; end of the
                     transcript.
-                  </TooltipTypography>
+                  </Typography>
                 }
               >
                 <TextField
@@ -562,12 +559,12 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 <HelpTooltip
                   placement="bottom"
                   title={
-                    <TooltipTypography>
+                    <Typography>
                       A value representing the offset from the segment boundary,
                       with positive values offset towards the 5’ end of the
                       transcript and negative values offset towards the 3’ end
                       of the transcript. Optional.
-                    </TooltipTypography>
+                    </Typography>
                   }
                 >
                   <TextField
@@ -595,12 +592,12 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 <HelpTooltip
                   placement="bottom"
                   title={
-                    <TooltipTypography>
+                    <Typography>
                       A value representing the offset from the segment boundary,
                       with positive values offset towards the 5’ end of the
                       transcript and negative values offset towards the 3’ end
                       of the transcript. Optional.
-                    </TooltipTypography>
+                    </Typography>
                   }
                 >
                   <TextField
@@ -652,15 +649,15 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           placement="left"
           title={
             <>
-              <TooltipTypography>
+              <Typography>
                 Select the types of location data to provide for constructing
                 this transcript segment.
-              </TooltipTypography>
-              <TooltipTypography>
+              </Typography>
+              <Typography>
                 Regardless of what kinds of data you provide, we can generate
                 exhaustive genomic and transcript-level location information for
                 this element.
-              </TooltipTypography>
+              </Typography>
             </>
           }
         >

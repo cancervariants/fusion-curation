@@ -28,9 +28,8 @@ import ContrastIcon from "@mui/icons-material/Contrast";
 import HelpIcon from "@mui/icons-material/Help";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import LinkIcon from "@mui/icons-material/Link";
-import { Box } from "@material-ui/core";
+import { Box, Typography } from "@material-ui/core";
 import { MARGIN_OFFSETS } from "../../../../global/styles/theme";
-import TooltipTypography from "../../../main/shared/HelpTooltip/TooltipTypography";
 import HelpTooltip from "../../../main/shared/HelpTooltip/HelpTooltip";
 
 const EDITABLE_ELEMENT_TYPES = [
@@ -195,15 +194,15 @@ const Builder: React.FC = () => {
       ),
       tooltip: (
         <>
-          <TooltipTypography>
+          <Typography>
             A gene may be used as a structural element, in which case it refers
             to an unspecified transcript of that gene.
-          </TooltipTypography>
-          <TooltipTypography>
+          </Typography>
+          <Typography>
             {fusion.type === "CategoricalFusion"
               ? "For Categorical Gene Fusions, this means any transcript meeting other parameters of the specified fusion."
               : "For Assayed Gene Fusions, this means that the exact transcript is not known."}
-          </TooltipTypography>
+          </Typography>
         </>
       ),
     },
@@ -215,12 +214,12 @@ const Builder: React.FC = () => {
         </>
       ),
       tooltip: (
-        <TooltipTypography>
+        <Typography>
           A transcript segment is a representation of a transcribed sequence
           denoted by a 5&#39; and 3&#39; segment boundary. Typically, transcript
           segments are used when the gene fusion junction boundary is known or
           when representing full-length Chimeric Transcript Fusions.
-        </TooltipTypography>
+        </Typography>
       ),
     },
     LinkerSequenceElement: {
@@ -231,13 +230,13 @@ const Builder: React.FC = () => {
         </>
       ),
       tooltip: (
-        <TooltipTypography>
+        <Typography>
           A linker sequence is an observed sequence in the gene fusion that
           typically occurs between transcript segments, and where the sequence
           origin is unknown or ambiguous. In cases where the linker sequence is
           a known intronic or intergenic region, it should be represented as a
           Templated Sequence instead.
-        </TooltipTypography>
+        </Typography>
       ),
     },
     TemplatedSequenceElement: {
@@ -248,11 +247,11 @@ const Builder: React.FC = () => {
         </>
       ),
       tooltip: (
-        <TooltipTypography>
+        <Typography>
           A templated linker sequence is an observed sequence in the gene fusion
           that typically occurs between transcript segments, and where the
           sequence origin is a known intronic or intergenic region.
-        </TooltipTypography>
+        </Typography>
       ),
     },
     MultiplePossibleGenesElement: {
@@ -263,12 +262,12 @@ const Builder: React.FC = () => {
         </>
       ),
       tooltip: (
-        <TooltipTypography>
+        <Typography>
           This element represents a a partner in a fusion which typifies
           generalizable characteristics of a class of fusions such as retained
           or lost functional domains, often curated from biomedical literature
           for use in genomic knowledgebases.
-        </TooltipTypography>
+        </Typography>
       ),
     },
     UnknownGeneElement: {
@@ -279,11 +278,11 @@ const Builder: React.FC = () => {
         </>
       ),
       tooltip: (
-        <TooltipTypography>
+        <Typography>
           This element represents the unknown partner in the result of a fusion
           partner-agnostic assay, which identifies the absence of an expected
           gene.
-        </TooltipTypography>
+        </Typography>
       ),
     },
   };

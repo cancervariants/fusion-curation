@@ -9,7 +9,6 @@ import { ClientTemplatedSequenceElement } from "../../../../../services/Response
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
 import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
-import TooltipTypography from "../../../../main/shared/HelpTooltip/TooltipTypography";
 
 interface TemplatedSequenceElementInputProps
   extends StructuralElementInputProps {
@@ -94,14 +93,12 @@ const TemplatedSequenceElementInput: React.FC<
           placement="bottom"
           title={
             <>
-              <TooltipTypography>
-                The chromosome on which the segment lies.
-              </TooltipTypography>
-              <TooltipTypography>
+              <Typography>The chromosome on which the segment lies.</Typography>
+              <Typography>
                 RefSeq identifiers (e.g.{" "}
                 <Typography variant="overline">NC_000001.11</Typography>) are
                 preferred.
-              </TooltipTypography>
+              </Typography>
             </>
           }
         >
@@ -122,9 +119,9 @@ const TemplatedSequenceElementInput: React.FC<
         <HelpTooltip
           placement="bottom"
           title={
-            <TooltipTypography>
+            <Typography>
               The starting genomic position of the segment. 1-indexed.
-            </TooltipTypography>
+            </Typography>
           }
         >
           <TextField
@@ -139,9 +136,9 @@ const TemplatedSequenceElementInput: React.FC<
         <HelpTooltip
           placement="bottom"
           title={
-            <TooltipTypography>
+            <Typography>
               The ending genomic position of the segment. 1-indexed.
-            </TooltipTypography>
+            </Typography>
           }
         >
           <TextField

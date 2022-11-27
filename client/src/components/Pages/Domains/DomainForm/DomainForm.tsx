@@ -5,6 +5,7 @@ import {
   FormControl,
   Select,
   Button,
+  Typography,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
 import { FusionContext } from "../../../../global/contexts/FusionContext";
@@ -20,7 +21,6 @@ import {
 import { getFunctionalDomain } from "../../../../services/main";
 import AddIcon from "@material-ui/icons/Add";
 import HelpTooltip from "../../../main/shared/HelpTooltip/HelpTooltip";
-import TooltipTypography from "../../../main/shared/HelpTooltip/TooltipTypography";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -129,13 +129,13 @@ const DomainForm: React.FC = () => {
             placement="left"
             title={
               <>
-                <TooltipTypography>
+                <Typography>
                   Select the gene containing the functional domain of interest.
-                </TooltipTypography>
-                <TooltipTypography>
+                </Typography>
+                <Typography>
                   The available options are genes identified in structural or
                   regulatory elements of this fusion.
-                </TooltipTypography>
+                </Typography>
               </>
             }
           >
@@ -158,10 +158,10 @@ const DomainForm: React.FC = () => {
           <HelpTooltip
             placement="left"
             title={
-              <TooltipTypography>
+              <Typography>
                 Select from known or predicted functional domains associated
                 with the gene.
-              </TooltipTypography>
+              </Typography>
             }
           >
             <Select
@@ -182,9 +182,9 @@ const DomainForm: React.FC = () => {
           <HelpTooltip
             placement="left"
             title={
-              <TooltipTypography>
+              <Typography>
                 Indicate whether the domain is preserved or lost in the fusion.
-              </TooltipTypography>
+              </Typography>
             }
           >
             <Select
