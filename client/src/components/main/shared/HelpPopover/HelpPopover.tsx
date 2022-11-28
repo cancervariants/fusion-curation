@@ -41,6 +41,7 @@ export const HelpPopover: React.FC<HelpPopoverProps> = ({
           color: colorTheme["--background"],
           fontWeight: "bold",
           textDecoration: "underline",
+          ...linkStyle,
         },
       },
     },
