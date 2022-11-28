@@ -82,7 +82,8 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
       backgroundColor: colorTheme["--white"],
     },
     previous: {
-      backgroundColor: colorTheme["--primary"],
+      // backgroundColor: colorTheme["--primary"],
+      padding: "1em 2em",
     },
     indicator: {
       backgroundColor: colorTheme["--primary"],
@@ -185,9 +186,8 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
 
       <div className={`footer ${visibleTab !== 0 ? "with-prev" : ""}`}>
         {visibleTab !== 0 ? (
-          <div className="previous">
+          <div className={classes.previous}>
             <Button
-              className={classes.previous}
               onClick={(event) => updateVisibleTab(event, visibleTab - 1)}
               variant="contained"
               color="primary"
