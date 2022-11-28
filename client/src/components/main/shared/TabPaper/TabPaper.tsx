@@ -5,7 +5,7 @@ import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeConte
 interface Props {
   leftColumn: React.ReactFragment;
   rightColumn: React.ReactFragment;
-  leftColumnWidth: number | null;
+  leftColumnWidth: number | undefined;
 }
 
 const TabPaper: React.FC<Props> = ({

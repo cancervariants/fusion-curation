@@ -23,6 +23,8 @@ import CompInputAccordion from "../StructuralElementInputAccordion";
 import { FusionContext } from "../../../../../global/contexts/FusionContext";
 import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
+import ChromosomeField from "../../../../main/shared/ChromosomeField/ChromosomeField";
+import TranscriptField from "../../../../main/shared/TranscriptField/TranscriptField";
 
 interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
@@ -317,37 +319,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   };
 
   /**
-   * Render transcript segment chromosome input field
-   * @returns chromosome input TextField
-   */
-  const renderTxChrom = () => (
-    <HelpTooltip
-      placement="bottom"
-      title={
-        <>
-          <Typography>The chromosome on which the segment lies.</Typography>
-          <Typography>
-            RefSeq identifiers (e.g.{" "}
-            <Typography variant="overline">NC_000001.11</Typography>) are
-            preferred.
-          </Typography>
-        </>
-      }
-    >
-      <TextField
-        margin="dense"
-        style={{ height: 38, width: 125 }}
-        value={txChrom}
-        onChange={(event) => setTxChrom(event.target.value)}
-        error={txChromText !== ""}
-        onKeyDown={handleEnterKey}
-        label="Chromosome"
-        helperText={txChromText !== "" ? txChromText : null}
-      />
-    </HelpTooltip>
-  );
-
-  /**
    * Handle pre-request validation for a numeric input field
    * @param value user-entered value
    * @param warnSetter useState setter function for warning text
@@ -434,33 +405,24 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
 
   const txInputField = (
     <Box className="mid-inputs" minWidth="255px">
-      <HelpTooltip
-        placement="bottom"
-        title={
-          <Typography>
-            RefSeq transcript identifier, e.g.{" "}
-            <Typography variant="overline">NM_0002529.3</Typography>.
-          </Typography>
-        }
-      >
-        <TextField
-          margin="dense"
-          style={{ width: 125 }}
-          label="Transcript"
-          value={txAc}
-          onChange={(event) => setTxAc(event.target.value)}
-          onKeyDown={handleEnterKey}
-          error={txAcText !== ""}
-          helperText={txAcText}
-        />
-      </HelpTooltip>
+      <TranscriptField
+        fieldValue={txAc}
+        valueSetter={setTxAc}
+        errorText={txAcText}
+        keyHandler={handleEnterKey}
+      />
     </Box>
   );
 
   const genomicCoordinateInfo = (
     <>
       <Box className="mid-inputs">
-        {renderTxChrom()}
+        <ChromosomeField
+          fieldValue={txChrom}
+          valueSetter={setTxChrom}
+          errorText={txChromText}
+          keyHandler={handleEnterKey}
+        />
         <Box mt="18px" width="125px">
           <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
         </Box>

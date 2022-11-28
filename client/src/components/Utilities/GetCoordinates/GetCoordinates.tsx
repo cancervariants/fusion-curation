@@ -5,7 +5,6 @@ import {
   Table,
   TableRow,
   TableCell,
-  Card,
   Typography,
   makeStyles,
   Box,
@@ -22,6 +21,8 @@ import StrandSwitch from "../../main/shared/StrandSwitch/StrandSwitch";
 import TabHeader from "../../main/shared/TabHeader/TabHeader";
 import TabPaper from "../../main/shared/TabPaper/TabPaper";
 import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
+import ChromosomeField from "../../main/shared/ChromosomeField/ChromosomeField";
+import TranscriptField from "../../main/shared/TranscriptField/TranscriptField";
 
 const GetCoordinates: React.FC = () => {
   const useStyles = makeStyles(() => ({
@@ -33,21 +34,26 @@ const GetCoordinates: React.FC = () => {
       flexDirection: "column",
       alignItems: "center",
     },
-    datatypeSelect: {
-      marginBottom: "20px",
+    inputSelector: {
+      width: "100%",
+      minHeight: "50px",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "space-around",
+    },
+    inputParams: {
+      display: "flex",
+      width: "70%",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "flex-start",
     },
     fieldsPair: {
       width: "100%",
       display: "flex",
       flexDirection: "row",
       justifyContent: "space-between",
-    },
-    inputParams: {
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "flex-start",
-      marginTop: "20px",
     },
     strand: {
       display: "flex",
@@ -213,30 +219,26 @@ const GetCoordinates: React.FC = () => {
     if (inputValid) {
       if (results) {
         return (
-          <Card className={classes.coordsCard}>
-            <Table>
-              {renderRow("Gene", results.gene)}
-              {renderRow("Chromosome", results.chr)}
-              {results.start ? renderRow("Genomic start", results.start) : null}
-              {results.end ? renderRow("Genomic end", results.end) : null}
-              {results.strand
-                ? renderRow("Strand", results.strand === 1 ? "+" : "-")
-                : null}
-              {renderRow("Transcript", results.transcript)}
-              {results.exon_start
-                ? renderRow("Exon start", results.exon_start)
-                : null}
-              {results.exon_start_offset
-                ? renderRow("Exon start offset", results.exon_start_offset)
-                : null}
-              {results.exon_end
-                ? renderRow("Exon end", results.exon_end)
-                : null}
-              {results.exon_end_offset
-                ? renderRow("Exon end offset", results.exon_end_offset)
-                : null}
-            </Table>
-          </Card>
+          <Table>
+            {renderRow("Gene", results.gene)}
+            {renderRow("Chromosome", results.chr)}
+            {results.start ? renderRow("Genomic start", results.start) : null}
+            {results.end ? renderRow("Genomic end", results.end) : null}
+            {results.strand
+              ? renderRow("Strand", results.strand === 1 ? "+" : "-")
+              : null}
+            {renderRow("Transcript", results.transcript)}
+            {results.exon_start
+              ? renderRow("Exon start", results.exon_start)
+              : null}
+            {results.exon_start_offset
+              ? renderRow("Exon start offset", results.exon_start_offset)
+              : null}
+            {results.exon_end ? renderRow("Exon end", results.exon_end) : null}
+            {results.exon_end_offset
+              ? renderRow("Exon end offset", results.exon_end_offset)
+              : null}
+          </Table>
         );
       } else if (error) {
         return <Typography>{error}</Typography>;
@@ -251,14 +253,10 @@ const GetCoordinates: React.FC = () => {
   const genomicCoordinateInfo = (
     <>
       <Box display="flex" justifyContent="space-between" width="100%">
-        <TextField
-          margin="dense"
-          style={{ height: 38, width: 125 }}
-          value={chromosome}
-          onChange={(event) => setChromosome(event.target.value)}
-          error={chromosome && chromosomeText !== ""}
-          helperText={chromosome && chromosomeText ? chromosomeText : null}
-          label="Chromosome"
+        <ChromosomeField
+          fieldValue={chromosome}
+          valueSetter={setChromosome}
+          errorText={chromosomeText}
         />
         <Box mt="18px">
           <Box className={classes.strand} width="125px">
@@ -312,14 +310,10 @@ const GetCoordinates: React.FC = () => {
         return (
           <>
             <Box className={classes.fieldsPair}>
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Transcript"
-                value={txAc}
-                onChange={(event) => setTxAc(event.target.value)}
-                error={txAcText !== ""}
-                helperText={txAcText}
+              <TranscriptField
+                fieldValue={txAc}
+                valueSetter={setTxAc}
+                errorText={txAcText}
               />
             </Box>
             {genomicCoordinateInfo}
@@ -345,14 +339,10 @@ const GetCoordinates: React.FC = () => {
         return (
           <>
             <Box>
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Transcript"
-                value={txAc}
-                onChange={(event) => setTxAc(event.target.value)}
-                error={txAcText !== ""}
-                helperText={txAcText}
+              <TranscriptField
+                fieldValue={txAc}
+                valueSetter={setTxAc}
+                errorText={txAcText}
               />
             </Box>
             <Box className={classes.fieldsPair}>
@@ -398,21 +388,27 @@ const GetCoordinates: React.FC = () => {
 
   const inputField = (
     <Box className={classes.inputContainer}>
-      <Select
-        value={inputType}
-        onChange={(event) => setInputType(event.target.value as string)}
-      >
-        <MenuItem value="default" disabled>
-          Select input data
-        </MenuItem>
-        <MenuItem value="genomic_coords_gene">
-          Genomic coordinates, gene
-        </MenuItem>
-        <MenuItem value="genomic_coords_tx">
-          Genomic coordinates, transcript
-        </MenuItem>
-        <MenuItem value="exon_coords_tx">Exon coordinates, transcript</MenuItem>
-      </Select>
+      <Box className={classes.inputSelector}>
+        <Box>
+          <Select
+            value={inputType}
+            onChange={(event) => setInputType(event.target.value as string)}
+          >
+            <MenuItem value="default" disabled>
+              Select input data
+            </MenuItem>
+            <MenuItem value="genomic_coords_gene">
+              Genomic coordinates, gene
+            </MenuItem>
+            <MenuItem value="genomic_coords_tx">
+              Genomic coordinates, transcript
+            </MenuItem>
+            <MenuItem value="exon_coords_tx">
+              Exon coordinates, transcript
+            </MenuItem>
+          </Select>
+        </Box>
+      </Box>
       <Box className={classes.inputParams}>{renderInputOptions()}</Box>
     </Box>
   );
@@ -426,8 +422,14 @@ const GetCoordinates: React.FC = () => {
             Liftover between genomic and exon coordinates
             <HelpPopover>
               <Typography>
-                something about UTA TODO
-                <Link href="https://github.com/biocommons/uta">uta</Link>
+                The{" "}
+                <Link href="https://github.com/biocommons/uta">
+                  Biocommons Universal Transcript Archive
+                </Link>{" "}
+                provides mappings between genomic and transcript coordinates for
+                reference sequences and RefSeq transcripts. This tool provides a
+                basic frontend to UTA, enabling simple conversion between types
+                of coordinates.
               </Typography>
             </HelpPopover>
           </>
