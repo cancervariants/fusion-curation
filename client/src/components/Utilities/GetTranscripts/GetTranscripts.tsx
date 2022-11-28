@@ -171,7 +171,7 @@ export const GetTranscripts: React.FC = () => {
                     </AccordionSummary>
                   </HelpTooltip>
                   <AccordionDetails>
-                    <TableContainer component={Paper}>
+                    <TableContainer>
                       <Table aria-label="transcript-info-table" size="small">
                         <TableBody>
                           {Object.entries(resultData).map(

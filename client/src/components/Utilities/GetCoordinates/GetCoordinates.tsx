@@ -33,6 +33,9 @@ const GetCoordinates: React.FC = () => {
       flexDirection: "column",
       alignItems: "center",
     },
+    datatypeSelect: {
+      marginBottom: "20px",
+    },
     fieldsPair: {
       width: "100%",
       display: "flex",
@@ -44,6 +47,7 @@ const GetCoordinates: React.FC = () => {
       flexDirection: "column",
       justifyContent: "center",
       alignItems: "flex-start",
+      marginTop: "20px",
     },
     strand: {
       display: "flex",
@@ -397,7 +401,6 @@ const GetCoordinates: React.FC = () => {
       <Select
         value={inputType}
         onChange={(event) => setInputType(event.target.value as string)}
-        autoWidth
       >
         <MenuItem value="default" disabled>
           Select input data
