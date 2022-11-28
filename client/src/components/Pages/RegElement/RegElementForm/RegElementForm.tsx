@@ -4,6 +4,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Typography,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -142,9 +143,7 @@ const RegElementForm: React.FC<Props> = ({
           <HelpTooltip
             placement="left"
             title={
-              <>
-                <Typography>INSDC regulatory class vocabulary term.</Typography>
-              </>
+              <Typography>INSDC regulatory class vocabulary term.</Typography>
             }
           >
             <Select

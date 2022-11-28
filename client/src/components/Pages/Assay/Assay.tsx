@@ -190,11 +190,11 @@ export const Assay: React.FC<Props> = () => {
         <HelpTooltip
           placement="left"
           title={
-            <TooltipTypography>
+            <Typography>
               An ID for the assay concept, e.g.{" "}
               <Typography variant="overline">obi:OBI_0003094</Typography> from
               the Ontology for Biomedical Investigations.
-            </TooltipTypography>
+            </Typography>
           }
         >
           <TextField
