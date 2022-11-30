@@ -252,7 +252,7 @@ const App = (): JSX.Element => {
   }
 
   const fusionsComponent = (
-    <Box mt="75px" style={{ minHeight: "100vh" }}>
+    <Box mt="75px">
       {path !== "/utilities" ? (
         <GeneContext.Provider value={{ globalGenes, setGlobalGenes }}>
           <DomainOptionsContext.Provider
