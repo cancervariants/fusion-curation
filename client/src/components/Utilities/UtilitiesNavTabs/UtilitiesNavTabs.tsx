@@ -1,11 +1,10 @@
 import React from "react";
 import { GetTranscripts } from "../GetTranscripts/GetTranscripts";
 import { makeStyles, Theme } from "@material-ui/core/styles";
-import { AppBar, Tabs, Tab, Box } from "@material-ui/core";
-import "./UtilitiesNavTabs.scss";
+import { AppBar, Tabs, Tab, Box, Paper } from "@material-ui/core";
 import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
 import GetCoordinates from "../GetCoordinates/GetCoordinates";
-import GetSequenceIds from "../GetSequenceIds/GetSequenceIds";
+import GetSequence from "../GetSequence/GetSequence";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -20,7 +19,7 @@ const TabPanel = (props: TabPanelProps) => {
     <Box
       height="100%"
       hidden={value !== index}
-      className="sub-tab"
+      // className="sub-tab"
       aria-labelledby={`nav-tab-${index}`}
       {...other}
     >
@@ -59,6 +58,13 @@ const UtilitiesNavTabs = (): React.ReactElement => {
     root: {
       backgroundColor: colorTheme["--white"],
     },
+    utilitiesNavTabs: {
+      backgroundColor: colorTheme["--white"],
+    },
+    utilitiesTabPanel: {
+      minHeight: "66vh",
+      margin: "1em 2em 0 2em",
+    },
     continue: {
       backgroundColor: colorTheme["--primary"],
       marginLeft: "auto",
@@ -89,7 +95,7 @@ const UtilitiesNavTabs = (): React.ReactElement => {
   };
 
   return (
-    <Box className="utilities-nav-tabs">
+    <Paper className={classes.utilitiesNavTabs}>
       <AppBar elevation={0} position="static">
         <Tabs
           classes={{
@@ -103,10 +109,10 @@ const UtilitiesNavTabs = (): React.ReactElement => {
         >
           <LinkTab label="Get MANE Transcripts" {...a11yProps(0)} />
           <LinkTab label="Convert Coordinates" {...a11yProps(1)} />
-          <LinkTab label="Sequence ID Lookup" {...a11yProps(2)} />
+          <LinkTab label="Sequence Lookup" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
-      <Box className="utilities-tab-panel">
+      <Box className={classes.utilitiesTabPanel}>
         <TabPanel value={value} index={0}>
           <GetTranscripts />
         </TabPanel>
@@ -114,10 +120,10 @@ const UtilitiesNavTabs = (): React.ReactElement => {
           <GetCoordinates />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <GetSequenceIds />
+          <GetSequence />
         </TabPanel>
       </Box>
-    </Box>
+    </Paper>
   );
 };
 

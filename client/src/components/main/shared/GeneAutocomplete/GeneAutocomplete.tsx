@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField } from "@material-ui/core";
+import { TextField, Typography } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getGeneId, getGeneSuggestions } from "../../../../services/main";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
@@ -7,6 +7,7 @@ import {
   NormalizeGeneResponse,
   SuggestGeneResponse,
 } from "../../../../services/ResponseModels";
+import HelpTooltip from "../HelpTooltip/HelpTooltip";
 
 export enum GeneSuggestionType {
   alias = "Alias",
@@ -27,6 +28,21 @@ interface Props {
   geneText: string;
   setGeneText: CallableFunction;
   style: CSSProperties;
+  tooltipDirection:
+    | "bottom"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom-end"
+    | "bottom-start"
+    | "left-end"
+    | "left-start"
+    | "right-end"
+    | "right-start"
+    | "top-end"
+    | "top-start"
+    | undefined;
+  promptText: string | undefined;
 }
 
 export const GeneAutocomplete: React.FC<Props> = ({
@@ -35,6 +51,8 @@ export const GeneAutocomplete: React.FC<Props> = ({
   geneText,
   setGeneText,
   style,
+  tooltipDirection,
+  promptText,
 }) => {
   const existingGeneOption = gene
     ? { value: gene, type: GeneSuggestionType.symbol }
@@ -168,15 +186,29 @@ export const GeneAutocomplete: React.FC<Props> = ({
       clearOnBlur={false}
       clearOnEscape
       renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="standard"
-          label="Gene Symbol"
-          margin="dense"
-          style={style}
-          error={geneText !== ""}
-          helperText={geneText ? geneText : null}
-        />
+        <HelpTooltip
+          placement={tooltipDirection}
+          title={
+            <>
+              <Typography>Associated gene term.</Typography>
+              <Typography>
+                We recommend using an HUGO Gene Nomenclature Committee (HGNC)
+                symbol, but other kinds of referents (including aliases,
+                deprecated terms, and concept IDs) are supported as well.
+              </Typography>
+            </>
+          }
+        >
+          <TextField
+            {...params}
+            variant="standard"
+            label={promptText ? promptText : "Gene Symbol"}
+            margin="dense"
+            style={style}
+            error={geneText !== ""}
+            helperText={geneText ? geneText : null}
+          />
+        </HelpTooltip>
       )}
     />
   );

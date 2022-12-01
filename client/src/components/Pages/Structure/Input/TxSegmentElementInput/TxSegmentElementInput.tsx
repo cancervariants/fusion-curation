@@ -1,4 +1,10 @@
-import { TextField, MenuItem, Select, Box } from "@material-ui/core";
+import {
+  TextField,
+  MenuItem,
+  Select,
+  Box,
+  Typography,
+} from "@material-ui/core";
 import {
   ClientTranscriptSegmentElement,
   TranscriptSegmentElement,
@@ -16,6 +22,9 @@ import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import CompInputAccordion from "../StructuralElementInputAccordion";
 import { FusionContext } from "../../../../../global/contexts/FusionContext";
 import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
+import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
+import ChromosomeField from "../../../../main/shared/ChromosomeField/ChromosomeField";
+import TranscriptField from "../../../../main/shared/TranscriptField/TranscriptField";
 
 interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
@@ -103,7 +112,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       txAc !== "" &&
       (startingExon !== "" || endingExon !== ""));
 
-  const validated =
+  const validated: boolean =
     inputComplete &&
     hasRequiredEnds &&
     txGeneText === "" &&
@@ -151,9 +160,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     if (!hasRequiredEnds) {
       finishedElement.nomenclature = "ERROR";
     } else {
-      getTxSegmentNomenclature(
-        responseElement
-      ).then((nomenclatureResponse) => {
+      getTxSegmentNomenclature(responseElement).then((nomenclatureResponse) => {
         if (
           !nomenclatureResponse.warnings &&
           nomenclatureResponse.nomenclature
@@ -312,23 +319,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   };
 
   /**
-   * Render transcript segment chromosome input field
-   * @returns chromosome input TextField
-   */
-  const renderTxChrom = () => (
-    <TextField
-      margin="dense"
-      style={{ height: 38, width: 125 }}
-      value={txChrom}
-      onChange={(event) => setTxChrom(event.target.value)}
-      error={txChromText !== ""}
-      onKeyDown={handleEnterKey}
-      label="Chromosome"
-      helperText={txChromText !== "" ? txChromText : null}
-    />
-  );
-
-  /**
    * Handle pre-request validation for a numeric input field
    * @param value user-entered value
    * @param warnSetter useState setter function for warning text
@@ -356,47 +346,83 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
    */
   const renderTxGenomicCoords = () => (
     <>
-      <TextField
-        margin="dense"
-        style={{ width: 125 }}
-        label="Starting Position"
-        value={txStartingGenomic}
-        onChange={(event) =>
-          setNumericField(
-            event.target.value,
-            setTxStartingGenomicText,
-            setTxStartingGenomic,
-            true
-          )
+      <HelpTooltip
+        placement="bottom"
+        title={
+          <Typography>
+            The starting genomic position of the segment. 1-indexed.
+          </Typography>
         }
-        onKeyDown={handleEnterKey}
-        error={txStartingGenomicText !== ""}
-        helperText={txStartingGenomicText !== "" ? txStartingGenomicText : null}
-      />
-      <TextField
-        margin="dense"
-        style={{ width: 125 }}
-        label="Ending Position"
-        value={txEndingGenomic}
-        onChange={(event) =>
-          setNumericField(
-            event.target.value,
-            setTxEndingGenomicText,
-            setTxEndingGenomic,
-            true
-          )
+      >
+        <TextField
+          margin="dense"
+          style={{ width: 125 }}
+          label="Starting Position"
+          value={txStartingGenomic}
+          onChange={(event) =>
+            setNumericField(
+              event.target.value,
+              setTxStartingGenomicText,
+              setTxStartingGenomic,
+              true
+            )
+          }
+          onKeyDown={handleEnterKey}
+          error={txStartingGenomicText !== ""}
+          helperText={
+            txStartingGenomicText !== "" ? txStartingGenomicText : null
+          }
+        />
+      </HelpTooltip>
+      <HelpTooltip
+        placement="bottom"
+        title={
+          <Typography>
+            The ending genomic position of the segment. 1-indexed.
+          </Typography>
         }
-        onKeyDown={handleEnterKey}
-        error={txEndingGenomicText !== ""}
-        helperText={txEndingGenomicText !== "" ? txEndingGenomicText : null}
-      />
+      >
+        <TextField
+          margin="dense"
+          style={{ width: 125 }}
+          label="Ending Position"
+          value={txEndingGenomic}
+          onChange={(event) =>
+            setNumericField(
+              event.target.value,
+              setTxEndingGenomicText,
+              setTxEndingGenomic,
+              true
+            )
+          }
+          onKeyDown={handleEnterKey}
+          error={txEndingGenomicText !== ""}
+          helperText={txEndingGenomicText !== "" ? txEndingGenomicText : null}
+        />
+      </HelpTooltip>
     </>
+  );
+
+  const txInputField = (
+    <Box className="mid-inputs" minWidth="255px">
+      <TranscriptField
+        fieldValue={txAc}
+        valueSetter={setTxAc}
+        errorText={txAcText}
+        keyHandler={handleEnterKey}
+      />
+    </Box>
   );
 
   const genomicCoordinateInfo = (
     <>
       <Box className="mid-inputs">
-        {renderTxChrom()}
+        <ChromosomeField
+          fieldValue={txChrom}
+          valueSetter={setTxChrom}
+          errorText={txChromText}
+          keyHandler={handleEnterKey}
+        />
         <Box mt="18px" width="125px">
           <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
         </Box>
@@ -414,6 +440,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
               <GeneAutocomplete
                 gene={txGene}
                 setGene={setTxGene}
+                tooltipDirection="bottom"
                 geneText={txGeneText}
                 setGeneText={setTxGeneText}
                 style={{ width: 125 }}
@@ -425,114 +452,136 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       case InputType.gct:
         return (
           <Box>
-            <Box className="mid-inputs" minWidth="255px">
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Transcript"
-                value={txAc}
-                onChange={(event) => setTxAc(event.target.value)}
-                onKeyDown={handleEnterKey}
-                error={txAcText !== ""}
-                helperText={txAcText}
-              />
-            </Box>
+            {txInputField}
             {genomicCoordinateInfo}
           </Box>
         );
       case InputType.ect:
         return (
           <Box>
-            <Box className="mid-inputs">
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Transcript"
-                value={txAc}
-                onChange={(event) => setTxAc(event.target.value)}
-                onKeyDown={handleEnterKey}
-                error={txAcText !== ""}
-                helperText={txAcText}
-              />
-            </Box>
+            {txInputField}
             <Box className="bottom-inputs">
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Starting Exon"
-                value={startingExon}
-                onChange={(event) =>
-                  setNumericField(
-                    event.target.value,
-                    setStartingExonText,
-                    setStartingExon,
-                    true
-                  )
+              <HelpTooltip
+                placement="bottom"
+                title={
+                  <Typography>
+                    The starting exon number counted from the 5&#39; end of the
+                    transcript.
+                  </Typography>
                 }
-                onKeyDown={handleEnterKey}
-                error={startingExonText !== ""}
-                helperText={startingExonText !== "" ? startingExonText : null}
-              />
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Ending Exon"
-                value={endingExon}
-                onChange={(event) =>
-                  setNumericField(
-                    event.target.value,
-                    setEndingExonText,
-                    setEndingExon,
-                    true
-                  )
+              >
+                <TextField
+                  margin="dense"
+                  style={{ width: 125 }}
+                  label="Starting Exon"
+                  value={startingExon}
+                  onChange={(event) =>
+                    setNumericField(
+                      event.target.value,
+                      setStartingExonText,
+                      setStartingExon,
+                      true
+                    )
+                  }
+                  onKeyDown={handleEnterKey}
+                  error={startingExonText !== ""}
+                  helperText={startingExonText !== "" ? startingExonText : null}
+                />
+              </HelpTooltip>
+              <HelpTooltip
+                placement="bottom"
+                title={
+                  <Typography>
+                    The ending exon number counted from the 5&#39; end of the
+                    transcript.
+                  </Typography>
                 }
-                onKeyDown={handleEnterKey}
-                error={endingExonText !== ""}
-                helperText={endingExonText !== "" ? endingExonText : null}
-              />
+              >
+                <TextField
+                  margin="dense"
+                  style={{ width: 125 }}
+                  label="Ending Exon"
+                  value={endingExon}
+                  onChange={(event) =>
+                    setNumericField(
+                      event.target.value,
+                      setEndingExonText,
+                      setEndingExon,
+                      true
+                    )
+                  }
+                  onKeyDown={handleEnterKey}
+                  error={endingExonText !== ""}
+                  helperText={endingExonText !== "" ? endingExonText : null}
+                />
+              </HelpTooltip>
             </Box>
             {startingExon !== "" || endingExon !== "" ? (
               <Box className="bottom-inputs">
-                <TextField
-                  margin="dense"
-                  style={{ width: 125 }}
-                  label="Starting Offset"
-                  value={startingExonOffset}
-                  onChange={(event) =>
-                    setNumericField(
-                      event.target.value,
-                      setStartingExonOffsetText,
-                      setStartingExonOffset,
-                      true
-                    )
+                <HelpTooltip
+                  placement="bottom"
+                  title={
+                    <Typography>
+                      A value representing the offset from the segment boundary,
+                      with positive values offset towards the 5’ end of the
+                      transcript and negative values offset towards the 3’ end
+                      of the transcript. Optional.
+                    </Typography>
                   }
-                  onKeyDown={handleEnterKey}
-                  error={startingExonOffsetText !== ""}
-                  helperText={
-                    startingExonOffsetText !== ""
-                      ? startingExonOffsetText
-                      : null
+                >
+                  <TextField
+                    margin="dense"
+                    style={{ width: 125 }}
+                    label="Starting Offset"
+                    value={startingExonOffset}
+                    onChange={(event) =>
+                      setNumericField(
+                        event.target.value,
+                        setStartingExonOffsetText,
+                        setStartingExonOffset,
+                        true
+                      )
+                    }
+                    onKeyDown={handleEnterKey}
+                    error={startingExonOffsetText !== ""}
+                    helperText={
+                      startingExonOffsetText !== ""
+                        ? startingExonOffsetText
+                        : null
+                    }
+                  />
+                </HelpTooltip>
+                <HelpTooltip
+                  placement="bottom"
+                  title={
+                    <Typography>
+                      A value representing the offset from the segment boundary,
+                      with positive values offset towards the 5’ end of the
+                      transcript and negative values offset towards the 3’ end
+                      of the transcript. Optional.
+                    </Typography>
                   }
-                />
-                <TextField
-                  margin="dense"
-                  style={{ width: 125 }}
-                  label="Ending Offset"
-                  value={endingExonOffset}
-                  onChange={(event) =>
-                    setNumericField(
-                      event.target.value,
-                      setEndingExonOffsetText,
-                      setEndingExonOffset,
-                      true
-                    )
-                  }
-                  onKeyDown={handleEnterKey}
-                  error={endingExonOffsetText !== ""}
-                  helperText={
-                    endingExonOffsetText !== "" ? endingExonOffsetText : null
-                  }
-                />
+                >
+                  <TextField
+                    margin="dense"
+                    style={{ width: 125 }}
+                    label="Ending Offset"
+                    value={endingExonOffset}
+                    onChange={(event) =>
+                      setNumericField(
+                        event.target.value,
+                        setEndingExonOffsetText,
+                        setEndingExonOffset,
+                        true
+                      )
+                    }
+                    onKeyDown={handleEnterKey}
+                    error={endingExonOffsetText !== ""}
+                    helperText={
+                      endingExonOffsetText !== "" ? endingExonOffsetText : null
+                    }
+                  />
+                </HelpTooltip>
               </Box>
             ) : null}
           </Box>
@@ -558,23 +607,42 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   const inputElements = (
     <>
       <Box className="top-inputs">
-        <Select
-          value={txInputType}
-          onChange={(event) => selectInputType(event.target.value as InputType)}
+        <HelpTooltip
+          placement="left"
+          title={
+            <>
+              <Typography>
+                Select the types of location data to provide for constructing
+                this transcript segment.
+              </Typography>
+              <Typography>
+                Regardless of what kinds of data you provide, we can generate
+                exhaustive genomic and transcript-level location information for
+                this element.
+              </Typography>
+            </>
+          }
         >
-          <MenuItem value="default" disabled>
-            Select input data
-          </MenuItem>
-          <MenuItem value="genomic_coords_gene">
-            Genomic coordinates, gene
-          </MenuItem>
-          <MenuItem value="genomic_coords_tx">
-            Genomic coordinates, transcript
-          </MenuItem>
-          <MenuItem value="exon_coords_tx">
-            Exon coordinates, transcript
-          </MenuItem>
-        </Select>
+          <Select
+            value={txInputType}
+            onChange={(event) =>
+              selectInputType(event.target.value as InputType)
+            }
+          >
+            <MenuItem value="default" disabled>
+              Select input data
+            </MenuItem>
+            <MenuItem value="genomic_coords_gene">
+              Genomic coordinates, gene
+            </MenuItem>
+            <MenuItem value="genomic_coords_tx">
+              Genomic coordinates, transcript
+            </MenuItem>
+            <MenuItem value="exon_coords_tx">
+              Exon coordinates, transcript
+            </MenuItem>
+          </Select>
+        </HelpTooltip>
       </Box>
       {renderTxOptions()}
     </>

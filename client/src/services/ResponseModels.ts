@@ -599,9 +599,26 @@ export interface GetDomainResponse {
  */
 export interface GetTranscriptsResponse {
   warnings?: string[];
-  transcripts?: {
-    [k: string]: string | number;
-  }[];
+  transcripts?: ManeGeneTranscript[];
+}
+/**
+ * Base object containing MANE-provided gene transcript metadata
+ */
+export interface ManeGeneTranscript {
+  "#NCBI_GeneID": string;
+  Ensembl_Gene: string;
+  HGNC_ID: string;
+  symbol: string;
+  name: string;
+  RefSeq_nuc: string;
+  RefSeq_prot: string;
+  Ensembl_nuc: string;
+  Ensembl_prot: string;
+  MANE_status: string;
+  GRCh38_chr: string;
+  chr_start: string;
+  chr_end: string;
+  chr_strand: string;
 }
 /**
  * Response model for regulatory element nomenclature endpoint.

@@ -1,10 +1,11 @@
-import { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   InputLabel,
   MenuItem,
   FormControl,
   Select,
   Button,
+  Typography,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
 import { FusionContext } from "../../../../global/contexts/FusionContext";
@@ -18,6 +19,8 @@ import {
   DomainStatus,
 } from "../../../../services/ResponseModels";
 import { getFunctionalDomain } from "../../../../services/main";
+import AddIcon from "@material-ui/icons/Add";
+import HelpTooltip from "../../../main/shared/HelpTooltip/HelpTooltip";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -122,48 +125,83 @@ const DomainForm: React.FC = () => {
       <div className="formInput">
         <FormControl className={classes.formControl}>
           <InputLabel id="demo-simple-select-label">Gene</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={gene}
-            onChange={handleGeneChange}
-            disabled={Object.keys(domainOptions).length === 0}
+          <HelpTooltip
+            placement="left"
+            title={
+              <>
+                <Typography>
+                  Select the gene containing the functional domain of interest.
+                </Typography>
+                <Typography>
+                  The available options are genes identified in structural or
+                  regulatory elements of this fusion.
+                </Typography>
+              </>
+            }
           >
-            {renderGeneOptions()}
-          </Select>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={gene}
+              onChange={handleGeneChange}
+              disabled={Object.keys(domainOptions).length === 0}
+            >
+              {renderGeneOptions()}
+            </Select>
+          </HelpTooltip>
         </FormControl>
       </div>
 
       <div className="formInput">
         <FormControl className={classes.formControl}>
           <InputLabel>Domain</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={domain}
-            onChange={handleDomainChange}
-            disabled={gene === ""}
+          <HelpTooltip
+            placement="left"
+            title={
+              <Typography>
+                Select from known or predicted functional domains associated
+                with the gene.
+              </Typography>
+            }
           >
-            {renderDomainOptions()}
-          </Select>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={domain}
+              onChange={handleDomainChange}
+              disabled={gene === ""}
+            >
+              {renderDomainOptions()}
+            </Select>
+          </HelpTooltip>
         </FormControl>
       </div>
       <div className="formInput">
         <FormControl className={classes.formControl}>
           <InputLabel>Status</InputLabel>
-          <Select
-            value={status}
-            onChange={handleStatusChange}
-            disabled={domain === ""}
+          <HelpTooltip
+            placement="left"
+            title={
+              <Typography>
+                Indicate whether the domain is preserved or lost in the fusion.
+              </Typography>
+            }
           >
-            <MenuItem value="default" disabled></MenuItem>
-            <MenuItem value="lost">Lost</MenuItem>
-            <MenuItem value="preserved">Preserved</MenuItem>
-          </Select>
+            <Select
+              value={status}
+              onChange={handleStatusChange}
+              disabled={domain === ""}
+            >
+              <MenuItem value="default" disabled></MenuItem>
+              <MenuItem value="lost">Lost</MenuItem>
+              <MenuItem value="preserved">Preserved</MenuItem>
+            </Select>
+          </HelpTooltip>
         </FormControl>
       </div>
       <div className="add-button">
         <Button
+          startIcon={<AddIcon />}
           variant="outlined"
           color="primary"
           onClick={handleAdd}

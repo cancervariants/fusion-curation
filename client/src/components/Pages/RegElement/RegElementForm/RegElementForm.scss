@@ -29,8 +29,12 @@
     border-radius: 7px;
   }
 
-  .regel-add-button {
+  .regel-buttons {
     align-self: flex-end;
     margin-right: 85px;
+  }
+
+  .regel-delete-button {
+    margin-right: 10px;
   }
 }
