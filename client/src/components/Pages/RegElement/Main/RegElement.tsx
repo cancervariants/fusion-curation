@@ -137,36 +137,6 @@ export const RegElement: React.FC<Props> = () => {
         </Typography>
       </Box>
       <Box className={classes.pageContent}>
-        <div className={classes.leftColumn}>
-          <div className={classes.descriptionContainer}>
-            <div className={classes.descriptionMain}>
-              {regElement !== undefined ? (
-                <>
-                  <Typography variant="h5">
-                    This fusion contains the <b>{regElement.display_class}</b>{" "}
-                    regulatory element via the{" "}
-                    {regElement.associated_gene &&
-                      regElement.associated_gene.label &&
-                      regElement.associated_gene.label.toUpperCase()}{" "}
-                    gene.
-                  </Typography>
-                </>
-              ) : (
-                <Typography variant="h6">
-                  No regulatory element specified.
-                </Typography>
-              )}
-            </div>
-            <div className={classes.descriptionSubText}>
-              <Typography>
-                {regElement !== undefined
-                  ? "You can remove or update this regulatory element."
-                  : "You can add a regulatory element."}
-              </Typography>
-            </div>
-          </div>
-        </div>
-        <div className={classes.rightColumn}>
           <RegElementForm
             regElement={regElement}
             setRegElement={handleUpdate}
@@ -178,7 +148,6 @@ export const RegElement: React.FC<Props> = () => {
             geneText={geneText}
             setGeneText={setGeneText}
           />
-        </div>
       </Box>
     </div>
   );

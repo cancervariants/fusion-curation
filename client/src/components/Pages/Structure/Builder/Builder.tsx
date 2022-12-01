@@ -127,6 +127,7 @@ const Builder: React.FC = () => {
   const setWindowDimensions = () => {
     setWindowWidth(window.innerWidth);
   };
+
   useEffect(() => {
     window.addEventListener("resize", setWindowDimensions);
     return () => {
@@ -145,14 +146,19 @@ const Builder: React.FC = () => {
 
   // drop new element into structure
   const createNew = (result: DropResult) => {
-    const { source, destination } = result;
+    const { source, destination, draggableId } = result;
     const sourceClone = Array.from(ELEMENT_TEMPLATE);
-    const destClone = Array.from(fusion.structural_elements);
     const item = sourceClone[source.index];
     const newItem = Object.assign({}, item);
     newItem.element_id = uuid();
-    destClone.splice(destination.index, 0, newItem);
-    setFusion({ ...fusion, ...{ structural_elements: destClone } });
+
+    if (draggableId.includes("RegulatoryElement")) {
+      setFusion({...fusion, ...{ regulatory_element: newItem }})
+    } else {
+      const destClone = Array.from(fusion.structural_elements);
+      destClone.splice(destination.index, 0, newItem);
+      setFusion({ ...fusion, ...{ structural_elements: destClone } });
+    }
 
     // auto-save elements that don't need any additional input
     // TODO shouldn't need explicit autosave
@@ -191,6 +197,10 @@ const Builder: React.FC = () => {
     items = items.filter((item) => item?.element_id !== uuid);
     setFusion({ ...fusion, ...{ structural_elements: items } });
   };
+
+  const handleDeleteRegElement = () => {
+    setFusion({ ...fusion, ...{ regulatory_element: undefined }})
+  }
 
   const elementNameMap = {
     GeneElement: {
@@ -304,9 +314,9 @@ const Builder: React.FC = () => {
   };
 
   const onDragEnd = (result: DropResult) => {
-    const { source, destination } = result;
-    if (!destination) return; // dropped outside the list
-    if (destination.droppableId === source.droppableId) {
+    console.log(result)
+    const { source, destination, draggableId } = result;
+    if (destination && destination.droppableId === source.droppableId && !draggableId.includes("RegulatoryElement")) {
       reorder(result);
     } else {
       createNew(result);
@@ -376,7 +386,7 @@ const Builder: React.FC = () => {
         return (
           <RegulatoryElementInput
             icon={elementNameMap[ElementType.regulatoryElement].icon}
-            {...{ element, index, handleDelete, handleSave }}
+            {...{ element, index, handleDelete: handleDeleteRegElement, handleSave }}
           />
         );
     }
@@ -406,8 +416,9 @@ const Builder: React.FC = () => {
                       return (
                         <Draggable
                           key={element_id}
-                          draggableId={element_id}
+                          draggableId={type + element_id}
                           index={index}
+                          isDragDisabled={type === ElementType.regulatoryElement && fusion.regulatory_element !== undefined}
                         >
                           {(provided, snapshot) => {
                             return (
@@ -472,13 +483,18 @@ const Builder: React.FC = () => {
                 >
                   <h2
                     className={`${
-                      fusion.structural_elements?.length === 0
+                      fusion.structural_elements?.length === 0 && !fusion.regulatory_element
                         ? "instruction"
                         : "hidden"
                     }`}
                   >
                     Drag elements here
                   </h2>
+                  {fusion.regulatory_element && 
+                    <Box className={`block ${fusion?.regulatory_element?.type}`}>
+                      {renderElement(fusion?.regulatory_element, 0)}
+                    </Box>
+                  }
                   {fusion.structural_elements?.map(
                     (element: ClientElementUnion, index: number) => {
                       return (

@@ -138,7 +138,7 @@ const RegElementForm: React.FC<Props> = ({
   return (
     <div className="form-container">
       <div className="formInput">
-        <FormControl className={classes.formControl}>
+        <FormControl>
           <InputLabel id="regulatory-element-class-label">Class</InputLabel>
           <HelpTooltip
             placement="left"
@@ -165,46 +165,8 @@ const RegElementForm: React.FC<Props> = ({
           setGene={setGene}
           geneText={geneText}
           setGeneText={setGeneText}
-          style={{ width: 440 }}
           tooltipDirection="left"
         />
-      </div>
-      <div className="regel-buttons ">
-        {regElement !== undefined ? (
-          <Button
-            startIcon={<DeleteIcon />}
-            variant="outlined"
-            color="secondary"
-            onClick={() => removeRegElement()}
-            className="regel-delete-button"
-          >
-            Remove
-          </Button>
-        ) : (
-          <></>
-        )}
-
-        {regElement === undefined ? (
-          <Button
-            startIcon={<AddIcon />}
-            variant="outlined"
-            color="primary"
-            onClick={() => handleAdd()}
-            disabled={!inputComplete}
-          >
-            Add
-          </Button>
-        ) : (
-          <Button
-            startIcon={<UpdateIcon />}
-            variant="outlined"
-            color="primary"
-            onClick={() => handleAdd()}
-            disabled={!inputComplete}
-          >
-            Update
-          </Button>
-        )}
       </div>
     </div>
   );
