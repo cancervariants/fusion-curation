@@ -4,6 +4,7 @@ import {
   AccordionSummary,
   Box,
   Container,
+  makeStyles,
   Paper,
   Table,
   TableContainer,
@@ -11,20 +12,57 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  Link,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import React, { useEffect, useState } from "react";
+import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
 import { getTranscripts } from "../../../services/main";
+import {
+  GetTranscriptsResponse,
+  ManeGeneTranscript,
+} from "../../../services/ResponseModels";
 import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
-
-import "./GetTranscripts.scss";
+import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
+import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
+import TabHeader from "../../main/shared/TabHeader/TabHeader";
+import TabPaper from "../../main/shared/TabPaper/TabPaper";
 
 export const GetTranscripts: React.FC = () => {
   const [gene, setGene] = useState("");
   const [geneText, setGeneText] = useState("");
 
-  const [transcripts, setTranscripts] = useState<string[]>([]);
+  const [transcripts, setTranscripts] = useState<ManeGeneTranscript[]>([]);
   const [transcriptWarnings, setTranscriptWarnings] = useState<string[]>([]);
+
+  const { colorTheme } = useColorTheme();
+  const useStyles = makeStyles(() => ({
+    pageContainer: {
+      paddingBottom: "32px",
+    },
+    inputContainer: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: "25px",
+    },
+    txResponseContainer: {
+      overflowX: "hidden",
+      overflowY: "scroll",
+      textOverflow: "clip",
+      width: "100%",
+    },
+    txAccordionContainer: {
+      width: "90%",
+      paddingBottom: "1px",
+      fontWeight: "bold",
+      padding: "0px",
+    },
+    txAccordionTop: {
+      color: colorTheme["--primary"],
+    },
+  }));
+  const classes = useStyles();
 
   useEffect(() => {
     if (gene !== "" && !geneText) {
@@ -35,16 +73,47 @@ export const GetTranscripts: React.FC = () => {
   }, [gene]);
 
   const handleGet = () => {
-    getTranscripts(gene).then((transcriptsResponse) => {
+    getTranscripts(gene).then((transcriptsResponse: GetTranscriptsResponse) => {
       if (transcriptsResponse.warnings) {
         setTranscriptWarnings(transcriptsResponse.warnings);
         setTranscripts([]);
       } else {
         setTranscriptWarnings([]);
-        setTranscripts(transcriptsResponse.transcripts);
+        setTranscripts(transcriptsResponse.transcripts as ManeGeneTranscript[]);
       }
     });
   };
+
+  const maneClinicalDescription = (
+    <>
+      <Typography>Per RefSeq:</Typography>
+      <Typography>
+        <i>
+          The MANE Plus Clinical set includes additional transcripts for genes
+          where MANE Select alone is not sufficient to report all "Pathogenic
+          (P)" or "Likely Pathogenic (LP)" clinical variants available in public
+          resources.
+        </i>
+      </Typography>
+    </>
+  );
+
+  const maneSelectDescription = (
+    <>
+      <Typography>Per RefSeq:</Typography>
+      <Typography>
+        <i>
+          The MANE Select set consists of one transcript at each protein-coding
+          locus across the genome that is representative of biology at that
+          locus. This set is useful as a universal standard for clinical
+          reporting, as a default for display on browsers and key genomic
+          resources, and as a starting point for comparative or evolutionary
+          genomics. MANE Select transcripts are identified using computational
+          methods complemented by manual review and discussion.
+        </i>
+      </Typography>
+    </>
+  );
 
   const renderTranscripts = () => {
     if (transcriptWarnings.length > 0) {
@@ -53,15 +122,15 @@ export const GetTranscripts: React.FC = () => {
     } else if (transcripts.length > 0) {
       return (
         <div>
-          <Container className="tx-accordion">
+          <Container className={classes.txAccordionContainer}>
             <Accordion defaultExpanded>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
-                className="tx-accordion-top"
+                className={classes.txAccordionTop}
               >
                 {transcripts[0].symbol}
               </AccordionSummary>
-              <AccordionDetails className="tx-accordion-details">
+              <AccordionDetails>
                 <Typography>
                   <b>Name:</b> {transcripts[0].name} <br />
                   <b>NCBI ID:</b> ncbigene:
@@ -72,7 +141,7 @@ export const GetTranscripts: React.FC = () => {
               </AccordionDetails>
             </Accordion>
           </Container>
-          {transcripts.map((transcript, index) => {
+          {transcripts.map((transcript, index: number) => {
             const resultData = {
               "RefSeq Protein": transcript.RefSeq_nuc,
               "RefSeq Nucleotide": transcript.RefSeq_prot,
@@ -84,16 +153,25 @@ export const GetTranscripts: React.FC = () => {
               Strand: transcript.chr_strand,
             };
             return (
-              <Container key={index} className="tx-accordion">
+              <Container key={index} className={classes.txAccordionContainer}>
                 <Accordion>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    className="tx-accordion-top"
+                  <HelpTooltip
+                    placement="left"
+                    title={
+                      transcript.MANE_status === "MANE Plus Clinical"
+                        ? maneClinicalDescription
+                        : maneSelectDescription
+                    }
                   >
-                    {transcript.MANE_status}
-                  </AccordionSummary>
-                  <AccordionDetails className="tx-accordion-details">
-                    <TableContainer component={Paper}>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      className={classes.txAccordionTop}
+                    >
+                      {transcript.MANE_status}
+                    </AccordionSummary>
+                  </HelpTooltip>
+                  <AccordionDetails>
+                    <TableContainer>
                       <Table aria-label="transcript-info-table" size="small">
                         <TableBody>
                           {Object.entries(resultData).map(
@@ -121,25 +199,63 @@ export const GetTranscripts: React.FC = () => {
     }
   };
 
+  const transcriptsSubHeader = (
+    <>
+      Retrieve matching gene transcripts from the MANE project
+      <HelpPopover>
+        <Typography>
+          Matched Annotation from the NCBI and EMBL-EBI (MANE) defines
+          high-quality representative sets of transcripts matched to RefSeq and
+          Ensembl/GENCODE annotations and aligned perfectly to the GRCh38
+          reference assembly.
+        </Typography>
+        <Typography>
+          For more information, see the{" "}
+          <Link
+            target="_blank"
+            rel="noopener"
+            href="https://www.ncbi.nlm.nih.gov/refseq/MANE/"
+          >
+            RefSeq MANE project page
+          </Link>
+          .
+        </Typography>
+      </HelpPopover>
+    </>
+  );
+
+  const inputField = (
+    <Box className={classes.inputContainer}>
+      <Typography variant="h5">Enter a gene:</Typography>
+      <Box>
+        <GeneAutocomplete
+          gene={gene}
+          setGene={setGene}
+          geneText={geneText}
+          setGeneText={setGeneText}
+          style={{ width: 200 }}
+          tooltipDirection="right"
+          promptText="gene term"
+        />
+      </Box>
+    </Box>
+  );
+
   return (
-    <div className="get-transcripts-tab-container">
-      <div className="left">
-        <div className="blurb-container">
-          <div className="blurb">Enter a gene:</div>
-          <div>
-            <GeneAutocomplete
-              gene={gene}
-              setGene={setGene}
-              geneText={geneText}
-              setGeneText={setGeneText}
-              style={{ width: 200 }}
-            />
-          </div>
-        </div>
-      </div>
-      <div className="right">
-        <div className="tx-response-container">{renderTranscripts()}</div>
-      </div>
-    </div>
+    <Box className={classes.pageContainer}>
+      <TabHeader
+        title="Fetch MANE Transcripts"
+        subHeader={transcriptsSubHeader}
+      />
+      <TabPaper
+        leftColumn={inputField}
+        leftColumnWidth={30}
+        rightColumn={
+          <Box className={classes.txResponseContainer}>
+            {renderTranscripts()}
+          </Box>
+        }
+      />
+    </Box>
   );
 };

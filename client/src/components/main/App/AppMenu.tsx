@@ -55,7 +55,7 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
 
         <Box className={`${classes.menuHeader} ${classes.menuLink}`}>
           <Typography color="inherit">
-            <b>Resources</b>
+            <b>External Resources</b>
           </Typography>
         </Box>
         <Box ml="10px">
@@ -65,7 +65,7 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
               target="_blank"
               color="inherit"
             >
-              Fusions Home Page
+              Gene Fusion Specification
             </Link>
           </Box>
           <Box className={classes.menuLink}>
@@ -83,7 +83,7 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
               target="_blank"
               color="inherit"
             >
-              VICC
+              VICC Home Page
             </Link>
           </Box>
         </Box>

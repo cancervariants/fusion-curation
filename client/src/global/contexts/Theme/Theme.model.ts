@@ -34,6 +34,7 @@ export enum Color {
   VICC_GREEN = "#A1D044",
   VICC_BLUE = "#2980b9",
   VICC_DARK_BLUE = "#18252B",
+  VICC_BLACK = "#343131",
 }
 
 export interface ColorTheme {
@@ -61,6 +62,8 @@ export interface ColorTheme {
   "--gradient-2": Color;
   "--gradient-3": Color;
   "--menu-background": Color;
+  "--drawer-background": Color;
+  "--error": Color;
 }
 
 export type ColorThemeType = "two" | "light" | "dark";
@@ -90,6 +93,8 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     "--gradient-2": Color.ORANGE,
     "--gradient-3": Color.PURPLEY,
     "--menu-background": Color.VICC_DARK_BLUE,
+    "--drawer-background": Color.VICC_BLACK,
+    "--error": Color.FLICKR, // TODO get a better color
   },
   dark: {
     "--primary": Color.VICC_GREEN,
@@ -115,6 +120,8 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     "--gradient-2": Color.ORANGE,
     "--gradient-3": Color.PURPLEY,
     "--menu-background": Color.VICC_DARK_BLUE,
+    "--drawer-background": Color.VICC_BLACK,
+    "--error": Color.VICC_BLACK,
   },
   two: {
     "--primary": Color.DODGER,
@@ -140,5 +147,7 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
     "--gradient-2": Color.ULTRA,
     "--gradient-3": Color.PURPLEY,
     "--menu-background": Color.VICC_DARK_BLUE,
+    "--drawer-background": Color.VICC_BLACK,
+    "--error": Color.VICC_BLACK,
   },
 };

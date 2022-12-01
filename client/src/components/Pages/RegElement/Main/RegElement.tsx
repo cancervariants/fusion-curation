@@ -1,20 +1,71 @@
 import React, { useContext, useState } from "react";
-import Close from "../../Domains/Main/Close";
 import { FusionContext } from "../../../../global/contexts/FusionContext";
-
-import "./RegElement.scss";
+import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
 import RegElementForm from "../RegElementForm/RegElementForm";
 import {
   ClientRegulatoryElement,
   RegulatoryClass,
 } from "../../../../services/ResponseModels";
+import { Typography, makeStyles, Box, Link } from "@material-ui/core";
+import { HelpPopover } from "../../../main/shared/HelpPopover/HelpPopover";
 
 interface Props {
   index: number;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const RegElement: React.FC<Props> = ({ index }) => {
+export const RegElement: React.FC<Props> = () => {
+  const { colorTheme } = useColorTheme();
+  const useStyles = makeStyles(() => ({
+    pageContainer: {
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+      alignItems: "stretch",
+    },
+    pageTitle: {
+      display: "flex",
+      alignItems: "center",
+      flexDirection: "column",
+      justifyContent: "space-around",
+      height: "100px",
+    },
+    pageContent: {
+      display: "flex",
+      width: "100%",
+      height: "100%",
+      alignItems: "stretch",
+      flex: "1",
+    },
+    leftColumn: {
+      width: "50%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colorTheme["--light-gray"],
+    },
+    descriptionContainer: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      paddingBottom: "40px",
+    },
+    descriptionMain: {
+      width: "70%",
+    },
+    descriptionSubText: {
+      marginTop: "20px",
+      width: "70%",
+    },
+    rightColumn: {
+      display: "flex",
+      flexDirection: "column",
+      width: "50%",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+  }));
+  const classes = useStyles();
+
   const { fusion, setFusion } = useContext(FusionContext);
   const [regElement, setRegElement] = useState<
     ClientRegulatoryElement | undefined
@@ -32,8 +83,8 @@ export const RegElement: React.FC<Props> = ({ index }) => {
    * Remove regulatory element submitted by user and wipe input fields.
    */
   const handleRemove = () => {
-    const cloneFusion = { ...fusion };
     delete fusion.regulatory_element;
+    const cloneFusion = { ...fusion };
     setRegElement(undefined);
     setFusion(cloneFusion);
     setElementClass("default");
@@ -51,57 +102,84 @@ export const RegElement: React.FC<Props> = ({ index }) => {
   };
 
   return (
-    <div className="reg-element-tab-container">
-      <div className="left">
-        <div className="blurb-container">
-          <div className="blurb">
-            {regElement !== undefined ? (
-              <>
-                This transcript structure appears to be associated with a
-                <p />
-                <span key={index} className="bold">
-                  {regElement.associated_gene &&
-                    regElement.associated_gene.label &&
-                    regElement.associated_gene.label.toUpperCase()}{" "}
-                  {regElement.display_class}
-                  {"."}
-                </span>
-                <p />
-              </>
-            ) : (
-              <>No regulatory element found.</>
-            )}
-          </div>
-          <div className="sub-blurb">
-            {regElement !== undefined
-              ? "You can remove or replace this regulatory element."
-              : "You can add a regulatory element."}
-          </div>
-
-          {regElement !== undefined ? (
-            <div className="regel">
-              <div>Remove</div>
-              <div className="close-button-reg" onClick={() => handleRemove()}>
-                <Close />
-              </div>
+    <div className={classes.pageContainer}>
+      <Box className={classes.pageTitle}>
+        <Typography variant="h4">Regulatory Element</Typography>
+        <Typography>
+          Define a regulatory element.{" "}
+          <HelpPopover>
+            <Box>
+              <Typography>
+                Regulatory elements include a Regulatory Feature used to
+                describe an enhancer, promoter, or other regulatory elements
+                that constitute Regulatory Fusions. Regulatory features may also
+                be defined by a gene with which the feature is associated (e.g.
+                an IGH-associated enhancer element).
+              </Typography>
+              <Typography>
+                Our definitions of regulatory features follows the definitions
+                provided by the{" "}
+                <Link href="https://www.insdc.org/submitting-standards/controlled-vocabulary-regulatoryclass/">
+                  INSDC regulatory class vocabulary
+                </Link>
+                . In gene fusions, these are typically either enhancer or
+                promoter features.
+              </Typography>
+              <Typography>
+                See the{" "}
+                <Link href="https://fusions.cancervariants.org/en/latest/information_model.html#regulatory-elements">
+                  specification
+                </Link>{" "}
+                for more information.
+              </Typography>
+            </Box>
+          </HelpPopover>
+        </Typography>
+      </Box>
+      <Box className={classes.pageContent}>
+        <div className={classes.leftColumn}>
+          <div className={classes.descriptionContainer}>
+            <div className={classes.descriptionMain}>
+              {regElement !== undefined ? (
+                <>
+                  <Typography variant="h5">
+                    This fusion contains the <b>{regElement.display_class}</b>{" "}
+                    regulatory element via the{" "}
+                    {regElement.associated_gene &&
+                      regElement.associated_gene.label &&
+                      regElement.associated_gene.label.toUpperCase()}{" "}
+                    gene.
+                  </Typography>
+                </>
+              ) : (
+                <Typography variant="h6">
+                  No regulatory element specified.
+                </Typography>
+              )}
             </div>
-          ) : (
-            <></>
-          )}
+            <div className={classes.descriptionSubText}>
+              <Typography>
+                {regElement !== undefined
+                  ? "You can remove or update this regulatory element."
+                  : "You can add a regulatory element."}
+              </Typography>
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="right">
-        <RegElementForm
-          regElement={regElement}
-          setRegElement={handleUpdate}
-          elementClass={elementClass}
-          setElementClass={setElementClass}
-          gene={gene}
-          setGene={setGene}
-          geneText={geneText}
-          setGeneText={setGeneText}
-        />
-      </div>
+        <div className={classes.rightColumn}>
+          <RegElementForm
+            regElement={regElement}
+            setRegElement={handleUpdate}
+            removeRegElement={handleRemove}
+            elementClass={elementClass}
+            setElementClass={setElementClass}
+            gene={gene}
+            setGene={setGene}
+            geneText={geneText}
+            setGeneText={setGeneText}
+          />
+        </div>
+      </Box>
     </div>
   );
 };

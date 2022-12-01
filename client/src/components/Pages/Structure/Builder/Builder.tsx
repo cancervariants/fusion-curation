@@ -28,8 +28,9 @@ import ContrastIcon from "@mui/icons-material/Contrast";
 import HelpIcon from "@mui/icons-material/Help";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import LinkIcon from "@mui/icons-material/Link";
-import { Box } from "@material-ui/core";
+import { Box, Typography } from "@material-ui/core";
 import { MARGIN_OFFSETS } from "../../../../global/styles/theme";
+import HelpTooltip from "../../../main/shared/HelpTooltip/HelpTooltip";
 
 const EDITABLE_ELEMENT_TYPES = [
   ElementType.geneElement,
@@ -191,6 +192,19 @@ const Builder: React.FC = () => {
           <StarsIcon />
         </>
       ),
+      tooltip: (
+        <>
+          <Typography>
+            A gene may be used as a structural element, in which case it refers
+            to an unspecified transcript of that gene.
+          </Typography>
+          <Typography>
+            {fusion.type === "CategoricalFusion"
+              ? "For Categorical Gene Fusions, this means any transcript meeting other parameters of the specified fusion."
+              : "For Assayed Gene Fusions, this means that the exact transcript is not known."}
+          </Typography>
+        </>
+      ),
     },
     TranscriptSegmentElement: {
       name: "Transcript Segment",
@@ -198,6 +212,14 @@ const Builder: React.FC = () => {
         <>
           <ContrastIcon />
         </>
+      ),
+      tooltip: (
+        <Typography>
+          A transcript segment is a representation of a transcribed sequence
+          denoted by a 5&#39; and 3&#39; segment boundary. Typically, transcript
+          segments are used when the gene fusion junction boundary is known or
+          when representing full-length Chimeric Transcript Fusions.
+        </Typography>
       ),
     },
     LinkerSequenceElement: {
@@ -207,6 +229,15 @@ const Builder: React.FC = () => {
           <LinkIcon />
         </>
       ),
+      tooltip: (
+        <Typography>
+          A linker sequence is an observed sequence in the gene fusion that
+          typically occurs between transcript segments, and where the sequence
+          origin is unknown or ambiguous. In cases where the linker sequence is
+          a known intronic or intergenic region, it should be represented as a
+          Templated Sequence instead.
+        </Typography>
+      ),
     },
     TemplatedSequenceElement: {
       name: "Templated Sequence",
@@ -214,6 +245,13 @@ const Builder: React.FC = () => {
         <>
           <BlurCircularOutlinedIcon />
         </>
+      ),
+      tooltip: (
+        <Typography>
+          A templated linker sequence is an observed sequence in the gene fusion
+          that typically occurs between transcript segments, and where the
+          sequence origin is a known intronic or intergenic region.
+        </Typography>
       ),
     },
     MultiplePossibleGenesElement: {
@@ -223,6 +261,14 @@ const Builder: React.FC = () => {
           <WorkspacesIcon />
         </>
       ),
+      tooltip: (
+        <Typography>
+          This element represents a a partner in a fusion which typifies
+          generalizable characteristics of a class of fusions such as retained
+          or lost functional domains, often curated from biomedical literature
+          for use in genomic knowledgebases.
+        </Typography>
+      ),
     },
     UnknownGeneElement: {
       name: "Unknown Gene",
@@ -230,6 +276,13 @@ const Builder: React.FC = () => {
         <>
           <HelpIcon />
         </>
+      ),
+      tooltip: (
+        <Typography>
+          This element represents the unknown partner in the result of a fusion
+          partner-agnostic assay, which identifies the absence of an expected
+          gene.
+        </Typography>
       ),
     },
   };
@@ -336,23 +389,29 @@ const Builder: React.FC = () => {
                           {(provided, snapshot) => {
                             return (
                               <React.Fragment>
-                                <Box
-                                  ref={provided.innerRef}
-                                  className={`option-item ${type}`}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  style={{
-                                    ...provided.draggableProps.style,
-                                    transform: snapshot.isDragging
-                                      ? provided.draggableProps.style?.transform
-                                      : "translate(0px, 0px)",
-                                  }}
+                                <HelpTooltip
+                                  placement="right"
+                                  title={elementNameMap[type].tooltip}
                                 >
-                                  {elementNameMap[type].icon}{" "}
-                                  <Box ml="8px">
-                                    {elementNameMap[type].name}
+                                  <Box
+                                    ref={provided.innerRef}
+                                    className={`option-item ${type}`}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    style={{
+                                      ...provided.draggableProps.style,
+                                      transform: snapshot.isDragging
+                                        ? provided.draggableProps.style
+                                            ?.transform
+                                        : "translate(0px, 0px)",
+                                    }}
+                                  >
+                                    {elementNameMap[type].icon}{" "}
+                                    <Box ml="8px">
+                                      {elementNameMap[type].name}
+                                    </Box>
                                   </Box>
-                                </Box>
+                                </HelpTooltip>
                                 {snapshot.isDragging && (
                                   <Box
                                     style={{ transform: "none !important" }}
