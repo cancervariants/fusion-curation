@@ -17,9 +17,6 @@ import {
 } from "../../../../services/ResponseModels";
 import { GeneAutocomplete } from "../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import "./RegElementForm.scss";
-import AddIcon from "@material-ui/icons/Add";
-import UpdateIcon from "@material-ui/icons/Update";
-import DeleteIcon from "@material-ui/icons/Delete";
 import React from "react";
 import HelpTooltip from "../../../main/shared/HelpTooltip/HelpTooltip";
 
@@ -31,6 +28,9 @@ const useStyles = makeStyles((theme) => ({
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
+  classSelect: {
+    minWidth: "200px"
+  }
 }));
 
 interface Props {
@@ -136,8 +136,8 @@ const RegElementForm: React.FC<Props> = ({
   };
 
   return (
-    <div className="form-container">
-      <div className="formInput">
+    <div>
+      <div>
         <FormControl>
           <InputLabel id="regulatory-element-class-label">Class</InputLabel>
           <HelpTooltip
@@ -149,6 +149,7 @@ const RegElementForm: React.FC<Props> = ({
             <Select
               labelId="regulatory-element-class-label"
               id="regulatory-element-class"
+              className={classes.classSelect}
               value={elementClass}
               onChange={(e) =>
                 setElementClass(e.target.value as RegulatoryClass)

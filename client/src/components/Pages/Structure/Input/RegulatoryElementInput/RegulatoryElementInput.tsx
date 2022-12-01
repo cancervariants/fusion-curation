@@ -4,6 +4,8 @@ import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import { ClientRegulatoryElement, ClientTemplatedSequenceElement, RegulatoryElement } from "../../../../../services/ResponseModels";
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
 import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
+import RegElementForm from "../../../RegElement/RegElementForm/RegElementForm";
+import { RegElement } from "../../../RegElement/Main/RegElement";
 
 interface RegulatoryElementInputProps
   extends StructuralElementInputProps {
@@ -18,7 +20,7 @@ RegulatoryElementInputProps
   const inputComplete = true;
   const validated = inputComplete && inputError === "";
 
-  const [expanded, setExpanded] = useState<boolean>(!validated);
+  const [expanded, setExpanded] = useState<boolean>(!validated || true);
 
   // TODO: implement validation
   // useEffect(() => {
@@ -36,12 +38,7 @@ RegulatoryElementInputProps
   const inputElements = (
     <>
       <div className="top-inputs">
-        <TextField
-          margin="dense"
-          style={{ height: 38, width: 125 }}
-          label="TEST"
-          onKeyDown={handleEnterKey}
-        />
+        <RegElement />
       </div>
       <div className="bottom-inputs">
       </div>

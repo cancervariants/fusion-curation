@@ -10,7 +10,7 @@ import { Typography, makeStyles, Box, Link } from "@material-ui/core";
 import { HelpPopover } from "../../../main/shared/HelpPopover/HelpPopover";
 
 interface Props {
-  index: number;
+  index?: number;
 }
 
 export const RegElement: React.FC<Props> = () => {
@@ -21,20 +21,6 @@ export const RegElement: React.FC<Props> = () => {
       flexDirection: "column",
       height: "100%",
       alignItems: "stretch",
-    },
-    pageTitle: {
-      display: "flex",
-      alignItems: "center",
-      flexDirection: "column",
-      justifyContent: "space-around",
-      height: "100px",
-    },
-    pageContent: {
-      display: "flex",
-      width: "100%",
-      height: "100%",
-      alignItems: "stretch",
-      flex: "1",
     },
     leftColumn: {
       width: "50%",
@@ -102,53 +88,18 @@ export const RegElement: React.FC<Props> = () => {
   };
 
   return (
-    <div className={classes.pageContainer}>
-      <Box className={classes.pageTitle}>
-        <Typography variant="h4">Regulatory Element</Typography>
-        <Typography>
-          Define a regulatory element.{" "}
-          <HelpPopover>
-            <Box>
-              <Typography>
-                Regulatory elements include a Regulatory Feature used to
-                describe an enhancer, promoter, or other regulatory elements
-                that constitute Regulatory Fusions. Regulatory features may also
-                be defined by a gene with which the feature is associated (e.g.
-                an IGH-associated enhancer element).
-              </Typography>
-              <Typography>
-                Our definitions of regulatory features follows the definitions
-                provided by the{" "}
-                <Link href="https://www.insdc.org/submitting-standards/controlled-vocabulary-regulatoryclass/">
-                  INSDC regulatory class vocabulary
-                </Link>
-                . In gene fusions, these are typically either enhancer or
-                promoter features.
-              </Typography>
-              <Typography>
-                See the{" "}
-                <Link href="https://fusions.cancervariants.org/en/latest/information_model.html#regulatory-elements">
-                  specification
-                </Link>{" "}
-                for more information.
-              </Typography>
-            </Box>
-          </HelpPopover>
-        </Typography>
-      </Box>
-      <Box className={classes.pageContent}>
-          <RegElementForm
-            regElement={regElement}
-            setRegElement={handleUpdate}
-            removeRegElement={handleRemove}
-            elementClass={elementClass}
-            setElementClass={setElementClass}
-            gene={gene}
-            setGene={setGene}
-            geneText={geneText}
-            setGeneText={setGeneText}
-          />
-      </Box>
-    </div>
+    <Box>
+        <RegElementForm
+          regElement={regElement}
+          setRegElement={handleUpdate}
+          removeRegElement={handleRemove}
+          elementClass={elementClass}
+          setElementClass={setElementClass}
+          gene={gene}
+          setGene={setGene}
+          geneText={geneText}
+          setGeneText={setGeneText}
+        />
+    </Box>
   );
 };

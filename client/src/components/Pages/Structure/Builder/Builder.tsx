@@ -310,6 +310,15 @@ const Builder: React.FC = () => {
           <AutorenewIcon />
         </>
       ),
+      tooltip: (
+        <Typography>
+          Regulatory elements include a Regulatory Feature used to
+          describe an enhancer, promoter, or other regulatory elements
+          that constitute Regulatory Fusions. Regulatory features may also
+          be defined by a gene with which the feature is associated (e.g.
+          an IGH-associated enhancer element).
+        </Typography>
+      )
     },
   };
 
