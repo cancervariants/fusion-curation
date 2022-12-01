@@ -9,6 +9,7 @@ import {
 } from "../../../../services/ResponseModels";
 
 export enum GeneSuggestionType {
+  conceptId = "Concept ID",
   alias = "Alias",
   symbol = "Symbol",
   prevSymbol = "Previous Symbol",
@@ -100,7 +101,9 @@ export const GeneAutocomplete: React.FC<Props> = ({
         setGeneOptions([
           {
             value: geneResponseJson.cased,
-            type: GeneSuggestionType.symbol,
+            type: geneResponseJson.cased.match(/^\w[^:]*:.+$/)
+              ? GeneSuggestionType.conceptId
+              : GeneSuggestionType.symbol,
           },
         ]);
       }
