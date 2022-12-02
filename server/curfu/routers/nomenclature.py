@@ -25,7 +25,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/nomenclature/regulatory_element",
+    "/api/nomenclature/regulatory_element",
     operation_id="regulatoryElementNomenclature",
     response_model=NomenclatureResponse,
     response_model_exclude_none=True,
@@ -35,6 +35,7 @@ def generate_regulatory_element_nomenclature(
 ) -> ResponseDict:
     """
     Build regulatory element nomenclature.
+    \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param regulatory_element: element to build nomenclature for
@@ -45,7 +46,7 @@ def generate_regulatory_element_nomenclature(
     except ValidationError as e:
         error_msg = str(e)
         logger.warning(
-            f"Encountered ValidationError: {error_msg} for regulatory element: {regulatory_element}"
+            f"Encountered ValidationError: {error_msg} for regulatory element: {regulatory_element}"  # noqa: E501
         )
         return {"warnings": [error_msg]}
     try:
@@ -65,16 +66,15 @@ def generate_regulatory_element_nomenclature(
 
 
 @router.post(
-    "/nomenclature/transcript_segment",
+    "/api/nomenclature/transcript_segment",
     operation_id="txSegmentNomenclature",
     response_model=NomenclatureResponse,
     response_model_exclude_none=True,
 )
-def generate_tx_segment_nomenclature(
-    tx_segment: Dict = Body()
-) -> ResponseDict:
+def generate_tx_segment_nomenclature(tx_segment: Dict = Body()) -> ResponseDict:
     """
     Build transcript segment element nomenclature.
+    \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param tx_segment: element to build nomenclature for
@@ -93,7 +93,7 @@ def generate_tx_segment_nomenclature(
 
 
 @router.post(
-    "/nomenclature/templated_sequence",
+    "/api/nomenclature/templated_sequence",
     operation_id="templatedSequenceNomenclature",
     response_model=NomenclatureResponse,
     response_model_exclude_none=True,
@@ -101,8 +101,8 @@ def generate_tx_segment_nomenclature(
 def generate_templated_seq_nomenclature(
     request: Request, templated_sequence: Dict = Body()
 ) -> ResponseDict:
-    """
-    Build templated sequence element nomenclature.
+    """Build templated sequence element nomenclature.
+    \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param templated_sequence: element to build nomenclature for
@@ -133,14 +133,14 @@ def generate_templated_seq_nomenclature(
 
 
 @router.post(
-    "/nomenclature/gene",
+    "/api/nomenclature/gene",
     operation_id="geneNomenclature",
     response_model=NomenclatureResponse,
     response_model_exclude_none=True,
 )
 def generate_gene_nomenclature(gene_element: Dict = Body()) -> ResponseDict:
-    """
-    Build gene element nomenclature.
+    """Build gene element nomenclature.
+    \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param gene_element: element to build nomenclature for
@@ -167,7 +167,7 @@ def generate_gene_nomenclature(gene_element: Dict = Body()) -> ResponseDict:
 
 
 @router.post(
-    "/nomenclature/fusion",
+    "/api/nomenclature/fusion",
     operation_id="fusionNomenclature",
     response_model=NomenclatureResponse,
     response_model_exclude_none=True,
@@ -175,8 +175,8 @@ def generate_gene_nomenclature(gene_element: Dict = Body()) -> ResponseDict:
 def generate_fusion_nomenclature(
     request: Request, fusion: Dict = Body()
 ) -> ResponseDict:
-    """
-    Generate nomenclature for complete fusion.
+    """Generate nomenclature for complete fusion.
+    \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param fusion: provided fusion object (should be validly constructed)

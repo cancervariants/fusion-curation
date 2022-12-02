@@ -60,16 +60,13 @@ ClientFusion = Union[ClientCategoricalFusion, ClientAssayedFusion]
 def clientify_structural_element(
     element: ElementUnion,
     fusor_instance: FUSOR,
-    first: bool = False,
-    last: bool = False,
 ) -> ClientElementUnion:
     """
     Add fields required by client to structural element object.
+    \f
     :param element: a structural element object
     :param fusor_instance: instantiated FUSOR object, passed down from FastAPI request
         context
-    :param first: true if element is at 5' end in fusion
-    :param last: true if element is at 3' end in fusion
     :return: client-ready structural element
     """
     element_args = element.dict()
@@ -121,11 +118,8 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
     """
     fusion_args = fusion.dict()
     client_elements = []
-    last = len(fusion.structural_elements) - 1
-    for i, element in enumerate(fusion.structural_elements):
-        client_elements.append(
-            clientify_structural_element(element, fusor_instance, i == 0, i == last)
-        )
+    for element in fusion.structural_elements:
+        client_elements.append(clientify_structural_element(element, fusor_instance))
     fusion_args["structural_elements"] = client_elements
 
     if fusion.type == FUSORTypes.CATEGORICAL_FUSION:
@@ -144,13 +138,14 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
 
 
 @router.get(
-    "/demo/alk",
+    "/api/demo/alk",
     operation_id="alkDemo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
 )
 def get_alk(request: Request) -> DemoResponse:
     """Retrieve ALK assayed fusion.
+    \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     """
@@ -163,13 +158,14 @@ def get_alk(request: Request) -> DemoResponse:
 
 
 @router.get(
-    "/demo/ewsr1",
+    "/api/demo/ewsr1",
     operation_id="ewsr1Demo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
 )
 def get_ewsr1(request: Request) -> DemoResponse:
     """Retrieve EWSR1 assayed fusion.
+    \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     """
@@ -182,13 +178,14 @@ def get_ewsr1(request: Request) -> DemoResponse:
 
 
 @router.get(
-    "/demo/bcr_abl1",
+    "/api/demo/bcr_abl1",
     operation_id="bcrAbl1Demo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
 )
 def get_bcr_abl1(request: Request) -> DemoResponse:
     """Retrieve BCR-ABL1 categorical fusion.
+    \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     """
@@ -201,13 +198,14 @@ def get_bcr_abl1(request: Request) -> DemoResponse:
 
 
 @router.get(
-    "/demo/tpm3_ntrk1",
+    "/api/demo/tpm3_ntrk1",
     operation_id="tpm3Ntrk1Demo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
 )
 def get_tpm3_ntrk1(request: Request) -> DemoResponse:
     """Retrieve TPM3-NTRK1 assayed fusion.
+    \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     """
@@ -220,13 +218,14 @@ def get_tpm3_ntrk1(request: Request) -> DemoResponse:
 
 
 @router.get(
-    "/demo/tpm3_pdgfrb",
+    "/api/demo/tpm3_pdgfrb",
     operation_id="tpm3PdgfrbDemo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
 )
 def get_tpm3_pdgfrb(request: Request) -> DemoResponse:
     """Retrieve TPM3-PDGFRB assayed fusion.
+    \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     """
@@ -239,7 +238,7 @@ def get_tpm3_pdgfrb(request: Request) -> DemoResponse:
 
 
 @router.get(
-    "/demo/igh_myc",
+    "/api/demo/igh_myc",
     operation_id="ighMycDemo",
     response_model=DemoResponse,
     response_model_exclude_none=True,

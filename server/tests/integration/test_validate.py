@@ -206,7 +206,7 @@ async def check_validated_fusion_response(client, fixture: Dict, case_name: str)
     * FUSOR should provide a "fusion equality" utility function -- incorporate it here
       when that's done
     """
-    response = await client.post("/validate", json=fixture["input"])
+    response = await client.post("/api/validate", json=fixture["input"])
 
     assert response.status_code == 200, f"{case_name}: status code failed"
     response_json = response.json()

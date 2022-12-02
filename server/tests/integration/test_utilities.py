@@ -27,7 +27,7 @@ async def test_get_mane_transcript(check_response):
             assert matched, "Could not find matching result"
 
     await check_response(
-        "/utilities/get_transcripts?term=BRAF",
+        "/api/utilities/get_transcripts?term=BRAF",
         {
             "transcripts": [
                 {
@@ -68,7 +68,7 @@ async def test_get_mane_transcript(check_response):
     )
 
     await check_response(
-        "/utilities/get_transcripts?term=FAKE_GENE999",
+        "/api/utilities/get_transcripts?term=FAKE_GENE999",
         {"warnings": ["Normalization error: FAKE_GENE999"]},
         check_mane_response,
     )
@@ -91,7 +91,7 @@ async def test_get_genomic_coords(check_response):
         assert response["coordinates_data"] == expected_response["coordinates_data"]
 
     await check_response(
-        "/utilities/get_genomic?transcript=NM_002529.3&exon_start=1&exon_end=6",
+        "/api/utilities/get_genomic?transcript=NM_002529.3&exon_start=1&exon_end=6",
         {
             "coordinates_data": {
                 "gene": "NTRK1",
@@ -110,7 +110,7 @@ async def test_get_genomic_coords(check_response):
     )
 
     await check_response(
-        "/utilities/get_genomic?transcript=NM_002529.3&exon_start=1&exon_end=6&gene=FAKE_GENE",
+        "/api/utilities/get_genomic?transcript=NM_002529.3&exon_start=1&exon_end=6&gene=FAKE_GENE",  # noqa: E501
         {
             "warnings": [
                 "Unable to find a result where NM_002529.3 has transcript coordinates 56 and 268 between an exon's start and end coordinates on gene FAKE_GENE"  # noqa: E501
@@ -136,7 +136,7 @@ async def test_get_exon_coords(check_response):
         assert response["coordinates_data"] == expected_response["coordinates_data"]
 
     await check_response(
-        "/utilities/get_exon?chromosome=1&transcript=NM_152263.3&start=154192135&strand=-",  # noqa: E501
+        "/api/utilities/get_exon?chromosome=1&transcript=NM_152263.3&start=154192135&strand=-",  # noqa: E501
         {
             "coordinates_data": {
                 "gene": "TPM3",
@@ -152,7 +152,7 @@ async def test_get_exon_coords(check_response):
     )
 
     await check_response(
-        "/utilities/get_exon?chromosome=1",
+        "/api/utilities/get_exon?chromosome=1",
         {
             "warnings": [
                 "Must provide start and/or end coordinates",
@@ -163,7 +163,7 @@ async def test_get_exon_coords(check_response):
     )
 
     await check_response(
-        "/utilities/get_exon?chromosome=NC_000001.11&start=154192131&gene=TPM3",
+        "/api/utilities/get_exon?chromosome=NC_000001.11&start=154192131&gene=TPM3",
         {
             "warnings": [
                 "Unable to find mane data for NC_000001.11 with position 154192130 on gene TPM3"  # noqa: E501
@@ -190,7 +190,7 @@ async def test_get_sequence_id(check_response):
             assert set(response["aliases"]) == set(expected_response["aliases"])
 
     await check_response(
-        "/utilities/get_sequence_id?sequence=NC_000001.11",
+        "/api/utilities/get_sequence_id?sequence=NC_000001.11",
         {
             "sequence": "NC_000001.11",
             "ga4gh_sequence_id": "ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
@@ -234,7 +234,7 @@ async def test_get_sequence_id(check_response):
     )
 
     await check_response(
-        "/utilities/get_sequence_id?sequence=NP_001278445.11",
+        "/api/utilities/get_sequence_id?sequence=NP_001278445.11",
         {
             "sequence": "NP_001278445.11",
             "warnings": ["Identifier NP_001278445.11 could not be retrieved"],

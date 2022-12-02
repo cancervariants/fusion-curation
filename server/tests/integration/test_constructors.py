@@ -115,21 +115,21 @@ async def test_build_tx_segment_ect(
     coordinates and transcript.
     """
     await check_response(
-        "/construct/structural_element/tx_segment_ect?transcript=NM_002529.3&exon_start=2&exon_start_offset=1",  # noqa: E501
+        "/api/construct/structural_element/tx_segment_ect?transcript=NM_002529.3&exon_start=2&exon_start_offset=1",  # noqa: E501
         {"element": ntrk1_tx_element_start},
         check_tx_element_response,
     )
 
     # test require exon_start or exon_end
     await check_response(
-        "/construct/structural_element/tx_segment_ect?transcript=NM_002529.3",
+        "/api/construct/structural_element/tx_segment_ect?transcript=NM_002529.3",
         {"warnings": ["Must provide either `exon_start` or `exon_end`"]},
         check_tx_element_response,
     )
 
     # test handle invalid transcript
     await check_response(
-        "/construct/structural_element/tx_segment_ect?transcript=NM_0012529.3&exon_start=3",
+        "/api/construct/structural_element/tx_segment_ect?transcript=NM_0012529.3&exon_start=3",  # noqa: E501
         {"warnings": ["Unable to get exons for NM_0012529.3"]},
         check_tx_element_response,
     )
@@ -143,7 +143,7 @@ async def test_build_segment_gct(
     genomic coordinates and transcript.
     """
     await check_response(
-        "/construct/structural_element/tx_segment_gct?transcript=NM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",  # noqa: E501
+        "/api/construct/structural_element/tx_segment_gct?transcript=NM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",  # noqa: E501
         {"element": tpm3_tx_t_element},
         check_tx_element_response,
     )
@@ -157,7 +157,7 @@ async def test_build_segment_gcg(
     genomic coordinates and gene name.
     """
     await check_response(
-        "/construct/structural_element/tx_segment_gcg?gene=TPM3&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",  # noqa: E501
+        "/api/construct/structural_element/tx_segment_gcg?gene=TPM3&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",  # noqa: E501
         {"element": tpm3_tx_g_element},
         check_tx_element_response,
     )
@@ -167,7 +167,7 @@ async def test_build_segment_gcg(
 async def test_build_reg_element(check_response, check_reg_element_response):
     """Test correctness of regulatory element constructor endpoint."""
     await check_response(
-        "/construct/regulatory_element?element_class=promoter&gene_name=braf",
+        "/api/construct/regulatory_element?element_class=promoter&gene_name=braf",
         {
             "regulatory_element": {
                 "associated_gene": {
