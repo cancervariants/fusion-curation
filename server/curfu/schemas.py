@@ -1,7 +1,7 @@
 """Provide schemas for FastAPI responses."""
 from typing import List, Optional, Tuple, Union, Literal, Dict
 
-from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
+from pydantic import BaseModel, Field, StrictStr, StrictInt, validator, Extra
 from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 from fusor.models import (
     AssayedFusion,
@@ -224,10 +224,29 @@ class SequenceIDResponse(Response):
     aliases: Optional[List[StrictStr]]
 
 
+class ManeGeneTranscript(BaseModel):
+    """Base object containing MANE-provided gene transcript metadata"""
+
+    NCBI_GeneID: str = Field(..., alias="#NCBI_GeneID")
+    Ensembl_Gene: str
+    HGNC_ID: str
+    symbol: str
+    name: str
+    RefSeq_nuc: str
+    RefSeq_prot: str
+    Ensembl_nuc: str
+    Ensembl_prot: str
+    MANE_status: str
+    GRCh38_chr: str
+    chr_start: str
+    chr_end: str
+    chr_strand: str
+
+
 class GetTranscriptsResponse(Response):
     """Response model for MANE transcript retrieval endpoint."""
 
-    transcripts: Optional[List[Dict[StrictStr, Union[StrictStr, StrictInt]]]]
+    transcripts: Optional[List[ManeGeneTranscript]]
 
 
 class ServiceInfoResponse(Response):
