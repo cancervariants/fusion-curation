@@ -26,9 +26,10 @@ export type FusionType = AssayedFusion | CategoricalFusion;
 
 interface Props {
   index: number;
+  setVisibleTab: CallableFunction;
 }
 
-export const Summary: React.FC<Props> = () => {
+export const Summary: React.FC<Props> = ({ setVisibleTab }) => {
   const [validatedFusion, setValidatedFusion] = useState<
     AssayedFusion | CategoricalFusion | null
   >(null);
@@ -165,7 +166,10 @@ export const Summary: React.FC<Props> = () => {
       ) : (
         <>
           {validationErrors && validationErrors.length > 0 ? (
-            <Invalid validationErrors={validationErrors} />
+            <Invalid
+              validationErrors={validationErrors}
+              setVisibleTab={setVisibleTab}
+            />
           ) : (
             <></>
           )}

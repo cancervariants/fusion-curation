@@ -14,6 +14,7 @@ from curfu.schemas import (
     GetDomainResponse,
     ResponseDict,
 )
+from curfu.routers import parse_identifier
 from curfu.sequence_services import get_strand, InvalidInputException
 
 router = APIRouter()
@@ -27,9 +28,10 @@ router = APIRouter()
 )
 def build_gene_element(request: Request, term: str = Query("")) -> GeneElementResponse:
     """Construct valid gene element given user-provided term.
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+    \f
+    :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
-    :param str term: gene symbol/alias/name/etc
+    :param term: gene symbol/alias/name/etc
     :return: Pydantic class with gene element if successful and warnings otherwise
     """
     gene_element, warnings = request.app.state.fusor.gene_element(term)
@@ -56,18 +58,19 @@ async def build_tx_segment_ect(
 ) -> TxSegmentElementResponse:
     """Construct Transcript Segment element by providing transcript and exon
         coordinates. Either exon_start or exon_end are required.
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+    \f
+    :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
-    :param str transcript: transcript accession identifier
-    :param Optional[int] exon_start: number of starting exon, 0 by default
-    :param int exon_start_offset: offset from starting exon
-    :param Optional[int] exon_end: number of ending exon
-    :param int exon_end_offset: offset from ending exon, 0 by default
+    :param transcript: transcript accession identifier
+    :param exon_start: number of starting exon, 0 by default
+    :param exon_start_offset: offset from starting exon
+    :param exon_end: number of ending exon
+    :param exon_end_offset: offset from ending exon, 0 by default
     :return: Pydantic class with TranscriptSegment element if successful, and warnings
         otherwise.
     """
     tx_segment, warnings = await request.app.state.fusor.transcript_segment_element(
-        transcript=transcript,
+        transcript=parse_identifier(transcript),
         exon_start=exon_start,
         exon_start_offset=exon_start_offset,
         exon_end=exon_end,
@@ -92,12 +95,13 @@ async def build_tx_segment_gct(
 ) -> TxSegmentElementResponse:
     """Construct Transcript Segment element by providing transcript and genomic
     coordinates (chromosome, start, end positions).
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+    \f
+    :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
-    :param str transcript: transcript accession identifier
-    :param str chromosome: chromosome (TODO how to identify?)
-    :param int start: starting position (TODO assume residue-based?)
-    :param int end: ending position
+    :param transcript: transcript accession identifier
+    :param chromosome: chromosome (TODO how to identify?)
+    :param start: starting position (TODO assume residue-based?)
+    :param end: ending position
     :return: Pydantic class with TranscriptSegment element if successful, and
         warnings otherwise.
     """
@@ -112,8 +116,8 @@ async def build_tx_segment_gct(
         strand_validated = strand
     tx_segment, warnings = await request.app.state.fusor.transcript_segment_element(
         tx_to_genomic_coords=False,
-        transcript=transcript,
-        chromosome=chromosome,
+        transcript=parse_identifier(transcript),
+        chromosome=parse_identifier(chromosome),
         start=start,
         end=end,
         strand=strand_validated,
@@ -138,12 +142,13 @@ async def build_tx_segment_gcg(
 ) -> TxSegmentElementResponse:
     """Construct Transcript Segment element by providing gene and genomic
     coordinates (chromosome, start, end positions).
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+    \f
+    :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
-    :param str gene: gene (TODO how to identify?)
-    :param str chromosome: chromosome (TODO how to identify?)
-    :param int start: starting position (TODO assume residue-based?)
-    :param int end: ending position
+    :param gene: gene (TODO how to identify?)
+    :param chromosome: chromosome (TODO how to identify?)
+    :param start: starting position (TODO assume residue-based?)
+    :param end: ending position
     :return: Pydantic class with TranscriptSegment element if successful, and
         warnings otherwise.
     """
@@ -159,7 +164,7 @@ async def build_tx_segment_gcg(
     tx_segment, warnings = await request.app.state.fusor.transcript_segment_element(
         tx_to_genomic_coords=False,
         gene=gene,
-        chromosome=chromosome,
+        chromosome=parse_identifier(chromosome),
         strand=strand_validated,
         start=start,
         end=end,
@@ -178,12 +183,13 @@ def build_templated_sequence_element(
     request: Request, start: int, end: int, sequence_id: str, strand: str
 ) -> TemplatedSequenceElementResponse:
     """Construct templated sequence element
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+    \f
+    :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
-    :param int start: genomic starting position
-    :param int end: genomic ending position
-    :param str sequence_id: chromosome accession for sequence
-    :param str strand: chromosome strand - must be one of {'+', '-'}
+    :param start: genomic starting position
+    :param end: genomic ending position
+    :param sequence_id: chromosome accession for sequence
+    :param strand: chromosome strand - must be one of {'+', '-'}
     :return: Pydantic class with Templated Sequnce element if successful, or warnings
         otherwise
     """
@@ -196,7 +202,7 @@ def build_templated_sequence_element(
     element = request.app.state.fusor.templated_sequence_element(
         start=start,
         end=end,
-        sequence_id=sequence_id,
+        sequence_id=parse_identifier(sequence_id),
         strand=strand_n,
         add_location_id=True,
     )
@@ -220,17 +226,18 @@ def build_domain(
     end: int,
 ) -> ResponseDict:
     """Construct complete functional domain object given constitutive parameters.
+    \f
 
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+    :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
-    :param DomainStatus status: status of domain
-    :param str name: domain name (should match InterPro entry but not validated here)
-    :param str domain_id: InterPro ID (expected to be formatted as a CURIE)
-    :param str gene_id: normalized gene ID (expected to be formatted as a CURIE)
-    :param str sequence_id: associated protein sequence ID (expected to be refseq-style,
+    :param status: status of domain
+    :param name: domain name (should match InterPro entry but not validated here)
+    :param domain_id: InterPro ID (expected to be formatted as a CURIE)
+    :param gene_id: normalized gene ID (expected to be formatted as a CURIE)
+    :param sequence_id: associated protein sequence ID (expected to be refseq-style,
         but not validated, and namespace shouldn't be included)
-    :param int start: the domain's protein start position
-    :param int end: the domain's protein end position
+    :param start: the domain's protein start position
+    :param end: the domain's protein end position
     :return: complete domain or warning msg
     """
     response: ResponseDict = {}
@@ -257,6 +264,7 @@ def build_regulatory_element(
     request: Request, element_class: RegulatoryClass, gene_name: str
 ) -> ResponseDict:
     """Construct regulatory element from given params.
+    \f
     :param request: the HTTP request context, supplied by FastAPI. Used to access
         FUSOR and UTA-associated tools.
     :param element_class: type of regulatory element
