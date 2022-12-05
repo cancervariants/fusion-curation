@@ -42,8 +42,8 @@ async def test_get_mane_transcript(check_response):
                     "Ensembl_prot": "ENSP00000496776.1",
                     "MANE_status": "MANE Plus Clinical",
                     "GRCh38_chr": "7",
-                    "chr_start": 140719337,
-                    "chr_end": 140924929,
+                    "chr_start": "140719337",
+                    "chr_end": "140924929",
                     "chr_strand": "-",
                 },
                 {
@@ -58,8 +58,8 @@ async def test_get_mane_transcript(check_response):
                     "Ensembl_prot": "ENSP00000493543.1",
                     "MANE_status": "MANE Select",
                     "GRCh38_chr": "7",
-                    "chr_start": 140730665,
-                    "chr_end": 140924929,
+                    "chr_start": "140730665",
+                    "chr_end": "140924929",
                     "chr_strand": "-",
                 },
             ]
@@ -110,10 +110,10 @@ async def test_get_genomic_coords(check_response):
     )
 
     await check_response(
-        "/utilities/get_genomic?transcript=NM_002529.3&exon_start=1&exon_end=6&gene=FAKE_GENE",
+        "/utilities/get_genomic?transcript=NM_002529.3&exon_start=1&exon_end=6&gene=FAKE_GENE",  # noqa: E501
         {
             "warnings": [
-                "Unable to find a result where NM_002529.3 has transcript coordinates 56 and 268 between an exon's start and end coordinates on gene FAKE_GENE"  # noqa: E501
+                "Unable to find a result where NM_002529.3 has transcript coordinates 0 and 268 between an exon's start and end coordinates on gene FAKE_GENE"  # noqa: E501
             ]
         },
         check_genomic_coords_response,
@@ -180,12 +180,8 @@ async def test_get_sequence_id(check_response):
     def check_sequence_id_response(response: Dict, expected_response: Dict):
         """Provide to check_response to test specific response params"""
         assert response["sequence"] == expected_response["sequence"]
-        if response.get("ga4gh_sequence_id") or expected_response.get(
-            "ga4gh_sequence_id"
-        ):
-            assert (
-                response["ga4gh_sequence_id"] == expected_response["ga4gh_sequence_id"]
-            )
+        if response.get("ga4gh_id") or expected_response.get("ga4gh_id"):
+            assert response["ga4gh_id"] == expected_response["ga4gh_id"]
         if response.get("aliases") or expected_response.get("aliases"):
             assert set(response["aliases"]) == set(expected_response["aliases"])
 
@@ -193,41 +189,26 @@ async def test_get_sequence_id(check_response):
         "/utilities/get_sequence_id?sequence=NC_000001.11",
         {
             "sequence": "NC_000001.11",
-            "ga4gh_sequence_id": "ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+            "ga4gh_id": "ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
             "aliases": [
-                "GRCh38.p6:chr1",
                 "GRCh38:chr1",
-                "GRCh38.p2:1",
-                "GRCh38.p10:1",
-                "MD5:6aef897c3d6ff0c78aff06ac189178dd",
-                "GRCh38.p4:chr1",
-                "GRCh38.p10:chr1",
-                "GRCh38.p7:1",
-                "GRCh38.p8:chr1",
-                "sha512t24u:Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
-                "GRCh38.p3:1",
-                "GRCh38.p8:1",
-                "GRCh38.p2:chr1",
-                "GRCh38.p12:1",
-                "GRCh38.p5:1",
                 "GRCh38.p1:chr1",
-                "GRCh38.p11:1",
-                "GRCh38.p12:chr1",
-                "GRCh38.p6:1",
-                "SEGUID:FCUd6VJ6uikS/VWLbhGdVmj2rOA",
-                "GRCh38.p9:chr1",
-                "GRCh38.p1:1",
-                "NCBI:NC_000001.11",
+                "GRCh38.p10:chr1",
                 "GRCh38.p11:chr1",
-                "VMC:GS_Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
-                "refseq:NC_000001.11",
-                "GRCh38.p9:1",
-                "GRCh38:1",
-                "SHA1:14251de9527aba2912fd558b6e119d5668f6ace0",
-                "GRCh38.p5:chr1",
-                "GRCh38.p7:chr1",
+                "GRCh38.p12:chr1",
+                "GRCh38.p2:chr1",
                 "GRCh38.p3:chr1",
-                "GRCh38.p4:1",
+                "GRCh38.p4:chr1",
+                "GRCh38.p5:chr1",
+                "GRCh38.p6:chr1",
+                "GRCh38.p7:chr1",
+                "GRCh38.p8:chr1",
+                "GRCh38.p9:chr1",
+                "MD5:6aef897c3d6ff0c78aff06ac189178dd",
+                "SEGUID:FCUd6VJ6uikS/VWLbhGdVmj2rOA",
+                "SHA1:14251de9527aba2912fd558b6e119d5668f6ace0",
+                "VMC:GS_Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+                "sha512t24u:Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
             ],
         },
         check_sequence_id_response,
