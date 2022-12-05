@@ -180,7 +180,7 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
           )}
         </TabPanel>
         <TabPanel value={visibleTab} index={4}>
-          <Summary index={4} />
+          <Summary index={4} setVisibleTab={setVisibleTab} />
         </TabPanel>
       </div>
 
