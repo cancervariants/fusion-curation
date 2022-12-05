@@ -55,7 +55,7 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
 
         <Box className={`${classes.menuHeader} ${classes.menuLink}`}>
           <Typography color="inherit">
-            <b>External Resources</b>
+            <b>Resources</b>
           </Typography>
         </Box>
         <Box ml="10px">
@@ -66,6 +66,11 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
               color="inherit"
             >
               Gene Fusion Specification
+            </Link>
+          </Box>
+          <Box className={classes.menuLink}>
+            <Link href="/docs" target="_blank" color="inherit">
+              API
             </Link>
           </Box>
           <Box className={classes.menuLink}>
