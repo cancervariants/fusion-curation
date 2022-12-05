@@ -137,7 +137,6 @@ const RegElementForm: React.FC<Props> = ({
 
   return (
     <div>
-      <div>
         <FormControl>
           <InputLabel id="regulatory-element-class-label">Class</InputLabel>
           <HelpTooltip
@@ -159,8 +158,6 @@ const RegElementForm: React.FC<Props> = ({
             </Select>
           </HelpTooltip>
         </FormControl>
-      </div>
-      <div className="formInput">
         <GeneAutocomplete
           gene={gene}
           setGene={setGene}
@@ -168,7 +165,6 @@ const RegElementForm: React.FC<Props> = ({
           setGeneText={setGeneText}
           tooltipDirection="left"
         />
-      </div>
     </div>
   );
 };

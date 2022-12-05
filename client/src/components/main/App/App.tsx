@@ -165,7 +165,7 @@ const App = (): JSX.Element => {
       return true;
     } else if (fusion.structural_elements.length > 0) {
       return false;
-    } else if (fusion.regulatory_element) {
+    } else if (fusion.regulatory_element !== undefined) {
       return false;
     } else if (fusion.type == "AssayedFusion") {
       if (

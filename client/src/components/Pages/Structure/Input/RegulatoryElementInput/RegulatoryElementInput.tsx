@@ -37,11 +37,7 @@ RegulatoryElementInputProps
 
   const inputElements = (
     <>
-      <div className="top-inputs">
-        <RegElement />
-      </div>
-      <div className="bottom-inputs">
-      </div>
+      <RegElement />
     </>
   );
 

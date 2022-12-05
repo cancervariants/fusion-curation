@@ -14,44 +14,6 @@ interface Props {
 }
 
 export const RegElement: React.FC<Props> = () => {
-  const { colorTheme } = useColorTheme();
-  const useStyles = makeStyles(() => ({
-    pageContainer: {
-      display: "flex",
-      flexDirection: "column",
-      height: "100%",
-      alignItems: "stretch",
-    },
-    leftColumn: {
-      width: "50%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: colorTheme["--light-gray"],
-    },
-    descriptionContainer: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      paddingBottom: "40px",
-    },
-    descriptionMain: {
-      width: "70%",
-    },
-    descriptionSubText: {
-      marginTop: "20px",
-      width: "70%",
-    },
-    rightColumn: {
-      display: "flex",
-      flexDirection: "column",
-      width: "50%",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-  }));
-  const classes = useStyles();
-
   const { fusion, setFusion } = useContext(FusionContext);
   const [regElement, setRegElement] = useState<
     ClientRegulatoryElement | undefined

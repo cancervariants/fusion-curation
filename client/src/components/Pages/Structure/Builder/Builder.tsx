@@ -30,7 +30,7 @@ import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import LinkIcon from "@mui/icons-material/Link";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import RegulatoryElementInput from "../Input/RegulatoryElementInput/RegulatoryElementInput";
-import { Box, Typography } from "@material-ui/core";
+import { Box, Divider, Typography } from "@material-ui/core";
 import { MARGIN_OFFSETS } from "../../../../global/styles/theme";
 import HelpTooltip from "../../../main/shared/HelpTooltip/HelpTooltip";
 
@@ -438,7 +438,7 @@ const Builder: React.FC = () => {
                                 >
                                   <Box
                                     ref={provided.innerRef}
-                                    className={`option-item ${type}`}
+                                    className={"option-item" + (type === ElementType.regulatoryElement && fusion.regulatory_element !== undefined ? " disabled_reg_element" : "")}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
                                     style={{
@@ -500,9 +500,12 @@ const Builder: React.FC = () => {
                     Drag elements here
                   </h2>
                   {fusion.regulatory_element && 
-                    <Box className={`block ${fusion?.regulatory_element?.type}`}>
-                      {renderElement(fusion?.regulatory_element, 0)}
-                    </Box>
+                    <>
+                      <Box className={`block ${fusion?.regulatory_element?.type}`}>
+                        {renderElement(fusion?.regulatory_element, 0)}
+                      </Box>
+                      <Divider orientation="vertical" style={{width: "2px"}} />
+                    </>
                   }
                   {fusion.structural_elements?.map(
                     (element: ClientElementUnion, index: number) => {

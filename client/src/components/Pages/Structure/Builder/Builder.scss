@@ -118,6 +118,11 @@
     }
   }
 
+  .disabled_reg_element {
+    background-color: var(--dark-gray) !important;
+    cursor: not-allowed;
+  }
+
   .card-parent {
     display: flex;
     flex-direction: row;
