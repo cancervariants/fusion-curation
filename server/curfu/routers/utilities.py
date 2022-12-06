@@ -40,13 +40,47 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
     elif not normalized.gene_descriptor.gene_id.lower().startswith("hgnc"):
         return {"warnings": [f"No HGNC symbol: {term}"]}
     symbol = normalized.gene_descriptor.label
-    transcripts = request.app.state.fusor.cool_seq_tool.mane_transcript_mappings.get_gene_mane_data(  # noqa: E501
+    retrieved_transcripts = request.app.state.fusor.cool_seq_tool.mane_transcript_mappings.get_gene_mane_data(  # noqa: E501
         symbol
     )
-    if not transcripts:
+    if not retrieved_transcripts:
         return {"warnings": [f"No matching transcripts: {term}"]}
     else:
-        return {"transcripts": transcripts}
+        response = {"transcripts": {"mane_select": None, "mane_plus_clinical": None}}
+        for t in retrieved_transcripts:
+            gene = {
+                "ncbi_id": f"ncbi.gene:{t['#NCBI_GeneID'].split(':')[1]}",
+                "ensembl_id": f"ensembl:{t['Ensembl_Gene']}",
+                "hgnc_id": t["HGNC_ID"],
+                "symbol": t["symbol"],
+                "name": t["name"],
+            }
+            if "gene" in response["transcripts"]:
+                if gene != response["transcripts"]["gene"]:
+                    raise Exception
+            else:
+                response["transcripts"]["gene"] = gene  # type: ignore
+            transcript = {
+                "refseq_accessions": {
+                    "nuclear": t["RefSeq_nuc"],
+                    "protein": t["RefSeq_prot"],
+                },
+                "ensembl_accessions": {
+                    "nuclear": t["Ensembl_nuc"],
+                    "protein": t["Ensembl_prot"],
+                },
+                "grch38_coords": {
+                    "chromosome": t["GRCh38_chr"],
+                    "start": t["chr_start"],
+                    "end": t["chr_end"],
+                    "strand": t["chr_strand"],
+                },
+            }
+            if t["MANE_status"] == "MANE Plus Clinical":
+                response["transcripts"]["mane_plus_clinical"] = transcript  # type: ignore  # noqa: E501
+            else:
+                response["transcripts"]["mane_select"] = transcript  # type: ignore
+        return response
 
 
 @router.get(
@@ -247,8 +281,10 @@ async def get_sequence(
     try:
         request.app.state.fusor.cool_seq_tool.get_fasta_file(sequence_id, Path(path))
     except KeyError:
-        resp = request.app.state.fusor.cool_seq_tool.seqrepo_access.translate_identifier(
-            sequence_id, "refseq"
+        resp = (
+            request.app.state.fusor.cool_seq_tool.seqrepo_access.translate_identifier(
+                sequence_id, "refseq"
+            )
         )
         if len(resp[0]) < 1:
             raise HTTPException(
@@ -257,7 +293,9 @@ async def get_sequence(
         else:
             try:
                 new_seq_id = resp[0][0].split(":")[1]
-                request.app.state.fusor.cool_seq_tool.get_fasta_file(new_seq_id, Path(path))
+                request.app.state.fusor.cool_seq_tool.get_fasta_file(
+                    new_seq_id, Path(path)
+                )
             except KeyError:
                 raise HTTPException(
                     status_code=404,

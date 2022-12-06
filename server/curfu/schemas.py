@@ -1,7 +1,7 @@
 """Provide schemas for FastAPI responses."""
 from typing import List, Optional, Tuple, Union, Literal, Dict
 
-from pydantic import BaseModel, Field, StrictStr, StrictInt, validator, Extra
+from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
 from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 from fusor.models import (
     AssayedFusion,
@@ -224,29 +224,64 @@ class SequenceIDResponse(Response):
     aliases: Optional[List[StrictStr]]
 
 
-class ManeGeneTranscript(BaseModel):
-    """Base object containing MANE-provided gene transcript metadata"""
+class ManeAccessions(BaseModel):
+    """zzz"""
 
-    NCBI_GeneID: str = Field(..., alias="#NCBI_GeneID")
-    Ensembl_Gene: str
-    HGNC_ID: str
+    nuclear: str
+    protein: str
+
+
+class ManeGrch38Coords(BaseModel):
+    """zzz"""
+
+    chromosome: str
+    start: int
+    end: int
+    strand: str
+
+
+class ManeGene(BaseModel):
+    """zzz"""
+
+    ncbi_id: CURIE
+    ensembl_id: str
+    hgnc_id: CURIE
     symbol: str
     name: str
-    RefSeq_nuc: str
-    RefSeq_prot: str
-    Ensembl_nuc: str
-    Ensembl_prot: str
-    MANE_status: str
-    GRCh38_chr: str
-    chr_start: str
-    chr_end: str
-    chr_strand: str
+
+
+class ManeBase(BaseModel):
+    """zzz"""
+
+    refseq_accessions: ManeAccessions
+    ensembl_accessions: ManeAccessions
+    grch38_coords: ManeGrch38Coords
+
+
+class ManePlusClinical(ManeBase):
+    """zzz"""
+
+    mane_type: str = "MANE Plus Clinical"
+
+
+class ManeSelect(ManeBase):
+    """zzz"""
+
+    mane_type: str = "MANE Select"
+
+
+class ManeTranscripts(BaseModel):
+    """zzz"""
+
+    gene: ManeGene
+    mane_plus_clinical: Optional[ManePlusClinical]
+    mane_select: Optional[ManeSelect]
 
 
 class GetTranscriptsResponse(Response):
     """Response model for MANE transcript retrieval endpoint."""
 
-    transcripts: Optional[List[ManeGeneTranscript]]
+    transcripts: Optional[ManeTranscripts]
 
 
 class ServiceInfoResponse(Response):
