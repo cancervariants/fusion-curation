@@ -5,7 +5,6 @@ import {
   Box,
   Container,
   makeStyles,
-  Paper,
   Table,
   TableContainer,
   Typography,
@@ -13,6 +12,8 @@ import {
   TableRow,
   TableCell,
   Link,
+  Tooltip,
+  Button,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import React, { useEffect, useState } from "react";
@@ -27,6 +28,9 @@ import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
 import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
 import TabHeader from "../../main/shared/TabHeader/TabHeader";
 import TabPaper from "../../main/shared/TabPaper/TabPaper";
+import AssignmentIcon from "@material-ui/icons/Assignment";
+import copy from "clipboard-copy";
+import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
 
 export const GetTranscripts: React.FC = () => {
   const [gene, setGene] = useState("");
@@ -34,6 +38,8 @@ export const GetTranscripts: React.FC = () => {
 
   const [transcripts, setTranscripts] = useState<ManeGeneTranscript[]>([]);
   const [transcriptWarnings, setTranscriptWarnings] = useState<string[]>([]);
+
+  const [isCopied, setIsCopied] = useState<boolean>(false);
 
   const { colorTheme } = useColorTheme();
   const useStyles = makeStyles(() => ({
@@ -60,6 +66,15 @@ export const GetTranscripts: React.FC = () => {
     },
     txAccordionTop: {
       color: colorTheme["--primary"],
+    },
+    resultsContainer: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    },
+    copyButton: {
+      marginTop: "20px",
+      width: "100px",
     },
   }));
   const classes = useStyles();
@@ -115,13 +130,21 @@ export const GetTranscripts: React.FC = () => {
     </>
   );
 
+  const handleCopy = async () => {
+    copy(JSON.stringify(transcripts, null, 2));
+    setIsCopied(true);
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    await sleep(1500);
+    setIsCopied(false);
+  };
+
   const renderTranscripts = () => {
     if (transcriptWarnings.length > 0) {
       // TODO more error handling here
       return <Box>{JSON.stringify(transcriptWarnings, null, 2)}</Box>;
     } else if (transcripts.length > 0) {
       return (
-        <div>
+        <Box className={classes.resultsContainer}>
           <Container className={classes.txAccordionContainer}>
             <Accordion defaultExpanded>
               <AccordionSummary
@@ -192,7 +215,18 @@ export const GetTranscripts: React.FC = () => {
               </Container>
             );
           })}
-        </div>
+          <Button
+            startIcon={
+              !isCopied ? <AssignmentIcon /> : <AssignmentTurnedInIcon />
+            }
+            color="primary"
+            variant="contained"
+            className={classes.copyButton}
+            onClick={handleCopy}
+          >
+            {!isCopied ? "Copy" : "Copied!"}
+          </Button>
+        </Box>
       );
     } else {
       return <></>;
