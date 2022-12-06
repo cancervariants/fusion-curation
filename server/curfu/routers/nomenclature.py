@@ -70,9 +70,7 @@ def generate_regulatory_element_nomenclature(
     response_model=NomenclatureResponse,
     response_model_exclude_none=True,
 )
-def generate_tx_segment_nomenclature(
-    tx_segment: Dict = Body()
-) -> ResponseDict:
+def generate_tx_segment_nomenclature(tx_segment: Dict = Body()) -> ResponseDict:
     """
     Build transcript segment element nomenclature.
     :param request: the HTTP request context, supplied by FastAPI. Use to access

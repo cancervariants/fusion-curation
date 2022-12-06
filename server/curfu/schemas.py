@@ -302,6 +302,7 @@ class ClientCategoricalFusion(CategoricalFusion):
     global FusionContext.
     """
 
+    regulatory_element: Optional[ClientRegulatoryElement] = None
     structural_elements: List[
         Union[
             ClientTranscriptSegmentElement,
@@ -319,6 +320,7 @@ class ClientAssayedFusion(AssayedFusion):
     global FusionContext.
     """
 
+    regulatory_element: Optional[ClientRegulatoryElement] = None
     structural_elements: List[
         Union[
             ClientTranscriptSegmentElement,
