@@ -381,12 +381,6 @@ export interface MultiplePossibleGenesElement {
 /**
  * Define FunctionalDomain class
  */
-export interface RegulatoryElement {
-  type?: "RegulatoryElement";
-}
-/**
- * Define FunctionalDomain class
- */
 export interface FunctionalDomain {
   type?: "FunctionalDomain";
   status: DomainStatus;
@@ -502,12 +496,6 @@ export interface ClientMultiplePossibleGenesElement {
   element_id: string;
   nomenclature: string;
   type?: "MultiplePossibleGenesElement";
-}
-/**
- * Define FunctionalDomain class
- */
- export interface ClientRegulatoryElement {
-  type?: "RegulatoryElement";
 }
 /**
  * Define functional domain object used client-side.

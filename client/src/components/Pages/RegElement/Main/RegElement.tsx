@@ -14,18 +14,6 @@ interface Props {
 }
 
 export const RegElement: React.FC<Props> = () => {
-  const { fusion, setFusion } = useContext(FusionContext);
-  const [regElement, setRegElement] = useState<
-    ClientRegulatoryElement | undefined
-  >(fusion.regulatory_element);
-
-  const [elementClass, setElementClass] = useState<RegulatoryClass | "default">(
-    regElement?.regulatory_class || "default"
-  );
-  const [gene, setGene] = useState<string>(
-    regElement?.associated_gene?.label || ""
-  );
-  const [geneText, setGeneText] = useState<string>("");
 
   /**
    * Remove regulatory element submitted by user and wipe input fields.

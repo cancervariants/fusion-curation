@@ -198,10 +198,6 @@ const Builder: React.FC = () => {
     setFusion({ ...fusion, ...{ structural_elements: items } });
   };
 
-  const handleDeleteRegElement = () => {
-    setFusion({ ...fusion, ...{ regulatory_element: undefined }})
-  }
-
   const elementNameMap = {
     GeneElement: {
       name: "Gene",
@@ -395,7 +391,7 @@ const Builder: React.FC = () => {
         return (
           <RegulatoryElementInput
             icon={elementNameMap[ElementType.regulatoryElement].icon}
-            {...{ element, index, handleDelete: handleDeleteRegElement, handleSave }}
+            {...{ element, index, handleSave }}
           />
         );
     }
