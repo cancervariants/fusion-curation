@@ -29,40 +29,54 @@ async def test_get_mane_transcript(check_response):
     await check_response(
         "/utilities/get_transcripts?term=BRAF",
         {
-            "transcripts": [
-                {
-                    "#NCBI_GeneID": "GeneID:673",
-                    "Ensembl_Gene": "ENSG00000157764.14",
-                    "HGNC_ID": "HGNC:1097",
-                    "symbol": "BRAF",
-                    "name": "B-Raf proto-oncogene, serine/threonine kinase",
-                    "RefSeq_nuc": "NM_001374258.1",
-                    "RefSeq_prot": "NP_001361187.1",
-                    "Ensembl_nuc": "ENST00000644969.2",
-                    "Ensembl_prot": "ENSP00000496776.1",
-                    "MANE_status": "MANE Plus Clinical",
-                    "GRCh38_chr": "7",
-                    "chr_start": "140719337",
-                    "chr_end": "140924929",
-                    "chr_strand": "-",
+            "gene": {
+                "id": "normalize.gene:BRAF",
+                "type": "GeneDescriptor",
+                "label": "BRAF",
+                "xrefs": ["ncbi.gene:673", "ensembl:ENSG00000157764.14"],
+                "extensions": [
+                    {
+                        "type": "Extension",
+                        "name": "approved_name",
+                        "value": "B-Raf proto-oncogene, serine/threonine kinase",
+                    }
+                ],
+                "gene_id": "HGNC:1097",
+            },
+            "mane_plus_clinical_tx": {
+                "refseq_accessions": {
+                    "nuclear": "NM_001374258.1",
+                    "protein": "NP_001361187.1",
                 },
-                {
-                    "#NCBI_GeneID": "GeneID:673",
-                    "Ensembl_Gene": "ENSG00000157764.14",
-                    "HGNC_ID": "HGNC:1097",
-                    "symbol": "BRAF",
-                    "name": "B-Raf proto-oncogene, serine/threonine kinase",
-                    "RefSeq_nuc": "NM_004333.6",
-                    "RefSeq_prot": "NP_004324.2",
-                    "Ensembl_nuc": "ENST00000646891.2",
-                    "Ensembl_prot": "ENSP00000493543.1",
-                    "MANE_status": "MANE Select",
-                    "GRCh38_chr": "7",
-                    "chr_start": "140730665",
-                    "chr_end": "140924929",
-                    "chr_strand": "-",
+                "ensembl_accessions": {
+                    "nuclear": "ENST00000644969.2",
+                    "protein": "ENSP00000496776.1",
                 },
-            ]
+                "grch38_coords": {
+                    "chromosome": "7",
+                    "start": 140719337,
+                    "end": 140924929,
+                    "strand": "-",
+                },
+                "mane_type": "MANE Plus Clinical",
+            },
+            "mane_select_tx": {
+                "refseq_accessions": {
+                    "nuclear": "NM_004333.6",
+                    "protein": "NP_004324.2",
+                },
+                "ensembl_accessions": {
+                    "nuclear": "ENST00000646891.2",
+                    "protein": "ENSP00000493543.1",
+                },
+                "grch38_coords": {
+                    "chromosome": "7",
+                    "start": 140730665,
+                    "end": 140924929,
+                    "strand": "-",
+                },
+                "mane_type": "MANE Select",
+            },
         },
         check_mane_response,
     )

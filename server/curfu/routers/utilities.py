@@ -6,6 +6,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, Request, Query, HTTPException
 from fastapi.responses import FileResponse
+from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor, Extension
 from starlette.background import BackgroundTasks
 from gene import schemas as GeneSchemas
 
@@ -46,20 +47,26 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
     if not retrieved_transcripts:
         return {"warnings": [f"No matching transcripts: {term}"]}
     else:
-        response = {"transcripts": {"mane_select": None, "mane_plus_clinical": None}}
+        response = {"mane_select_tx": None, "mane_plus_clinical_tx": None}
         for t in retrieved_transcripts:
-            gene = {
-                "ncbi_id": f"ncbi.gene:{t['#NCBI_GeneID'].split(':')[1]}",
-                "ensembl_id": f"ensembl:{t['Ensembl_Gene']}",
-                "hgnc_id": t["HGNC_ID"],
-                "symbol": t["symbol"],
-                "name": t["name"],
-            }
-            if "gene" in response["transcripts"]:
-                if gene != response["transcripts"]["gene"]:
+            gene = GeneDescriptor(
+                id=f"normalize.gene:{term}",
+                label=normalized.gene_descriptor.label,
+                description=None,
+                xrefs=[
+                    f"ncbi.gene:{t['#NCBI_GeneID'].split(':')[1]}",
+                    f"ensembl:{t['Ensembl_Gene']}",
+                ],
+                alternate_labels=None,
+                gene_id=t["HGNC_ID"],
+                gene=None,
+                extensions=[Extension(name="approved_name", value=t["name"])],
+            )
+            if response.get("gene"):
+                if gene.dict() != response["gene"].dict():
                     raise Exception
             else:
-                response["transcripts"]["gene"] = gene  # type: ignore
+                response["gene"] = gene  # type: ignore
             transcript = {
                 "refseq_accessions": {
                     "nuclear": t["RefSeq_nuc"],
@@ -77,9 +84,9 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
                 },
             }
             if t["MANE_status"] == "MANE Plus Clinical":
-                response["transcripts"]["mane_plus_clinical"] = transcript  # type: ignore  # noqa: E501
+                response["mane_plus_clinical_tx"] = transcript  # type: ignore  # noqa: E501
             else:
-                response["transcripts"]["mane_select"] = transcript  # type: ignore
+                response["mane_select_tx"] = transcript  # type: ignore
         return response
 
 

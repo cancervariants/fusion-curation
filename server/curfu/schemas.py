@@ -2,7 +2,7 @@
 from typing import List, Optional, Tuple, Union, Literal, Dict
 
 from pydantic import BaseModel, StrictStr, StrictInt, validator, Extra
-from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
+from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE, GeneDescriptor
 from fusor.models import (
     AssayedFusion,
     CategoricalFusion,
@@ -270,18 +270,12 @@ class ManeSelect(ManeBase):
     mane_type: str = "MANE Select"
 
 
-class ManeTranscripts(BaseModel):
-    """zzz"""
-
-    gene: ManeGene
-    mane_plus_clinical: Optional[ManePlusClinical]
-    mane_select: Optional[ManeSelect]
-
-
 class GetTranscriptsResponse(Response):
     """Response model for MANE transcript retrieval endpoint."""
 
-    transcripts: Optional[ManeTranscripts]
+    gene: Optional[GeneDescriptor]
+    mane_plus_clinical_tx: Optional[ManePlusClinical]
+    mane_select_tx: Optional[ManeSelect]
 
 
 class ServiceInfoResponse(Response):
