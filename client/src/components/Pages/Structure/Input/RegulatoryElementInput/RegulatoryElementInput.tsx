@@ -1,11 +1,8 @@
-import React, { useState, useEffect, KeyboardEvent, useContext } from "react";
-import { TextField, Box } from "@material-ui/core";
+import React, { useState, useEffect, useContext } from "react";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
-import { ClientRegulatoryElement, ClientTemplatedSequenceElement, RegulatoryClass, RegulatoryElement } from "../../../../../services/ResponseModels";
+import { ClientRegulatoryElement, RegulatoryClass } from "../../../../../services/ResponseModels";
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
-import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 import RegElementForm from "../../../RegElement/RegElementForm/RegElementForm";
-import { RegElement } from "../../../RegElement/Main/RegElement";
 import { getRegElementNomenclature, getRegulatoryElement } from "../../../../../services/main";
 import { FusionContext } from "../../../../../global/contexts/FusionContext";
 
@@ -45,14 +42,11 @@ interface RegulatoryElementInputProps
 
 const RegulatoryElementInput: React.FC<
 RegulatoryElementInputProps
-> = ({ element, index, handleSave, handleDelete, icon }) => {
-  const [inputError, setInputError] = useState<string>("");
+> = ({ element, icon }) => {
   const { fusion, setFusion } = useContext(FusionContext);
   const [regElement, setRegElement] = useState<
     ClientRegulatoryElement | undefined
   >(fusion.regulatory_element);
-
-  console.log(fusion.regulatory_element)
 
   const [elementClass, setElementClass] = useState<RegulatoryClass | "default">(
     regElement?.regulatory_class || "default"
@@ -62,7 +56,7 @@ RegulatoryElementInputProps
   );
   const [geneText, setGeneText] = useState<string>("");
   
-  const validated = gene !== "" && geneText == "";
+  const validated = gene !== "" && geneText == "" && elementClass !== "default";
   const [expanded, setExpanded] = useState<boolean>(!validated);
 
   useEffect(() => {
@@ -71,12 +65,7 @@ RegulatoryElementInputProps
 
   const handleAdd = () => {
     if (elementClass === "default") return;
-    console.log("handling add reg element")
-    console.log(elementClass)
-    console.log(gene)
     getRegulatoryElement(elementClass, gene).then((reResponse) => {
-      console.log("reg el response")
-      console.log(reResponse)
       if (reResponse.warnings && reResponse.warnings.length > 0) {
         throw new Error(reResponse.warnings[0]);
       }
@@ -95,8 +84,6 @@ RegulatoryElementInputProps
           };
           setRegElement(newRegElement);
           setFusion({ ...fusion, ...{ regulatory_element: newRegElement } });
-          console.log("new element")
-          console.log(newRegElement)
         }
       );
     });
@@ -111,20 +98,6 @@ RegulatoryElementInputProps
     setGene("");
     setGeneText("");
   }
-
-
-  // TODO: implement validation
-  // useEffect(() => {
-  //   if (inputComplete) {
-  //     buildTemplatedSequenceElement();
-  //   }
-  // }, [chromosome, strand, startPosition, endPosition]);
-
-  const handleEnterKey = (e: KeyboardEvent) => {
-    if (e.key == "Enter" && validated) {
-      setExpanded(false);
-    }
-  };
 
   const inputElements = (
     <>

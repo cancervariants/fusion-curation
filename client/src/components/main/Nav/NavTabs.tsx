@@ -5,7 +5,6 @@ import { FusionContext } from "../../../global/contexts/FusionContext";
 
 // Pages
 import { Structure } from "../../Pages/Structure/Main/Structure";
-import { RegElement } from "../../Pages/RegElement/Main/RegElement";
 import { Summary } from "../../Pages/Summary/Main/Summary";
 import { Domain } from "../../Pages/Domains/Main/Domains";
 import { ReadingFrame } from "../../Pages/ReadingFrame/ReadingFrame";

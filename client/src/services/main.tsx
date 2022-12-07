@@ -414,7 +414,6 @@ export const getRegulatoryElement = async (
     `/construct/regulatory_element?element_class=${regulatoryClass}&gene_name=${geneName}`
   );
   const responseJson = await response.json();
-  console.log(response)
   return responseJson;
 };
 
