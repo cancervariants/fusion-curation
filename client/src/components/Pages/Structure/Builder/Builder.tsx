@@ -319,7 +319,6 @@ const Builder: React.FC = () => {
   };
 
   const onDragEnd = (result: DropResult) => {
-    console.log(result)
     const { source, destination, draggableId } = result;
     if (destination && destination.droppableId === source.droppableId && !draggableId.includes("RegulatoryElement")) {
       reorder(result);

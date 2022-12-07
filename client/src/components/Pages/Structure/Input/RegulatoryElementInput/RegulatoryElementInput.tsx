@@ -71,7 +71,12 @@ RegulatoryElementInputProps
 
   const handleAdd = () => {
     if (elementClass === "default") return;
+    console.log("handling add reg element")
+    console.log(elementClass)
+    console.log(gene)
     getRegulatoryElement(elementClass, gene).then((reResponse) => {
+      console.log("reg el response")
+      console.log(reResponse)
       if (reResponse.warnings && reResponse.warnings.length > 0) {
         throw new Error(reResponse.warnings[0]);
       }
@@ -89,6 +94,9 @@ RegulatoryElementInputProps
             nomenclature: nomenclatureResponse.nomenclature,
           };
           setRegElement(newRegElement);
+          setFusion({ ...fusion, ...{ regulatory_element: newRegElement } });
+          console.log("new element")
+          console.log(newRegElement)
         }
       );
     });
