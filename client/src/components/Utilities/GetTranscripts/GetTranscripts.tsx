@@ -12,7 +12,6 @@ import {
   TableRow,
   TableCell,
   Link,
-  Tooltip,
   Button,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -20,8 +19,10 @@ import React, { useEffect, useState } from "react";
 import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
 import { getTranscripts } from "../../../services/main";
 import {
+  GeneDescriptor,
   GetTranscriptsResponse,
-  ManeGeneTranscript,
+  ManePlusClinical,
+  ManeSelect,
 } from "../../../services/ResponseModels";
 import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
@@ -36,7 +37,12 @@ export const GetTranscripts: React.FC = () => {
   const [gene, setGene] = useState("");
   const [geneText, setGeneText] = useState("");
 
-  const [transcripts, setTranscripts] = useState<ManeGeneTranscript[]>([]);
+  // const [transcripts, setTranscripts] = useState<[]>([]);
+  const [geneDescriptor, setGeneDescriptor] = useState<GeneDescriptor | null>(
+    null
+  );
+  const [manePlusTx, setManePlusTx] = useState<ManePlusClinical | null>(null);
+  const [maneSelectTx, setManeSelectTx] = useState<ManeSelect | null>(null);
   const [transcriptWarnings, setTranscriptWarnings] = useState<string[]>([]);
 
   const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -91,10 +97,16 @@ export const GetTranscripts: React.FC = () => {
     getTranscripts(gene).then((transcriptsResponse: GetTranscriptsResponse) => {
       if (transcriptsResponse.warnings) {
         setTranscriptWarnings(transcriptsResponse.warnings);
-        setTranscripts([]);
+        setGeneDescriptor(null);
+        setManePlusTx(null);
+        setManeSelectTx(null);
       } else {
         setTranscriptWarnings([]);
-        setTranscripts(transcriptsResponse.transcripts as ManeGeneTranscript[]);
+        setGeneDescriptor(transcriptsResponse.gene as GeneDescriptor);
+        setManePlusTx(
+          transcriptsResponse.mane_plus_clinical_tx as ManePlusClinical
+        );
+        setManeSelectTx(transcriptsResponse.mane_select_tx as ManeSelect);
       }
     });
   };
@@ -131,7 +143,17 @@ export const GetTranscripts: React.FC = () => {
   );
 
   const handleCopy = async () => {
-    copy(JSON.stringify(transcripts, null, 2));
+    copy(
+      JSON.stringify(
+        {
+          gene: geneDescriptor,
+          mane_plus_clinical_tx: manePlusTx,
+          mane_select_tx: maneSelectTx,
+        },
+        null,
+        2
+      )
+    );
     setIsCopied(true);
     const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
     await sleep(1500);

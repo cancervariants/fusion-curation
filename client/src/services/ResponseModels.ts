@@ -395,7 +395,7 @@ export interface FunctionalDomain {
  */
 export interface ClientAssayedFusion {
   type?: "AssayedFusion";
-  regulatory_element?: RegulatoryElement;
+  regulatory_element?: ClientRegulatoryElement;
   structural_elements: (
     | ClientTranscriptSegmentElement
     | ClientGeneElement
@@ -405,6 +405,18 @@ export interface ClientAssayedFusion {
   )[];
   causative_event: CausativeEvent;
   assay: Assay;
+}
+/**
+ * Define regulatory element object used client-side.
+ */
+export interface ClientRegulatoryElement {
+  type?: "RegulatoryElement";
+  regulatory_class: RegulatoryClass;
+  feature_id?: string;
+  associated_gene?: GeneDescriptor;
+  feature_location?: LocationDescriptor;
+  display_class: string;
+  nomenclature: string;
 }
 /**
  * TranscriptSegment element class used client-side.
@@ -478,7 +490,7 @@ export interface ClientUnknownGeneElement {
  */
 export interface ClientCategoricalFusion {
   type?: "CategoricalFusion";
-  regulatory_element?: RegulatoryElement;
+  regulatory_element?: ClientRegulatoryElement;
   structural_elements: (
     | ClientTranscriptSegmentElement
     | ClientGeneElement
@@ -508,18 +520,6 @@ export interface ClientFunctionalDomain {
   label?: string;
   sequence_location?: LocationDescriptor;
   domain_id: string;
-}
-/**
- * Define regulatory element object used client-side.
- */
-export interface ClientRegulatoryElement {
-  type?: "RegulatoryElement";
-  regulatory_class: RegulatoryClass;
-  feature_id?: string;
-  associated_gene?: GeneDescriptor;
-  feature_location?: LocationDescriptor;
-  display_class: string;
-  nomenclature: string;
 }
 /**
  * Abstract class to provide identification properties used by client.
@@ -587,26 +587,61 @@ export interface GetDomainResponse {
  */
 export interface GetTranscriptsResponse {
   warnings?: string[];
-  transcripts?: ManeGeneTranscript[];
+  gene?: GeneDescriptor;
+  mane_plus_clinical_tx?: ManePlusClinical;
+  mane_select_tx?: ManeSelect;
 }
 /**
- * Base object containing MANE-provided gene transcript metadata
+ * zzz
  */
-export interface ManeGeneTranscript {
-  "#NCBI_GeneID": string;
-  Ensembl_Gene: string;
-  HGNC_ID: string;
+export interface ManePlusClinical {
+  refseq_accessions: ManeAccessions;
+  ensembl_accessions: ManeAccessions;
+  grch38_coords: ManeGrch38Coords;
+  mane_type?: string;
+}
+/**
+ * zzz
+ */
+export interface ManeAccessions {
+  nuclear: string;
+  protein: string;
+}
+/**
+ * zzz
+ */
+export interface ManeGrch38Coords {
+  chromosome: string;
+  start: number;
+  end: number;
+  strand: string;
+}
+/**
+ * zzz
+ */
+export interface ManeSelect {
+  refseq_accessions: ManeAccessions;
+  ensembl_accessions: ManeAccessions;
+  grch38_coords: ManeGrch38Coords;
+  mane_type?: string;
+}
+/**
+ * zzz
+ */
+export interface ManeBase {
+  refseq_accessions: ManeAccessions;
+  ensembl_accessions: ManeAccessions;
+  grch38_coords: ManeGrch38Coords;
+}
+/**
+ * zzz
+ */
+export interface ManeGene {
+  ncbi_id: CURIE;
+  ensembl_id: string;
+  hgnc_id: CURIE;
   symbol: string;
   name: string;
-  RefSeq_nuc: string;
-  RefSeq_prot: string;
-  Ensembl_nuc: string;
-  Ensembl_prot: string;
-  MANE_status: string;
-  GRCh38_chr: string;
-  chr_start: string;
-  chr_end: string;
-  chr_strand: string;
 }
 /**
  * Response model for regulatory element nomenclature endpoint.
