@@ -323,19 +323,16 @@ export const getRegElementNomenclature = async (
  * @returns nomenclature if successful
  */
 export const getTxSegmentNomenclature = async (
-  txSegment: TranscriptSegmentElement,
+  txSegment: TranscriptSegmentElement
 ): Promise<NomenclatureResponse> => {
-  const response = await fetch(
-    `/nomenclature/transcript_segment`,
-    {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(txSegment),
-    }
-  );
+  const response = await fetch(`/nomenclature/transcript_segment`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(txSegment),
+  });
   const responseJson = await response.json();
   return responseJson;
 };

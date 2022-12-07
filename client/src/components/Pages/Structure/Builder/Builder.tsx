@@ -153,7 +153,7 @@ const Builder: React.FC = () => {
     newItem.element_id = uuid();
 
     if (draggableId.includes("RegulatoryElement")) {
-      setFusion({...fusion, ...{ regulatory_element: newItem }})
+      setFusion({ ...fusion, ...{ regulatory_element: newItem } });
     } else {
       const destClone = Array.from(fusion.structural_elements);
       destClone.splice(destination.index, 0, newItem);
@@ -308,19 +308,23 @@ const Builder: React.FC = () => {
       ),
       tooltip: (
         <Typography>
-          Regulatory elements include a Regulatory Feature used to
-          describe an enhancer, promoter, or other regulatory elements
-          that constitute Regulatory Fusions. Regulatory features may also
-          be defined by a gene with which the feature is associated (e.g.
-          an IGH-associated enhancer element).
+          Regulatory elements include a Regulatory Feature used to describe an
+          enhancer, promoter, or other regulatory elements that constitute
+          Regulatory Fusions. Regulatory features may also be defined by a gene
+          with which the feature is associated (e.g. an IGH-associated enhancer
+          element).
         </Typography>
-      )
+      ),
     },
   };
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination, draggableId } = result;
-    if (destination && destination.droppableId === source.droppableId && !draggableId.includes("RegulatoryElement")) {
+    if (
+      destination &&
+      destination.droppableId === source.droppableId &&
+      !draggableId.includes("RegulatoryElement")
+    ) {
       reorder(result);
     } else {
       createNew(result);
@@ -386,7 +390,7 @@ const Builder: React.FC = () => {
             {...{ element, index, handleDelete }}
           />
         );
-        case ElementType.regulatoryElement:
+      case ElementType.regulatoryElement:
         return (
           <RegulatoryElementInput
             icon={elementNameMap[ElementType.regulatoryElement].icon}
@@ -422,7 +426,10 @@ const Builder: React.FC = () => {
                           key={element_id}
                           draggableId={type + element_id}
                           index={index}
-                          isDragDisabled={type === ElementType.regulatoryElement && fusion.regulatory_element !== undefined}
+                          isDragDisabled={
+                            type === ElementType.regulatoryElement &&
+                            fusion.regulatory_element !== undefined
+                          }
                         >
                           {(provided, snapshot) => {
                             return (
@@ -433,7 +440,13 @@ const Builder: React.FC = () => {
                                 >
                                   <Box
                                     ref={provided.innerRef}
-                                    className={"option-item" + (type === ElementType.regulatoryElement && fusion.regulatory_element !== undefined ? " disabled_reg_element" : "")}
+                                    className={
+                                      "option-item" +
+                                      (type === ElementType.regulatoryElement &&
+                                      fusion.regulatory_element !== undefined
+                                        ? " disabled_reg_element"
+                                        : "")
+                                    }
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
                                     style={{
@@ -487,21 +500,27 @@ const Builder: React.FC = () => {
                 >
                   <h2
                     className={`${
-                      fusion.structural_elements?.length === 0 && !fusion.regulatory_element
+                      fusion.structural_elements?.length === 0 &&
+                      !fusion.regulatory_element
                         ? "instruction"
                         : "hidden"
                     }`}
                   >
                     Drag elements here
                   </h2>
-                  {fusion.regulatory_element && 
+                  {fusion.regulatory_element && (
                     <>
-                      <Box className={`block ${fusion?.regulatory_element?.type}`}>
+                      <Box
+                        className={`block ${fusion?.regulatory_element?.type}`}
+                      >
                         {renderElement(fusion?.regulatory_element, 0)}
                       </Box>
-                      <Divider orientation="vertical" style={{width: "2px"}} />
+                      <Divider
+                        orientation="vertical"
+                        style={{ width: "2px" }}
+                      />
                     </>
-                  }
+                  )}
                   {fusion.structural_elements?.map(
                     (element: ClientElementUnion, index: number) => {
                       return (

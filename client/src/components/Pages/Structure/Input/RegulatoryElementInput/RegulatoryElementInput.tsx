@@ -1,19 +1,25 @@
 import React, { useState, useEffect, useContext } from "react";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
-import { ClientRegulatoryElement, RegulatoryClass } from "../../../../../services/ResponseModels";
+import {
+  ClientRegulatoryElement,
+  RegulatoryClass,
+} from "../../../../../services/ResponseModels";
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
 import RegElementForm from "../../../RegElement/RegElementForm/RegElementForm";
-import { getRegElementNomenclature, getRegulatoryElement } from "../../../../../services/main";
+import {
+  getRegElementNomenclature,
+  getRegulatoryElement,
+} from "../../../../../services/main";
 import { FusionContext } from "../../../../../global/contexts/FusionContext";
 
 /**
-   * Lookup table used to map raw regulatory class enum values to options for the class
-   * drop-down menu and for display purposes. The boolean is for disabling selectability
-   * on the drop-down menu, and the string is the displayed value.
-   * It's not clear to me if Typescript can check these values for correctness if they change,
-   * so any changes to the Pydantic RegulatoryClass class need to be reflected in the keys here.
-   */
- const regulatoryClassItems = {
+ * Lookup table used to map raw regulatory class enum values to options for the class
+ * drop-down menu and for display purposes. The boolean is for disabling selectability
+ * on the drop-down menu, and the string is the displayed value.
+ * It's not clear to me if Typescript can check these values for correctness if they change,
+ * so any changes to the Pydantic RegulatoryClass class need to be reflected in the keys here.
+ */
+const regulatoryClassItems = {
   default: [true, ""],
   attenuator: [false, "Attenuator"],
   caat_signal: [false, "CAAT signal"],
@@ -35,14 +41,14 @@ import { FusionContext } from "../../../../../global/contexts/FusionContext";
   other: [false, "Other"],
 };
 
-interface RegulatoryElementInputProps
-  extends StructuralElementInputProps {
+interface RegulatoryElementInputProps extends StructuralElementInputProps {
   element: ClientRegulatoryElement;
 }
 
-const RegulatoryElementInput: React.FC<
-RegulatoryElementInputProps
-> = ({ element, icon }) => {
+const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
+  element,
+  icon,
+}) => {
   const { fusion, setFusion } = useContext(FusionContext);
   const [regElement, setRegElement] = useState<
     ClientRegulatoryElement | undefined
@@ -55,7 +61,7 @@ RegulatoryElementInputProps
     regElement?.associated_gene?.label || ""
   );
   const [geneText, setGeneText] = useState<string>("");
-  
+
   const validated = gene !== "" && geneText == "" && elementClass !== "default";
   const [expanded, setExpanded] = useState<boolean>(!validated);
 
@@ -97,7 +103,7 @@ RegulatoryElementInputProps
     setElementClass("default");
     setGene("");
     setGeneText("");
-  }
+  };
 
   const inputElements = (
     <>
@@ -108,7 +114,8 @@ RegulatoryElementInputProps
         gene={gene}
         setGene={setGene}
         geneText={geneText}
-        setGeneText={setGeneText} />
+        setGeneText={setGeneText}
+      />
     </>
   );
 

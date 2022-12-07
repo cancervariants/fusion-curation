@@ -6,9 +6,7 @@ import {
   Typography,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  RegulatoryClass,
-} from "../../../../services/ResponseModels";
+import { RegulatoryClass } from "../../../../services/ResponseModels";
 import { GeneAutocomplete } from "../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import "./RegElementForm.scss";
 import React from "react";
@@ -68,34 +66,32 @@ const RegElementForm: React.FC<Props> = ({
 
   return (
     <div>
-        <FormControl style={{ width: "100%" }}>
-          <InputLabel id="regulatory-element-class-label">Class</InputLabel>
-          <HelpTooltip
-            placement="left"
-            title={
-              <Typography>INSDC regulatory class vocabulary term.</Typography>
-            }
+      <FormControl style={{ width: "100%" }}>
+        <InputLabel id="regulatory-element-class-label">Class</InputLabel>
+        <HelpTooltip
+          placement="left"
+          title={
+            <Typography>INSDC regulatory class vocabulary term.</Typography>
+          }
+        >
+          <Select
+            labelId="regulatory-element-class-label"
+            id="regulatory-element-class"
+            className={classes.classSelect}
+            value={elementClass}
+            onChange={(e) => setElementClass(e.target.value as RegulatoryClass)}
           >
-            <Select
-              labelId="regulatory-element-class-label"
-              id="regulatory-element-class"
-              className={classes.classSelect}
-              value={elementClass}
-              onChange={(e) =>
-                setElementClass(e.target.value as RegulatoryClass)
-              }
-            >
-              {buildMenuItems()}
-            </Select>
-          </HelpTooltip>
-        </FormControl>
-        <GeneAutocomplete
-          gene={gene}
-          setGene={setGene}
-          geneText={geneText}
-          setGeneText={setGeneText}
-          tooltipDirection="left"
-        />
+            {buildMenuItems()}
+          </Select>
+        </HelpTooltip>
+      </FormControl>
+      <GeneAutocomplete
+        gene={gene}
+        setGene={setGene}
+        geneText={geneText}
+        setGeneText={setGeneText}
+        tooltipDirection="left"
+      />
     </div>
   );
 };
