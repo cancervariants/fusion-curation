@@ -122,12 +122,6 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
             disabled={fusion.type == null}
             {...a11yProps(1)}
           />
-          {/* <LinkTab
-            label="Regulatory Element"
-            href="/"
-            disabled={fusion.type == null}
-            {...a11yProps(2)}
-          /> */}
           {fusion.type === "CategoricalFusion" ? (
             <LinkTab label="Domain" href="/" {...a11yProps(3)} />
           ) : fusion.type === "AssayedFusion" ? (
