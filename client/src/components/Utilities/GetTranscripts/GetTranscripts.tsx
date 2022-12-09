@@ -160,11 +160,18 @@ export const GetTranscripts: React.FC = () => {
     setIsCopied(false);
   };
 
+  const renderId = (prefix: string, description: string) => {
+    const matchingIds = geneDescriptor.xrefs.filter((x) =>
+      x.startsWith(prefix)
+    );
+    if (!matchingIds || matchingIds.length != 1) return <></>;
+  };
+
   const renderTranscripts = () => {
     if (transcriptWarnings.length > 0) {
       // TODO more error handling here
       return <Box>{JSON.stringify(transcriptWarnings, null, 2)}</Box>;
-    } else if (transcripts.length > 0) {
+    } else if (geneDescriptor && (manePlusTx || maneSelectTx)) {
       return (
         <Box className={classes.resultsContainer}>
           <Container className={classes.txAccordionContainer}>
@@ -173,11 +180,20 @@ export const GetTranscripts: React.FC = () => {
                 expandIcon={<ExpandMoreIcon />}
                 className={classes.txAccordionTop}
               >
-                {transcripts[0].symbol}
+                {geneDescriptor.label}
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>
-                  <b>Name:</b> {transcripts[0].name} <br />
+                  {geneDescriptor.extensions &&
+                  geneDescriptor.extensions.length > 0 &&
+                  geneDescriptor.extensions[0].value ? (
+                    <>
+                      <b>Name:</b> {geneDescriptor.extensions[0].value} <br />
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                  {}
                   <b>NCBI ID:</b> ncbigene:
                   {transcripts[0]["#NCBI_GeneID"].split(":")[1]} <br />
                   <b>Ensembl ID:</b> {transcripts[0].Ensembl_Gene} <br />
