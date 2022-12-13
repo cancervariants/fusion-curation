@@ -5,6 +5,7 @@ from typing import Union
 from fastapi import APIRouter, Request
 from fusor import examples, FUSOR
 from fusor.models import (
+    RegulatoryElement,
     StructuralElementType,
     CategoricalFusion,
     AssayedFusion,
@@ -14,6 +15,7 @@ from fusor.nomenclature import (
     tx_segment_nomenclature,
     templated_seq_nomenclature,
     gene_nomenclature,
+    reg_element_nomenclature,
 )
 
 from curfu.schemas import (
@@ -121,6 +123,19 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
     for element in fusion.structural_elements:
         client_elements.append(clientify_structural_element(element, fusor_instance))
     fusion_args["structural_elements"] = client_elements
+
+    if "regulatory_element" in fusion_args and fusion_args["regulatory_element"]:
+        reg_element_args = fusion_args["regulatory_element"]
+        nomenclature = reg_element_nomenclature(
+            RegulatoryElement(**reg_element_args), fusor_instance.seqrepo
+        )
+        reg_element_args["nomenclature"] = nomenclature
+        regulatory_class = fusion_args["regulatory_element"]["regulatory_class"]
+        if regulatory_class == "enhancer":
+            reg_element_args["display_class"] = "Enhancer"
+        else:
+            raise Exception("Undefined reg element class used in demo")
+        fusion_args["regulatory_element"] = reg_element_args
 
     if fusion.type == FUSORTypes.CATEGORICAL_FUSION:
         if fusion.critical_functional_domains:
