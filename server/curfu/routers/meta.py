@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/service_info", operation_id="serviceInfo", response_model=ServiceInfoResponse
+    "/api/service_info", operation_id="serviceInfo", response_model=ServiceInfoResponse
 )
 def get_service_info() -> ServiceInfoResponse:
     """Return service info."""

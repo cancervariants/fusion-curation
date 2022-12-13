@@ -69,7 +69,11 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
             </Link>
           </Box>
           <Box className={classes.menuLink}>
-            <Link href="/docs" target="_blank" color="inherit">
+            <Link
+              href={`${process.env.REACT_APP_DEV_PROXY}/docs`}
+              target="_blank"
+              color="inherit"
+            >
               API
             </Link>
           </Box>
