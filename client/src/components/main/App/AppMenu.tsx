@@ -43,7 +43,7 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
     getInfo().then((infoResponse) => {
       setServiceInfo(infoResponse);
     });
-  });
+  }, []);
 
   const classes = useStyles();
   return (
