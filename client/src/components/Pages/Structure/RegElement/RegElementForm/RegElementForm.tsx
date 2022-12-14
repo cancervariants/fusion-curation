@@ -6,11 +6,11 @@ import {
   Typography,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
-import { RegulatoryClass } from "../../../../services/ResponseModels";
-import { GeneAutocomplete } from "../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import "./RegElementForm.scss";
 import React from "react";
-import HelpTooltip from "../../../main/shared/HelpTooltip/HelpTooltip";
+import { RegulatoryClass } from "../../../../../services/ResponseModels";
+import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
+import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {

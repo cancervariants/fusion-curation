@@ -5,12 +5,12 @@ import {
   RegulatoryClass,
 } from "../../../../../services/ResponseModels";
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
-import RegElementForm from "../../../RegElement/RegElementForm/RegElementForm";
 import {
   getRegElementNomenclature,
   getRegulatoryElement,
 } from "../../../../../services/main";
 import { FusionContext } from "../../../../../global/contexts/FusionContext";
+import RegElementForm from "../../RegElement/RegElementForm/RegElementForm";
 
 /**
  * Lookup table used to map raw regulatory class enum values to options for the class
