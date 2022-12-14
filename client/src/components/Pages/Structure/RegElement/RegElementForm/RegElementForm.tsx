@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
-  regulatoryClassItems: any;
+  regulatoryClassItems: object;
   elementClass: RegulatoryClass | "default";
   setElementClass: CallableFunction;
   gene: string;
