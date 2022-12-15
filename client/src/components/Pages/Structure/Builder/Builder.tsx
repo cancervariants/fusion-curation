@@ -28,14 +28,18 @@ import ContrastIcon from "@mui/icons-material/Contrast";
 import HelpIcon from "@mui/icons-material/Help";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import LinkIcon from "@mui/icons-material/Link";
-import { Box } from "@material-ui/core";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
+import RegulatoryElementInput from "../Input/RegulatoryElementInput/RegulatoryElementInput";
+import { Box, Divider, Typography } from "@material-ui/core";
 import { MARGIN_OFFSETS } from "../../../../global/styles/theme";
+import HelpTooltip from "../../../main/shared/HelpTooltip/HelpTooltip";
 
 const EDITABLE_ELEMENT_TYPES = [
   ElementType.geneElement,
   ElementType.templatedSequenceElement,
   ElementType.linkerSequenceElement,
   ElementType.transcriptSegmentElement,
+  ElementType.regulatoryElement,
 ];
 
 const STATIC_ELEMENT_TYPES = [
@@ -108,6 +112,11 @@ const ELEMENT_TEMPLATE = [
     element_id: uuid(),
     nomenclature: "v",
   },
+  {
+    type: ElementType.regulatoryElement,
+    nomenclature: "",
+    element_id: uuid(),
+  },
 ];
 
 const Builder: React.FC = () => {
@@ -118,6 +127,7 @@ const Builder: React.FC = () => {
   const setWindowDimensions = () => {
     setWindowWidth(window.innerWidth);
   };
+
   useEffect(() => {
     window.addEventListener("resize", setWindowDimensions);
     return () => {
@@ -136,14 +146,19 @@ const Builder: React.FC = () => {
 
   // drop new element into structure
   const createNew = (result: DropResult) => {
-    const { source, destination } = result;
+    const { source, destination, draggableId } = result;
     const sourceClone = Array.from(ELEMENT_TEMPLATE);
-    const destClone = Array.from(fusion.structural_elements);
     const item = sourceClone[source.index];
     const newItem = Object.assign({}, item);
     newItem.element_id = uuid();
-    destClone.splice(destination.index, 0, newItem);
-    setFusion({ ...fusion, ...{ structural_elements: destClone } });
+
+    if (draggableId.includes("RegulatoryElement")) {
+      setFusion({ ...fusion, ...{ regulatory_element: newItem } });
+    } else {
+      const destClone = Array.from(fusion.structural_elements);
+      destClone.splice(destination.index, 0, newItem);
+      setFusion({ ...fusion, ...{ structural_elements: destClone } });
+    }
 
     // auto-save elements that don't need any additional input
     // TODO shouldn't need explicit autosave
@@ -191,6 +206,19 @@ const Builder: React.FC = () => {
           <StarsIcon />
         </>
       ),
+      tooltip: (
+        <>
+          <Typography>
+            A gene may be used as a structural element, in which case it refers
+            to an unspecified transcript of that gene.
+          </Typography>
+          <Typography>
+            {fusion.type === "CategoricalFusion"
+              ? "For Categorical Gene Fusions, this means any transcript meeting other parameters of the specified fusion."
+              : "For Assayed Gene Fusions, this means that the exact transcript is not known."}
+          </Typography>
+        </>
+      ),
     },
     TranscriptSegmentElement: {
       name: "Transcript Segment",
@@ -198,6 +226,14 @@ const Builder: React.FC = () => {
         <>
           <ContrastIcon />
         </>
+      ),
+      tooltip: (
+        <Typography>
+          A transcript segment is a representation of a transcribed sequence
+          denoted by a 5&#39; and 3&#39; segment boundary. Typically, transcript
+          segments are used when the gene fusion junction boundary is known or
+          when representing full-length Chimeric Transcript Fusions.
+        </Typography>
       ),
     },
     LinkerSequenceElement: {
@@ -207,6 +243,15 @@ const Builder: React.FC = () => {
           <LinkIcon />
         </>
       ),
+      tooltip: (
+        <Typography>
+          A linker sequence is an observed sequence in the gene fusion that
+          typically occurs between transcript segments, and where the sequence
+          origin is unknown or ambiguous. In cases where the linker sequence is
+          a known intronic or intergenic region, it should be represented as a
+          Templated Sequence instead.
+        </Typography>
+      ),
     },
     TemplatedSequenceElement: {
       name: "Templated Sequence",
@@ -214,6 +259,13 @@ const Builder: React.FC = () => {
         <>
           <BlurCircularOutlinedIcon />
         </>
+      ),
+      tooltip: (
+        <Typography>
+          A templated linker sequence is an observed sequence in the gene fusion
+          that typically occurs between transcript segments, and where the
+          sequence origin is a known intronic or intergenic region.
+        </Typography>
       ),
     },
     MultiplePossibleGenesElement: {
@@ -223,6 +275,14 @@ const Builder: React.FC = () => {
           <WorkspacesIcon />
         </>
       ),
+      tooltip: (
+        <Typography>
+          This element represents a a partner in a fusion which typifies
+          generalizable characteristics of a class of fusions such as retained
+          or lost functional domains, often curated from biomedical literature
+          for use in genomic knowledgebases.
+        </Typography>
+      ),
     },
     UnknownGeneElement: {
       name: "Unknown Gene",
@@ -231,13 +291,40 @@ const Builder: React.FC = () => {
           <HelpIcon />
         </>
       ),
+      tooltip: (
+        <Typography>
+          This element represents the unknown partner in the result of a fusion
+          partner-agnostic assay, which identifies the absence of an expected
+          gene.
+        </Typography>
+      ),
+    },
+    RegulatoryElement: {
+      name: "Regulatory Element",
+      icon: (
+        <>
+          <AutorenewIcon />
+        </>
+      ),
+      tooltip: (
+        <Typography>
+          Regulatory elements include a Regulatory Feature used to describe an
+          enhancer, promoter, or other regulatory elements that constitute
+          Regulatory Fusions. Regulatory features may also be defined by a gene
+          with which the feature is associated (e.g. an IGH-associated enhancer
+          element).
+        </Typography>
+      ),
     },
   };
 
   const onDragEnd = (result: DropResult) => {
-    const { source, destination } = result;
-    if (!destination) return; // dropped outside the list
-    if (destination.droppableId === source.droppableId) {
+    const { source, destination, draggableId } = result;
+    if (
+      destination &&
+      destination.droppableId === source.droppableId &&
+      !draggableId.includes("RegulatoryElement")
+    ) {
       reorder(result);
     } else {
       createNew(result);
@@ -254,7 +341,7 @@ const Builder: React.FC = () => {
     );
 
   const nomenclatureElement = (
-    <Box className="hr-section" py={1} minHeight="35px">
+    <Box className="hr-section" minHeight="30px">
       {nomenclatureContent}
     </Box>
   );
@@ -303,6 +390,13 @@ const Builder: React.FC = () => {
             {...{ element, index, handleDelete }}
           />
         );
+      case ElementType.regulatoryElement:
+        return (
+          <RegulatoryElementInput
+            icon={elementNameMap[ElementType.regulatoryElement].icon}
+            {...{ element, index, handleSave }}
+          />
+        );
     }
   };
 
@@ -330,29 +424,45 @@ const Builder: React.FC = () => {
                       return (
                         <Draggable
                           key={element_id}
-                          draggableId={element_id}
+                          draggableId={type + element_id}
                           index={index}
+                          isDragDisabled={
+                            type === ElementType.regulatoryElement &&
+                            fusion.regulatory_element !== undefined
+                          }
                         >
                           {(provided, snapshot) => {
                             return (
                               <React.Fragment>
-                                <Box
-                                  ref={provided.innerRef}
-                                  className={`option-item ${type}`}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  style={{
-                                    ...provided.draggableProps.style,
-                                    transform: snapshot.isDragging
-                                      ? provided.draggableProps.style?.transform
-                                      : "translate(0px, 0px)",
-                                  }}
+                                <HelpTooltip
+                                  placement="right"
+                                  title={elementNameMap[type].tooltip}
                                 >
-                                  {elementNameMap[type].icon}{" "}
-                                  <Box ml="8px">
-                                    {elementNameMap[type].name}
+                                  <Box
+                                    ref={provided.innerRef}
+                                    className={
+                                      "option-item" +
+                                      (type === ElementType.regulatoryElement &&
+                                      fusion.regulatory_element !== undefined
+                                        ? " disabled_reg_element"
+                                        : "")
+                                    }
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    style={{
+                                      ...provided.draggableProps.style,
+                                      transform: snapshot.isDragging
+                                        ? provided.draggableProps.style
+                                            ?.transform
+                                        : "translate(0px, 0px)",
+                                    }}
+                                  >
+                                    {elementNameMap[type].icon}{" "}
+                                    <Box ml="8px">
+                                      {elementNameMap[type].name}
+                                    </Box>
                                   </Box>
-                                </Box>
+                                </HelpTooltip>
                                 {snapshot.isDragging && (
                                   <Box
                                     style={{ transform: "none !important" }}
@@ -390,13 +500,27 @@ const Builder: React.FC = () => {
                 >
                   <h2
                     className={`${
-                      fusion.structural_elements?.length === 0
+                      fusion.structural_elements?.length === 0 &&
+                      !fusion.regulatory_element
                         ? "instruction"
                         : "hidden"
                     }`}
                   >
                     Drag elements here
                   </h2>
+                  {fusion.regulatory_element && (
+                    <>
+                      <Box
+                        className={`block ${fusion?.regulatory_element?.type}`}
+                      >
+                        {renderElement(fusion?.regulatory_element, 0)}
+                      </Box>
+                      <Divider
+                        orientation="vertical"
+                        style={{ width: "2px" }}
+                      />
+                    </>
+                  )}
                   {fusion.structural_elements?.map(
                     (element: ClientElementUnion, index: number) => {
                       return (

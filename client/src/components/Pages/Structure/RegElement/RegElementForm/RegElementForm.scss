@@ -1,7 +1,6 @@
 .form-container {
   display: flex;
   flex-direction: column;
-  width: 600px;
 
   .close-button-reg {
     margin-left: 38px;
@@ -15,7 +14,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 550px;
   }
 
   .regel {
@@ -29,8 +27,12 @@
     border-radius: 7px;
   }
 
-  .regel-add-button {
+  .regel-buttons {
     align-self: flex-end;
     margin-right: 85px;
+  }
+
+  .regel-delete-button {
+    margin-right: 10px;
   }
 }

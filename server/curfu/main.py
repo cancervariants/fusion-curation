@@ -4,12 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.templating import _TemplateResponse as TemplateResponse
-from fusor import FUSOR, __version__ as fusor_version
-from cool_seq_tool.version import __version__ as cool_seq_tool_version
+from fusor import FUSOR
 
 from curfu import APP_ROOT
 from curfu.version import __version__ as curfu_version
-from curfu.schemas import ServiceInfoResponse
 from curfu.gene_services import GeneService
 from curfu.domain_services import DomainService
 from curfu.routers import (
@@ -20,6 +18,7 @@ from curfu.routers import (
     complete,
     validate,
     demo,
+    meta,
 )
 
 
@@ -37,6 +36,7 @@ fastapi_app.include_router(complete.router)
 fastapi_app.include_router(validate.router)
 fastapi_app.include_router(nomenclature.router)
 fastapi_app.include_router(demo.router)
+fastapi_app.include_router(meta.router)
 
 origins = ["http://localhost", "http://localhost:3000"]
 
@@ -129,19 +129,3 @@ async def startup():
 async def shutdown():
     """Clean up thread pool."""
     await app.state.fusor.cool_seq_tool.uta_db._connection_pool.close()
-
-
-@app.get(
-    "/service_info", operation_id="serviceInfo", response_model=ServiceInfoResponse
-)
-def get_service_info() -> ServiceInfoResponse:
-    """Return service info."""
-    return ServiceInfoResponse(
-        **{
-            "curfu_version": curfu_version,
-            # "vrs_python_version": vrs_version,
-            "cool_seq_tool_version": cool_seq_tool_version,
-            "fusor_version": fusor_version,
-            "warnings": [],
-        }
-    )

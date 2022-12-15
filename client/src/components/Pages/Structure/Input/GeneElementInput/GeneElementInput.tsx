@@ -70,6 +70,7 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
       geneText={geneText}
       setGeneText={setGeneText}
       style={{ width: 125 }}
+      tooltipDirection="left"
     />
   );
 
