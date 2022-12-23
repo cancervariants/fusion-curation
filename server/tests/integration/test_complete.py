@@ -6,7 +6,7 @@ from httpx import AsyncClient
 @pytest.mark.asyncio
 async def test_normalize_gene(async_client: AsyncClient):
     """Test /complete/gene endpoint"""
-    response = await async_client.get("/complete/gene?term=NTRK")
+    response = await async_client.get("/api/complete/gene?term=NTRK")
     assert response.status_code == 200
     assert response.json() == {
         "term": "NTRK",
@@ -30,7 +30,7 @@ async def test_normalize_gene(async_client: AsyncClient):
         ],
     }
 
-    response = await async_client.get("/complete/gene?term=a")
+    response = await async_client.get("/api/complete/gene?term=a")
     assert response.status_code == 200
     assert response.json() == {
         "term": "a",

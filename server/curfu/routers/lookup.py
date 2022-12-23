@@ -9,13 +9,14 @@ router = APIRouter()
 
 
 @router.get(
-    "/lookup/gene",
+    "/api/lookup/gene",
     operation_id="normalizeGene",
     response_model=NormalizeGeneResponse,
     response_model_exclude_none=True,
 )
 def normalize_gene(request: Request, term: str = Query("")) -> ResponseDict:
     """Normalize gene term provided by user.
+    \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param str term: gene symbol/alias/name/etc
