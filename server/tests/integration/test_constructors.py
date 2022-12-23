@@ -25,20 +25,20 @@ async def test_build_gene_element(check_response, alk_gene_element):
     alk_gene_response = {"warnings": [], "element": alk_gene_element}
 
     await check_response(
-        "/construct/structural_element/gene?term=hgnc:427",
+        "/api/construct/structural_element/gene?term=hgnc:427",
         alk_gene_response,
         check_gene_element_response,
         expected_id="normalize.gene:hgnc%3A427",
     )
     await check_response(
-        "/construct/structural_element/gene?term=ALK",
+        "/api/construct/structural_element/gene?term=ALK",
         alk_gene_response,
         check_gene_element_response,
         expected_id="normalize.gene:ALK",
     )
     fake_id = "hgnc:99999999"
     await check_response(
-        f"/construct/structural_element/gene?term={fake_id}",
+        f"/api/construct/structural_element/gene?term={fake_id}",
         {"warnings": [f"gene-normalizer unable to normalize {fake_id}"]},
         check_gene_element_response,
     )
@@ -200,7 +200,7 @@ async def test_build_segment_gct(
         check_tx_element_response,
     )
     await check_response(
-        "/construct/structural_element/tx_segment_gct?transcript=refseq%3ANM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",  # noqa: E501
+        "/api/construct/structural_element/tx_segment_gct?transcript=refseq%3ANM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",  # noqa: E501
         {"element": tpm3_tx_t_element},
         check_tx_element_response,
     )
@@ -247,7 +247,7 @@ async def test_build_templated_sequence(
 ):
     """Test correct functioning of templated sequence constructor"""
     await check_response(
-        "/construct/structural_element/templated_sequence?start=154171415&end=154171417&sequence_id=NC_000001.11&strand=-",  # noqa: E501
+        "/api/construct/structural_element/templated_sequence?start=154171415&end=154171417&sequence_id=NC_000001.11&strand=-",  # noqa: E501
         {
             "element": {
                 "type": "TemplatedSequenceElement",
@@ -272,7 +272,7 @@ async def test_build_templated_sequence(
     )
 
     await check_response(
-        "/construct/structural_element/templated_sequence?start=154171415&end=154171417&sequence_id=refseq%3ANC_000001.11&strand=-",  # noqa: E501
+        "/api/construct/structural_element/templated_sequence?start=154171415&end=154171417&sequence_id=refseq%3ANC_000001.11&strand=-",  # noqa: E501
         {
             "element": {
                 "type": "TemplatedSequenceElement",
