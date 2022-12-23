@@ -81,6 +81,7 @@ const StructuralElementInputAccordion: React.FC<
         action={
           <Tooltip title="Delete element">
             <DeleteIcon
+              style={{ cursor: "pointer" }}
               onClick={(event) => {
                 event.stopPropagation();
                 handleDelete(element.element_id);

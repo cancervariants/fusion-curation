@@ -169,6 +169,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
     <Autocomplete
       debug
       value={geneValue}
+      style={{ minWidth: "100px" }}
       onChange={(_, newValue) => {
         if (newValue) {
           updateSelection(newValue);

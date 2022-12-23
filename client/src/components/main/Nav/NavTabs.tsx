@@ -5,7 +5,6 @@ import { FusionContext } from "../../../global/contexts/FusionContext";
 
 // Pages
 import { Structure } from "../../Pages/Structure/Main/Structure";
-import { RegElement } from "../../Pages/RegElement/Main/RegElement";
 import { Summary } from "../../Pages/Summary/Main/Summary";
 import { Domain } from "../../Pages/Domains/Main/Domains";
 import { ReadingFrame } from "../../Pages/ReadingFrame/ReadingFrame";
@@ -97,13 +96,6 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
       color: colorTheme["--dark-gray"],
       borderBottom: `1px solid ${colorTheme["--medium-gray"]}`,
     },
-    demoMenu: {
-      width: "200px",
-      alignItems: "center",
-    },
-    demoMenuLabel: {
-      marginLeft: "20px",
-    },
   }));
   const classes = useStyles();
 
@@ -130,12 +122,6 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
             disabled={fusion.type == null}
             {...a11yProps(1)}
           />
-          <LinkTab
-            label="Regulatory Element"
-            href="/"
-            disabled={fusion.type == null}
-            {...a11yProps(2)}
-          />
           {fusion.type === "CategoricalFusion" ? (
             <LinkTab label="Domain" href="/" {...a11yProps(3)} />
           ) : fusion.type === "AssayedFusion" ? (
@@ -159,27 +145,24 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
           <Structure index={0} />
         </TabPanel>
         <TabPanel value={visibleTab} index={1}>
-          <RegElement index={1} />
-        </TabPanel>
-        <TabPanel value={visibleTab} index={2}>
           {fusion.type === "CategoricalFusion" ? (
-            <Domain index={2} />
+            <Domain index={1} />
           ) : fusion.type === "AssayedFusion" ? (
-            <CausativeEvent index={3} />
+            <CausativeEvent index={1} />
           ) : (
             <></>
           )}
         </TabPanel>
-        <TabPanel value={visibleTab} index={3}>
+        <TabPanel value={visibleTab} index={2}>
           {fusion.type === "CategoricalFusion" ? (
-            <ReadingFrame index={3} />
+            <ReadingFrame index={2} />
           ) : fusion.type === "AssayedFusion" ? (
             <Assay index={2} />
           ) : (
             <></>
           )}
         </TabPanel>
-        <TabPanel value={visibleTab} index={4}>
+        <TabPanel value={visibleTab} index={3}>
           <Summary index={4} setVisibleTab={setVisibleTab} />
         </TabPanel>
       </div>

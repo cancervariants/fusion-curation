@@ -28,7 +28,9 @@ import ContrastIcon from "@mui/icons-material/Contrast";
 import HelpIcon from "@mui/icons-material/Help";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import LinkIcon from "@mui/icons-material/Link";
-import { Box, Typography } from "@material-ui/core";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
+import RegulatoryElementInput from "../Input/RegulatoryElementInput/RegulatoryElementInput";
+import { Box, Divider, Typography } from "@material-ui/core";
 import { MARGIN_OFFSETS } from "../../../../global/styles/theme";
 import HelpTooltip from "../../../main/shared/HelpTooltip/HelpTooltip";
 
@@ -37,6 +39,7 @@ const EDITABLE_ELEMENT_TYPES = [
   ElementType.templatedSequenceElement,
   ElementType.linkerSequenceElement,
   ElementType.transcriptSegmentElement,
+  ElementType.regulatoryElement,
 ];
 
 const STATIC_ELEMENT_TYPES = [
@@ -109,6 +112,11 @@ const ELEMENT_TEMPLATE = [
     element_id: uuid(),
     nomenclature: "v",
   },
+  {
+    type: ElementType.regulatoryElement,
+    nomenclature: "",
+    element_id: uuid(),
+  },
 ];
 
 const Builder: React.FC = () => {
@@ -119,6 +127,7 @@ const Builder: React.FC = () => {
   const setWindowDimensions = () => {
     setWindowWidth(window.innerWidth);
   };
+
   useEffect(() => {
     window.addEventListener("resize", setWindowDimensions);
     return () => {
@@ -137,14 +146,19 @@ const Builder: React.FC = () => {
 
   // drop new element into structure
   const createNew = (result: DropResult) => {
-    const { source, destination } = result;
+    const { source, destination, draggableId } = result;
     const sourceClone = Array.from(ELEMENT_TEMPLATE);
-    const destClone = Array.from(fusion.structural_elements);
     const item = sourceClone[source.index];
     const newItem = Object.assign({}, item);
     newItem.element_id = uuid();
-    destClone.splice(destination.index, 0, newItem);
-    setFusion({ ...fusion, ...{ structural_elements: destClone } });
+
+    if (draggableId.includes("RegulatoryElement")) {
+      setFusion({ ...fusion, ...{ regulatory_element: newItem } });
+    } else {
+      const destClone = Array.from(fusion.structural_elements);
+      destClone.splice(destination.index, 0, newItem);
+      setFusion({ ...fusion, ...{ structural_elements: destClone } });
+    }
 
     // auto-save elements that don't need any additional input
     // TODO shouldn't need explicit autosave
@@ -285,12 +299,32 @@ const Builder: React.FC = () => {
         </Typography>
       ),
     },
+    RegulatoryElement: {
+      name: "Regulatory Element",
+      icon: (
+        <>
+          <AutorenewIcon />
+        </>
+      ),
+      tooltip: (
+        <Typography>
+          Regulatory elements include a Regulatory Feature used to describe an
+          enhancer, promoter, or other regulatory elements that constitute
+          Regulatory Fusions. Regulatory features may also be defined by a gene
+          with which the feature is associated (e.g. an IGH-associated enhancer
+          element).
+        </Typography>
+      ),
+    },
   };
 
   const onDragEnd = (result: DropResult) => {
-    const { source, destination } = result;
-    if (!destination) return; // dropped outside the list
-    if (destination.droppableId === source.droppableId) {
+    const { source, destination, draggableId } = result;
+    if (
+      destination &&
+      destination.droppableId === source.droppableId &&
+      !draggableId.includes("RegulatoryElement")
+    ) {
       reorder(result);
     } else {
       createNew(result);
@@ -307,7 +341,7 @@ const Builder: React.FC = () => {
     );
 
   const nomenclatureElement = (
-    <Box className="hr-section" py={1} minHeight="35px">
+    <Box className="hr-section" minHeight="30px">
       {nomenclatureContent}
     </Box>
   );
@@ -356,6 +390,13 @@ const Builder: React.FC = () => {
             {...{ element, index, handleDelete }}
           />
         );
+      case ElementType.regulatoryElement:
+        return (
+          <RegulatoryElementInput
+            icon={elementNameMap[ElementType.regulatoryElement].icon}
+            {...{ element, index, handleSave }}
+          />
+        );
     }
   };
 
@@ -383,8 +424,12 @@ const Builder: React.FC = () => {
                       return (
                         <Draggable
                           key={element_id}
-                          draggableId={element_id}
+                          draggableId={type + element_id}
                           index={index}
+                          isDragDisabled={
+                            type === ElementType.regulatoryElement &&
+                            fusion.regulatory_element !== undefined
+                          }
                         >
                           {(provided, snapshot) => {
                             return (
@@ -395,7 +440,13 @@ const Builder: React.FC = () => {
                                 >
                                   <Box
                                     ref={provided.innerRef}
-                                    className={`option-item ${type}`}
+                                    className={
+                                      "option-item" +
+                                      (type === ElementType.regulatoryElement &&
+                                      fusion.regulatory_element !== undefined
+                                        ? " disabled_reg_element"
+                                        : "")
+                                    }
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
                                     style={{
@@ -449,13 +500,27 @@ const Builder: React.FC = () => {
                 >
                   <h2
                     className={`${
-                      fusion.structural_elements?.length === 0
+                      fusion.structural_elements?.length === 0 &&
+                      !fusion.regulatory_element
                         ? "instruction"
                         : "hidden"
                     }`}
                   >
                     Drag elements here
                   </h2>
+                  {fusion.regulatory_element && (
+                    <>
+                      <Box
+                        className={`block ${fusion?.regulatory_element?.type}`}
+                      >
+                        {renderElement(fusion?.regulatory_element, 0)}
+                      </Box>
+                      <Divider
+                        orientation="vertical"
+                        style={{ width: "2px" }}
+                      />
+                    </>
+                  )}
                   {fusion.structural_elements?.map(
                     (element: ClientElementUnion, index: number) => {
                       return (

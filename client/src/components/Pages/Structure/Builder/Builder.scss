@@ -87,7 +87,7 @@
   .option-item {
     display: flex;
     font-weight: 300;
-    padding: 1em;
+    padding: 0.7em;
     font-size: 18px;
     border-radius: 5px;
     border: 1px solid darkgrey;
@@ -116,6 +116,11 @@
       color: var(--dark-gray);
       font-weight: 500;
     }
+  }
+
+  .disabled_reg_element {
+    background-color: var(--dark-gray) !important;
+    cursor: not-allowed;
   }
 
   .card-parent {

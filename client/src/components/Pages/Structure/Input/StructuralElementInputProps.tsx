@@ -2,7 +2,7 @@ import { ClientElementUnion } from "../../../../services/main";
 
 export interface BaseStructuralElementProps {
   element: ClientElementUnion;
-  handleDelete: (id: string) => void;
+  handleDelete?: (id?: string) => void;
   icon: JSX.Element;
 }
 
