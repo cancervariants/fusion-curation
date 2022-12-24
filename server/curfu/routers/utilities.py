@@ -22,13 +22,14 @@ router = APIRouter()
 
 
 @router.get(
-    "/utilities/get_transcripts",
+    "/api/utilities/get_transcripts",
     operation_id="getMANETranscripts",
     response_model=GetTranscriptsResponse,
     response_model_exclude_none=True,
 )
 def get_mane_transcripts(request: Request, term: str) -> Dict:
     """Get MANE transcripts for gene term.
+    \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param str term: gene term provided by user
@@ -50,7 +51,7 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
 
 
 @router.get(
-    "/utilities/get_genomic",
+    "/api/utilities/get_genomic",
     operation_id="getGenomicCoords",
     response_model=CoordsUtilsResponse,
     response_model_exclude_none=True,
@@ -65,7 +66,7 @@ async def get_genome_coords(
     exon_end_offset: Optional[int] = None,
 ) -> CoordsUtilsResponse:
     """Convert provided exon positions to genomic coordinates
-
+    \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param Optional[str] gene: gene symbol/ID on which exons lie
@@ -92,7 +93,7 @@ async def get_genome_coords(
         warning = "No start param: exon_start_offset parameter requires explicit exon_start parameter"  # noqa: E501
         warnings.append(warning)
     if (exon_end is None) and (exon_end_offset is not None):
-        warning = "No end param: exon_end_offset parameter requires explicit exon_end parameter"
+        warning = "No end param: exon_end_offset parameter requires explicit exon_end parameter"  # noqa: E501
         warnings.append(warning)
     if warnings:
         for warning in warnings:
@@ -122,7 +123,7 @@ async def get_genome_coords(
 
 
 @router.get(
-    "/utilities/get_exon",
+    "/api/utilities/get_exon",
     operation_id="getExonCoords",
     response_model=CoordsUtilsResponse,
     response_model_exclude_none=True,
@@ -137,6 +138,7 @@ async def get_exon_coords(
     transcript: Optional[str] = None,
 ) -> CoordsUtilsResponse:
     """Convert provided genomic coordinates to exon coordinates
+    \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param str chromosome: chromosome, either as a number/X/Y or as an accession
@@ -180,13 +182,14 @@ async def get_exon_coords(
 
 
 @router.get(
-    "/utilities/get_sequence_id",
+    "/api/utilities/get_sequence_id",
     operation_id="getSequenceId",
     response_model=SequenceIDResponse,
     response_model_exclude_none=True,
 )
 async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse:
     """Get GA4GH sequence ID and aliases given sequence sequence ID
+    \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use
         to access FUSOR and UTA-associated tools.
     :param str sequence_id: user-provided sequence identifier to translate
@@ -236,6 +239,7 @@ async def get_sequence(
     ),
 ) -> FileResponse:
     """Get sequence for requested sequence ID.
+    \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use
         to access FUSOR and UTA-associated tools.
     :param background_tasks: Starlette background tasks object. Use to clean up
@@ -247,7 +251,7 @@ async def get_sequence(
     try:
         request.app.state.fusor.cool_seq_tool.get_fasta_file(sequence_id, Path(path))
     except KeyError:
-        resp = request.app.state.fusor.cool_seq_tool.seqrepo_access.translate_identifier(
+        resp = request.app.state.fusor.cool_seq_tool.seqrepo_access.translate_identifier(  # noqa: E501
             sequence_id, "refseq"
         )
         if len(resp[0]) < 1:
@@ -257,7 +261,9 @@ async def get_sequence(
         else:
             try:
                 new_seq_id = resp[0][0].split(":")[1]
-                request.app.state.fusor.cool_seq_tool.get_fasta_file(new_seq_id, Path(path))
+                request.app.state.fusor.cool_seq_tool.get_fasta_file(
+                    new_seq_id, Path(path)
+                )
             except KeyError:
                 raise HTTPException(
                     status_code=404,

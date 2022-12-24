@@ -80,7 +80,7 @@ export type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 export const validateFusion = async (
   fusion: AssayedFusion | CategoricalFusion
 ): Promise<ValidateFusionResponse> => {
-  const response = await fetch("/validate", {
+  const response = await fetch("/api/validate", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -96,7 +96,7 @@ export const getGeneElement = async (
   term: string
 ): Promise<GeneElementResponse> => {
   const response = await fetch(
-    `construct/structural_element/gene?term=${term}`
+    `/api/construct/structural_element/gene?term=${term}`
   );
   const responseJson = await response.json();
   return responseJson;
@@ -109,7 +109,7 @@ export const getTemplatedSequenceElement = async (
   end: string
 ): Promise<TemplatedSequenceElementResponse> => {
   const response = await fetch(
-    `construct/structural_element/templated_sequence?sequence_id=${chr}&start=${start}&end=${end}` +
+    `api/construct/structural_element/templated_sequence?sequence_id=${chr}&start=${start}&end=${end}` +
       `&strand=${strand === "+" ? "%2B" : "-"}`
   );
   const responseJson = await response.json();
@@ -138,7 +138,8 @@ export const getTxSegmentElementECT = async (
   if (exonEndOffset !== "") {
     params.push(`exon_end_offset=${exonEndOffset}`);
   }
-  const url = "construct/structural_element/tx_segment_ect?" + params.join("&");
+  const url =
+    "api/construct/structural_element/tx_segment_ect?" + params.join("&");
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
@@ -158,7 +159,8 @@ export const getTxSegmentElementGCT = async (
   ];
   if (start !== "") params.push(`start=${start}`);
   if (end !== "") params.push(`end=${end}`);
-  const url = "construct/structural_element/tx_segment_gct?" + params.join("&");
+  const url =
+    "api/construct/structural_element/tx_segment_gct?" + params.join("&");
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
@@ -178,7 +180,8 @@ export const getTxSegmentElementGCG = async (
   ];
   if (start !== "") params.push(`start=${start}`);
   if (end !== "") params.push(`end=${end}`);
-  const url = "construct/structural_element/tx_segment_gcg?" + params.join("&");
+  const url =
+    "api/construct/structural_element/tx_segment_gcg?" + params.join("&");
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
@@ -187,7 +190,7 @@ export const getTxSegmentElementGCG = async (
 export const getGeneId = async (
   symbol: string
 ): Promise<NormalizeGeneResponse> => {
-  const response = await fetch(`lookup/gene?term=${symbol}`);
+  const response = await fetch(`api/lookup/gene?term=${symbol}`);
   const geneResponse = await response.json();
   return geneResponse;
 };
@@ -195,7 +198,7 @@ export const getGeneId = async (
 export const getGeneSuggestions = async (
   term: string
 ): Promise<SuggestGeneResponse> => {
-  const response = await fetch(`complete/gene?term=${term}`);
+  const response = await fetch(`api/complete/gene?term=${term}`);
   const responseJson = await response.json();
   return responseJson;
 };
@@ -203,7 +206,7 @@ export const getGeneSuggestions = async (
 export const getAssociatedDomains = async (
   gene_id: string
 ): Promise<AssociatedDomainResponse> => {
-  const response = await fetch(`/complete/domain?gene_id=${gene_id}`);
+  const response = await fetch(`/api/complete/domain?gene_id=${gene_id}`);
   const responseJson = await response.json();
   return responseJson;
 };
@@ -214,7 +217,7 @@ export const getFunctionalDomain = async (
   geneId: string
 ): Promise<GetDomainResponse> => {
   const url =
-    `/construct/domain?status=${domainStatus}&name=${domain.domain_name}` +
+    `/api/construct/domain?status=${domainStatus}&name=${domain.domain_name}` +
     `&domain_id=${domain.interpro_id}&gene_id=${geneId}` +
     `&sequence_id=${domain.refseq_ac}&start=${domain.start}&end=${domain.end}`;
   const response = await fetch(url);
@@ -225,7 +228,7 @@ export const getFunctionalDomain = async (
 export const getTranscripts = async (
   term: string
 ): Promise<GetTranscriptsResponse> => {
-  const response = await fetch(`/utilities/get_transcripts?term=${term}`);
+  const response = await fetch(`/api/utilities/get_transcripts?term=${term}`);
   const transcriptResponse = await response.json();
   return transcriptResponse;
 };
@@ -247,7 +250,7 @@ export const getExonCoords = async (
     end !== "" ? `end=${end}` : "",
   ];
   const args = argsArray.filter((a) => a !== "").join("&");
-  const response = await fetch(`/utilities/get_exon?${args}`);
+  const response = await fetch(`/api/utilities/get_exon?${args}`);
   const responseJson = await response.json();
   return responseJson;
 };
@@ -269,7 +272,7 @@ export const getGenomicCoords = async (
     exonEndOffset !== "" ? `exon_end_offset=${exonEndOffset}` : "",
   ];
   const args = argsArray.filter((a) => a !== "").join("&");
-  const response = await fetch(`/utilities/get_genomic?${args}`);
+  const response = await fetch(`/api/utilities/get_genomic?${args}`);
   const responseJson = await response.json();
   return responseJson;
 };
@@ -278,7 +281,7 @@ export const getSequenceIds = async (
   sequence: string
 ): Promise<SequenceIDResponse> => {
   const response = await fetch(
-    `/utilities/get_sequence_id?sequence=${sequence}`
+    `/api/utilities/get_sequence_id?sequence=${sequence}`
   );
   const responseJson = await response.json();
   return responseJson;
@@ -292,7 +295,7 @@ export const getSequenceIds = async (
  * the server itself.
  */
 export const getInfo = async (): Promise<ServiceInfoResponse> => {
-  const response = await fetch("/service_info");
+  const response = await fetch("/api/service_info");
   const responseJson = await response.json();
   return responseJson;
 };
@@ -305,7 +308,7 @@ export const getInfo = async (): Promise<ServiceInfoResponse> => {
 export const getRegElementNomenclature = async (
   regulatoryElement: RegulatoryElement
 ): Promise<NomenclatureResponse> => {
-  const response = await fetch("/nomenclature/regulatory_element", {
+  const response = await fetch("/api/nomenclature/regulatory_element", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -325,7 +328,7 @@ export const getRegElementNomenclature = async (
 export const getTxSegmentNomenclature = async (
   txSegment: TranscriptSegmentElement
 ): Promise<NomenclatureResponse> => {
-  const response = await fetch(`/nomenclature/transcript_segment`, {
+  const response = await fetch(`/api/nomenclature/transcript_segment`, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -345,7 +348,7 @@ export const getTxSegmentNomenclature = async (
 export const getTemplatedSequenceNomenclature = async (
   templatedSequenceElement: TemplatedSequenceElement
 ): Promise<NomenclatureResponse> => {
-  const response = await fetch("/nomenclature/templated_sequence", {
+  const response = await fetch("/api/nomenclature/templated_sequence", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -365,7 +368,7 @@ export const getTemplatedSequenceNomenclature = async (
 export const getGeneNomenclature = async (
   gene: GeneElement
 ): Promise<NomenclatureResponse> => {
-  const response = await fetch("/nomenclature/gene", {
+  const response = await fetch("/api/nomenclature/gene", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -385,7 +388,7 @@ export const getGeneNomenclature = async (
 export const getFusionNomenclature = async (
   fusion: AssayedFusion | CategoricalFusion
 ): Promise<NomenclatureResponse> => {
-  const response = await fetch("/nomenclature/fusion", {
+  const response = await fetch("/api/nomenclature/fusion", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -408,7 +411,7 @@ export const getRegulatoryElement = async (
   geneName: string
 ): Promise<RegulatoryElementResponse> => {
   const response = await fetch(
-    `/construct/regulatory_element?element_class=${regulatoryClass}&gene_name=${geneName}`
+    `/api/construct/regulatory_element?element_class=${regulatoryClass}&gene_name=${geneName}`
   );
   const responseJson = await response.json();
   return responseJson;
@@ -441,7 +444,7 @@ export const categoricalDemoList = [
 export const getDemoObject = async (
   fusionName: DemoFusionName
 ): Promise<ClientFusion> => {
-  const response = await fetch(`/demo/${fusionName}`);
+  const response = await fetch(`/api/demo/${fusionName}`);
   const responseJson = await response.json();
   return responseJson.fusion;
 };

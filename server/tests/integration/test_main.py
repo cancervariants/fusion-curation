@@ -11,7 +11,7 @@ async def test_service_info(async_client):
     uses semver-provided regex to check version numbers:
     https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string  # noqa: E501
     """
-    response = await async_client.get("/service_info")
+    response = await async_client.get("/api/service_info")
     assert response.status_code == 200
     response_json = response.json()
     assert response_json["warnings"] == []

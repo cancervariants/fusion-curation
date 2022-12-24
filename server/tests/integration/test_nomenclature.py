@@ -139,7 +139,7 @@ async def test_regulatory_element_nomenclature(
 ):
     """Test correctness of regulatory element nomenclature endpoint."""
     response = await async_client.post(
-        "nomenclature/regulatory_element", json=regulatory_element
+        "api/nomenclature/regulatory_element", json=regulatory_element
     )
     assert response.status_code == 200
     assert response.json().get("nomenclature", "") == "reg_p@G1(hgnc:9339)"
@@ -155,26 +155,26 @@ async def test_tx_segment_nomenclature(
 ):
     """Test correctness of transcript segment nomenclature response."""
     response = await async_client.post(
-        "/nomenclature/transcript_segment?first=false&last=true",
+        "/api/nomenclature/transcript_segment?first=false&last=true",
         json=ntrk1_tx_element_start,
     )
     assert response.status_code == 200
     assert response.json().get("nomenclature", "") == "refseq:NM_002529.3(NTRK1):e.2+1"
 
     response = await async_client.post(
-        "/nomenclature/transcript_segment?first=true&last=false", json=epcam_5_prime
+        "/api/nomenclature/transcript_segment?first=true&last=false", json=epcam_5_prime
     )
     assert response.status_code == 200
     assert response.json().get("nomenclature", "") == "refseq:NM_002354.2(EPCAM):e.5"
 
     response = await async_client.post(
-        "/nomenclature/transcript_segment?first=false&last=true", json=epcam_3_prime
+        "/api/nomenclature/transcript_segment?first=false&last=true", json=epcam_3_prime
     )
     assert response.status_code == 200
     assert response.json().get("nomenclature", "") == "refseq:NM_002354.2(EPCAM):e.5"
 
     response = await async_client.post(
-        "/nomenclature/transcript_segment?first=true&last=false", json=epcam_invalid
+        "/api/nomenclature/transcript_segment?first=true&last=false", json=epcam_invalid
     )
     assert response.status_code == 200
     assert response.json().get("warnings", []) == [
@@ -187,12 +187,12 @@ async def test_gene_element_nomenclature(
     async_client: AsyncClient, alk_gene_element: Dict
 ):
     """Test correctness of gene element nomenclature endpoint."""
-    response = await async_client.post("/nomenclature/gene", json=alk_gene_element)
+    response = await async_client.post("/api/nomenclature/gene", json=alk_gene_element)
     assert response.status_code == 200
     assert response.json().get("nomenclature", "") == "ALK(hgnc:427)"
 
     response = await async_client.post(
-        "/nomenclature/gene",
+        "/api/nomenclature/gene",
         json={"type": "GeneElement", "associated_gene": {"id": "hgnc:427"}},
     )
     assert response.status_code == 200
@@ -207,7 +207,7 @@ async def test_templated_sequence_nomenclature(
 ):
     """Test correctness of templated sequence element endpoint."""
     response = await async_client.post(
-        "/nomenclature/templated_sequence", json=templated_sequence_element
+        "/api/nomenclature/templated_sequence", json=templated_sequence_element
     )
     assert response.status_code == 200
     assert (
@@ -216,7 +216,7 @@ async def test_templated_sequence_nomenclature(
     )
 
     response = await async_client.post(
-        "/nomenclature/templated_sequence",
+        "/api/nomenclature/templated_sequence",
         json={
             "type": "TemplatedSequenceElement",
             "region": {
@@ -242,7 +242,7 @@ async def test_templated_sequence_nomenclature(
 @pytest.mark.asyncio
 async def test_fusion_nomenclature(async_client: AsyncClient):
     """Test correctness of fusion nomneclature endpoint."""
-    response = await async_client.post("/nomenclature/fusion", json=bcr_abl1.dict())
+    response = await async_client.post("/api/nomenclature/fusion", json=bcr_abl1.dict())
     assert response.status_code == 200
     assert (
         response.json().get("nomenclature", "")

@@ -21,7 +21,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/construct/structural_element/gene",
+    "/api/construct/structural_element/gene",
     operation_id="buildGeneElement",
     response_model=GeneElementResponse,
     response_model_exclude_none=True,
@@ -43,7 +43,7 @@ def build_gene_element(request: Request, term: str = Query("")) -> GeneElementRe
 
 
 @router.get(
-    "/construct/structural_element/tx_segment_ect",
+    "/api/construct/structural_element/tx_segment_ect",
     operation_id="buildTranscriptSegmentElementECT",
     response_model=TxSegmentElementResponse,
     response_model_exclude_none=True,
@@ -80,7 +80,7 @@ async def build_tx_segment_ect(
 
 
 @router.get(
-    "/construct/structural_element/tx_segment_gct",
+    "/api/construct/structural_element/tx_segment_gct",
     operation_id="buildTranscriptSegmentElementGCT",
     response_model=TxSegmentElementResponse,
     response_model_exclude_none=True,
@@ -127,7 +127,7 @@ async def build_tx_segment_gct(
 
 
 @router.get(
-    "/construct/structural_element/tx_segment_gcg",
+    "/api/construct/structural_element/tx_segment_gcg",
     operation_id="buildTranscriptSegmentElementGCG",
     response_model=TxSegmentElementResponse,
     response_model_exclude_none=True,
@@ -174,7 +174,7 @@ async def build_tx_segment_gcg(
 
 
 @router.get(
-    "/construct/structural_element/templated_sequence",
+    "/api/construct/structural_element/templated_sequence",
     operation_id="buildTemplatedSequenceElement",
     response_model=TemplatedSequenceElementResponse,
     response_model_exclude_none=True,
@@ -210,7 +210,7 @@ def build_templated_sequence_element(
 
 
 @router.get(
-    "/construct/domain",
+    "/api/construct/domain",
     operation_id="getDomain",
     response_model=GetDomainResponse,
     response_model_exclude_none=True,
@@ -255,7 +255,7 @@ def build_domain(
 
 
 @router.get(
-    "/construct/regulatory_element",
+    "/api/construct/regulatory_element",
     operation_id="getRegulatoryElement",
     response_model=RegulatoryElementResponse,
     response_model_exclude_none=True,

@@ -43,7 +43,7 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
     getInfo().then((infoResponse) => {
       setServiceInfo(infoResponse);
     });
-  });
+  }, []);
 
   const classes = useStyles();
   return (
@@ -83,7 +83,7 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
 
           <Box className={`${classes.menuHeader} ${classes.menuLink}`}>
             <Typography color="inherit">
-              <b>External Resources</b>
+              <b>Resources</b>
             </Typography>
           </Box>
           <Box ml="10px">
@@ -94,6 +94,15 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
                 color="inherit"
               >
                 Gene Fusion Specification
+              </Link>
+            </Box>
+            <Box className={classes.menuLink}>
+              <Link
+                href={`${process.env.REACT_APP_DEV_PROXY}/docs`}
+                target="_blank"
+                color="inherit"
+              >
+                API
               </Link>
             </Box>
             <Box className={classes.menuLink}>
@@ -116,6 +125,7 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
             </Box>
           </Box>
         </Box>
+
         <Box className={classes.lowerSection}>
           <Typography className={classes.versionText}>
             v{serviceInfo.curfu_version}

@@ -11,13 +11,14 @@ router = APIRouter()
 
 
 @router.get(
-    "/complete/gene",
+    "/api/complete/gene",
     operation_id="suggestGene",
     response_model=SuggestGeneResponse,
     response_model_exclude_none=True,
 )
 def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
     """Provide completion suggestions for term provided by user.
+    \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param str term: entered gene term
@@ -34,13 +35,14 @@ def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
 
 
 @router.get(
-    "/complete/domain",
+    "/api/complete/domain",
     operation_id="suggestDomain",
     response_model=AssociatedDomainResponse,
     response_model_exclude_none=True,
 )
 def suggest_domain(request: Request, gene_id: str = Query("")) -> ResponseDict:
     """Provide possible domains associated with a given gene to be selected by a user.
+    \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param str gene_id: normalized gene concept ID
