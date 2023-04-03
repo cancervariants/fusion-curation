@@ -31,13 +31,16 @@ const theme = createTheme({
     navbutton: "#0BD3D3",
     enabledtabs: "#FFFFFF",
     disabledtabs: "#F5F5FA",
-    viccBlue: "#2980b9",
   },
   palette: {
     primary: {
       main: COLORTHEMES.light["--primary"],
       contrastText: COLORTHEMES.light["--white"],
     },
+    secondary: {
+      main: COLORTHEMES.light["--secondary"],
+      contrastText: COLORTHEMES.light["--white"],
+    }
   },
 });
 
