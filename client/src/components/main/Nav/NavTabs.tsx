@@ -85,7 +85,7 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
       padding: "1em 2em",
     },
     indicator: {
-      backgroundColor: colorTheme["--primary"],
+      backgroundColor: colorTheme["--secondary"],
     },
     footer: {
       padding: "15px",
@@ -115,6 +115,7 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
           onChange={updateVisibleTab}
           aria-label="nav tabs example"
           className={classes.enabledtabs}
+          textColor="primary"
         >
           <LinkTab
             label="Structure"
@@ -173,7 +174,7 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
             <Button
               onClick={(event) => updateVisibleTab(event, visibleTab - 1)}
               variant="contained"
-              color="primary"
+              color="secondary"
             >
               Back
             </Button>
@@ -184,7 +185,7 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
             className="clear-all"
             onClick={handleClear}
             variant="contained"
-            color="secondary"
+            color="primary"
             disabled={!fusion.type}
           >
             Clear All
@@ -192,7 +193,7 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
           <Button
             onClick={(event) => updateVisibleTab(event, visibleTab + 1)}
             variant="contained"
-            color="primary"
+            color="secondary"
             disabled={!fusion.type}
             style={{
               display: visibleTab === 4 ? "none" : "",
