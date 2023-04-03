@@ -32,7 +32,7 @@ export enum Color {
   DODGER = "#4895EF",
   VIVID = "#4CC9F0",
   VICC_GREEN = "#A1D044",
-  VICC_BLUE = "#2980b9",
+  VICC_BLUE = "#334D5C",
   VICC_DARK_BLUE = "#18252B",
   VICC_BLACK = "#343131",
 }
@@ -72,7 +72,7 @@ export const COLORTHEMES: Record<ColorThemeType, ColorTheme> = {
   light: {
     "--primary": Color.VICC_BLUE,
     "--black-primary": Color.BLACKSEAFOAM,
-    "--secondary": Color.DARK_VIOLET,
+    "--secondary": Color.VICC_GREEN,
     "--tabs": Color.WHITE,
     "--background": Color.LIGHT_GRAY,
     "--white": Color.WHITE,
