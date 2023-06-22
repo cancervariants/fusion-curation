@@ -143,9 +143,9 @@ export const GetTranscripts: React.FC = () => {
           </Container>
           {transcripts.map((transcript, index: number) => {
             const resultData = {
-              "RefSeq Protein": transcript.RefSeq_nuc,
-              "RefSeq Nucleotide": transcript.RefSeq_prot,
-              "Ensembl Nucleotide": transcript.Ensembl_nuc,
+              "RefSeq Transcript": transcript.RefSeq_nuc,
+              "RefSeq Protein": transcript.RefSeq_prot,
+              "Ensembl Transcript": transcript.Ensembl_nuc,
               "Ensembl Protein": transcript.Ensembl_prot,
               Chromosome: transcript.GRCh38_chr,
               Start: transcript.chr_start,
