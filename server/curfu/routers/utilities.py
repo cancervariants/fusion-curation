@@ -195,32 +195,21 @@ async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse
     :param str sequence_id: user-provided sequence identifier to translate
     :return: Response object with ga4gh ID and aliases
     """
-    params: Dict[str, Any] = {"sequence": sequence}
-    sr = request.app.state.fusor.cool_seq_tool.seqrepo_access.seqrepo_client
-    try:
-        aliases_dict: Dict[str, str] = {
-            sr_id.split(":")[0]: sr_id for sr_id in sr.translate_identifier(sequence)
-        }
-    except KeyError:
+    params: Dict[str, Any] = {"sequence": sequence, "ga4gh_id": None, "aliases": []}
+    sr = request.app.state.fusor.cool_seq_tool.seqrepo_access
+
+    aliases, errors = sr.translate_identifier(sequence)
+    if errors:
         params["warnings"] = [f"Identifier {sequence} could not be retrieved"]
         return SequenceIDResponse(**params)
-    try:
-        params["ga4gh_id"] = aliases_dict["ga4gh"]
-    except KeyError:
-        logger.warning(f"No available ga4gh ID for {sequence}")
-        params["ga4gh_id"] = None
-    finally:
-        del aliases_dict["ga4gh"]
-    try:
-        params["refseq_id"] = aliases_dict["refseq"]
-    except KeyError:
-        logger.warning(f"No available refseq ID for {sequence}")
-        params["refseq_id"] = None
-    finally:
-        del aliases_dict["refseq"]
-        if "NCBI" in aliases_dict:
-            del aliases_dict["NCBI"]
-    params["aliases"] = list(aliases_dict.values())
+
+    for alias in aliases:
+        if alias.startswith("ga4gh"):
+            params["ga4gh_id"] = alias
+        elif alias.startswith("refseq"):
+            params["refseq_id"] = alias
+        else:
+            params["aliases"].append(alias)
     return SequenceIDResponse(**params)
 
 
