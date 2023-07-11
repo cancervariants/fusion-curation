@@ -198,18 +198,34 @@ async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse
     params: Dict[str, Any] = {"sequence": sequence, "ga4gh_id": None, "aliases": []}
     sr = request.app.state.fusor.cool_seq_tool.seqrepo_access
 
-    aliases, errors = sr.translate_identifier(sequence)
+    sr_ids, errors = sr.translate_identifier(sequence)
     if errors:
         params["warnings"] = [f"Identifier {sequence} could not be retrieved"]
         return SequenceIDResponse(**params)
 
-    for alias in aliases:
+    tmp_aliases = []
+    for alias in sr_ids:
         if alias.startswith("ga4gh"):
             params["ga4gh_id"] = alias
         elif alias.startswith("refseq"):
             params["refseq_id"] = alias
         else:
-            params["aliases"].append(alias)
+            tmp_aliases.append(alias)
+
+    # drop redundant IDs
+    prefix_dict = {}
+    for alias in tmp_aliases:
+        if alias.startswith("NCBI") and params.get("refseq_id"):
+            continue
+        prefix = alias.split(":")[0]
+        if prefix not in prefix_dict:
+            prefix_dict[prefix] = alias
+        else:
+            existing_alias = prefix_dict[prefix].split(":")[1]
+            if len(alias) > len(existing_alias):
+                prefix_dict[prefix] = alias
+    params["aliases"] = list(prefix_dict.values())
+
     return SequenceIDResponse(**params)
 
 

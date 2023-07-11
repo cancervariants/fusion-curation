@@ -24,7 +24,7 @@ async def test_get_mane_transcript(check_response):
                 if transcript == expected_transcript:
                     assert not matched, "Multiple redundant results?"
                     matched = True
-            assert matched, "Could not find matching result"
+            assert matched, f"Could not find matching result: {transcript}"
 
     await check_response(
         "/api/utilities/get_transcripts?term=BRAF",
@@ -41,7 +41,7 @@ async def test_get_mane_transcript(check_response):
                     "Ensembl_nuc": "ENST00000644969.2",
                     "Ensembl_prot": "ENSP00000496776.1",
                     "MANE_status": "MANE Plus Clinical",
-                    "GRCh38_chr": "7",
+                    "GRCh38_chr": "NC_000007.14",
                     "chr_start": "140719337",
                     "chr_end": "140924929",
                     "chr_strand": "-",
@@ -57,7 +57,7 @@ async def test_get_mane_transcript(check_response):
                     "Ensembl_nuc": "ENST00000646891.2",
                     "Ensembl_prot": "ENSP00000493543.1",
                     "MANE_status": "MANE Select",
-                    "GRCh38_chr": "7",
+                    "GRCh38_chr": "NC_000007.14",
                     "chr_start": "140730665",
                     "chr_end": "140924929",
                     "chr_strand": "-",
