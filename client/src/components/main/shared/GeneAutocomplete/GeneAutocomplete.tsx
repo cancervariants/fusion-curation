@@ -43,7 +43,7 @@ interface Props {
     | "top-end"
     | "top-start"
     | undefined;
-  promptText: string | undefined;
+  promptText?: string | undefined;
 }
 
 export const GeneAutocomplete: React.FC<Props> = ({
