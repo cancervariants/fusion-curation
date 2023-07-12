@@ -165,6 +165,8 @@ export const GeneAutocomplete: React.FC<Props> = ({
     return options;
   };
 
+  console.log(geneValue)
+
   return (
     <Autocomplete
       debug
@@ -189,6 +191,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
       }}
       clearOnBlur={false}
       clearOnEscape
+      disableClearable={inputValue.value === ""}
       renderInput={(params) => (
         <HelpTooltip
           placement={tooltipDirection}
