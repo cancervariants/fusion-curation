@@ -19,7 +19,7 @@ const TranscriptField: React.FC<Props> = ({
 }) => {
   const useStyles = makeStyles(() => ({
     textField: {
-      height: 38,
+      // height: 38,
       width: width ? width : 125,
     },
   }));
