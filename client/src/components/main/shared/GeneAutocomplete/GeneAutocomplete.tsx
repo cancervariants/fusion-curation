@@ -165,8 +165,6 @@ export const GeneAutocomplete: React.FC<Props> = ({
     return options;
   };
 
-  console.log(geneValue)
-
   return (
     <Autocomplete
       debug
