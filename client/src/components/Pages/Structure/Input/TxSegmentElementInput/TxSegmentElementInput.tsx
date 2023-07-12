@@ -404,7 +404,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   );
 
   const txInputField = (
-    <Box className="mid-inputs" minWidth="255px">
+    <Box className="mid-inputs" minWidth="250px">
       <TranscriptField
         fieldValue={txAc}
         valueSetter={setTxAc}

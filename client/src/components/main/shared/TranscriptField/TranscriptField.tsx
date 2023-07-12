@@ -7,7 +7,7 @@ interface Props {
   valueSetter: CallableFunction;
   errorText: string;
   keyHandler: KeyboardEventHandler<HTMLDivElement> | undefined;
-  width: number | undefined;
+  width?: number | undefined;
 }
 
 const TranscriptField: React.FC<Props> = ({
@@ -30,7 +30,7 @@ const TranscriptField: React.FC<Props> = ({
       title={
         <Typography>
           RefSeq transcript identifier, e.g.{" "}
-          <Typography variant="overline">NM_0002529.3</Typography>.
+          <Typography variant="overline">NM_002529.3</Typography>.
         </Typography>
       }
     >
