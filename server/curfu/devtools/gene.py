@@ -5,6 +5,7 @@ from datetime import datetime as dt
 from timeit import default_timer as timer
 
 from gene.query import QueryHandler
+from gene.database import create_db
 import click
 
 from curfu import APP_ROOT, logger
@@ -32,7 +33,7 @@ class GeneSuggestionBuilder:
 
         TODO: think about how best to force prod environment
         """
-        self.q = QueryHandler()
+        self.q = QueryHandler(create_db())  # must be DynamoDB
         self.genes = self.q.db.genes
 
     @staticmethod
