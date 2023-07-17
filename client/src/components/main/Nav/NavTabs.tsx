@@ -196,7 +196,7 @@ export default function NavTabs(props: NavTabsProps): React.ReactElement {
             color="secondary"
             disabled={!fusion.type}
             style={{
-              display: visibleTab === 4 ? "none" : "",
+              display: visibleTab === 3 ? "none" : "",
               marginLeft: "10px",
             }}
           >
