@@ -28,7 +28,6 @@ interface Props {
   setGene: CallableFunction;
   geneText: string;
   setGeneText: CallableFunction;
-  style: CSSProperties;
   tooltipDirection:
     | "bottom"
     | "left"
@@ -43,7 +42,7 @@ interface Props {
     | "top-end"
     | "top-start"
     | undefined;
-  promptText: string | undefined;
+  promptText?: string | undefined;
 }
 
 export const GeneAutocomplete: React.FC<Props> = ({
@@ -51,7 +50,6 @@ export const GeneAutocomplete: React.FC<Props> = ({
   setGene,
   geneText,
   setGeneText,
-  style,
   tooltipDirection,
   promptText,
 }) => {
@@ -169,7 +167,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
     <Autocomplete
       debug
       value={geneValue}
-      style={{ minWidth: "100px" }}
+      style={{ minWidth: "150px" }}
       onChange={(_, newValue) => {
         if (newValue) {
           updateSelection(newValue);
@@ -189,6 +187,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
       }}
       clearOnBlur={false}
       clearOnEscape
+      disableClearable={inputValue.value === ""}
       renderInput={(params) => (
         <HelpTooltip
           placement={tooltipDirection}
@@ -208,7 +207,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
             variant="standard"
             label={promptText ? promptText : "Gene Symbol"}
             margin="dense"
-            style={style}
+            style={{minWidth: "250px !important"}}
             error={geneText !== ""}
             helperText={geneText ? geneText : null}
           />

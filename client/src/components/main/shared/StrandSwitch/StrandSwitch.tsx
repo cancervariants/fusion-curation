@@ -36,7 +36,7 @@ export default function StrandSwitch(
           classes={{ track: classes.track }}
           checked={selectedStrand === "-"}
           icon={<AddCircleIcon color="primary" />}
-          checkedIcon={<RemoveCircleIcon />}
+          checkedIcon={<RemoveCircleIcon color="primary" />}
           disableRipple
         />
       }

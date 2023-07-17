@@ -7,7 +7,7 @@ interface Props {
   valueSetter: CallableFunction;
   errorText: string;
   keyHandler: KeyboardEventHandler<HTMLDivElement> | undefined;
-  width: number | undefined;
+  width?: number | undefined;
 }
 
 const ChromosomeField: React.FC<Props> = ({
