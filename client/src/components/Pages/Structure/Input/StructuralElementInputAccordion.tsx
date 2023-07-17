@@ -22,7 +22,7 @@ const useStyles = makeStyles(() => ({
   cardHeaderTitleRoot: {
     textAlign: "center",
     fontSize: "15px !important",
-    marginRight: "10px !important",
+    paddingRight: "10px !important",
   },
   cardHeaderSubTitleRoot: {
     textAlign: "center",
@@ -31,7 +31,7 @@ const useStyles = makeStyles(() => ({
     marginRight: "10px !important",
   },
   cardActionsRoot: {
-    padding: "0 8px 8px 16px !important",
+    padding: "16px !important",
     minHeight: "40px",
   },
 }));
@@ -80,14 +80,16 @@ const StructuralElementInputAccordion: React.FC<
         avatar={icon}
         action={
           <Tooltip title="Delete element">
-            <DeleteIcon
+            <IconButton
               style={{ cursor: "pointer" }}
               onClick={(event) => {
                 event.stopPropagation();
                 handleDelete(element.element_id);
               }}
               onFocus={(event) => event.stopPropagation()}
-            />
+            >
+              <DeleteIcon />
+            </IconButton>
           </Tooltip>
         }
         title={element.nomenclature ? element.nomenclature : null}
