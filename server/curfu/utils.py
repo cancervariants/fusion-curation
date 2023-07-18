@@ -1,4 +1,5 @@
 """Miscellaneous helper functions."""
+import logging
 import os
 from pathlib import Path
 from typing import TypeVar, List
@@ -9,8 +10,10 @@ from botocore.exceptions import ClientError
 
 from botocore.config import Config
 
-from curfu import logger, APP_ROOT
+from curfu import APP_ROOT
 
+
+logger = logging.getLogger("curfu")
 ObjectSummary = TypeVar("ObjectSummary")
 
 

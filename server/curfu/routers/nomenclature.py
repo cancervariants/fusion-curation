@@ -1,4 +1,5 @@
 """Provide routes for nomenclature generation."""
+import logging
 from typing import Dict
 
 from fastapi import Request, APIRouter, Body
@@ -17,10 +18,10 @@ from fusor.nomenclature import (
 from fusor.exceptions import FUSORParametersException
 from pydantic import ValidationError
 
-from curfu import logger
 from curfu.schemas import NomenclatureResponse, ResponseDict
 
 
+logger = logging.getLogger("curfu")
 router = APIRouter()
 
 

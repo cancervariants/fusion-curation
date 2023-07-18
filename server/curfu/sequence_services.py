@@ -1,8 +1,4 @@
 """Provide sequence ID generation services."""
-import logging
-
-logger = logging.getLogger("curfu")
-logger.setLevel(logging.DEBUG)
 
 
 class InvalidInputException(Exception):

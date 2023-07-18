@@ -1,4 +1,5 @@
 """Provide routes for app utility endpoints"""
+import logging
 from typing import Dict, Optional, List, Any
 import tempfile
 import os
@@ -9,7 +10,6 @@ from fastapi.responses import FileResponse
 from starlette.background import BackgroundTasks
 from gene import schemas as GeneSchemas
 
-from curfu import logger
 from curfu.schemas import (
     GetTranscriptsResponse,
     CoordsUtilsResponse,
@@ -17,6 +17,8 @@ from curfu.schemas import (
 )
 from curfu.sequence_services import get_strand, InvalidInputException
 
+
+logger = logging.getLogger("curfu")
 
 router = APIRouter()
 

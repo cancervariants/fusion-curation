@@ -1,4 +1,5 @@
 """Wrapper for required Gene Normalization services."""
+import logging
 from typing import List, Tuple, Dict, Union
 import csv
 
@@ -6,9 +7,11 @@ from gene.query import QueryHandler
 from gene.schemas import MatchType
 from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 
-from curfu import logger, ServiceWarning, MAX_SUGGESTIONS
+from curfu import ServiceWarning, MAX_SUGGESTIONS
 from curfu.utils import get_data_file
 
+
+logger = logging.getLogger("curfu")
 
 # term -> (normalized ID, normalized label)
 Map = Dict[str, Tuple[str, str, str]]

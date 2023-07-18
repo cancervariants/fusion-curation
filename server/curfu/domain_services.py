@@ -4,11 +4,15 @@ TODO
  * domains file should be a JSON and pre-pruned to unique pairs
  * get_possible_domains shouldn't have to force uniqueness
 """
+import logging
 from typing import List, Dict
 import csv
 
-from curfu import logger, ServiceWarning
+from curfu import ServiceWarning
 from curfu.utils import get_data_file
+
+
+logger = logging.getLogger("curfu")
 
 
 class DomainService:

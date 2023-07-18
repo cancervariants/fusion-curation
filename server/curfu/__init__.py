@@ -20,7 +20,7 @@ else:
 logging.basicConfig(
     filename=LOG_FN, format="[%(asctime)s] - %(name)s - %(levelname)s : %(message)s"
 )
-logger = logging.getLogger("fusion_backend")
+logger = logging.getLogger("curfu")
 logger.setLevel(logging.DEBUG)
 logger.handlers = []
 

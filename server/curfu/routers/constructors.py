@@ -1,11 +1,11 @@
 """Provide routes for element construction endpoints"""
+import logging
 from typing import Optional
 
 from fastapi import Query, Request, APIRouter
 from pydantic import ValidationError
 from fusor.models import RegulatoryClass, Strand, DomainStatus
 
-from curfu import logger
 from curfu.schemas import (
     GeneElementResponse,
     RegulatoryElementResponse,
@@ -17,6 +17,7 @@ from curfu.schemas import (
 from curfu.routers import parse_identifier
 from curfu.sequence_services import get_strand, InvalidInputException
 
+logger = logging.getLogger("curfu")
 router = APIRouter()
 
 

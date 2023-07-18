@@ -1,7 +1,8 @@
 """Utility functions for application setup."""
 import ftplib
+import logging
 
-from curfu import logger
+logger = logging.getLogger("curfu")
 
 
 def ftp_download(domain: str, path: str, fname: str, callback) -> None:
