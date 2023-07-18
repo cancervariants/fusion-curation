@@ -9,7 +9,7 @@ from curfu import APP_ROOT
 from curfu.devtools import DEFAULT_INTERPRO_TYPES
 from curfu.devtools.build_client_types import build_client_types
 from curfu.devtools.interpro import build_gene_domain_maps
-from curfu.devtools.gene import GeneSuggestionBuilder
+from curfu.devtools.gene_suggest import GeneSuggestionBuilder
 
 
 @click.command()
