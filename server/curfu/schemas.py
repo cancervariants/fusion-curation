@@ -149,10 +149,10 @@ class SuggestGeneResponse(Response):
     """Response model for gene autocomplete suggestions endpoint."""
 
     term: StrictStr
-    # complete term, normalized ID, normalized label
-    symbols: Optional[List[Tuple[str, str, str]]]
-    prev_symbols: Optional[List[Tuple[str, str, str]]]
-    aliases: Optional[List[Tuple[str, str, str]]]
+    # complete term, normalized ID, normalized label, chromosome ID, strand
+    symbols: Optional[List[Tuple[str, str, str, str, str]]]
+    prev_symbols: Optional[List[Tuple[str, str, str, str, str]]]
+    aliases: Optional[List[Tuple[str, str, str, str, str]]]
 
 
 class DomainParams(BaseModel):

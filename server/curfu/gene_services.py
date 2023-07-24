@@ -11,7 +11,7 @@ from curfu.utils import get_data_file
 
 
 # term -> (normalized ID, normalized label)
-Map = Dict[str, Tuple[str, str, str]]
+Map = Dict[str, Tuple[str, str, str, str, str]]
 
 
 class GeneService:
@@ -32,8 +32,20 @@ class GeneService:
             map_file = get_data_file(f"gene_{name}")
             with open(map_file, "r") as m:
                 reader = csv.reader(m, delimiter="\t")
-                for term, normalized_id, normalized_label in reader:
-                    map[term.lower()] = (term, normalized_id, normalized_label)
+                for (
+                    term,
+                    normalized_id,
+                    normalized_label,
+                    chromosome_id,
+                    strand,
+                ) in reader:
+                    map[term.lower()] = (
+                        term,
+                        normalized_id,
+                        normalized_label,
+                        chromosome_id,
+                        strand,
+                    )
 
     @staticmethod
     def get_normalized_gene(
@@ -122,7 +134,7 @@ class GeneService:
         suggestions = {}
         suggestions["symbols"] = sorted(
             [
-                (v[0], v[1], v[0])
+                (v[0], v[1], v[0], v[3], v[4])
                 for t, v in self.symbols_map.items()
                 if t.startswith(q_lower)
             ],
@@ -130,7 +142,7 @@ class GeneService:
         )
         suggestions["prev_symbols"] = sorted(
             [
-                (v[0], v[1], v[2])
+                (v[0], v[1], v[2], v[3], v[4])
                 for t, v in self.prev_symbols_map.items()
                 if t.startswith(q_lower)
             ],
@@ -138,7 +150,7 @@ class GeneService:
         )
         suggestions["aliases"] = sorted(
             [
-                (v[0], v[1], v[2])
+                (v[0], v[1], v[2], v[3], v[4])
                 for t, v in self.aliases_map.items()
                 if t.startswith(q_lower)
             ],
