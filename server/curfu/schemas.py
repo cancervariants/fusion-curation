@@ -23,7 +23,10 @@ from cool_seq_tool.schemas import GenomicData
 ResponseWarnings = Optional[List[StrictStr]]
 
 ResponseDict = Dict[
-    str, Union[str, CURIE, List[str], List[Tuple[str, str, str, str]], FunctionalDomain]
+    str,
+    Union[
+        str, int, CURIE, List[str], List[Tuple[str, str, str, str]], FunctionalDomain
+    ],
 ]
 Warnings = List[str]
 
@@ -149,6 +152,7 @@ class SuggestGeneResponse(Response):
     """Response model for gene autocomplete suggestions endpoint."""
 
     term: StrictStr
+    matches_count: StrictInt
     # complete term, normalized ID, normalized label
     symbols: Optional[List[Tuple[str, str, str]]]
     prev_symbols: Optional[List[Tuple[str, str, str]]]

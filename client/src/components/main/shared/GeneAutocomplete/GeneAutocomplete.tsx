@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { TextField, Typography } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import React, { useState, useEffect, ReactNode } from "react";
+import { Box, TextField, Typography } from "@material-ui/core";
+import Autocomplete, {
+  AutocompleteRenderGroupParams,
+} from "@material-ui/lab/Autocomplete";
 import { getGeneId, getGeneSuggestions } from "../../../../services/main";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import {
@@ -16,7 +18,11 @@ export enum GeneSuggestionType {
   prevSymbol = "Previous Symbol",
   none = "",
 }
-export type SuggestedGeneOption = { value: string; type: GeneSuggestionType };
+
+export type SuggestedGeneOption = {
+  value: string;
+  type: GeneSuggestionType | string;
+};
 
 const defaultGeneOption: SuggestedGeneOption = {
   value: "",
@@ -76,22 +82,15 @@ export const GeneAutocomplete: React.FC<Props> = ({
       setGeneText("");
       setGeneOptions([]);
     } else {
-      const delayDebounce = setTimeout(() => {
-        getGeneSuggestions(inputValue.value).then((suggestResponseJson) => {
-          if (
-            !suggestResponseJson.symbols &&
-            !suggestResponseJson.prev_symbols &&
-            !suggestResponseJson.aliases
-          ) {
-            setGeneText("Unrecognized term");
-            setGeneOptions([]);
-          } else {
-            setGeneText("");
-            setGeneOptions(buildOptions(suggestResponseJson));
-          }
-        });
-      }, 300);
-      return () => clearTimeout(delayDebounce);
+      getGeneSuggestions(inputValue.value).then((suggestResponseJson) => {
+        if (suggestResponseJson.matches_count === 0) {
+          setGeneText("Unrecognized term");
+          setGeneOptions([]);
+        } else {
+          setGeneText("");
+          setGeneOptions(buildOptions(suggestResponseJson, inputValue.value));
+        }
+      });
     }
   }, [inputValue]);
 
@@ -102,44 +101,19 @@ export const GeneAutocomplete: React.FC<Props> = ({
     }
   }, [gene]);
 
-  /**
-   * Attempt exact match for entered text. Should be called if user-submitted text
-   * isn't specific enough to narrow options down to a reasonable number (the
-   * `MAX_SUGGESTIONS` value set server-side), in case their entered value
-   * happens to match a real gene term.
-   * No return value, but updates dropdown options if successful.
-   */
-  const tryExactMatch = (input: string) => {
-    getGeneId(input).then((geneResponseJson: NormalizeGeneResponse) => {
-      // just provide entered term, but correctly-cased
-      setGeneText("");
-      if (geneResponseJson.cased) {
-        setGeneOptions([
-          {
-            value: geneResponseJson.cased,
-            type: geneResponseJson.cased.match(/^\w[^:]*:.+$/)
-              ? GeneSuggestionType.conceptId
-              : GeneSuggestionType.symbol,
-          },
-        ]);
-      }
-    });
+  const makeGroup = (params: AutocompleteRenderGroupParams): ReactNode => {
+    const children = params.group.includes("possible") ? [] : params.children;
+    const groupElement = (
+      <div key={params.key} className="autocomplete-group-name">
+        {params.group}
+      </div>
+    );
+    return [groupElement, children];
   };
 
-  // if geneOptions is empty, try an exact match (note: keep this useEffect separately, as we want to do this after all of the autocomplete lookups)
-  useEffect(() => {
-    if (!geneOptions.length) {
-      tryExactMatch(inputValue.value);
-    }
-  }, [geneOptions]);
-
-  /**
-   * Construct options for use in MUI Autocomplete GroupBy
-   * @param suggestResponse response from suggestions API received from server
-   * @returns array of option objects
-   */
   const buildOptions = (
-    suggestResponse: SuggestGeneResponse
+    suggestResponse: SuggestGeneResponse,
+    inputValue: string
   ): SuggestedGeneOption[] => {
     const options: SuggestedGeneOption[] = [];
     if (suggestResponse.symbols) {
@@ -159,6 +133,16 @@ export const GeneAutocomplete: React.FC<Props> = ({
       suggestResponse.aliases.map((suggestion) =>
         options.push({ value: suggestion[0], type: GeneSuggestionType.alias })
       );
+    }
+    if (suggestResponse.warnings) {
+      suggestResponse.warnings.map((warn: string) => {
+        if (warn.startsWith("Exceeds max matches")) {
+          options.push({
+            value: inputValue,
+            type: `+ ${suggestResponse.matches_count} possible options`,
+          });
+        }
+      });
     }
     return options;
   };
@@ -181,6 +165,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
       }}
       options={geneOptions}
       groupBy={(option) => (option ? option.type : "")}
+      renderGroup={makeGroup}
       getOptionLabel={(option) => (option.value ? option.value : "")}
       getOptionSelected={(option, selected) => {
         return option.value === selected.value;
@@ -207,7 +192,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
             variant="standard"
             label={promptText ? promptText : "Gene Symbol"}
             margin="dense"
-            style={{minWidth: "250px !important"}}
+            style={{ minWidth: "250px !important" }}
             error={geneText !== ""}
             helperText={geneText ? geneText : null}
           />

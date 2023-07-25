@@ -6,7 +6,7 @@ from gene.query import QueryHandler
 from gene.schemas import MatchType
 from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 
-from curfu import logger, ServiceWarning, MAX_SUGGESTIONS
+from curfu import logger, ServiceWarning
 from curfu.utils import get_data_file
 
 
@@ -144,15 +144,4 @@ class GeneService:
             ],
             key=lambda s: s[0],
         )
-
-        n = (
-            len(suggestions["symbols"])
-            + len(suggestions["prev_symbols"])
-            + len(suggestions["aliases"])
-        )
-        if n > MAX_SUGGESTIONS:
-            warn = f"Exceeds max matches: Got {n} possible matches for {query} (limit: {MAX_SUGGESTIONS})"  # noqa: E501
-            logger.warning(warn)
-            raise ServiceWarning(warn)
-        else:
-            return suggestions
+        return suggestions
