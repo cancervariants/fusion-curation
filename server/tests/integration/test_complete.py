@@ -39,3 +39,26 @@ async def test_normalize_gene(async_client: AsyncClient):
             ["A", "LOC110467529", "ncbigene:110467529", "NCBI:NC_000021.9", "+"]
         ],
     }
+
+    response = await async_client.get("/api/complete/gene?term=hgnc:1097")
+    assert response.status_code == 200
+    assert response.json() == {
+        "term": "hgnc:1097",
+        "matches_count": 11,
+        "concept_id": [
+            ["hgnc:1097", "BRAF", "hgnc:1097", "NCBI:NC_000007.14", "-"],
+            ["hgnc:10970", "SLC22A6", "hgnc:10970", "NCBI:NC_000011.10", "-"],
+            ["hgnc:10971", "SLC22A7", "hgnc:10971", "NCBI:NC_000006.12", "+"],
+            ["hgnc:10972", "SLC22A8", "hgnc:10972", "NCBI:NC_000011.10", "-"],
+            ["hgnc:10973", "SLC23A2", "hgnc:10973", "NCBI:NC_000020.11", "-"],
+            ["hgnc:10974", "SLC23A1", "hgnc:10974", "NCBI:NC_000005.10", "-"],
+            ["hgnc:10975", "SLC24A1", "hgnc:10975", "NCBI:NC_000015.10", "+"],
+            ["hgnc:10976", "SLC24A2", "hgnc:10976", "NCBI:NC_000009.12", "-"],
+            ["hgnc:10977", "SLC24A3", "hgnc:10977", "NCBI:NC_000020.11", "+"],
+            ["hgnc:10978", "SLC24A4", "hgnc:10978", "NCBI:NC_000014.9", "+"],
+            ["hgnc:10979", "SLC25A1", "hgnc:10979", "NCBI:NC_000022.11", "-"],
+        ],
+        "symbol": [],
+        "prev_symbols": [],
+        "aliases": [],
+    }

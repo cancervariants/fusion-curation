@@ -139,10 +139,9 @@ class GeneService:
         """
         q_upper = query.upper()
         suggestions = {}
-        if q_upper in self.concept_id_map:
-            suggestions["concept_id"] = [self.concept_id_map[q_upper]]
-        else:
-            suggestions["concept_id"] = []
+        suggestions["concept_id"] = self._get_completion_results(
+            q_upper, self.concept_id_map
+        )
         suggestions["symbol"] = self._get_completion_results(q_upper, self.symbol_map)
         suggestions["prev_symbols"] = self._get_completion_results(
             q_upper, self.prev_symbols_map
