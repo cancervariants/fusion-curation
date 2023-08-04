@@ -93,7 +93,7 @@ def domains(
 def genes() -> None:
     """Build gene mappings for use in Fusion Curation gene autocomplete."""
     builder = GeneSuggestionBuilder()
-    builder.build_gene_suggest_maps()
+    builder.build_gene_suggestion_file()
 
 
 @devtools.command()

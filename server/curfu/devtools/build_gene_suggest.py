@@ -1,56 +1,31 @@
 """Provide tools to build backend data relating to gene identification."""
-from typing import Dict, List, Optional, Tuple
+import csv
+from typing import Dict, List, Optional
 from pathlib import Path
 from datetime import datetime as dt
 from timeit import default_timer as timer
 from biocommons.seqrepo.seqrepo import SeqRepo
 
 from gene.database import create_db
-import click
 from gene.schemas import RecordType
+import click
 
 from curfu import APP_ROOT, SEQREPO_DATA_PATH, logger
-
-
-# type stub
-Map = Dict[str, Tuple[str, str, str, str, str]]
 
 
 class GeneSuggestionBuilder:
     """Provide build tools for gene autosuggest mappings.
 
-    Implemented as a class for easier sharing of DynamoDB resources between methods.
+    Implemented as a class for easier sharing of database resources between methods.
     """
 
-    xrefs_map = {}
-    symbol_map = {}
-    label_map = {}
-    prev_symbol_map = {}
-    alias_map = {}
-    assoc_with_map = {}
-
     def __init__(self):
-        """Initialize class.
-
-        TODO: think about how best to force prod environment
-        """
+        """Initialize class."""
         self.gene_db = create_db()
         self.sr = SeqRepo(SEQREPO_DATA_PATH)
+        self.genes = []
 
-    @staticmethod
-    def write_map_to_file(mapping: Map, outfile_path: Path) -> None:
-        """Save individual gene mapping to file.
-        :param Map mapping: dictionary keying values of a specific item_type set
-        to normalized gene data
-        :param outfile_path Path: path to save mapping at
-        """
-        with open(outfile_path, "w") as fp:
-            for normed in mapping.values():
-                fp.write(
-                    f"{normed[0]}\t{normed[1]}\t{normed[2]}\t{normed[3]}\t{normed[4]}\n"
-                )
-
-    def get_chromosome(self, record: Dict) -> Optional[str]:
+    def _get_chromosome(self, record: Dict) -> Optional[str]:
         """Extract readable chromosome identifier from gene extensions.
 
         :param record: stored normalized record
@@ -63,107 +38,109 @@ class GeneSuggestionBuilder:
                         location["sequence_id"], "NCBI"
                     )
                     if identifiers:
-                        return identifiers[0].split(":")[1]
+                        return identifiers[0]
         return None
 
-    def get_strand(self, extensions: List[Dict]) -> Optional[str]:
-        """TODO"""
-        for extension in extensions:
-            if extension["type"] == "strand":
-                return extension["value"]
-        return None
+    @staticmethod
+    def _make_list_column(values: List[str]) -> str:
+        """Convert a list of strings into a comma-separated string, filtering out
+        non-alphabetic values.
 
-    def update_maps(self, record: Dict) -> None:
-        """Add map entries for relevant data in given DB record.
-        :param Dict record: individual identity or merged record from DDB. Ideally,
-        should not duplicate previous records (i.e., `record` should not be a record
-        for which an associated merged record exists).
+        This static method takes a list of strings as input and converts it into a
+        comma-separated string. The method filters out non-alphabetic values and
+        ensures that only unique, alphabetic values are included in the result.
+
+        Note:
+        - The method performs a case-insensitive comparison when filtering unique
+          values.
+        - If the input list contains non-alphabetic values or duplicates, they will be
+          excluded from the result.
+        - The result will be a comma-separated string with no leading or trailing
+          commas.
+
+        :param values: A list of strings to be converted into a comma-separated string.
+        :return: A comma-separated string containing unique, alphabetic values from the
+            input list.
         """
-        norm_id = record["concept_id"]
-        norm_symbol = record["symbol"]
+        unique = {v.upper() for v in values}
+        filtered = {v for v in unique if any(char.isalpha() for char in v)}
+        return ",".join(filtered)
 
-        chromosome = self.get_chromosome(record)
+    def _process_gene_record(self, record: Dict) -> None:
+        """Add the gene record to processed suggestions.
+
+        :param record: gene record object retrieved from DB
+        """
+        symbol = record.get("symbol")
+        chromosome = self._get_chromosome(record)
         strand = record.get("strand")
-        if (chromosome is None) or (strand is None):
-            return None
+        if not all([symbol, chromosome, strand]):
+            return
+        gene_data = {
+            "concept_id": record["concept_id"],
+            "symbol": symbol,
+            "aliases": self._make_list_column(record.get("aliases", [])),
+            "previous_symbols": self._make_list_column(
+                record.get("previous_symbols", [])
+            ),
+            "chromosome": self._get_chromosome(record),
+            "strand": record.get("strand"),
+        }
+        self.genes.append(gene_data)
 
-        for xref in [norm_id] + record.get("xrefs", []):
-            self.xrefs_map[xref.lower()] = (
-                xref,
-                norm_id,
-                norm_symbol,
-                chromosome,
-                strand,
-            )
+    def _save_suggest_file(self, output_dir: Path) -> None:
+        """Save the gene suggestions table to a CSV file.
 
-        self.symbol_map[norm_symbol.lower()] = (
-            norm_symbol,
-            norm_id,
-            "",
-            chromosome,
-            strand,
-        )
+        This method takes the processed gene suggestions stored in the `self.genes`
+        attribute and saves them to a CSV file. The CSV file will have the following
+        columns:
 
-        for prev_symbol in record.get("previous_symbols", []):
-            self.prev_symbol_map[prev_symbol.lower()] = (
-                prev_symbol,
-                norm_id,
-                norm_symbol,
-                chromosome,
-                strand,
-            )
+        - `concept_id`: The unique identifier for the gene concept.
+        - `symbol`: The primary gene symbol.
+        - `aliases`: Comma-separated list of gene aliases.
+        - `previous_symbols`: Comma-separated list of previous gene symbols.
+        - `chromosome`: The chromosome where the gene is located.
+        - `strand`: The genomic strand where the gene is located.
 
-        for assoc_with in record.get("associated_with", []):
-            self.assoc_with_map[assoc_with.lower()] = (
-                assoc_with,
-                norm_id,
-                norm_symbol,
-                chromosome,
-                strand,
-            )
+        The CSV file will be named using the current date in the format
+        "gene_suggest_YYYYMMDD.csv" and will be saved in the specified `output_dir`.
 
-        label = record.get("label")
-        if label:
-            self.label_map[label.lower()] = (
-                label,
-                norm_id,
-                norm_symbol,
-                chromosome,
-                strand,
-            )
+        :param output_dir: The directory where the gene suggestions table file will be
+            saved.
+        """
+        fieldnames = [
+            "concept_id",
+            "symbol",
+            "aliases",
+            "previous_symbols",
+            "chromosome",
+            "strand",
+        ]
+        today = dt.strftime(dt.today(), "%Y%m%d")
+        with open(output_dir / f"gene_suggest_{today}.csv", "w") as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in self.genes:
+                writer.writerow(row)
 
-        for alias in record.get("aliases", []):
-            self.alias_map[alias.lower()] = (
-                alias,
-                norm_id,
-                norm_symbol,
-                chromosome,
-                strand,
-            )
+    def build_gene_suggestion_file(self, output_dir: Path = APP_ROOT / "data") -> None:
+        """
+        Build the gene suggestions table file by processing gene records from the gene
+        database.
 
-    def build_gene_suggest_maps(self, output_dir: Path = APP_ROOT / "data") -> None:
-        """Construct gene autocomplete suggestion mappings.
-        Scan existing gene_concepts table and gather all possible terms that can be
-        used to look up normalized concepts. Then, link them with their associated
-        normalized concept IDs/labels and save them.
+        - The gene database should be initialized before calling this method.
+        - The gene suggestions table file will be saved in CSV format.
 
-        :param Path output_dir: path to directory to save output files in
+        :param output_dir: The directory where the gene suggestions table file will be
+            saved. Default is the 'data' directory within the application root.
+        :return: None
         """
         start = timer()
 
         for record in self.gene_db.get_all_records(RecordType.MERGER):
-            self.update_maps(record)
+            self._process_gene_record(record)
 
-        today = dt.strftime(dt.today(), "%Y%m%d")
-        for map, name in (
-            (self.xrefs_map, "xrefs"),
-            (self.symbol_map, "symbols"),
-            (self.label_map, "labels"),
-            (self.prev_symbol_map, "prev_symbols"),
-            (self.alias_map, "aliases"),
-            (self.assoc_with_map, "assoc_with"),
-        ):
-            self.write_map_to_file(map, output_dir / f"gene_{name}_suggest_{today}.tsv")
+        self._save_suggest_file(output_dir)
 
         stop = timer()
         msg = f"Built gene suggestions table in {(stop - start):.5f} seconds."

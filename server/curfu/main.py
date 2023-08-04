@@ -103,7 +103,6 @@ def get_gene_services() -> GeneService:
     :return: GeneService instance
     """
     gene_services = GeneService()
-    gene_services.load_mapping()
     return gene_services
 
 

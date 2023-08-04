@@ -7,9 +7,8 @@
 
 /**
  * Define possible classes of Regulatory Elements. Options are the possible values
- *     for /regulatory_class value property in the INSDC controlled vocabulary:
- *     https://www.insdc.org/controlled-vocabulary-regulatoryclass
- *
+ * for /regulatory_class value property in the INSDC controlled vocabulary:
+ * https://www.insdc.org/controlled-vocabulary-regulatoryclass
  */
 export type RegulatoryClass =
   | "attenuator"
@@ -32,20 +31,7 @@ export type RegulatoryClass =
   | "terminator"
   | "other";
 /**
- * A string that refers to an object uniquely.  The lifetime and scope of
- * an id is defined by the sender. VRS does not impose any constraints on
- * strings used as ids in messages. However, to maximize sharability of data,
- * VRS RECOMMENDS that implementations use [W3C Compact URI (CURIE)]
- * (https://www.w3.org/TR/curie/) syntax. String CURIEs are represented as
- * `prefix`:`reference` (W3C terminology), but often referred to as `
- * namespace`:`accession` or `namespace`:`local id` colloquially. VRS also
- * RECOMMENDS that `prefix` be defined in identifiers.org. The `reference`
- * component is an unconstrained string. A CURIE is a URI.  URIs may *locate*
- * objects (i.e., specify where to retrieve them) or *name* objects
- * conceptually.  VRS uses CURIEs primarily as a naming mechanism.
- * Implementations MAY provide CURIE resolution mechanisms for prefixes to
- * make these objects locatable. Using internal ids in public messages is
- * strongly discouraged.
+ * A `W3C Compact URI <https://www.w3.org/TR/curie/>`_ formatted string. A CURIE string has the structure ``prefix``:``reference``, as defined by the W3C syntax.
  */
 export type CURIE = string;
 /**
@@ -53,9 +39,7 @@ export type CURIE = string;
  */
 export type Comparator = "<=" | ">=";
 /**
- * A interval on a stained metaphase chromosome specified by cytobands.
- * CytobandIntervals include the regions described by the start and end
- * cytobands.
+ * A character string representing cytobands derived from the *International System for Human Cytogenomic Nomenclature* (ISCN) `guidelines <http://doi.org/10.1159/isbn.978-3-318-06861-0>`_.
  */
 export type HumanCytoband = string;
 /**
@@ -63,16 +47,12 @@ export type HumanCytoband = string;
  */
 export type Strand = "+" | "-";
 /**
- * A character string of residues that represents a biological sequence
- * using the conventional sequence order (5’-to-3’ for nucleic acid sequences,
- * and amino-to-carboxyl for amino acid sequences). IUPAC ambiguity codes
- * are permitted in Sequences.
+ * A character string of Residues that represents a biological sequence using the conventional sequence order (5'-to-3' for nucleic acid sequences, and amino-to-carboxyl for amino acid sequences). IUPAC ambiguity codes are permitted in Sequences.
  */
 export type Sequence = string;
 /**
  * Permissible values for describing the underlying causative event driving an
- *     assayed fusion.
- *
+ * assayed fusion.
  */
 export type EventType = "rearrangement" | "read-through" | "trans-splicing";
 /**
@@ -143,13 +123,15 @@ export interface Extension {
   value?: unknown;
 }
 /**
- * A gene is an authoritative representation of one or more heritable
- * :ref:`Locations <Location>` that includes all sequence elements necessary
- * to perform a biological function. A gene may include regulatory,
- * transcribed, and/or other functional Locations.
+ * A reference to a Gene as defined by an authority. For human genes, the use of
+ * `hgnc <https://registry.identifiers.org/registry/hgnc>`_ as the gene authority is
+ * RECOMMENDED.
  */
 export interface Gene {
   type?: "Gene";
+  /**
+   * A CURIE reference to a Gene concept
+   */
   gene_id: CURIE;
 }
 /**
@@ -170,77 +152,128 @@ export interface LocationDescriptor {
  * A Location defined by an interval on a referenced Sequence.
  */
 export interface SequenceLocation {
+  /**
+   * Variation Id. MUST be unique within document.
+   */
   _id?: CURIE;
   type?: "SequenceLocation";
+  /**
+   * A VRS Computed Identifier for the reference Sequence.
+   */
   sequence_id: CURIE;
+  /**
+   * Reference sequence region defined by a SequenceInterval.
+   */
   interval: SequenceInterval | SimpleInterval;
 }
 /**
- * A SequenceInterval represents a span of sequence. Positions are always
- * represented by contiguous spans using interbase coordinates.
- * SequenceInterval is intended to be compatible with that in Sequence
- * Ontology ([SO:0000001](http://www.sequenceontology.org/browser/
- * current_svn/term/SO:0000001)), with the exception that the GA4GH VRS
- * SequenceInterval may be zero-width. The SO definition is for an extent
- * greater than zero.
+ * A SequenceInterval represents a span on a Sequence. Positions are always
+ * represented by contiguous spans using interbase coordinates or coordinate ranges.
  */
 export interface SequenceInterval {
   type?: "SequenceInterval";
-  start: Number | IndefiniteRange | DefiniteRange;
-  end: Number | IndefiniteRange | DefiniteRange;
-}
-/**
- * A simple number value as a VRS class.
- */
-export interface Number {
-  type?: "Number";
-  value: number;
-}
-/**
- * An indefinite range represented as a number and associated comparator.
- * The bound operator is interpreted as follows: `>=` are all values greater
- * than and including the value, `<=` are all numbers less than and including
- * the value.
- */
-export interface IndefiniteRange {
-  type?: "IndefiniteRange";
-  value: number;
-  comparator: Comparator;
+  /**
+   * The start coordinate or range of the interval. The minimum value of this coordinate or range is 0. MUST represent a coordinate or range less than the value of `end`.
+   */
+  start: DefiniteRange | IndefiniteRange | Number;
+  /**
+   * The end coordinate or range of the interval. The minimum value of this coordinate or range is 0. MUST represent a coordinate or range greater than the value of `start`.
+   */
+  end: DefiniteRange | IndefiniteRange | Number;
 }
 /**
  * A bounded, inclusive range of numbers.
  */
 export interface DefiniteRange {
   type?: "DefiniteRange";
+  /**
+   * The minimum value; inclusive
+   */
   min: number;
+  /**
+   * The maximum value; inclusive
+   */
   max: number;
 }
 /**
- * DEPRECATED: A SimpleInterval represents a span of sequence. Positions
- * are always represented by contiguous spans using interbase coordinates.
+ * A half-bounded range of numbers represented as a number bound and associated
+ * comparator. The bound operator is interpreted as follows: '>=' are all numbers
+ * greater than and including `value`, '<=' are all numbers less than and including
+ * `value`.
+ */
+export interface IndefiniteRange {
+  type?: "IndefiniteRange";
+  /**
+   * The bounded value; inclusive
+   */
+  value: number;
+  /**
+   * MUST be one of '<=' or '>=', indicating which direction the range is indefinite
+   */
+  comparator: Comparator;
+}
+/**
+ * A simple integer value as a VRS class.
+ */
+export interface Number {
+  type?: "Number";
+  /**
+   * The value represented by Number
+   */
+  value: number;
+}
+/**
+ * DEPRECATED: A SimpleInterval represents a span of sequence. Positions are always
+ * represented by contiguous spans using interbase coordinates.
  * This class is deprecated. Use SequenceInterval instead.
  */
 export interface SimpleInterval {
   type?: "SimpleInterval";
+  /**
+   * The start coordinate
+   */
   start: number;
+  /**
+   * The end coordinate
+   */
   end: number;
 }
 /**
  * A Location on a chromosome defined by a species and chromosome name.
  */
 export interface ChromosomeLocation {
-  type?: "ChromosomeLocation";
+  /**
+   * Location Id. MUST be unique within document.
+   */
   _id?: CURIE;
-  species_id: CURIE;
+  type?: "ChromosomeLocation";
+  /**
+   * CURIE representing a species from the `NCBI species taxonomy <https://registry.identifiers.org/registry/taxonomy>`_. Default: 'taxonomy:9606' (human)
+   */
+  species_id?: CURIE & string;
+  /**
+   * The symbolic chromosome name. For humans, For humans, chromosome names MUST be one of 1..22, X, Y (case-sensitive)
+   */
   chr: string;
+  /**
+   * The chromosome region defined by a CytobandInterval
+   */
   interval: CytobandInterval;
 }
 /**
- * A contiguous region specified by chromosomal bands features.
+ * A contiguous span on a chromosome defined by cytoband features. The span includes
+ * the constituent regions described by the start and end cytobands, as well as any
+ * intervening regions.
  */
 export interface CytobandInterval {
   type?: "CytobandInterval";
+  /**
+   * The start cytoband region. MUST specify a region nearer the terminal end (telomere) of the chromosome p-arm than `end`.
+   */
   start: HumanCytoband;
+  /**
+   * The end cytoband region. MUST specify a region nearer the terminal end (telomere) of the chromosome q-arm than `start`.
+   */
   end: HumanCytoband;
 }
 /**
@@ -395,7 +428,7 @@ export interface FunctionalDomain {
  */
 export interface ClientAssayedFusion {
   type?: "AssayedFusion";
-  regulatory_element?: RegulatoryElement;
+  regulatory_element?: ClientRegulatoryElement;
   structural_elements: (
     | ClientTranscriptSegmentElement
     | ClientGeneElement
@@ -405,6 +438,18 @@ export interface ClientAssayedFusion {
   )[];
   causative_event: CausativeEvent;
   assay: Assay;
+}
+/**
+ * Define regulatory element object used client-side.
+ */
+export interface ClientRegulatoryElement {
+  type?: "RegulatoryElement";
+  regulatory_class: RegulatoryClass;
+  feature_id?: string;
+  associated_gene?: GeneDescriptor;
+  feature_location?: LocationDescriptor;
+  display_class: string;
+  nomenclature: string;
 }
 /**
  * TranscriptSegment element class used client-side.
@@ -478,7 +523,7 @@ export interface ClientUnknownGeneElement {
  */
 export interface ClientCategoricalFusion {
   type?: "CategoricalFusion";
-  regulatory_element?: RegulatoryElement;
+  regulatory_element?: ClientRegulatoryElement;
   structural_elements: (
     | ClientTranscriptSegmentElement
     | ClientGeneElement
@@ -508,18 +553,6 @@ export interface ClientFunctionalDomain {
   label?: string;
   sequence_location?: LocationDescriptor;
   domain_id: string;
-}
-/**
- * Define regulatory element object used client-side.
- */
-export interface ClientRegulatoryElement {
-  type?: "RegulatoryElement";
-  regulatory_class: RegulatoryClass;
-  feature_id?: string;
-  associated_gene?: GeneDescriptor;
-  feature_location?: LocationDescriptor;
-  display_class: string;
-  nomenclature: string;
 }
 /**
  * Abstract class to provide identification properties used by client.
@@ -663,9 +696,11 @@ export interface ServiceInfoResponse {
 export interface SuggestGeneResponse {
   warnings?: string[];
   term: string;
-  symbols?: [string, string, string][];
-  prev_symbols?: [string, string, string][];
-  aliases?: [string, string, string][];
+  matches_count: number;
+  concept_id?: [string, string, string, string, string][];
+  symbol?: [string, string, string, string, string][];
+  prev_symbols?: [string, string, string, string, string][];
+  aliases?: [string, string, string, string, string][];
 }
 /**
  * Response model for transcript segment element construction endpoint.
