@@ -161,7 +161,10 @@ const App = (): JSX.Element => {
    * readability.
    */
   const fusionIsEmpty = () => {
-    if (fusion?.structural_elements.length === 0 && fusion?.regulatory_element === undefined) {
+    if (
+      fusion?.structural_elements.length === 0 &&
+      fusion?.regulatory_element === undefined
+    ) {
       return true;
     } else if (fusion.structural_elements.length > 0) {
       return false;

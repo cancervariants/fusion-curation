@@ -443,7 +443,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 tooltipDirection="bottom"
                 geneText={txGeneText}
                 setGeneText={setTxGeneText}
-                style={{ width: 125 }}
+                setChromosome={setTxChrom}
+                setStrand={setTxStrand}
               />
             </Box>
             {genomicCoordinateInfo}
