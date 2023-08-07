@@ -297,11 +297,28 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             txSegmentResponse.warnings &&
             txSegmentResponse.warnings?.length > 0
           ) {
+            // transcript invalid
             const txWarning = `Unable to get exons for ${txAc}`;
             if (txSegmentResponse.warnings.includes(txWarning)) {
               setTxAcText("Unrecognized value");
             }
+            // exon(s) invalid
+            if (startingExon !== undefined) {
+              const startWarning = `Exon ${startingExon} does not exist on ${txAc}`;
+              if (txSegmentResponse.warnings.includes(startWarning)) {
+                setStartingExonText("Invalid");
+              }
+            }
+            if (endingExon !== undefined) {
+              const endWarning = `Exon ${endingExon} does not exist on ${txAc}`;
+              if (txSegmentResponse.warnings.includes(endWarning)) {
+                setEndingExonText("Invalid");
+              }
+            }
           } else {
+            setTxAcText("");
+            setStartingExonText("");
+            setEndingExonText("");
             const inputParams = {
               input_type: txInputType,
               input_tx: txAc,
