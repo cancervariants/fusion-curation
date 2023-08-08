@@ -68,6 +68,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
   const [geneOptions, setGeneOptions] = useState<SuggestedGeneOption[]>([]);
   const [geneValue, setGeneValue] = useState(existingGeneOption);
   const [inputValue, setInputValue] = useState(existingGeneOption);
+  const [loading, setLoading] = useState(false);
 
   const { colorTheme } = useColorTheme();
   const useStyles = makeStyles(() => ({
@@ -100,8 +101,11 @@ export const GeneAutocomplete: React.FC<Props> = ({
     if (inputValue.value === "") {
       setGeneText("");
       setGeneOptions([]);
+      setLoading(false);
     } else {
+      setLoading(true);
       getGeneSuggestions(inputValue.value).then((suggestResponseJson) => {
+        setLoading(false);
         if (suggestResponseJson.matches_count === 0) {
           setGeneText("Unrecognized term");
           setGeneOptions([]);
@@ -203,7 +207,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
 
   return (
     <Autocomplete
-      debug
+      loading={loading}
       value={geneValue}
       style={{ minWidth: "150px" }}
       clearOnBlur={false}
