@@ -3,9 +3,6 @@ import { FusionContext } from "../../../../global/contexts/FusionContext";
 import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
 import { HelpPopover } from "../../../main/shared/HelpPopover/HelpPopover";
 import Builder from "../Builder/Builder";
-// import PopoverBox from "../../../main/shared/HelpPopover/PopoverBox";
-// import PopoverTypography from "../../../main/shared/HelpPopover/PopoverTypography";
-// import PopoverLink from "../../../main/shared/HelpPopover/PopoverLink";
 import { Typography, makeStyles, Link, Box } from "@material-ui/core";
 
 interface Props {

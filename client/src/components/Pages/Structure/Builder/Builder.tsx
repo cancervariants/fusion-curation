@@ -331,18 +331,22 @@ const Builder: React.FC = () => {
     }
   };
 
-  const nomenclatureContent = fusion.structural_elements
+  const nomenclatureParts = fusion.structural_elements
     .filter(
       (element: ClientElementUnion) => Boolean(element) && element.nomenclature
     )
-    .map(
-      (element: ClientElementUnion, index: number) =>
-        `${index ? "::" : ""}${element.nomenclature}`
-    );
+    .map((element: ClientElementUnion) => element.nomenclature);
+
+  if (fusion.regulatory_element && fusion.regulatory_element.nomenclature) {
+    nomenclatureParts.unshift(fusion.regulatory_element.nomenclature);
+  }
+  const nomenclature = nomenclatureParts.map(
+    (nom: string, index: number) => `${index ? "::" : ""}${nom}`
+  );
 
   const nomenclatureElement = (
     <Box className="hr-section" minHeight="30px">
-      {nomenclatureContent}
+      {nomenclature}
     </Box>
   );
 
