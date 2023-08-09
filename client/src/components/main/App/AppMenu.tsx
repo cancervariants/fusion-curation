@@ -1,8 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./App.scss";
-import { Box, Typography, makeStyles, Link, Drawer } from "@material-ui/core";
+import {
+  Box,
+  Typography,
+  makeStyles,
+  Link,
+  Drawer,
+  Switch,
+} from "@material-ui/core";
 import { ServiceInfoResponse } from "../../../services/ResponseModels";
 import { getInfo } from "../../../services/main";
+import { SettingsContext } from "../../../global/contexts/SettingsContext";
 
 const useStyles = makeStyles(() => ({
   menuLink: {
@@ -16,16 +24,27 @@ const useStyles = makeStyles(() => ({
   upperSection: {
     marginLeft: "10px",
   },
-  lowerSection: {
-    marginBottom: "10px",
-    display: "flex",
-    justifyContent: "center",
-  },
   drawerContainer: {
     height: "100%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
+  },
+  lowerSection: {
+    marginBottom: "10px",
+    display: "flex",
+    flexDirection: "column",
+  },
+  optionsContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  optionsText: { fontSize: "0.85rem" },
+  versionContainer: {
+    display: "flex",
+    justifyContent: "center",
+    paddingTop: "10px",
   },
   versionText: {
     fontSize: "0.7rem",
@@ -46,6 +65,9 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
   }, []);
 
   const classes = useStyles();
+
+  // const { enableToolTips, setEnableToolTips } = useContext(EnableToolTipsContext);
+
   return (
     <Drawer
       variant="permanent"
@@ -127,9 +149,17 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
         </Box>
 
         <Box className={classes.lowerSection}>
-          <Typography className={classes.versionText}>
-            v{serviceInfo.curfu_version}
-          </Typography>
+          <Box className={classes.optionsContainer}>
+            <Typography className={classes.optionsText}>
+              Enable tooltips
+            </Typography>
+            <Switch size="small" />
+          </Box>
+          <Box className={classes.versionContainer}>
+            <Typography className={classes.versionText}>
+              v{serviceInfo.curfu_version}
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </Drawer>

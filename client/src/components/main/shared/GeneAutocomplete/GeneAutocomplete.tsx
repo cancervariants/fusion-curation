@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { TextField, Typography } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { getGeneId, getGeneSuggestions } from "../../../../services/main";
-import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import {
   NormalizeGeneResponse,
   SuggestGeneResponse,
@@ -207,7 +206,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
             variant="standard"
             label={promptText ? promptText : "Gene Symbol"}
             margin="dense"
-            style={{minWidth: "250px !important"}}
+            style={{ minWidth: "250px !important" }}
             error={geneText !== ""}
             helperText={geneText ? geneText : null}
           />
