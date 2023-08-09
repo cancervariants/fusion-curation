@@ -13,7 +13,7 @@ import {
   makeStyles,
   ThemeProvider,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 // global contexts
 import { DomainOptionsContext } from "../../../global/contexts/DomainOptionsContext";
 import { FusionContext } from "../../../global/contexts/FusionContext";
@@ -147,13 +147,13 @@ const App = (): JSX.Element => {
   // disable superfluous react_dnd warnings
   // window["__react-beautiful-dnd-disable-dev-warnings"] = true;
 
-  const { colorTheme } = useColorTheme();
-  const useStyles = makeStyles(() => ({
-    titleBox: {
-      display: "flex",
-    },
-  }));
-  const classes = useStyles();
+  // const { colorTheme } = useColorTheme();
+  // const useStyles = makeStyles(() => ({
+  //   titleBox: {
+  //     display: "flex",
+  //   },
+  // }));
+  // const classes = useStyles();
 
   /**
    * Check if user has submitted any data.
@@ -161,7 +161,10 @@ const App = (): JSX.Element => {
    * readability.
    */
   const fusionIsEmpty = () => {
-    if (fusion?.structural_elements.length === 0 && fusion?.regulatory_element === undefined) {
+    if (
+      fusion?.structural_elements.length === 0 &&
+      fusion?.regulatory_element === undefined
+    ) {
       return true;
     } else if (fusion.structural_elements.length > 0) {
       return false;
@@ -311,11 +314,11 @@ const App = (): JSX.Element => {
       <ThemeProvider theme={theme}>
         <div
           className="app-main"
-          style={
-            {
-              ...colorTheme,
-            } as React.CSSProperties
-          }
+          // style={
+          //   {
+          //     ...colorTheme,
+          //   } as React.CSSProperties
+          // }
         >
           <AppBar
             style={{
@@ -331,17 +334,19 @@ const App = (): JSX.Element => {
               display="flex"
               justifyContent="space-between"
             >
-              <Box className={classes.titleBox}>
+              <Box
+              // className={classes.titleBox}
+              >
                 <h3>{title}</h3>
                 {path.includes("utilities") ? (
                   <></>
                 ) : (
                   <Box mt="12px" ml="5px">
                     <HelpPopover
-                      iconStyle={{ color: colorTheme["--background"] }}
-                      backgroundStyle={{
-                        backgroundColor: colorTheme["--drawer-background"],
-                      }}
+                    // iconStyle={{ color: colorTheme["--background"] }}
+                    // backgroundStyle={{
+                    //   backgroundColor: colorTheme["--drawer-background"],
+                    // }}
                     >
                       {path.includes("/assayed-fusion")
                         ? assayedHelpText

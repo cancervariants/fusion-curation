@@ -207,7 +207,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
             variant="standard"
             label={promptText ? promptText : "Gene Symbol"}
             margin="dense"
-            style={{minWidth: "250px !important"}}
+            style={{ minWidth: "250px !important" }}
             error={geneText !== ""}
             helperText={geneText ? geneText : null}
           />

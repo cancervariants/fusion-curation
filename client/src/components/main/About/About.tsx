@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -5,11 +6,10 @@ import {
   List,
   ListItem,
   ListItemText,
-} from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+} from "@mui/material";
+import { ArrowForwardIos } from "@mui/icons-material";
 import { getInfo } from "../../../services/main";
 import { ServiceInfoResponse } from "../../../services/ResponseModels";
-import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import "./About.scss";
 
 interface AboutProps {
@@ -61,7 +61,7 @@ const About: React.FC<AboutProps> = ({ show, setShow }) => {
           rel="noopener"
         >
           <ListItemText>Code Repository</ListItemText>
-          <ArrowForwardIosIcon style={{ fontSize: 20 }} />
+          <ArrowForwardIos style={{ fontSize: 20 }} />
         </ListItem>
         <ListItem
           button
@@ -73,7 +73,7 @@ const About: React.FC<AboutProps> = ({ show, setShow }) => {
           <ListItemText>
             Variant Interpretation for Cancer Consortium
           </ListItemText>
-          <ArrowForwardIosIcon style={{ fontSize: 20 }} />
+          <ArrowForwardIos style={{ fontSize: 20 }} />
         </ListItem>
       </List>
     </Dialog>
