@@ -10,7 +10,10 @@ import {
 } from "@material-ui/core";
 import { ServiceInfoResponse } from "../../../services/ResponseModels";
 import { getInfo } from "../../../services/main";
-import { SettingsContext } from "../../../global/contexts/SettingsContext";
+import {
+  SettingsContext,
+  SettingsType,
+} from "../../../global/contexts/SettingsContext";
 
 const useStyles = makeStyles(() => ({
   menuLink: {
@@ -39,8 +42,10 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+    margin: "0px 10px 0px 10px",
   },
-  optionsText: { fontSize: "0.85rem" },
+  optionsText: { fontSize: "0.8rem" },
   versionContainer: {
     display: "flex",
     justifyContent: "center",
@@ -51,12 +56,15 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-interface AppMenuProps {
-  open?: boolean;
-}
-
-export default function AppMenu(props: AppMenuProps): React.ReactElement {
+export default function AppMenu({
+  open,
+  settings,
+  setSettings,
+}): React.ReactElement {
   const [serviceInfo, setServiceInfo] = useState({} as ServiceInfoResponse);
+  const [tooltipsEnabled, setTooltipsEnabled] = useState(
+    settings.enableToolTips
+  );
 
   useEffect(() => {
     getInfo().then((infoResponse) => {
@@ -66,12 +74,15 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
 
   const classes = useStyles();
 
-  // const { enableToolTips, setEnableToolTips } = useContext(EnableToolTipsContext);
+  const handleTooltipsChange = (event) => {
+    setTooltipsEnabled(event.target.checked);
+    setSettings({ ...settings, enableToolTips: event.target.checked });
+  };
 
   return (
     <Drawer
       variant="permanent"
-      open={props.open}
+      open={open}
       anchor="left"
       className="menu-drawer"
     >
@@ -153,7 +164,11 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
             <Typography className={classes.optionsText}>
               Enable tooltips
             </Typography>
-            <Switch size="small" />
+            <Switch
+              size="small"
+              checked={tooltipsEnabled}
+              onChange={handleTooltipsChange}
+            />
           </Box>
           <Box className={classes.versionContainer}>
             <Typography className={classes.versionText}>

@@ -102,32 +102,23 @@ export const CausativeEvent: React.FC<Props> = () => {
               </Box>
             </HelpPopover>
           </Typography>
-          <HelpTooltip
-            placement="bottom"
-            title={
-              <Typography>
-                The type of event that generated the fusion.
-              </Typography>
-            }
+          <RadioGroup
+            aria-label="Causative event?"
+            name="controlled-radio-buttons-group"
+            value={eventType}
+            onChange={handleEventTypeChange}
           >
-            <RadioGroup
-              aria-label="Causative event?"
-              name="controlled-radio-buttons-group"
-              value={eventType}
-              onChange={handleEventTypeChange}
-            >
-              {["rearrangement", "trans-splicing", "read-through"].map(
-                (value, index) => (
-                  <FormControlLabel
-                    value={value}
-                    control={<Radio />}
-                    label={eventDisplayMap[value]}
-                    key={index}
-                  />
-                )
-              )}
-            </RadioGroup>
-          </HelpTooltip>
+            {["rearrangement", "trans-splicing", "read-through"].map(
+              (value, index) => (
+                <FormControlLabel
+                  value={value}
+                  control={<Radio />}
+                  label={eventDisplayMap[value]}
+                  key={index}
+                />
+              )
+            )}
+          </RadioGroup>
         </Box>
       </FormControl>
       <Box className="right column">
