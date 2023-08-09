@@ -44,7 +44,6 @@ import AppMenu from "./AppMenu";
 import DemoDropdown from "./DemoDropdown";
 import { HelpPopover } from "../shared/HelpPopover/HelpPopover";
 import {
-  defaultSettings,
   initialSettings,
   SettingsContext,
   SettingsType,

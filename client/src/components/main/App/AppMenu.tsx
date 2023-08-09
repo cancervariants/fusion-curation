@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.scss";
 import {
   Box,
@@ -10,10 +10,6 @@ import {
 } from "@material-ui/core";
 import { ServiceInfoResponse } from "../../../services/ResponseModels";
 import { getInfo } from "../../../services/main";
-import {
-  SettingsContext,
-  SettingsType,
-} from "../../../global/contexts/SettingsContext";
 
 const useStyles = makeStyles(() => ({
   menuLink: {
