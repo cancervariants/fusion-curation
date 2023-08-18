@@ -163,7 +163,6 @@ export const Invalid: React.FC<Props> = ({
   );
 
   const CURIE_PATTERN = /^\w[^:]*:.+$/;
-  console.log(fusion)
 
   const geneElements = fusion.structural_elements.filter(el => el.type === "GeneElement").map(el => { return el.nomenclature })
   const findDuplicates = arr => arr.filter((item, index) => arr.indexOf(item) !== index)
