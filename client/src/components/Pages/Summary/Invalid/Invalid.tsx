@@ -49,6 +49,24 @@ export const Invalid: React.FC<Props> = ({
   }));
   const classes = useStyles();
 
+  const duplicateGeneError = (
+    <ListItemText>
+      A duplicated gene element was detected. Per the{" "}
+      <Link
+        href="https://fusions.cancervariants.org/en/latest/information_model.html#structural-elements"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Gene Fusion Specification
+      </Link>
+      , Internal Tandem Duplications are not considered gene fusions, as they do not involve an interaction
+      between <b>two or more genes</b>.{" "}
+      <Link href="#" onClick={() => setVisibleTab(0)}>
+        Edit elements to resolve.
+      </Link>
+    </ListItemText>
+  );
+
   const elementNumberError = (
     <ListItemText>
       Insufficient number of structural and regulatory elements. Per the{" "}
@@ -145,6 +163,11 @@ export const Invalid: React.FC<Props> = ({
   );
 
   const CURIE_PATTERN = /^\w[^:]*:.+$/;
+  console.log(fusion)
+
+  const geneElements = fusion.structural_elements.filter(el => el.type === "GeneElement").map(el => { return el.nomenclature })
+  const findDuplicates = arr => arr.filter((item, index) => arr.indexOf(item) !== index)
+  const duplicateGenes = findDuplicates(geneElements)
 
   const checkErrors = () => {
     const errorElements: React.ReactFragment[] = [];
@@ -165,6 +188,9 @@ export const Invalid: React.FC<Props> = ({
       if (!containsGene && !fusion.regulatory_element) {
         errorElements.push(noGeneElementsError);
       }
+    }
+    if (duplicateGenes.length > 0) {
+      errorElements.push(duplicateGeneError)
     }
     if (fusion.type == "AssayedFusion") {
       if (
