@@ -6,7 +6,7 @@ interface Props {
   fieldValue: string;
   valueSetter: CallableFunction;
   errorText: string;
-  keyHandler: KeyboardEventHandler<HTMLDivElement> | undefined;
+  keyHandler?: KeyboardEventHandler<HTMLDivElement> | undefined;
   width?: number | undefined;
 }
 
@@ -42,12 +42,12 @@ const ChromosomeField: React.FC<Props> = ({
       <TextField
         margin="dense"
         value={fieldValue}
-        onChange={(event) => valueSetter(event.target.value)}
         error={errorText != ""}
         onKeyDown={keyHandler}
         label="Chromosome"
         helperText={errorText != "" ? errorText : null}
         className={classes.textField}
+        InputProps={{readOnly: true}}
       />
     </HelpTooltip>
   );
