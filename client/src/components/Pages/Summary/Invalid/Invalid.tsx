@@ -49,23 +49,25 @@ export const Invalid: React.FC<Props> = ({
   }));
   const classes = useStyles();
 
-  const duplicateGeneError = (
-    <ListItemText>
-      A duplicated gene element was detected. Per the{" "}
-      <Link
-        href="https://fusions.cancervariants.org/en/latest/information_model.html#structural-elements"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Gene Fusion Specification
-      </Link>
-      , Internal Tandem Duplications are not considered gene fusions, as they do not involve an interaction
-      between <b>two or more genes</b>.{" "}
-      <Link href="#" onClick={() => setVisibleTab(0)}>
-        Edit elements to resolve.
-      </Link>
-    </ListItemText>
-  );
+  const duplicateGeneError = (duplicateGenes) => {
+    return (
+      <ListItemText>
+        Duplicate gene element(s) detected: <b>{duplicateGenes.join(", ")}</b>. Per the{" "}
+        <Link
+          href="https://fusions.cancervariants.org/en/latest/information_model.html#structural-elements"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Gene Fusion Specification
+        </Link>
+        , Internal Tandem Duplications are not considered gene fusions, as they do not involve an interaction
+        between <b>two or more genes</b>.{" "}
+        <Link href="#" onClick={() => setVisibleTab(0)}>
+          Edit elements to resolve.
+        </Link>
+      </ListItemText>
+    )
+  };
 
   const elementNumberError = (
     <ListItemText>
@@ -189,7 +191,7 @@ export const Invalid: React.FC<Props> = ({
       }
     }
     if (duplicateGenes.length > 0) {
-      errorElements.push(duplicateGeneError)
+      errorElements.push(duplicateGeneError(duplicateGenes))
     }
     if (fusion.type == "AssayedFusion") {
       if (
