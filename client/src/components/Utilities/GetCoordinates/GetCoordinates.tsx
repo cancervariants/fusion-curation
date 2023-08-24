@@ -152,7 +152,6 @@ const GetCoordinates: React.FC = () => {
       setResults(null);
       clearWarnings();
       coordsResponse.warnings.forEach((warning) => {
-        console.log(warning);
         if (warning.startsWith("Found more than one accession")) {
           setChromosomeText("Complete ID required");
         } else if (warning.startsWith("Unable to get exons for")) {
@@ -169,8 +168,6 @@ const GetCoordinates: React.FC = () => {
           const exonPattern = /Exon (\d*) does not exist on (.*)/;
           const match = exonPattern.exec(warning);
           if (match) {
-            console.log(exonStart);
-            console.log(match[1]);
             if (exonStart === match[1]) {
               setExonStartText("Out of range");
             } else if (exonEnd === match[1]) {
