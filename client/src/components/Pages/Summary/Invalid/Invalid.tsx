@@ -49,7 +49,7 @@ export const Invalid: React.FC<Props> = ({
   }));
   const classes = useStyles();
 
-  const duplicateGeneError = (duplicateGenes) => {
+  const duplicateGeneError = (duplicateGenes: string[]) => {
     return (
       <ListItemText>
         Duplicate gene element(s) detected: <b>{duplicateGenes.join(", ")}</b>. Per the{" "}
@@ -237,10 +237,10 @@ export const Invalid: React.FC<Props> = ({
         </Box>
         <List component={Paper} className={classes.list}>
           {checkErrors().map((error, index: number) => (
-            <>
+            <Box key={index}>
               {index > 0 ? <Divider /> : <></>}
               <ListItem key={index}>{error}</ListItem>
-            </>
+            </Box>
           ))}
         </List>
       </Box>
