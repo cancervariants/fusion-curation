@@ -1,4 +1,4 @@
-import React, { useState, useEffect, KeyboardEvent } from "react";
+import React, { useState, useEffect, KeyboardEvent, useRef } from "react";
 import { TextField, Box, Typography } from "@material-ui/core";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import {
@@ -18,6 +18,8 @@ interface TemplatedSequenceElementInputProps
 const TemplatedSequenceElementInput: React.FC<
   TemplatedSequenceElementInputProps
 > = ({ element, index, handleSave, handleDelete, icon }) => {
+  const mountedRef = useRef(true)
+
   const [chromosome, setChromosome] = useState<string>(
     element.input_chromosome || ""
   );
@@ -40,6 +42,10 @@ const TemplatedSequenceElementInput: React.FC<
   const [expanded, setExpanded] = useState<boolean>(!validated);
 
   useEffect(() => {
+    mountedRef.current = false
+  }, [])
+
+  useEffect(() => {
     if (inputComplete) {
       buildTemplatedSequenceElement();
     }
@@ -52,6 +58,7 @@ const TemplatedSequenceElementInput: React.FC<
   };
 
   const buildTemplatedSequenceElement = () => {
+    if (!mountedRef.current) return;
     getTemplatedSequenceElement(
       chromosome,
       strand,

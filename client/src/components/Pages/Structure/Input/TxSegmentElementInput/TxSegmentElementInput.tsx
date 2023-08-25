@@ -10,7 +10,7 @@ import {
   TranscriptSegmentElement,
   TxSegmentElementResponse,
 } from "../../../../../services/ResponseModels";
-import React, { useEffect, useState, KeyboardEvent, useContext } from "react";
+import React, { useEffect, useState, KeyboardEvent, useContext, useCallback, useRef } from "react";
 import {
   getTxSegmentElementECT,
   getTxSegmentElementGCG,
@@ -45,6 +45,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   icon,
 }) => {
   const { fusion } = useContext(FusionContext);
+  const mountedRef = useRef(true)
 
   const [txInputType, setTxInputType] = useState<InputType>(
     (element.input_type as InputType) || InputType.default
@@ -128,6 +129,10 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   const [expanded, setExpanded] = useState<boolean>(!validated);
 
   useEffect(() => {
+    mountedRef.current = false
+  }, [])
+
+  useEffect(() => {
     if (inputComplete) {
       buildTranscriptSegmentElement();
     }
@@ -145,10 +150,11 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     index,
   ]);
 
-  const handleTxElementResponse = (
+  const handleTxElementResponse = useCallback((
     txSegmentResponse: TxSegmentElementResponse,
     inputParams: Record<string, string>
   ) => {
+    if (!mountedRef.current) return;
     const responseElement =
       txSegmentResponse.element as TranscriptSegmentElement;
     const finishedElement: ClientTranscriptSegmentElement = {
@@ -156,7 +162,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       ...responseElement,
       ...inputParams,
     };
-
     if (!hasRequiredEnds) {
       finishedElement.nomenclature = "ERROR";
     } else {
@@ -170,7 +175,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
         }
       });
     }
-  };
+  }, [txGene, txChrom]);
 
   /**
    * Check for, and handle, warning about invalid chromosome input
@@ -226,6 +231,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
    * Request construction of tx segment element from server and handle response
    */
   const buildTranscriptSegmentElement = () => {
+    if (!mountedRef.current) return;
+
     // fire constructor request
     switch (txInputType) {
       case InputType.gcg:
