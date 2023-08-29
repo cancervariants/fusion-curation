@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   ClientGeneElement,
   NomenclatureResponse,
@@ -28,18 +28,12 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
   const [geneText, setGeneText] = useState<string>("");
   const validated = gene !== "" && geneText == "";
   const [expanded, setExpanded] = useState<boolean>(!validated);
-  const mountedRef = useRef(true)
-
-  useEffect(() => {
-    mountedRef.current = false
-  }, [])
 
   useEffect(() => {
     if (validated) buildGeneElement();
   }, [gene, geneText]);
 
   const buildGeneElement = () => {
-    if (!mountedRef.current) return;
       getGeneElement(gene).then((geneElementResponse) => {
       if (
         geneElementResponse.warnings &&

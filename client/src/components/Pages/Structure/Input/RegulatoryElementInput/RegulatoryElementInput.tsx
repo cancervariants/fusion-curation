@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import {
   ClientRegulatoryElement,
@@ -51,8 +51,6 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
 }) => {
   const { fusion, setFusion } = useContext(FusionContext);
 
-  const mountedRef = useRef(true)
-
   const [regElement, setRegElement] = useState<
     ClientRegulatoryElement | undefined
   >(fusion.regulatory_element);
@@ -69,16 +67,11 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
   const [expanded, setExpanded] = useState<boolean>(!validated);
 
   useEffect(() => {
-    mountedRef.current = false
-  }, [])
-
-  useEffect(() => {
     if (validated) handleAdd();
   }, [gene, geneText, elementClass]);
 
   const handleAdd = () => {
     if (elementClass === "default") return;
-    if (!mountedRef.current) return;
     getRegulatoryElement(elementClass, gene).then((reResponse) => {
       if (reResponse.warnings && reResponse.warnings.length > 0) {
         throw new Error(reResponse.warnings[0]);
