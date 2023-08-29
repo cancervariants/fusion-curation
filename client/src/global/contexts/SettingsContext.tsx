@@ -5,7 +5,7 @@ export type SettingsType = {
 };
 
 export const defaultSettings = {
-  enableToolTips: false,
+  enableToolTips: true,
 };
 
 export const initialSettings =
