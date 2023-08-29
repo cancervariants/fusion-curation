@@ -1,22 +1,21 @@
 """Provide routes for app utility endpoints"""
-from typing import Dict, Optional, List, Any
-import tempfile
 import os
+import tempfile
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Request, Query, HTTPException
+from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import FileResponse
+from gene import schemas as gene_schemas
 from starlette.background import BackgroundTasks
-from gene import schemas as GeneSchemas
 
 from curfu import logger
 from curfu.schemas import (
-    GetTranscriptsResponse,
     CoordsUtilsResponse,
+    GetTranscriptsResponse,
     SequenceIDResponse,
 )
-from curfu.sequence_services import get_strand, InvalidInputException
-
+from curfu.sequence_services import InvalidInputError, get_strand
 
 router = APIRouter()
 
@@ -36,7 +35,7 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
     :return: Dict containing transcripts if lookup succeeds, or warnings upon failure
     """
     normalized = request.app.state.fusor.gene_normalizer.normalize(term)
-    if normalized.match_type == GeneSchemas.MatchType.NO_MATCH:
+    if normalized.match_type == gene_schemas.MatchType.NO_MATCH:
         return {"warnings": [f"Normalization error: {term}"]}
     elif not normalized.gene_descriptor.gene_id.lower().startswith("hgnc"):
         return {"warnings": [f"No HGNC symbol: {term}"]}
@@ -157,7 +156,7 @@ async def get_exon_coords(
     if strand is not None:
         try:
             strand_validated = get_strand(strand)
-        except InvalidInputException:
+        except InvalidInputError:
             warnings.append(f"Received invalid strand value: {strand}")
     else:
         strand_validated = strand

@@ -1,16 +1,16 @@
 """Provide utilities relating to data fetched from InterPro service."""
-import gzip
-from typing import Tuple, Dict, Optional, Set
-from pathlib import Path
 import csv
-from datetime import datetime
-from timeit import default_timer as timer
+import gzip
 import os
 import shutil
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET  # noqa: N817
+from datetime import datetime
+from pathlib import Path
+from timeit import default_timer as timer
+from typing import Dict, Optional, Set, Tuple
 
-from gene.query import QueryHandler
 import click
+from gene.query import QueryHandler
 
 from curfu import APP_ROOT, logger
 from curfu.devtools import ftp_download
@@ -34,7 +34,7 @@ def download_protein2ipr(output_dir: Path) -> None:
     gz_file_path = output_dir / "protein2ipr.dat.gz"
     with open(gz_file_path, "w") as fp:
 
-        def writefile(data):
+        def writefile(data):  # noqa
             fp.write(data)
 
         ftp_download(
@@ -283,7 +283,7 @@ def build_gene_domain_maps(
     # get relevant Interpro IDs
     interpro_data_bin = []
 
-    def get_interpro_data(data):
+    def get_interpro_data(data):  # noqa
         interpro_data_bin.append(data)
 
     ftp_download(

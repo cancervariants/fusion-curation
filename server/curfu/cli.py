@@ -1,15 +1,15 @@
 """Provide command-line interface to application and associated utilities."""
 import os
-from typing import Optional
 from pathlib import Path
+from typing import Optional
 
 import click
-from curfu import APP_ROOT
 
+from curfu import APP_ROOT
 from curfu.devtools import DEFAULT_INTERPRO_TYPES
 from curfu.devtools.build_client_types import build_client_types
-from curfu.devtools.interpro import build_gene_domain_maps
 from curfu.devtools.gene import GeneSuggestionBuilder
+from curfu.devtools.interpro import build_gene_domain_maps
 
 
 @click.command()
@@ -27,9 +27,8 @@ def serve(port: int) -> None:
 
 
 @click.group()
-def devtools():
+def devtools() -> None:
     """Provide setup utilities for constructing data for Fusion Curation app."""
-    pass
 
 
 types_help = """

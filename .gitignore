@@ -160,7 +160,6 @@ dynamodb_local_latest/*
 
 # Build files
 Pipfile.lock
-pyproject.toml
 
 # client-side things
 curation/client/node_modules

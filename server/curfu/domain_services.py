@@ -1,13 +1,15 @@
 """Provide lookup services for functional domains.
 
-TODO
+Todo:
+----
  * domains file should be a JSON and pre-pruned to unique pairs
  * get_possible_domains shouldn't have to force uniqueness
-"""
-from typing import List, Dict
-import csv
 
-from curfu import logger, ServiceWarning
+"""
+import csv
+from typing import Dict, List
+
+from curfu import LookupServiceError, logger
 from curfu.utils import get_data_file
 
 
@@ -56,5 +58,5 @@ class DomainService:
             domains = self.domains[gene_id.lower()]
         except KeyError:
             logger.warning(f"Unable to retrieve associated domains for {gene_id}")
-            raise ServiceWarning
+            raise LookupServiceError
         return domains

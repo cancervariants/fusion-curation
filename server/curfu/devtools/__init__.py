@@ -1,10 +1,11 @@
 """Utility functions for application setup."""
 import ftplib
+from typing import Callable
 
 from curfu import logger
 
 
-def ftp_download(domain: str, path: str, fname: str, callback) -> None:
+def ftp_download(domain: str, path: str, fname: str, callback: Callable) -> None:
     """Acquire file via FTP.
     :param str domain: domain name for remote file host
     :param str path: path within host to desired file

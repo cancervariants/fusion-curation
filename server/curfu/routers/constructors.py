@@ -1,21 +1,21 @@
 """Provide routes for element construction endpoints"""
 from typing import Optional
 
-from fastapi import Query, Request, APIRouter
+from fastapi import APIRouter, Query, Request
+from fusor.models import DomainStatus, RegulatoryClass, Strand
 from pydantic import ValidationError
-from fusor.models import RegulatoryClass, Strand, DomainStatus
 
 from curfu import logger
+from curfu.routers import parse_identifier
 from curfu.schemas import (
     GeneElementResponse,
-    RegulatoryElementResponse,
-    TxSegmentElementResponse,
-    TemplatedSequenceElementResponse,
     GetDomainResponse,
+    RegulatoryElementResponse,
     ResponseDict,
+    TemplatedSequenceElementResponse,
+    TxSegmentElementResponse,
 )
-from curfu.routers import parse_identifier
-from curfu.sequence_services import get_strand, InvalidInputException
+from curfu.sequence_services import InvalidInputError, get_strand
 
 router = APIRouter()
 
@@ -28,6 +28,7 @@ router = APIRouter()
 )
 def build_gene_element(request: Request, term: str = Query("")) -> GeneElementResponse:
     """Construct valid gene element given user-provided term.
+
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
@@ -108,7 +109,7 @@ async def build_tx_segment_gct(
     if strand is not None:
         try:
             strand_validated = get_strand(strand)
-        except InvalidInputException:
+        except InvalidInputError:
             warning = f"Received invalid strand value: {strand}"
             logger.warning(warning)
             return TxSegmentElementResponse(warnings=[warning], element=None)
@@ -155,7 +156,7 @@ async def build_tx_segment_gcg(
     if strand is not None:
         try:
             strand_validated = get_strand(strand)
-        except InvalidInputException:
+        except InvalidInputError:
             warning = f"Received invalid strand value: {strand}"
             logger.warning(warning)
             return TxSegmentElementResponse(warnings=[warning], element=None)

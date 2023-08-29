@@ -1,11 +1,10 @@
 """Provide routes for autocomplete/term suggestion methods"""
-from typing import Dict, Any
+from typing import Any, Dict
 
-from fastapi import Query, APIRouter, Request
+from fastapi import APIRouter, Query, Request
 
-from curfu import ServiceWarning
-from curfu.schemas import ResponseDict, AssociatedDomainResponse, SuggestGeneResponse
-
+from curfu import LookupServiceError
+from curfu.schemas import AssociatedDomainResponse, ResponseDict, SuggestGeneResponse
 
 router = APIRouter()
 
@@ -29,7 +28,7 @@ def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
     try:
         possible_matches = request.app.state.genes.suggest_genes(term)
         response.update(possible_matches)
-    except ServiceWarning as e:
+    except LookupServiceError as e:
         response["warnings"] = [str(e)]
     return response
 
@@ -53,6 +52,6 @@ def suggest_domain(request: Request, gene_id: str = Query("")) -> ResponseDict:
     try:
         possible_matches = request.app.state.domains.get_possible_domains(gene_id)
         response["suggestions"] = possible_matches
-    except ServiceWarning:
+    except LookupServiceError:
         response["warnings"] = [f"No associated domains for {gene_id}"]
     return response
