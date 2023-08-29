@@ -1,5 +1,6 @@
 import { makeStyles, Tooltip } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
+import { SettingsContext } from "../../../../global/contexts/SettingsContext";
 
 const useStylesBootstrap = makeStyles(() => ({
   tooltip: {
@@ -14,6 +15,8 @@ const useStylesBootstrap = makeStyles(() => ({
 }));
 
 const BootstrapTooltip = ({ title, placement, children }) => {
+  const settings = useContext(SettingsContext);
+
   const classes = useStylesBootstrap();
 
   return (
@@ -22,6 +25,9 @@ const BootstrapTooltip = ({ title, placement, children }) => {
       placement={placement ? placement : "right"}
       title={title}
       classes={classes}
+      disableFocusListener={!settings.enableToolTips}
+      disableHoverListener={!settings.enableToolTips}
+      disableTouchListener={!settings.enableToolTips}
     >
       {children}
     </Tooltip>

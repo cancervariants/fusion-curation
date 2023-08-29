@@ -43,6 +43,11 @@ import LandingPage from "../Landing/LandingPage";
 import AppMenu from "./AppMenu";
 import DemoDropdown from "./DemoDropdown";
 import { HelpPopover } from "../shared/HelpPopover/HelpPopover";
+import {
+  initialSettings,
+  SettingsContext,
+  SettingsType,
+} from "../../../global/contexts/SettingsContext";
 
 type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 
@@ -69,6 +74,15 @@ const App = (): JSX.Element => {
     null
   );
   const [selectedDemo, setSelectedDemo] = React.useState("");
+  const [settings, setSettings] = useState(initialSettings);
+
+  const handleSetSettings = (newSettings: SettingsType) => {
+    sessionStorage.setItem(
+      "fusion-builder-settings",
+      JSON.stringify(newSettings)
+    );
+    setSettings(newSettings);
+  };
 
   // TODO: implement open/closing of AppMenu. This variable will become a state variable
   const open = true;
@@ -161,7 +175,10 @@ const App = (): JSX.Element => {
    * readability.
    */
   const fusionIsEmpty = () => {
-    if (fusion?.structural_elements.length === 0 && fusion?.regulatory_element === undefined) {
+    if (
+      fusion?.structural_elements.length === 0 &&
+      fusion?.regulatory_element === undefined
+    ) {
       return true;
     } else if (fusion.structural_elements.length > 0) {
       return false;
@@ -307,8 +324,8 @@ const App = (): JSX.Element => {
   );
 
   return (
-    <>
-      <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
+      <SettingsContext.Provider value={settings}>
         <div
           className="app-main"
           style={
@@ -359,7 +376,7 @@ const App = (): JSX.Element => {
               </Box>
             </Box>
           </AppBar>
-          <AppMenu />
+          <AppMenu settings={settings} setSettings={handleSetSettings} />
           <Box ml={leftMarginOffset} mr="15px" width="100%">
             {displayTool ? fusionsComponent : <LandingPage />}
           </Box>
@@ -392,8 +409,8 @@ const App = (): JSX.Element => {
             </Button>
           </DialogActions>
         </Dialog>
-      </ThemeProvider>
-    </>
+      </SettingsContext.Provider>
+    </ThemeProvider>
   );
 };
 
