@@ -34,7 +34,7 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
   }, [gene, geneText]);
 
   const buildGeneElement = () => {
-      getGeneElement(gene).then((geneElementResponse) => {
+    getGeneElement(gene).then((geneElementResponse) => {
       if (
         geneElementResponse.warnings &&
         geneElementResponse.warnings.length > 0

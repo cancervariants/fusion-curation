@@ -10,7 +10,7 @@ import {
   TranscriptSegmentElement,
   TxSegmentElementResponse,
 } from "../../../../../services/ResponseModels";
-import React, { useEffect, useState, KeyboardEvent, useContext, useCallback } from "react";
+import React, { useEffect, useState, KeyboardEvent, useContext } from "react";
 import {
   getTxSegmentElementECT,
   getTxSegmentElementGCG,
@@ -145,7 +145,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     index,
   ]);
 
-  const handleTxElementResponse = useCallback((
+  const handleTxElementResponse = (
     txSegmentResponse: TxSegmentElementResponse,
     inputParams: Record<string, string>
   ) => {
@@ -169,7 +169,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
         }
       });
     }
-  }, [txGene, txChrom]);
+  };
 
   /**
    * Check for, and handle, warning about invalid chromosome input
