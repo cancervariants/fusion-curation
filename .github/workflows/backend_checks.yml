@@ -1,0 +1,31 @@
+name: backend_checks
+on: [push, pull_request]
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: pip install server/
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: black
+        uses: psf/black@stable
+        with:
+          src: "./server"
+
+      - name: ruff
+        uses: chartboost/ruff-action@v1
+        with:
+          src: "./server"

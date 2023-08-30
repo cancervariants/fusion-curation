@@ -1,14 +1,13 @@
 """Provide tools to build backend data relating to gene identification."""
-from typing import Dict, Tuple
-from pathlib import Path
 from datetime import datetime as dt
+from pathlib import Path
 from timeit import default_timer as timer
+from typing import Dict, Tuple
 
-from gene.query import QueryHandler
 import click
+from gene.query import QueryHandler
 
 from curfu import APP_ROOT, logger
-
 
 # type stub
 Map = Dict[str, Tuple[str, str, str]]
@@ -27,7 +26,7 @@ class GeneSuggestionBuilder:
     alias_map = {}
     assoc_with_map = {}
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize class.
 
         TODO: think about how best to force prod environment
@@ -108,7 +107,7 @@ class GeneSuggestionBuilder:
                 break
 
         today = dt.strftime(dt.today(), "%Y%m%d")
-        for (map, name) in (
+        for map, name in (
             (self.xrefs_map, "xrefs"),
             (self.symbol_map, "symbols"),
             (self.label_map, "labels"),

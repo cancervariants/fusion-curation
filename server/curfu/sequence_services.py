@@ -5,10 +5,8 @@ logger = logging.getLogger("curfu")
 logger.setLevel(logging.DEBUG)
 
 
-class InvalidInputException(Exception):
+class InvalidInputError(Exception):
     """Provide exception for input validation."""
-
-    pass
 
 
 def get_strand(input: str) -> int:
@@ -22,4 +20,4 @@ def get_strand(input: str) -> int:
     elif input == "-":
         return -1
     else:
-        raise InvalidInputException
+        raise InvalidInputError

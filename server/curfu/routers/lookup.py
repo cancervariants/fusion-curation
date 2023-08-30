@@ -1,9 +1,8 @@
 """Provide routes for basic data lookup endpoints"""
-from fastapi import Query, Request, APIRouter
+from fastapi import APIRouter, Query, Request
 
-from curfu import ServiceWarning
-from curfu.schemas import ResponseDict, NormalizeGeneResponse
-
+from curfu import LookupServiceError
+from curfu.schemas import NormalizeGeneResponse, ResponseDict
 
 router = APIRouter()
 
@@ -30,6 +29,6 @@ def normalize_gene(request: Request, term: str = Query("")) -> ResponseDict:
         response["concept_id"] = concept_id
         response["symbol"] = symbol
         response["cased"] = cased
-    except ServiceWarning as e:
+    except LookupServiceError as e:
         response["warnings"] = [str(e)]
     return response

@@ -1,7 +1,7 @@
 """Provide validation endpoint to confirm correctness of fusion object structure."""
 from typing import Dict
 
-from fastapi import Body, Request, APIRouter
+from fastapi import APIRouter, Body, Request
 from fusor.exceptions import FUSORParametersException
 
 from curfu.schemas import ResponseDict, ValidateFusionResponse

@@ -1,14 +1,13 @@
 """Wrapper for required Gene Normalization services."""
-from typing import List, Tuple, Dict, Union
 import csv
+from typing import Dict, List, Tuple, Union
 
+from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 from gene.query import QueryHandler
 from gene.schemas import MatchType
-from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 
-from curfu import logger, ServiceWarning, MAX_SUGGESTIONS
+from curfu import MAX_SUGGESTIONS, LookupServiceError, logger
 from curfu.utils import get_data_file
-
 
 # term -> (normalized ID, normalized label)
 Map = Dict[str, Tuple[str, str, str]]
@@ -51,13 +50,13 @@ class GeneService:
             if not gd or not gd.gene_id:
                 msg = f"Unexpected null property in normalized response for `{term}`"
                 logger.error(msg)
-                raise ServiceWarning(msg)
+                raise LookupServiceError(msg)
             concept_id = gd.gene_id
             symbol = gd.label
             if not symbol:
                 msg = f"Unable to retrieve symbol for gene {concept_id}"
                 logger.error(msg)
-                raise ServiceWarning(msg)
+                raise LookupServiceError(msg)
             term_lower = term.lower()
             term_cased = None
             if response.match_type == 100:
@@ -100,7 +99,7 @@ class GeneService:
         else:
             warn = f"Lookup of gene term {term} failed."
             logger.warning(warn)
-            raise ServiceWarning(warn)
+            raise LookupServiceError(warn)
 
     def suggest_genes(self, query: str) -> Dict[str, List[Tuple[str, str, str]]]:
         """Provide autocomplete suggestions based on submitted term.
@@ -153,6 +152,6 @@ class GeneService:
         if n > MAX_SUGGESTIONS:
             warn = f"Exceeds max matches: Got {n} possible matches for {query} (limit: {MAX_SUGGESTIONS})"  # noqa: E501
             logger.warning(warn)
-            raise ServiceWarning(warn)
+            raise LookupServiceError(warn)
         else:
             return suggestions

@@ -1,15 +1,14 @@
 """Miscellaneous helper functions."""
 import os
 from pathlib import Path
-from typing import TypeVar, List
+from typing import List, TypeVar
 
 import boto3
 from boto3.exceptions import ResourceLoadException
+from botocore.config import Config
 from botocore.exceptions import ClientError
 
-from botocore.config import Config
-
-from curfu import logger, APP_ROOT
+from curfu import APP_ROOT, logger
 
 ObjectSummary = TypeVar("ObjectSummary")
 
@@ -58,9 +57,9 @@ def download_s3_file(bucket_object: ObjectSummary) -> Path:
 
 
 def get_latest_data_file(file_prefix: str, local_files: List[Path]) -> Path:
-    """
-    Get path to latest version of given data file. Download from S3 if not
+    """Get path to latest version of given data file. Download from S3 if not
     available locally.
+
     :param file_prefix: leading pattern in filename (eg `gene_aliases`)
     :param local_files: local files matching pattern
     :return: path to up-to-date file
@@ -74,8 +73,8 @@ def get_latest_data_file(file_prefix: str, local_files: List[Path]) -> Path:
 
 
 def get_data_file(filename_prefix: str) -> Path:
-    """
-    Acquire most recent version of static data file. Download from S3 if not available locally.
+    """Acquire most recent version of static data file. Download from S3 if not available locally.
+
     :param filename_prefix: leading text of filename, eg `gene_aliases_suggest`. Should not
         include filetype or date information.
     :return: Path to acquired file.

@@ -1,7 +1,8 @@
 """Provide routes for nomenclature generation."""
 from typing import Dict
 
-from fastapi import Request, APIRouter, Body
+from fastapi import APIRouter, Body, Request
+from fusor.exceptions import FUSORParametersException
 from fusor.models import (
     GeneElement,
     RegulatoryElement,
@@ -14,12 +15,10 @@ from fusor.nomenclature import (
     templated_seq_nomenclature,
     tx_segment_nomenclature,
 )
-from fusor.exceptions import FUSORParametersException
 from pydantic import ValidationError
 
 from curfu import logger
 from curfu.schemas import NomenclatureResponse, ResponseDict
-
 
 router = APIRouter()
 
@@ -33,8 +32,8 @@ router = APIRouter()
 def generate_regulatory_element_nomenclature(
     request: Request, regulatory_element: Dict = Body()
 ) -> ResponseDict:
-    """
-    Build regulatory element nomenclature.
+    """Build regulatory element nomenclature.
+
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
@@ -72,8 +71,8 @@ def generate_regulatory_element_nomenclature(
     response_model_exclude_none=True,
 )
 def generate_tx_segment_nomenclature(tx_segment: Dict = Body()) -> ResponseDict:
-    """
-    Build transcript segment element nomenclature.
+    """Build transcript segment element nomenclature.
+
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.

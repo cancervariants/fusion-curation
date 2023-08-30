@@ -2,8 +2,8 @@
 from typing import Dict
 
 import pytest
-from httpx import AsyncClient
 from fusor.examples import bcr_abl1
+from httpx import AsyncClient
 
 
 @pytest.fixture(scope="module")
