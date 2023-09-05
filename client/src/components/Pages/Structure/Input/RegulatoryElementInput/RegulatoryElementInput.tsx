@@ -50,7 +50,6 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
   icon,
 }) => {
   const { fusion, setFusion } = useContext(FusionContext);
-
   const [regElement, setRegElement] = useState<
     ClientRegulatoryElement | undefined
   >(fusion.regulatory_element);

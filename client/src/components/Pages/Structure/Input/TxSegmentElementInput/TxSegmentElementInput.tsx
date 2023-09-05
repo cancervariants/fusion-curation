@@ -134,6 +134,16 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       buildTranscriptSegmentElement();
     }
   }, [
+    txAc,
+    txGene,
+    txStrand,
+    txChrom,
+    txStartingGenomic,
+    txEndingGenomic,
+    startingExon,
+    endingExon,
+    startingExonOffset,
+    endingExonOffset,
     index
   ]);
 

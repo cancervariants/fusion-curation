@@ -40,6 +40,8 @@ const TemplatedSequenceElementInput: React.FC<
 
   const [expanded, setExpanded] = useState<boolean>(!validated);
 
+  const [pendingResponse, setPendingResponse] = useState(false);
+
   useEffect(() => {
     if (inputComplete) {
       buildTemplatedSequenceElement();
@@ -65,6 +67,7 @@ const TemplatedSequenceElementInput: React.FC<
       ) {
         // TODO visible error handling
         setInputError("element validation unsuccessful");
+        setPendingResponse(false)
         return;
       } else if (templatedSequenceResponse.element) {
         setInputError("");
@@ -84,6 +87,7 @@ const TemplatedSequenceElementInput: React.FC<
           }
         });
       }
+      setPendingResponse(false)
     });
   };
 
@@ -163,6 +167,7 @@ const TemplatedSequenceElementInput: React.FC<
     inputElements,
     validated,
     icon,
+    pendingResponse
   });
 };
 

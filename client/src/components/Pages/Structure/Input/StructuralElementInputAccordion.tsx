@@ -76,8 +76,6 @@ const StructuralElementInputAccordion: React.FC<
 }) => {
   const classes = useStyles();
 
-  // pendingResponse = true
-
   return (
     <Card>
       <CardHeader
