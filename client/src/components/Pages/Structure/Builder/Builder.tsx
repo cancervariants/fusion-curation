@@ -123,6 +123,7 @@ const Builder: React.FC = () => {
   // Fusion object constructed throughout app lifecycle
   const { fusion, setFusion } = useContext(FusionContext);
   // calculate window width and rerender component upon window resize for proper styling
+
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const setWindowDimensions = () => {
     setWindowWidth(window.innerWidth);
