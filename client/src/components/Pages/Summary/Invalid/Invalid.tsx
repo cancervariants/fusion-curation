@@ -98,63 +98,6 @@ export const Invalid: React.FC<Props> = ({
     </ListItemText>
   );
 
-  const noEventError = (
-    <ListItemText>
-      The causative event is not specified.{" "}
-      <Link href="#" onClick={() => setVisibleTab(2)}>
-        Declare the event type
-      </Link>{" "}
-      to resolve.
-    </ListItemText>
-  );
-
-  const noAssayError = (
-    <ListItemText>
-      No assay metadata is provided. You must{" "}
-      <Link href="#" onClick={() => setVisibleTab(3)}>
-        identify the assay, detection method, and methodology that was used to
-        uncover the fusion
-      </Link>{" "}
-      in order to resolve.
-    </ListItemText>
-  );
-
-  const assayIdCurieError = (
-    <ListItemText>
-      The provided assay ID is not a valid{" "}
-      <Link
-        href="https://www.w3.org/TR/2010/NOTE-curie-20101216/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        W3 CURIE
-      </Link>
-      .{" "}
-      <Link href="#" onClick={() => setVisibleTab(3)}>
-        Update the assay ID
-      </Link>{" "}
-      to resolve.
-    </ListItemText>
-  );
-
-  const assayMethodUriCurieError = (
-    <ListItemText>
-      The provided assay method URI is not a valid{" "}
-      <Link
-        href="https://www.w3.org/TR/2010/NOTE-curie-20101216/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        W3 CURIE
-      </Link>
-      .{" "}
-      <Link href="#" onClick={() => setVisibleTab(3)}>
-        Update the method URI
-      </Link>{" "}
-      to resolve.
-    </ListItemText>
-  );
-
   const unknownError = (
     <>
       <ListItemText>
@@ -163,8 +106,6 @@ export const Invalid: React.FC<Props> = ({
       <blockquote>{validationErrors}</blockquote>
     </>
   );
-
-  const CURIE_PATTERN = /^\w[^:]*:.+$/;
 
   const geneElements = fusion.structural_elements.filter(el => el.type === "GeneElement").map(el => { return el.nomenclature })
   const findDuplicates = arr => arr.filter((item, index) => arr.indexOf(item) !== index)
@@ -192,28 +133,6 @@ export const Invalid: React.FC<Props> = ({
     }
     if (duplicateGenes.length > 0) {
       errorElements.push(duplicateGeneError(duplicateGenes))
-    }
-    if (fusion.type == "AssayedFusion") {
-      if (
-        !(
-          fusion.assay &&
-          fusion.assay.assay_name &&
-          fusion.assay.assay_id &&
-          fusion.assay.method_uri
-        )
-      ) {
-        errorElements.push(noAssayError);
-      } else {
-        if (!fusion.assay.assay_id.match(CURIE_PATTERN)) {
-          errorElements.push(assayIdCurieError);
-        }
-        if (!fusion.assay.method_uri.match(CURIE_PATTERN)) {
-          errorElements.push(assayMethodUriCurieError);
-        }
-      }
-      if (!fusion.causative_event) {
-        errorElements.push(noEventError);
-      }
     }
     if (errorElements.length == 0) {
       errorElements.push(
