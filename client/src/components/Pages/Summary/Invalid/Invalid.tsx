@@ -49,6 +49,26 @@ export const Invalid: React.FC<Props> = ({
   }));
   const classes = useStyles();
 
+  const duplicateGeneError = (duplicateGenes: string[]) => {
+    return (
+      <ListItemText>
+        Duplicate gene element(s) detected: <b>{duplicateGenes.join(", ")}</b>. Per the{" "}
+        <Link
+          href="https://fusions.cancervariants.org/en/latest/information_model.html#structural-elements"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Gene Fusion Specification
+        </Link>
+        , Internal Tandem Duplications are not considered gene fusions, as they do not involve an interaction
+        between <b>two or more genes</b>.{" "}
+        <Link href="#" onClick={() => setVisibleTab(0)}>
+          Edit elements to resolve.
+        </Link>
+      </ListItemText>
+    )
+  };
+
   const elementNumberError = (
     <ListItemText>
       Insufficient number of structural and regulatory elements. Per the{" "}
@@ -146,6 +166,10 @@ export const Invalid: React.FC<Props> = ({
 
   const CURIE_PATTERN = /^\w[^:]*:.+$/;
 
+  const geneElements = fusion.structural_elements.filter(el => el.type === "GeneElement").map(el => { return el.nomenclature })
+  const findDuplicates = arr => arr.filter((item, index) => arr.indexOf(item) !== index)
+  const duplicateGenes = findDuplicates(geneElements)
+
   const checkErrors = () => {
     const errorElements: React.ReactFragment[] = [];
     if (
@@ -165,6 +189,9 @@ export const Invalid: React.FC<Props> = ({
       if (!containsGene && !fusion.regulatory_element) {
         errorElements.push(noGeneElementsError);
       }
+    }
+    if (duplicateGenes.length > 0) {
+      errorElements.push(duplicateGeneError(duplicateGenes))
     }
     if (fusion.type == "AssayedFusion") {
       if (
@@ -210,10 +237,10 @@ export const Invalid: React.FC<Props> = ({
         </Box>
         <List component={Paper} className={classes.list}>
           {checkErrors().map((error, index: number) => (
-            <>
+            <Box key={index}>
               {index > 0 ? <Divider /> : <></>}
               <ListItem key={index}>{error}</ListItem>
-            </>
+            </Box>
           ))}
         </List>
       </Box>
