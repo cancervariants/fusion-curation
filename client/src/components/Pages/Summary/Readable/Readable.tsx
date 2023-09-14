@@ -43,7 +43,7 @@ export const Readable: React.FC<Props> = ({ validatedFusion }) => {
         </TableCell>
         <TableCell align="right">
           <Typography>
-            {eventDisplayMap[fusion.causative_event.event_type] || ""}
+            {eventDisplayMap[fusion.causative_event?.event_type] || ""}
           </Typography>
         </TableCell>
       </TableRow>
@@ -52,7 +52,7 @@ export const Readable: React.FC<Props> = ({ validatedFusion }) => {
           <Typography className="row-name">Assay</Typography>
         </TableCell>
         <TableCell align="right">
-          <Typography>{`${fusion.assay.assay_name} (${fusion.assay.assay_id})`}</Typography>
+          <Typography>{fusion.assay ? `${fusion.assay?.assay_name} (${fusion.assay?.assay_id})` : ""}</Typography>
         </TableCell>
       </TableRow>
     </>
