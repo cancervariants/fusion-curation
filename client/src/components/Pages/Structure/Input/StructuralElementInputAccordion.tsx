@@ -1,4 +1,4 @@
-import { Tooltip, makeStyles } from "@material-ui/core";
+import { Tooltip, makeStyles, CircularProgress } from "@material-ui/core";
 import { styled } from "@mui/material/styles";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import Card from "@mui/material/Card";
@@ -43,6 +43,7 @@ interface StructuralElementInputAccordionProps
   inputElements?: JSX.Element;
   validated: boolean;
   icon: JSX.Element;
+  pendingResponse?: boolean;
 }
 
 interface ExpandMoreProps extends IconButtonProps {
@@ -71,6 +72,7 @@ const StructuralElementInputAccordion: React.FC<
   inputElements,
   validated,
   icon,
+  pendingResponse
 }) => {
   const classes = useStyles();
 
@@ -79,6 +81,8 @@ const StructuralElementInputAccordion: React.FC<
       <CardHeader
         avatar={icon}
         action={
+          pendingResponse ?
+          <CircularProgress style={{width: "1.25em", height: "1.25em", padding: "8px"}} /> :
           <Tooltip title="Delete element">
             <IconButton
               style={{ cursor: "pointer" }}

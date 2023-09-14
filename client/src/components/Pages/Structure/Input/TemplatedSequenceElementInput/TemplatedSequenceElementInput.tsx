@@ -18,6 +18,7 @@ interface TemplatedSequenceElementInputProps
 const TemplatedSequenceElementInput: React.FC<
   TemplatedSequenceElementInputProps
 > = ({ element, index, handleSave, handleDelete, icon }) => {
+
   const [chromosome, setChromosome] = useState<string>(
     element.input_chromosome || ""
   );
@@ -38,6 +39,8 @@ const TemplatedSequenceElementInput: React.FC<
   const validated = inputComplete && inputError === "";
 
   const [expanded, setExpanded] = useState<boolean>(!validated);
+
+  const [pendingResponse, setPendingResponse] = useState(false);
 
   useEffect(() => {
     if (inputComplete) {
@@ -64,6 +67,7 @@ const TemplatedSequenceElementInput: React.FC<
       ) {
         // TODO visible error handling
         setInputError("element validation unsuccessful");
+        setPendingResponse(false)
         return;
       } else if (templatedSequenceResponse.element) {
         setInputError("");
@@ -83,6 +87,7 @@ const TemplatedSequenceElementInput: React.FC<
           }
         });
       }
+      setPendingResponse(false)
     });
   };
 
@@ -162,6 +167,7 @@ const TemplatedSequenceElementInput: React.FC<
     inputElements,
     validated,
     icon,
+    pendingResponse
   });
 };
 

@@ -9,7 +9,7 @@ import {
   getGeneElement,
   getGeneNomenclature,
 } from "../../../../../services/main";
-import ElementInputAccordion from "../StructuralElementInputAccordion";
+import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
 
 interface GeneElementInputProps extends StructuralElementInputProps {
   element: ClientGeneElement;
@@ -28,12 +28,14 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
   const [geneText, setGeneText] = useState<string>("");
   const validated = gene !== "" && geneText == "";
   const [expanded, setExpanded] = useState<boolean>(!validated);
+  const [pendingResponse, setPendingResponse] = useState(false);
 
   useEffect(() => {
     if (validated) buildGeneElement();
   }, [gene, geneText]);
 
   const buildGeneElement = () => {
+    setPendingResponse(true)
     getGeneElement(gene).then((geneElementResponse) => {
       if (
         geneElementResponse.warnings &&
@@ -56,6 +58,7 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
                 nomenclature: nomenclatureResponse.nomenclature,
               };
               handleSave(index, clientGeneElement);
+              setPendingResponse(false)
             }
           }
         );
@@ -74,7 +77,7 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
     />
   );
 
-  return ElementInputAccordion({
+  return StructuralElementInputAccordion({
     expanded,
     setExpanded,
     element,
@@ -82,6 +85,7 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
     inputElements,
     validated,
     icon,
+    pendingResponse
   });
 };
 
