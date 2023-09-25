@@ -4,6 +4,7 @@ export interface BaseStructuralElementProps {
   element: ClientElementUnion;
   handleDelete?: (id?: string) => void;
   icon: JSX.Element;
+  pendingResponse?: boolean
 }
 
 export interface StructuralElementInputProps

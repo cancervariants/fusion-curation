@@ -19,7 +19,7 @@ import {
 } from "../../../../../services/main";
 import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
-import CompInputAccordion from "../StructuralElementInputAccordion";
+import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
 import { FusionContext } from "../../../../../global/contexts/FusionContext";
 import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
@@ -85,6 +85,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   );
   const [endingExonOffsetText, setEndingExonOffsetText] = useState("");
 
+  const [pendingResponse, setPendingResponse] = useState(false);
+
   /*
   Depending on this element's location in the structure array, the user
   needs to provide some kind of coordinate input for either one or both ends
@@ -142,7 +144,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     endingExon,
     startingExonOffset,
     endingExonOffset,
-    index,
+    index
   ]);
 
   const handleTxElementResponse = (
@@ -156,7 +158,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       ...responseElement,
       ...inputParams,
     };
-
     if (!hasRequiredEnds) {
       finishedElement.nomenclature = "ERROR";
     } else {
@@ -170,6 +171,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
         }
       });
     }
+    setPendingResponse(false)
   };
 
   /**
@@ -226,6 +228,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
    * Request construction of tx segment element from server and handle response
    */
   const buildTranscriptSegmentElement = () => {
+    setPendingResponse(true)
     // fire constructor request
     switch (txInputType) {
       case InputType.gcg:
@@ -665,7 +668,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     </>
   );
 
-  return CompInputAccordion({
+  return StructuralElementInputAccordion({
     expanded,
     setExpanded,
     element,
@@ -673,6 +676,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     inputElements,
     validated,
     icon,
+    pendingResponse
   });
 };
 
