@@ -115,7 +115,10 @@ const StructuralElementInputAccordion: React.FC<
       >
         {validated ? (
           <Tooltip title="Validation successful">
-            <CheckCircleIcon className="input-correct" style={{ color: green[500] }} />
+            <CheckCircleIcon
+              className="input-correct"
+              style={{ color: green[500] }}
+            />
           </Tooltip>
         ) : (
           <Tooltip title="Invalid component">

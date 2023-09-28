@@ -40,7 +40,7 @@ const theme = createTheme({
     secondary: {
       main: COLORTHEMES.light["--secondary"],
       contrastText: COLORTHEMES.light["--white"],
-    }
+    },
   },
 });
 
