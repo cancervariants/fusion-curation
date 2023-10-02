@@ -281,7 +281,8 @@ const GetCoordinates: React.FC = () => {
                 setGene={setGene}
                 geneText={geneText}
                 setGeneText={setGeneText}
-                style={{ width: 125 }}
+                setChromosome={setChromosome}
+                setStrand={setStrand}
               />
             </Box>
             {genomicCoordinateInfo}

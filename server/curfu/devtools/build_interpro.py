@@ -10,6 +10,7 @@ from timeit import default_timer as timer
 from typing import Dict, Optional, Set, Tuple
 
 import click
+from gene.database import create_db
 from gene.query import QueryHandler
 
 from curfu import APP_ROOT, logger
@@ -63,7 +64,7 @@ def get_uniprot_refs() -> UniprotRefs:
     start = timer()
 
     # scanning on DynamoDB_Local is extremely slow
-    q = QueryHandler()
+    q = QueryHandler(create_db())  # must be dynamodb
     genes = q.db.genes
 
     uniprot_ids: UniprotRefs = {}

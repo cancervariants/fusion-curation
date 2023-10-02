@@ -1,38 +1,53 @@
 """Wrapper for required Gene Normalization services."""
 import csv
-from typing import Dict, List, Tuple, Union
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple, Union
 
 from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 from gene.query import QueryHandler
 from gene.schemas import MatchType
 
-from curfu import MAX_SUGGESTIONS, LookupServiceError, logger
+from curfu import LookupServiceError, logger
 from curfu.utils import get_data_file
 
 # term -> (normalized ID, normalized label)
 Map = Dict[str, Tuple[str, str, str]]
 
+# term -> (normalized ID, normalized label)
+Map = Dict[str, Tuple[str, str, str]]
+# term, symbol, concept ID, chromosome, strand
+Suggestion = Tuple[str, str, str, str, str]
+
 
 class GeneService:
     """Provide gene ID resolution and term autocorrect suggestions."""
 
-    symbols_map: Map = {}
-    prev_symbols_map: Map = {}
-    aliases_map: Map = {}
+    def __init__(self, suggestions_file: Optional[Path] = None) -> None:
+        """Initialize gene service provider class.
 
-    def load_mapping(self) -> None:
-        """Load mapping files for use in autocomplete."""
-        map_pairs = (
-            ("symbols", self.symbols_map),
-            ("prev_symbols", self.prev_symbols_map),
-            ("aliases", self.aliases_map),
-        )
-        for name, map in map_pairs:
-            map_file = get_data_file(f"gene_{name}")
-            with open(map_file, "r") as m:
-                reader = csv.reader(m, delimiter="\t")
-                for term, normalized_id, normalized_label in reader:
-                    map[term.lower()] = (term, normalized_id, normalized_label)
+        :param suggestions_file: path to existing suggestions file. If not provided,
+            will use newest available file in expected location.
+        """
+        if not suggestions_file:
+            suggestions_file = get_data_file("gene_suggest")
+
+        self.concept_id_map: Dict[str, Suggestion] = {}
+        self.symbol_map: Dict[str, Suggestion] = {}
+        self.aliases_map: Dict[str, Suggestion] = {}
+        self.prev_symbols_map: Dict[str, Suggestion] = {}
+
+        for row in csv.DictReader(open(suggestions_file, "r")):
+            symbol = row["symbol"]
+            concept_id = row["concept_id"]
+            suggestion = [symbol, concept_id, row["chromosome"], row["strand"]]
+            self.concept_id_map[concept_id.upper()] = tuple([concept_id] + suggestion)
+            self.symbol_map[symbol.upper()] = tuple([symbol] + suggestion)
+            for alias in row.get("aliases", []):
+                self.aliases_map[alias.upper()] = tuple([alias] + suggestion)
+            for prev_symbol in row.get("previous_symbols", []):
+                self.prev_symbols_map[prev_symbol.upper()] = tuple(
+                    [prev_symbol] + suggestion
+                )
 
     @staticmethod
     def get_normalized_gene(
@@ -101,57 +116,38 @@ class GeneService:
             logger.warning(warn)
             raise LookupServiceError(warn)
 
-    def suggest_genes(self, query: str) -> Dict[str, List[Tuple[str, str, str]]]:
-        """Provide autocomplete suggestions based on submitted term.
+    @staticmethod
+    def _get_completion_results(term: str, lookup: Dict) -> List[Suggestion]:
+        """Filter valid completions for term.
 
-        Outstanding questions:
-         * Where to make decisions about item types -- in client? provide as route
-         parameter? in gene services? All of the above?
-         * how to safely reduce redundant suggestions
+        :param term: user-entered text
+        :param lookup: stored mapping where key is a name (e.g. symbol or alias) and
+            value is the complete suggestion
+        :return: List of suggested completions along with relevant metadata
+        """
+        matches = []
+        for key, data in lookup.items():
+            if key.startswith(term):
+                matches.append(data)
+        matches = sorted(matches, key=lambda s: s[0])
+        return matches
+
+    def suggest_genes(self, query: str) -> Dict[str, List[Suggestion]]:
+        """Provide autocomplete suggestions based on submitted term.
 
         :param str query: text entered by user
         :returns: dict returning list containing any number of suggestion tuples, where
-        each is the correctly-cased term, normalized ID, normalized label, for each
-        item type
-        :raises ServiceWarning: if number of matching suggestions exceeds
-        MAX_SUGGESTIONS
+            each is the correctly-cased term, normalized ID, normalized label, for each
+            item type
         """
-        # tentatively, just search terms
-        q_lower = query.lower()
+        q_upper = query.upper()
         suggestions = {}
-        suggestions["symbols"] = sorted(
-            [
-                (v[0], v[1], v[0])
-                for t, v in self.symbols_map.items()
-                if t.startswith(q_lower)
-            ],
-            key=lambda s: s[0],
+        suggestions["concept_id"] = self._get_completion_results(
+            q_upper, self.concept_id_map
         )
-        suggestions["prev_symbols"] = sorted(
-            [
-                (v[0], v[1], v[2])
-                for t, v in self.prev_symbols_map.items()
-                if t.startswith(q_lower)
-            ],
-            key=lambda s: s[0],
+        suggestions["symbol"] = self._get_completion_results(q_upper, self.symbol_map)
+        suggestions["prev_symbols"] = self._get_completion_results(
+            q_upper, self.prev_symbols_map
         )
-        suggestions["aliases"] = sorted(
-            [
-                (v[0], v[1], v[2])
-                for t, v in self.aliases_map.items()
-                if t.startswith(q_lower)
-            ],
-            key=lambda s: s[0],
-        )
-
-        n = (
-            len(suggestions["symbols"])
-            + len(suggestions["prev_symbols"])
-            + len(suggestions["aliases"])
-        )
-        if n > MAX_SUGGESTIONS:
-            warn = f"Exceeds max matches: Got {n} possible matches for {query} (limit: {MAX_SUGGESTIONS})"  # noqa: E501
-            logger.warning(warn)
-            raise LookupServiceError(warn)
-        else:
-            return suggestions
+        suggestions["aliases"] = self._get_completion_results(q_upper, self.aliases_map)
+        return suggestions

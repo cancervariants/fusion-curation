@@ -144,7 +144,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     endingExon,
     startingExonOffset,
     endingExonOffset,
-    index
+    index,
   ]);
 
   const handleTxElementResponse = (
@@ -171,7 +171,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
         }
       });
     }
-    setPendingResponse(false)
+    setPendingResponse(false);
   };
 
   /**
@@ -228,7 +228,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
    * Request construction of tx segment element from server and handle response
    */
   const buildTranscriptSegmentElement = () => {
-    setPendingResponse(true)
+    setPendingResponse(true);
     // fire constructor request
     switch (txInputType) {
       case InputType.gcg:
@@ -463,7 +463,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 tooltipDirection="bottom"
                 geneText={txGeneText}
                 setGeneText={setTxGeneText}
-                style={{ width: 125 }}
+                setChromosome={setTxChrom}
+                setStrand={setTxStrand}
               />
             </Box>
             {genomicCoordinateInfo}
@@ -676,7 +677,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     inputElements,
     validated,
     icon,
-    pendingResponse
+    pendingResponse,
   });
 };
 

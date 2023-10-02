@@ -8,8 +8,8 @@ import click
 from curfu import APP_ROOT
 from curfu.devtools import DEFAULT_INTERPRO_TYPES
 from curfu.devtools.build_client_types import build_client_types
-from curfu.devtools.gene import GeneSuggestionBuilder
-from curfu.devtools.interpro import build_gene_domain_maps
+from curfu.devtools.build_gene_suggest import GeneSuggestionBuilder
+from curfu.devtools.build_interpro import build_gene_domain_maps
 
 
 @click.command()
@@ -92,7 +92,7 @@ def domains(
 def genes() -> None:
     """Build gene mappings for use in Fusion Curation gene autocomplete."""
     builder = GeneSuggestionBuilder()
-    builder.build_gene_suggest_maps()
+    builder.build_gene_suggestion_file()
 
 
 @devtools.command()

@@ -15,11 +15,11 @@ ObjectSummary = TypeVar("ObjectSummary")
 
 def get_latest_s3_file(file_prefix: str) -> ObjectSummary:
     """Get latest S3 object representation for data file
+
     :param file_prefix: filename prefix for data file
     :return: boto3 ObjectSummary
-    :raise:
-        ResourceLoadException: if Boto3 S3 initialization fails
-        FileNotFoundError: if no matching files exist in the bucket
+    :raise ResourceLoadException: if Boto3 S3 initialization fails
+    :raise FileNotFoundError: if no matching files exist in the bucket
     """
     logger.info(f"Attempting S3 lookup for data file pattern {file_prefix}...")
     s3 = boto3.resource("s3", config=Config(region_name="us-east-2"))
@@ -41,6 +41,7 @@ def get_latest_s3_file(file_prefix: str) -> ObjectSummary:
 
 def download_s3_file(bucket_object: ObjectSummary) -> Path:
     """Download local copy of file from S3
+
     :param bucket_object: boto object representation of S3 file
     :return: Path to downloaded file
     """
@@ -73,15 +74,16 @@ def get_latest_data_file(file_prefix: str, local_files: List[Path]) -> Path:
 
 
 def get_data_file(filename_prefix: str) -> Path:
-    """Acquire most recent version of static data file. Download from S3 if not available locally.
+    """Acquire most recent version of static data file. Download from S3 if not
+    available locally.
 
-    :param filename_prefix: leading text of filename, eg `gene_aliases_suggest`. Should not
-        include filetype or date information.
+    :param filename_prefix: leading text of filename, eg `gene_aliases_suggest`. Should
+        not include filetype or date information.
     :return: Path to acquired file.
     """
     data_dir = APP_ROOT / "data"
     data_dir.mkdir(exist_ok=True)
-    file_glob = f"{filename_prefix}*.tsv"
+    file_glob = f"{filename_prefix}*sv"
     files = list(data_dir.glob(file_glob))
     if not files:
         return download_s3_file(get_latest_s3_file(filename_prefix))

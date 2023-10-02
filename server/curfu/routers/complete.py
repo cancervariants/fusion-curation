@@ -3,7 +3,7 @@ from typing import Any, Dict
 
 from fastapi import APIRouter, Query, Request
 
-from curfu import LookupServiceError
+from curfu import MAX_SUGGESTIONS, LookupServiceError
 from curfu.schemas import AssociatedDomainResponse, ResponseDict, SuggestGeneResponse
 
 router = APIRouter()
@@ -25,11 +25,25 @@ def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
         provide suggestions.
     """
     response: ResponseDict = {"term": term}
-    try:
-        possible_matches = request.app.state.genes.suggest_genes(term)
-        response.update(possible_matches)
-    except LookupServiceError as e:
-        response["warnings"] = [str(e)]
+    possible_matches = request.app.state.genes.suggest_genes(term)
+    n = (
+        len(possible_matches["concept_id"])
+        + len(possible_matches["symbol"])
+        + len(possible_matches["prev_symbols"])
+        + len(possible_matches["aliases"])
+    )
+
+    response["matches_count"] = n
+    if n > MAX_SUGGESTIONS:
+        warn = f"Exceeds max matches: Got {n} possible matches for {term} (limit: {MAX_SUGGESTIONS})"  # noqa: E501
+        response["warnings"] = [warn]
+        term_upper = term.upper()
+        for match_type in ("concept_id", "symbol", "prev_symbols", "aliases"):
+            reduced = [
+                m for m in possible_matches[match_type] if m[0].upper() == term_upper
+            ]
+            possible_matches[match_type] = reduced
+    response.update(possible_matches)
     return response
 
 
