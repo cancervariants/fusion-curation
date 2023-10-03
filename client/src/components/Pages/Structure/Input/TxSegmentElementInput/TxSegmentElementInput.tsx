@@ -439,9 +439,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       <Box className="mid-inputs">
         <ChromosomeField
           fieldValue={txChrom}
-          valueSetter={setTxChrom}
           errorText={txChromText}
-          keyHandler={handleEnterKey}
         />
         <Box mt="18px" width="125px">
           <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
