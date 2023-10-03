@@ -4,17 +4,13 @@ import HelpTooltip from "../HelpTooltip/HelpTooltip";
 
 interface Props {
   fieldValue: string;
-  valueSetter: CallableFunction;
   errorText: string;
-  keyHandler: KeyboardEventHandler<HTMLDivElement> | undefined;
   width?: number | undefined;
 }
 
 const ChromosomeField: React.FC<Props> = ({
   fieldValue,
-  valueSetter,
   errorText,
-  keyHandler,
   width,
 }) => {
   const useStyles = makeStyles(() => ({
@@ -42,11 +38,10 @@ const ChromosomeField: React.FC<Props> = ({
       <TextField
         margin="dense"
         value={fieldValue}
-        onChange={(event) => valueSetter(event.target.value)}
         error={errorText != ""}
-        onKeyDown={keyHandler}
         label="Chromosome"
         helperText={errorText != "" ? errorText : null}
+        contentEditable={false}
         className={classes.textField}
       />
     </HelpTooltip>

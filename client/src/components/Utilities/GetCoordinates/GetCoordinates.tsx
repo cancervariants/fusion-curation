@@ -252,7 +252,6 @@ const GetCoordinates: React.FC = () => {
       <Box display="flex" justifyContent="space-between" width="100%">
         <ChromosomeField
           fieldValue={chromosome}
-          valueSetter={setChromosome}
           errorText={chromosomeText}
         />
         <Box mt="18px">
