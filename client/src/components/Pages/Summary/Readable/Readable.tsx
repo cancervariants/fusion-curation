@@ -31,6 +31,9 @@ export const Readable: React.FC<Props> = ({ validatedFusion }) => {
     );
   }, [validatedFusion]);
 
+  const assayName = fusion.assay?.assay_name ? fusion.assay.assay_name : ""
+  const assayId = fusion.assay?.assay_id ? `(${fusion.assay.assay_id})` : ""
+
   /**
    * Render rows specific to assayed fusion fields
    * @returns React component containing table rows
@@ -43,7 +46,7 @@ export const Readable: React.FC<Props> = ({ validatedFusion }) => {
         </TableCell>
         <TableCell align="right">
           <Typography>
-            {eventDisplayMap[fusion.causative_event.event_type] || ""}
+            {eventDisplayMap[fusion.causative_event?.event_type] || ""}
           </Typography>
         </TableCell>
       </TableRow>
@@ -52,7 +55,7 @@ export const Readable: React.FC<Props> = ({ validatedFusion }) => {
           <Typography className="row-name">Assay</Typography>
         </TableCell>
         <TableCell align="right">
-          <Typography>{`${fusion.assay.assay_name} (${fusion.assay.assay_id})`}</Typography>
+          <Typography>{fusion.assay ? `${assayName} ${assayId}` : ""}</Typography>
         </TableCell>
       </TableRow>
     </>
