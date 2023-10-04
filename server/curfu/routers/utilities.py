@@ -13,6 +13,7 @@ from curfu import logger
 from curfu.schemas import (
     CoordsUtilsResponse,
     GetTranscriptsResponse,
+    RouteTag,
     SequenceIDResponse,
 )
 from curfu.sequence_services import InvalidInputError, get_strand
@@ -25,6 +26,7 @@ router = APIRouter()
     operation_id="getMANETranscripts",
     response_model=GetTranscriptsResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.UTILITIES],
 )
 def get_mane_transcripts(request: Request, term: str) -> Dict:
     """Get MANE transcripts for gene term.
@@ -54,6 +56,7 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
     operation_id="getGenomicCoords",
     response_model=CoordsUtilsResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.UTILITIES],
 )
 async def get_genome_coords(
     request: Request,
@@ -126,6 +129,7 @@ async def get_genome_coords(
     operation_id="getExonCoords",
     response_model=CoordsUtilsResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.UTILITIES],
 )
 async def get_exon_coords(
     request: Request,
@@ -185,6 +189,7 @@ async def get_exon_coords(
     operation_id="getSequenceId",
     response_model=SequenceIDResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.UTILITIES],
 )
 async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse:
     """Get GA4GH sequence ID and aliases given sequence sequence ID
@@ -234,6 +239,7 @@ async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse
     description="Given a known accession identifier, retrieve sequence data and return"
     "as a FASTA file",
     response_class=FileResponse,
+    tags=[RouteTag.UTILITIES],
 )
 async def get_sequence(
     request: Request,
