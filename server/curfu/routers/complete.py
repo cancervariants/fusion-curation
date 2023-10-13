@@ -4,7 +4,12 @@ from typing import Any, Dict
 from fastapi import APIRouter, Query, Request
 
 from curfu import MAX_SUGGESTIONS, LookupServiceError
-from curfu.schemas import AssociatedDomainResponse, ResponseDict, SuggestGeneResponse
+from curfu.schemas import (
+    AssociatedDomainResponse,
+    ResponseDict,
+    RouteTag,
+    SuggestGeneResponse,
+)
 
 router = APIRouter()
 
@@ -14,6 +19,7 @@ router = APIRouter()
     operation_id="suggestGene",
     response_model=SuggestGeneResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.COMPLETION],
 )
 def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
     """Provide completion suggestions for term provided by user.
@@ -52,6 +58,7 @@ def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
     operation_id="suggestDomain",
     response_model=AssociatedDomainResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.COMPLETION],
 )
 def suggest_domain(request: Request, gene_id: str = Query("")) -> ResponseDict:
     """Provide possible domains associated with a given gene to be selected by a user.

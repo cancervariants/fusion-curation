@@ -22,6 +22,17 @@ from curfu.routers import (
 from curfu.version import __version__ as curfu_version
 
 fastapi_app = FastAPI(
+    title="Fusion Curation API",
+    description="Provide data functions to support [VICC Fusion Curation interface](fusion-builder.cancervariants.org/).",
+    contact={
+        "name": "Alex H. Wagner",
+        "email": "Alex.Wagner@nationwidechildrens.org",
+        "url": "https://www.nationwidechildrens.org/specialties/institute-for-genomic-medicine/research-labs/wagner-lab",
+    },
+    license={
+        "name": "MIT",
+        "url": "https://github.com/cancervariants/fusion-curation/blob/main/LICENSE",
+    },
     version=curfu_version,
     swagger_ui_parameters={"tryItOutEnabled": True},
     docs_url="/docs",
@@ -63,7 +74,7 @@ def serve_react_app(app: FastAPI) -> FastAPI:
     )
     templates = Jinja2Templates(directory=BUILD_DIR.as_posix())
 
-    @app.get("/{full_path:path}")
+    @app.get("/{full_path:path}", include_in_schema=False)
     async def serve_react_app(request: Request, full_path: str) -> TemplateResponse:
         """Add arbitrary path support to FastAPI service.
 

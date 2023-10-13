@@ -12,6 +12,7 @@ from curfu.schemas import (
     GetDomainResponse,
     RegulatoryElementResponse,
     ResponseDict,
+    RouteTag,
     TemplatedSequenceElementResponse,
     TxSegmentElementResponse,
 )
@@ -25,6 +26,7 @@ router = APIRouter()
     operation_id="buildGeneElement",
     response_model=GeneElementResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.CONSTRUCTORS],
 )
 def build_gene_element(request: Request, term: str = Query("")) -> GeneElementResponse:
     """Construct valid gene element given user-provided term.
@@ -48,6 +50,7 @@ def build_gene_element(request: Request, term: str = Query("")) -> GeneElementRe
     operation_id="buildTranscriptSegmentElementECT",
     response_model=TxSegmentElementResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.CONSTRUCTORS],
 )
 async def build_tx_segment_ect(
     request: Request,
@@ -85,6 +88,7 @@ async def build_tx_segment_ect(
     operation_id="buildTranscriptSegmentElementGCT",
     response_model=TxSegmentElementResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.CONSTRUCTORS],
 )
 async def build_tx_segment_gct(
     request: Request,
@@ -132,6 +136,7 @@ async def build_tx_segment_gct(
     operation_id="buildTranscriptSegmentElementGCG",
     response_model=TxSegmentElementResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.CONSTRUCTORS],
 )
 async def build_tx_segment_gcg(
     request: Request,
@@ -179,6 +184,7 @@ async def build_tx_segment_gcg(
     operation_id="buildTemplatedSequenceElement",
     response_model=TemplatedSequenceElementResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.CONSTRUCTORS],
 )
 def build_templated_sequence_element(
     request: Request, start: int, end: int, sequence_id: str, strand: str
@@ -215,6 +221,7 @@ def build_templated_sequence_element(
     operation_id="getDomain",
     response_model=GetDomainResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.CONSTRUCTORS],
 )
 def build_domain(
     request: Request,
@@ -260,6 +267,7 @@ def build_domain(
     operation_id="getRegulatoryElement",
     response_model=RegulatoryElementResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.CONSTRUCTORS],
 )
 def build_regulatory_element(
     request: Request, element_class: RegulatoryClass, gene_name: str
