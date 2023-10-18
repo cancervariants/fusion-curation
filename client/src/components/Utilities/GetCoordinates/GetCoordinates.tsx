@@ -44,7 +44,7 @@ const GetCoordinates: React.FC = () => {
     },
     inputParams: {
       display: "flex",
-      width: "70%",
+      width: "100%",
       flexDirection: "column",
       justifyContent: "center",
       alignItems: "flex-start",
@@ -98,12 +98,8 @@ const GetCoordinates: React.FC = () => {
 
   // programming horror
   const inputComplete =
-    (inputType === "genomic_coords_gene" &&
+    (inputType === "genomic_coords" &&
       gene !== "" &&
-      chromosome !== "" &&
-      (start !== "" || end !== "")) ||
-    (inputType === "genomic_coords_tx" &&
-      txAc !== "" &&
       chromosome !== "" &&
       (start !== "" || end !== "")) ||
     (inputType === "exon_coords_tx" &&
@@ -192,7 +188,7 @@ const GetCoordinates: React.FC = () => {
         exonStartOffset,
         exonEndOffset
       ).then((coordsResponse) => handleResponse(coordsResponse));
-    } else if (inputType == "genomic_coords_gene") {
+    } else if (inputType == "genomic_coords") {
       getExonCoords(chromosome, start, end, strand, gene).then(
         (coordsResponse) => handleResponse(coordsResponse)
       );
@@ -271,7 +267,7 @@ const GetCoordinates: React.FC = () => {
 
   const renderInputOptions = () => {
     switch (inputType) {
-      case "genomic_coords_gene":
+      case "genomic_coords":
         return (
           <>
             <Box className={classes.fieldsPair}>
@@ -283,30 +279,6 @@ const GetCoordinates: React.FC = () => {
                 setChromosome={setChromosome}
                 setStrand={setStrand}
               />
-            </Box>
-            {genomicCoordinateInfo}
-            <Box className={classes.fieldsPair}>
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Starting Position"
-                value={start}
-                onChange={(event) => setStart(event.target.value)}
-              />
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Ending Position"
-                value={end}
-                onChange={(event) => setEnd(event.target.value)}
-              />
-            </Box>
-          </>
-        );
-      case "genomic_coords_tx":
-        return (
-          <>
-            <Box className={classes.fieldsPair}>
               <TranscriptField
                 fieldValue={txAc}
                 valueSetter={setTxAc}
@@ -317,15 +289,13 @@ const GetCoordinates: React.FC = () => {
             <Box className={classes.fieldsPair}>
               <TextField
                 margin="dense"
-                style={{ width: 125 }}
-                label="Starting Position"
+                label="Genomic Start"
                 value={start}
                 onChange={(event) => setStart(event.target.value)}
               />
               <TextField
                 margin="dense"
-                style={{ width: 125 }}
-                label="Ending Position"
+                label="Genomic End"
                 value={end}
                 onChange={(event) => setEnd(event.target.value)}
               />
@@ -394,14 +364,11 @@ const GetCoordinates: React.FC = () => {
             <MenuItem value="default" disabled>
               Select input data
             </MenuItem>
-            <MenuItem value="genomic_coords_gene">
-              Genomic coordinates, gene
-            </MenuItem>
-            <MenuItem value="genomic_coords_tx">
-              Genomic coordinates, transcript
+            <MenuItem value="genomic_coords">
+              Genomic coordinates
             </MenuItem>
             <MenuItem value="exon_coords_tx">
-              Exon coordinates, transcript
+              Exon coordinates
             </MenuItem>
           </Select>
         </Box>
