@@ -252,6 +252,11 @@ class GetTranscriptsResponse(Response):
 
     transcripts: Optional[List[ManeGeneTranscript]]
 
+class GetGeneTranscriptsResponse(Response):
+    """Response model for MANE transcript retrieval endpoint."""
+
+    transcripts: Optional[List[str]]
+
 
 class ServiceInfoResponse(Response):
     """Response model for service_info endpoint."""

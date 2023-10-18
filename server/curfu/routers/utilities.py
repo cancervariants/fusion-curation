@@ -8,17 +8,19 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 from gene import schemas as gene_schemas
 from starlette.background import BackgroundTasks
+from cool_seq_tool.routers import CoolSeqTool
 
 from curfu import logger
 from curfu.schemas import (
     CoordsUtilsResponse,
     GetTranscriptsResponse,
+    GetGeneTranscriptsResponse,
     SequenceIDResponse,
 )
 from curfu.sequence_services import InvalidInputError, get_strand
+from curfu import UTA_DB_URL
 
 router = APIRouter()
-
 
 @router.get(
     "/api/utilities/get_transcripts",
@@ -48,6 +50,26 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
     else:
         return {"transcripts": transcripts}
 
+@router.get(
+    "/api/utilities/get_transcripts_for_gene",
+    operation_id="getTranscriptsFromGene",
+    response_model=GetGeneTranscriptsResponse,
+    response_model_exclude_none=True,
+)
+async def get_transcripts_for_gene(request: Request, gene: str) -> Dict:
+    """Get all transcripts for gene term.
+    \f
+    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+        FUSOR and UTA-associated tools.
+    :param str gene: gene term provided by user
+    :return: Dict containing transcripts if lookup succeeds, or warnings upon failure
+    """
+    cst = CoolSeqTool(db_url=UTA_DB_URL)
+    transcripts = await cst.uta_db.get_transcripts_from_gene(gene)
+    if not transcripts:
+        return {"warnings": [f"No matching transcripts: {gene}"]}
+    else:
+        return {"transcripts": transcripts}
 
 @router.get(
     "/api/utilities/get_genomic",

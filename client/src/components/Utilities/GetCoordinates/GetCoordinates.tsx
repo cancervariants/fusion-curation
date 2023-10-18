@@ -16,6 +16,7 @@ import { getGenomicCoords, getExonCoords } from "../../../services/main";
 import {
   CoordsUtilsResponse,
   GenomicData,
+  GetGeneTranscriptsResponse,
 } from "../../../services/ResponseModels";
 import StrandSwitch from "../../main/shared/StrandSwitch/StrandSwitch";
 import TabHeader from "../../main/shared/TabHeader/TabHeader";
@@ -23,6 +24,7 @@ import TabPaper from "../../main/shared/TabPaper/TabPaper";
 import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
 import ChromosomeField from "../../main/shared/ChromosomeField/ChromosomeField";
 import TranscriptField from "../../main/shared/TranscriptField/TranscriptField";
+import { getTranscriptsForGene } from "../../../services/main";
 
 const GetCoordinates: React.FC = () => {
   const useStyles = makeStyles(() => ({
@@ -93,6 +95,9 @@ const GetCoordinates: React.FC = () => {
   const [exonStartOffset, setExonStartOffset] = useState<string>("");
   const [exonEndOffset, setExonEndOffset] = useState<string>("");
 
+  const [geneTranscripts, setGeneTranscripts] = useState([]);
+  const [geneTxWarnings, setGeneTxWarnings] = useState<string[]>();
+
   const [results, setResults] = useState<GenomicData | null>(null);
   const [error, setError] = useState<string>("");
 
@@ -118,6 +123,7 @@ const GetCoordinates: React.FC = () => {
 
   useEffect(() => {
     if (inputComplete) {
+      handleGetTranscripts();
       fetchResults();
     }
   }, [
@@ -176,6 +182,18 @@ const GetCoordinates: React.FC = () => {
       clearWarnings();
       setResults(coordsResponse.coordinates_data as GenomicData);
     }
+  };
+
+  const handleGetTranscripts = () => {
+    getTranscriptsForGene(gene).then((transcriptsResponse: GetGeneTranscriptsResponse) => {
+      if (transcriptsResponse.warnings) {
+        setGeneTxWarnings(transcriptsResponse.warnings);
+        setGeneTranscripts([]);
+      } else {
+        setGeneTxWarnings([]);
+        setGeneTranscripts(transcriptsResponse.transcripts);
+      }
+    });
   };
 
   const fetchResults = () => {

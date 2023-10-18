@@ -233,6 +233,14 @@ export const getTranscripts = async (
   return transcriptResponse;
 };
 
+export const getTranscriptsForGene = async (
+  gene: string
+): Promise<GetTranscriptsResponse> => {
+  const response = await fetch(`/api/utilities/get_transcripts_for_gene?gene=${gene}`);
+  const transcriptResponse = await response.json();
+  return transcriptResponse;
+};
+
 export const getExonCoords = async (
   chromosome: string,
   start: string,
