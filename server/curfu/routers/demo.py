@@ -101,10 +101,10 @@ def clientify_structural_element(
         element_args["nomenclature"] = nm
         element_args["input_type"] = "exon_coords_tx"
         element_args["input_tx"] = element.transcript.split(":")[1]
-        element_args["input_exon_start"] = element.exon_start
-        element_args["input_exon_start_offset"] = element.exon_start_offset
-        element_args["input_exon_end"] = element.exon_end
-        element_args["input_exon_end_offset"] = element.exon_end_offset
+        element_args["input_exon_start"] = str(element.exon_start)
+        element_args["input_exon_start_offset"] = str(element.exon_start_offset)
+        element_args["input_exon_end"] = str(element.exon_end)
+        element_args["input_exon_end_offset"] = str(element.exon_end_offset)
         return ClientTranscriptSegmentElement(**element_args)
     else:
         raise ValueError("Unknown element type provided")

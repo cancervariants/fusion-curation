@@ -1,5 +1,6 @@
 """Provide schemas for FastAPI responses."""
 from typing import Dict, List, Literal, Optional, Tuple, Union
+import polars as pl
 
 from cool_seq_tool.schemas import GenomicData
 from fusor.models import (
@@ -45,16 +46,16 @@ class ClientTranscriptSegmentElement(TranscriptSegmentElement, ClientStructuralE
         Literal["genomic_coords_tx"],
         Literal["exon_coords_tx"],
     ]
-    input_tx: Optional[str]
-    input_strand: Optional[Strand]
-    input_gene: Optional[str]
-    input_chr: Optional[str]
-    input_genomic_start: Optional[str]
-    input_genomic_end: Optional[str]
-    input_exon_start: Optional[str]
-    input_exon_start_offset: Optional[str]
-    input_exon_end: Optional[str]
-    input_exon_end_offset: Optional[str]
+    input_tx: Optional[str] = ""
+    input_strand: Optional[Strand] = None
+    input_gene: Optional[str] = ""
+    input_chr: Optional[str] = ""
+    input_genomic_start: Optional[str] = ""
+    input_genomic_end: Optional[str] = ""
+    input_exon_start: Optional[str] = ""
+    input_exon_start_offset: Optional[str] = ""
+    input_exon_end: Optional[str] = ""
+    input_exon_end_offset: Optional[str] = ""
 
 
 class ClientLinkerElement(LinkerElement, ClientStructuralElement):
@@ -66,9 +67,9 @@ class ClientLinkerElement(LinkerElement, ClientStructuralElement):
 class ClientTemplatedSequenceElement(TemplatedSequenceElement, ClientStructuralElement):
     """Templated sequence element used client-side."""
 
-    input_chromosome: Optional[str]
-    input_start: Optional[str]
-    input_end: Optional[str]
+    input_chromosome: Optional[str] = ""
+    input_start: Optional[str] = ""
+    input_end: Optional[str] = ""
 
 
 class ClientGeneElement(GeneElement, ClientStructuralElement):
@@ -112,7 +113,7 @@ class ClientRegulatoryElement(RegulatoryElement):
 class Response(BaseModel):
     """Abstract Response class for defining API response structures."""
 
-    warnings: ResponseWarnings
+    warnings: ResponseWarnings = None
 
     class Config:
         """Configure class"""
@@ -123,28 +124,28 @@ class Response(BaseModel):
 class GeneElementResponse(Response):
     """Response model for gene element construction endoint."""
 
-    element: Optional[GeneElement]
+    element: Optional[GeneElement] = None
 
 
 class TxSegmentElementResponse(Response):
     """Response model for transcript segment element construction endpoint."""
 
-    element: Optional[TranscriptSegmentElement]
+    element: Optional[TranscriptSegmentElement] = None
 
 
 class TemplatedSequenceElementResponse(Response):
     """Response model for transcript segment element construction endpoint."""
 
-    element: Optional[TemplatedSequenceElement]
+    element: Optional[TemplatedSequenceElement] = None
 
 
 class NormalizeGeneResponse(Response):
     """Response model for gene normalization endpoint."""
 
     term: StrictStr
-    concept_id: Optional[CURIE]
-    symbol: Optional[StrictStr]
-    cased: Optional[StrictStr]
+    concept_id: Optional[CURIE] = None
+    symbol: Optional[StrictStr] = ""
+    cased: Optional[StrictStr] = ""
 
 
 class SuggestGeneResponse(Response):
@@ -153,10 +154,10 @@ class SuggestGeneResponse(Response):
     term: StrictStr
     matches_count: int
     # complete term, normalized symbol, normalized concept ID, chromosome ID, strand
-    concept_id: Optional[List[Tuple[str, str, str, str, str]]]
-    symbol: Optional[List[Tuple[str, str, str, str, str]]]
-    prev_symbols: Optional[List[Tuple[str, str, str, str, str]]]
-    aliases: Optional[List[Tuple[str, str, str, str, str]]]
+    concept_id: Optional[List[Tuple[str, str, str, str, str]]] = []
+    symbol: Optional[List[Tuple[str, str, str, str, str]]] = []
+    prev_symbols: Optional[List[Tuple[str, str, str, str, str]]] = []
+    aliases: Optional[List[Tuple[str, str, str, str, str]]] = []
 
 
 class DomainParams(BaseModel):
@@ -172,20 +173,20 @@ class DomainParams(BaseModel):
 class GetDomainResponse(Response):
     """Response model for functional domain constructor endpoint."""
 
-    domain: Optional[FunctionalDomain]
+    domain: Optional[FunctionalDomain] = None
 
 
 class AssociatedDomainResponse(Response):
     """Response model for domain ID autocomplete suggestion endpoint."""
 
     gene_id: StrictStr
-    suggestions: Optional[List[DomainParams]]
+    suggestions: Optional[List[DomainParams]] = []
 
 
 class ValidateFusionResponse(Response):
     """Response model for Fusion validation endpoint."""
 
-    fusion: Optional[Fusion]
+    fusion: Optional[Fusion] = None
 
 
 class ExonCoordsRequest(BaseModel):
@@ -223,9 +224,9 @@ class SequenceIDResponse(Response):
     """Response model for sequence ID retrieval endpoint."""
 
     sequence: StrictStr
-    refseq_id: Optional[StrictStr]
-    ga4gh_id: Optional[StrictStr]
-    aliases: Optional[List[StrictStr]]
+    refseq_id: Optional[StrictStr] = ""
+    ga4gh_id: Optional[StrictStr] = ""
+    aliases: Optional[List[StrictStr]] = []
 
 
 class ManeGeneTranscript(BaseModel):
@@ -242,8 +243,8 @@ class ManeGeneTranscript(BaseModel):
     Ensembl_prot: str
     MANE_status: str
     GRCh38_chr: str
-    chr_start: str
-    chr_end: str
+    chr_start: StrictInt
+    chr_end: StrictInt
     chr_strand: str
 
 
@@ -255,7 +256,7 @@ class GetTranscriptsResponse(Response):
 class GetGeneTranscriptsResponse(Response):
     """Response model for MANE transcript retrieval endpoint."""
 
-    transcripts: Optional[List[str]]
+    transcripts: Optional[pl.DataFrame]
 
 
 class ServiceInfoResponse(Response):
@@ -309,7 +310,7 @@ class ClientAssayedFusion(AssayedFusion):
 class NomenclatureResponse(Response):
     """Response model for regulatory element nomenclature endpoint."""
 
-    nomenclature: Optional[str]
+    nomenclature: Optional[str] = ""
 
 
 class RegulatoryElementResponse(Response):

@@ -64,10 +64,9 @@ async def get_transcripts_for_gene(request: Request, gene: str) -> Dict:
     :param str gene: gene term provided by user
     :return: Dict containing transcripts if lookup succeeds, or warnings upon failure
     """
-    cst = CoolSeqTool(db_url=UTA_DB_URL)
-    transcripts = await cst.uta_db.get_transcripts_from_gene(gene)
-    if not transcripts:
-        return {"warnings": [f"No matching transcripts: {gene}"]}
+    transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(gene)
+    if transcripts.is_empty():
+        return {"warnings": [f"No matching transcripts: {gene}"], "transcripts": []}
     else:
         return {"transcripts": transcripts}
 
@@ -187,7 +186,7 @@ async def get_exon_coords(
             logger.warning(warning)
         return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    response = await request.app.state.fusor.cool_seq_tool.genomic_to_transcript_exon_coordinates(  # noqa: E501
+    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.genomic_to_transcript_exon_coordinates(  # noqa: E501
         chromosome,
         start=start,
         end=end,

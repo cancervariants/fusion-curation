@@ -151,8 +151,8 @@ const GetCoordinates: React.FC = () => {
 
   const handleResponse = (coordsResponse: CoordsUtilsResponse) => {
     if (coordsResponse.warnings) {
-      setResults(null);
-      clearWarnings();
+      // setResults(null);
+      // clearWarnings();
       coordsResponse.warnings.forEach((warning) => {
         if (warning.startsWith("Found more than one accession")) {
           setChromosomeText("Complete ID required");
