@@ -64,7 +64,14 @@ async def get_transcripts_for_gene(request: Request, gene: str) -> Dict:
     :param str gene: gene term provided by user
     :return: Dict containing transcripts if lookup succeeds, or warnings upon failure
     """
-    transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(gene)
+    normalized = request.app.state.fusor.gene_normalizer.normalize(gene)
+    symbol = normalized.gene_descriptor.label
+    print(symbol)
+    print(request.app.state.fusor.cool_seq_tool.uta_db)
+    transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(symbol)
+    transcripts_dict = transcripts.to_dict()
+    tx_for_gene = transcripts_dict["tx_ac"]
+    print(transcripts.glimpse())
     if transcripts.is_empty():
         return {"warnings": [f"No matching transcripts: {gene}"], "transcripts": []}
     else:

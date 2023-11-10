@@ -256,7 +256,7 @@ class GetTranscriptsResponse(Response):
 class GetGeneTranscriptsResponse(Response):
     """Response model for MANE transcript retrieval endpoint."""
 
-    transcripts: Optional[pl.DataFrame]
+    transcripts: Optional[Dict]
 
 
 class ServiceInfoResponse(Response):
