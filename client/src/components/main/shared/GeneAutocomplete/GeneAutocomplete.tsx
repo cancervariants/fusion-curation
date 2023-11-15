@@ -3,8 +3,8 @@ import { TextField, Typography, makeStyles } from "@material-ui/core";
 import Autocomplete, {
   AutocompleteRenderGroupParams,
 } from "@material-ui/lab/Autocomplete";
-import { getGeneSuggestions } from "../../../../services/main";
-import { SuggestGeneResponse } from "../../../../services/ResponseModels";
+import { getGeneSuggestions, getTranscriptsForGene } from "../../../../services/main";
+import { GetGeneTranscriptsResponse, SuggestGeneResponse } from "../../../../services/ResponseModels";
 import HelpTooltip from "../HelpTooltip/HelpTooltip";
 import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
 
@@ -50,6 +50,8 @@ interface Props {
   promptText?: string | undefined;
   setChromosome?: CallableFunction;
   setStrand?: CallableFunction;
+  setTranscripts?: CallableFunction;
+  setDefaultTranscript?: CallableFunction;
 }
 
 export const GeneAutocomplete: React.FC<Props> = ({
@@ -61,6 +63,8 @@ export const GeneAutocomplete: React.FC<Props> = ({
   promptText,
   setChromosome,
   setStrand,
+  setTranscripts,
+  setDefaultTranscript,
 }) => {
   const existingGeneOption = gene
     ? { value: gene, type: GeneSuggestionType.symbol }
@@ -94,6 +98,15 @@ export const GeneAutocomplete: React.FC<Props> = ({
     }
     if (setStrand) {
       setStrand(selection.strand);
+    }
+    if (setTranscripts) {
+      getTranscriptsForGene(selection.value).then((transcriptsResponse: GetGeneTranscriptsResponse) => {
+        const transcripts = transcriptsResponse.transcripts
+        setTranscripts(transcripts);
+        if (setDefaultTranscript) {
+          setDefaultTranscript(transcripts[0])
+        }
+      });
     }
   };
 

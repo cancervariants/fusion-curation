@@ -66,16 +66,12 @@ async def get_transcripts_for_gene(request: Request, gene: str) -> Dict:
     """
     normalized = request.app.state.fusor.gene_normalizer.normalize(gene)
     symbol = normalized.gene_descriptor.label
-    print(symbol)
-    print(request.app.state.fusor.cool_seq_tool.uta_db)
-    transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(symbol)
-    transcripts_dict = transcripts.to_dict()
-    tx_for_gene = transcripts_dict["tx_ac"]
-    print(transcripts.glimpse())
+    transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(gene=symbol)
+    tx_for_gene = list(transcripts.rows_by_key("tx_ac"))
     if transcripts.is_empty():
         return {"warnings": [f"No matching transcripts: {gene}"], "transcripts": []}
     else:
-        return {"transcripts": transcripts}
+        return {"transcripts": tx_for_gene}
 
 @router.get(
     "/api/utilities/get_genomic",
@@ -133,7 +129,7 @@ async def get_genome_coords(
     if exon_end is not None and exon_end_offset is None:
         exon_end_offset = 0
 
-    response = await request.app.state.fusor.cool_seq_tool.transcript_to_genomic_coordinates(  # noqa: E501
+    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.transcript_to_genomic_coordinates(  # noqa: E501
         gene=gene,
         transcript=transcript,
         exon_start=exon_start,
@@ -281,7 +277,7 @@ async def get_sequence(
     """
     _, path = tempfile.mkstemp(suffix=".fasta")
     try:
-        request.app.state.fusor.cool_seq_tool.get_fasta_file(sequence_id, Path(path))
+        request.app.state.fusor.cool_seq_tool.seqrepo_access.get_fasta_file(sequence_id, Path(path))
     except KeyError:
         resp = request.app.state.fusor.cool_seq_tool.seqrepo_access.translate_identifier(  # noqa: E501
             sequence_id, "refseq"
@@ -293,7 +289,7 @@ async def get_sequence(
         else:
             try:
                 new_seq_id = resp[0][0].split(":")[1]
-                request.app.state.fusor.cool_seq_tool.get_fasta_file(
+                request.app.state.fusor.cool_seq_tool.seqrepo_access.get_fasta_file(
                     new_seq_id, Path(path)
                 )
             except KeyError:
