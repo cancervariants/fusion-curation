@@ -1,6 +1,5 @@
 """Provide schemas for FastAPI responses."""
 from typing import Dict, List, Literal, Optional, Tuple, Union
-import polars as pl
 
 from cool_seq_tool.schemas import GenomicData
 from fusor.models import (
