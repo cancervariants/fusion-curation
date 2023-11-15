@@ -103,8 +103,6 @@ const GetCoordinates: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  console.log(isLoading)
-
   // programming horror
   const inputComplete =
     (inputType === "genomic_coords" &&
@@ -126,7 +124,6 @@ const GetCoordinates: React.FC = () => {
     !exonEndText;
 
   useEffect(() => {
-    console.log(inputComplete)
     if (inputComplete) {
       fetchResults();
     }
