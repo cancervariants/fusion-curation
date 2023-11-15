@@ -11,6 +11,7 @@ import {
   Link,
   InputLabel,
   FormControl,
+  CircularProgress,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
@@ -26,7 +27,6 @@ import TabPaper from "../../main/shared/TabPaper/TabPaper";
 import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
 import ChromosomeField from "../../main/shared/ChromosomeField/ChromosomeField";
 import TranscriptField from "../../main/shared/TranscriptField/TranscriptField";
-import { getTranscriptsForGene } from "../../../services/main";
 
 const GetCoordinates: React.FC = () => {
   const useStyles = makeStyles(() => ({
@@ -98,11 +98,13 @@ const GetCoordinates: React.FC = () => {
   const [exonEndOffset, setExonEndOffset] = useState<string>("");
 
   const [geneTranscripts, setGeneTranscripts] = useState([]);
-  const [geneTxWarnings, setGeneTxWarnings] = useState<string[]>();
   const [selectedTranscript, setSelectedTranscript] = useState("");
 
   const [results, setResults] = useState<GenomicData | null>(null);
   const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  console.log(isLoading)
 
   // programming horror
   const inputComplete =
@@ -185,6 +187,7 @@ const GetCoordinates: React.FC = () => {
       clearWarnings();
       setResults(coordsResponse.coordinates_data as GenomicData);
     }
+    setIsLoading(false);
   };
 
   const handleTranscriptSelect = (event: any) => {
@@ -193,6 +196,7 @@ const GetCoordinates: React.FC = () => {
   };
 
   const fetchResults = () => {
+    setIsLoading(true);
     if (inputType == "exon_coords_tx") {
       getGenomicCoords(
         gene,
@@ -219,6 +223,14 @@ const GetCoordinates: React.FC = () => {
   );
 
   const renderResults = (): React.ReactFragment => {
+    if (isLoading) {
+      return (
+        <Box alignContent="center" alignItems="center" justifyContent="center" display="flex" flexDirection="column">
+          <Box mb={2}>Retrieving results...</Box>
+          <CircularProgress />
+        </Box>
+      )
+    }
     if (inputValid) {
       if (results) {
         return (

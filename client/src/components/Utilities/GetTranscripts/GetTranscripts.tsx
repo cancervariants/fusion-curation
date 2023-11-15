@@ -5,7 +5,6 @@ import {
   Box,
   Container,
   makeStyles,
-  Paper,
   Table,
   TableContainer,
   Typography,
@@ -27,6 +26,7 @@ import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
 import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
 import TabHeader from "../../main/shared/TabHeader/TabHeader";
 import TabPaper from "../../main/shared/TabPaper/TabPaper";
+import LoadingMessage from "../../main/shared/LoadingMessage/LoadingMessage";
 
 export const GetTranscripts: React.FC = () => {
   const [gene, setGene] = useState("");
@@ -34,6 +34,8 @@ export const GetTranscripts: React.FC = () => {
 
   const [transcripts, setTranscripts] = useState<ManeGeneTranscript[]>([]);
   const [transcriptWarnings, setTranscriptWarnings] = useState<string[]>([]);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { colorTheme } = useColorTheme();
   const useStyles = makeStyles(() => ({
@@ -51,6 +53,7 @@ export const GetTranscripts: React.FC = () => {
       overflowY: "scroll",
       textOverflow: "clip",
       width: "100%",
+      height: "100%",
     },
     txAccordionContainer: {
       width: "90%",
@@ -73,13 +76,16 @@ export const GetTranscripts: React.FC = () => {
   }, [gene]);
 
   const handleGet = () => {
+    setIsLoading(true);
     getTranscripts(gene).then((transcriptsResponse: GetTranscriptsResponse) => {
       if (transcriptsResponse.warnings) {
         setTranscriptWarnings(transcriptsResponse.warnings);
         setTranscripts([]);
+        setIsLoading(false);
       } else {
         setTranscriptWarnings([]);
         setTranscripts(transcriptsResponse.transcripts as ManeGeneTranscript[]);
+        setIsLoading(false);
       }
     });
   };
@@ -116,6 +122,9 @@ export const GetTranscripts: React.FC = () => {
   );
 
   const renderTranscripts = () => {
+    if (isLoading) {
+      return (<LoadingMessage message="Fetching transcripts..."/>)
+    }
     if (transcriptWarnings.length > 0) {
       // TODO more error handling here
       return <Box>{JSON.stringify(transcriptWarnings, null, 2)}</Box>;
