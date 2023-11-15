@@ -19,7 +19,6 @@ import { getGenomicCoords, getExonCoords } from "../../../services/main";
 import {
   CoordsUtilsResponse,
   GenomicData,
-  GetGeneTranscriptsResponse,
 } from "../../../services/ResponseModels";
 import StrandSwitch from "../../main/shared/StrandSwitch/StrandSwitch";
 import TabHeader from "../../main/shared/TabHeader/TabHeader";

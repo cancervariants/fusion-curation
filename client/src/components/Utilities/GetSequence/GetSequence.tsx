@@ -13,6 +13,7 @@ import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
 import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
 import TabHeader from "../../main/shared/TabHeader/TabHeader";
 import TabPaper from "../../main/shared/TabPaper/TabPaper";
+import LoadingMessage from "../../main/shared/LoadingMessage/LoadingMessage";
 
 const GetSequenceIds: React.FC = () => {
   const [inputSequence, setInputSequence] = useState<string>("");
@@ -20,15 +21,18 @@ const GetSequenceIds: React.FC = () => {
   const [refseqId, setRefseqId] = useState<string>("");
   const [ga4ghId, setGa4ghId] = useState<string>("");
   const [aliases, setAliases] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (inputSequence) {
+      setIsLoading(true);
       getSequenceIds(inputSequence).then((sequenceIdsResponse) => {
         if (sequenceIdsResponse.warnings) {
           setHelperText("Unrecognized sequence");
           setRefseqId("");
           setGa4ghId("");
           setAliases([]);
+          setIsLoading(false);
         } else {
           if (sequenceIdsResponse.refseq_id) {
             setRefseqId(sequenceIdsResponse.refseq_id);
@@ -40,6 +44,7 @@ const GetSequenceIds: React.FC = () => {
             setAliases(sequenceIdsResponse.aliases);
           }
           setHelperText("");
+          setIsLoading(false);
         }
       });
     }
@@ -184,7 +189,7 @@ const GetSequenceIds: React.FC = () => {
     </Box>
   );
 
-  const renderedIdInfo = (
+  const renderedIdInfo = isLoading ? (<LoadingMessage />) : (
     <Box className={classes.sequenceIdResult}>
       <Box className={classes.idsContainer}>
         <Box>
