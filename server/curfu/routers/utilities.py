@@ -22,6 +22,7 @@ from curfu import UTA_DB_URL
 
 router = APIRouter()
 
+
 @router.get(
     "/api/utilities/get_transcripts",
     operation_id="getMANETranscripts",
@@ -50,6 +51,7 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
     else:
         return {"transcripts": transcripts}
 
+
 @router.get(
     "/api/utilities/get_transcripts_for_gene",
     operation_id="getTranscriptsFromGene",
@@ -66,12 +68,15 @@ async def get_transcripts_for_gene(request: Request, gene: str) -> Dict:
     """
     normalized = request.app.state.fusor.gene_normalizer.normalize(gene)
     symbol = normalized.gene_descriptor.label
-    transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(gene=symbol)
+    transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(
+        gene=symbol
+    )
     tx_for_gene = list(transcripts.rows_by_key("tx_ac"))
     if transcripts.is_empty():
         return {"warnings": [f"No matching transcripts: {gene}"], "transcripts": []}
     else:
         return {"transcripts": tx_for_gene}
+
 
 @router.get(
     "/api/utilities/get_genomic",
@@ -277,7 +282,9 @@ async def get_sequence(
     """
     _, path = tempfile.mkstemp(suffix=".fasta")
     try:
-        request.app.state.fusor.cool_seq_tool.seqrepo_access.get_fasta_file(sequence_id, Path(path))
+        request.app.state.fusor.cool_seq_tool.seqrepo_access.get_fasta_file(
+            sequence_id, Path(path)
+        )
     except KeyError:
         resp = request.app.state.fusor.cool_seq_tool.seqrepo_access.translate_identifier(  # noqa: E501
             sequence_id, "refseq"

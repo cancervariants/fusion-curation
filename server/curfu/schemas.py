@@ -252,6 +252,7 @@ class GetTranscriptsResponse(Response):
 
     transcripts: Optional[List[ManeGeneTranscript]] = None
 
+
 class GetGeneTranscriptsResponse(Response):
     """Response model for MANE transcript retrieval endpoint."""
 
