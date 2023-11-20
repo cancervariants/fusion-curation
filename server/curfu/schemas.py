@@ -1,7 +1,6 @@
 """Provide schemas for FastAPI responses."""
 from enum import Enum
 from typing import Dict, List, Literal, Optional, Tuple, Union
-import polars as pl
 
 from cool_seq_tool.schemas import GenomicData
 from fusor.models import (
@@ -253,27 +252,12 @@ class GetTranscriptsResponse(Response):
     """Response model for MANE transcript retrieval endpoint."""
 
     transcripts: Optional[List[ManeGeneTranscript]] = None
-<<<<<<< HEAD
 
-=======
->>>>>>> 005823a (feat: add transcript lookup for genes)
 
 class GetGeneTranscriptsResponse(Response):
     """Response model for MANE transcript retrieval endpoint."""
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     transcripts: Optional[List[str]] = None
-=======
-    transcripts: Optional[pl.DataFrame]
->>>>>>> c11b094 (feat!: adding transcript lookup for genes)
-=======
-    transcripts: Optional[Dict]
->>>>>>> 047cc77 (feat: add transcript lookup for genes)
-=======
-    transcripts: Optional[List[str]] = None
->>>>>>> 005823a (feat: add transcript lookup for genes)
 
 
 class ServiceInfoResponse(Response):

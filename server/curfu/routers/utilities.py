@@ -68,40 +68,17 @@ async def get_transcripts_for_gene(request: Request, gene: str) -> Dict:
     :param str gene: gene term provided by user
     :return: Dict containing transcripts if lookup succeeds, or warnings upon failure
     """
-<<<<<<< HEAD
-<<<<<<< HEAD
     normalized = request.app.state.fusor.gene_normalizer.normalize(gene)
     symbol = normalized.gene_descriptor.label
     transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(
         gene=symbol
     )
     tx_for_gene = list(transcripts.rows_by_key("tx_ac"))
-=======
-    transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(gene)
->>>>>>> c11b094 (feat!: adding transcript lookup for genes)
-=======
-    normalized = request.app.state.fusor.gene_normalizer.normalize(gene)
-    symbol = normalized.gene_descriptor.label
-<<<<<<< HEAD
-    print(symbol)
-    print(request.app.state.fusor.cool_seq_tool.uta_db)
-    transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(symbol)
-    transcripts_dict = transcripts.to_dict()
-    tx_for_gene = transcripts_dict["tx_ac"]
-    print(transcripts.glimpse())
->>>>>>> 047cc77 (feat: add transcript lookup for genes)
-=======
-    transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(gene=symbol)
-    tx_for_gene = list(transcripts.rows_by_key("tx_ac"))
->>>>>>> 005823a (feat: add transcript lookup for genes)
     if transcripts.is_empty():
         return {"warnings": [f"No matching transcripts: {gene}"], "transcripts": []}
     else:
         return {"transcripts": tx_for_gene}
-<<<<<<< HEAD
 
-=======
->>>>>>> 005823a (feat: add transcript lookup for genes)
 
 @router.get(
     "/api/utilities/get_genomic",
@@ -311,13 +288,9 @@ async def get_sequence(
     """
     _, path = tempfile.mkstemp(suffix=".fasta")
     try:
-<<<<<<< HEAD
         request.app.state.fusor.cool_seq_tool.seqrepo_access.get_fasta_file(
             sequence_id, Path(path)
         )
-=======
-        request.app.state.fusor.cool_seq_tool.seqrepo_access.get_fasta_file(sequence_id, Path(path))
->>>>>>> 005823a (feat: add transcript lookup for genes)
     except KeyError:
         resp = request.app.state.fusor.cool_seq_tool.seqrepo_access.translate_identifier(  # noqa: E501
             sequence_id, "refseq"

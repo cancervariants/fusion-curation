@@ -11,10 +11,7 @@ import {
   Link,
   InputLabel,
   FormControl,
-<<<<<<< HEAD
   CircularProgress,
-=======
->>>>>>> 005823a (feat: add transcript lookup for genes)
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
@@ -101,10 +98,6 @@ const GetCoordinates: React.FC = () => {
   const [exonEndOffset, setExonEndOffset] = useState<string>("");
 
   const [geneTranscripts, setGeneTranscripts] = useState([]);
-<<<<<<< HEAD
-=======
-  const [geneTxWarnings, setGeneTxWarnings] = useState<string[]>();
->>>>>>> 005823a (feat: add transcript lookup for genes)
   const [selectedTranscript, setSelectedTranscript] = useState("");
 
   const [results, setResults] = useState<GenomicData | null>(null);
@@ -132,7 +125,6 @@ const GetCoordinates: React.FC = () => {
     !exonEndText;
 
   useEffect(() => {
-    console.log(inputComplete)
     if (inputComplete) {
       fetchResults();
     }
