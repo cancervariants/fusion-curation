@@ -8,7 +8,6 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 from gene import schemas as gene_schemas
 from starlette.background import BackgroundTasks
-from cool_seq_tool.routers import CoolSeqTool
 
 from curfu import logger
 from curfu.schemas import (
@@ -19,7 +18,6 @@ from curfu.schemas import (
     SequenceIDResponse,
 )
 from curfu.sequence_services import InvalidInputError, get_strand
-from curfu import UTA_DB_URL
 
 router = APIRouter()
 
