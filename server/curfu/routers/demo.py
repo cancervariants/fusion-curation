@@ -31,6 +31,7 @@ from curfu.schemas import (
     GeneElement,
     LinkerElement,
     MultiplePossibleGenesElement,
+    RouteTag,
     TemplatedSequenceElement,
     TranscriptSegmentElement,
     UnknownGeneElement,
@@ -156,6 +157,7 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
     operation_id="alkDemo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.DEMOS],
 )
 def get_alk(request: Request) -> DemoResponse:
     """Retrieve ALK assayed fusion.
@@ -176,6 +178,7 @@ def get_alk(request: Request) -> DemoResponse:
     operation_id="ewsr1Demo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.DEMOS],
 )
 def get_ewsr1(request: Request) -> DemoResponse:
     """Retrieve EWSR1 assayed fusion.
@@ -196,6 +199,7 @@ def get_ewsr1(request: Request) -> DemoResponse:
     operation_id="bcrAbl1Demo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.DEMOS],
 )
 def get_bcr_abl1(request: Request) -> DemoResponse:
     """Retrieve BCR-ABL1 categorical fusion.
@@ -216,6 +220,7 @@ def get_bcr_abl1(request: Request) -> DemoResponse:
     operation_id="tpm3Ntrk1Demo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.DEMOS],
 )
 def get_tpm3_ntrk1(request: Request) -> DemoResponse:
     """Retrieve TPM3-NTRK1 assayed fusion.
@@ -236,6 +241,7 @@ def get_tpm3_ntrk1(request: Request) -> DemoResponse:
     operation_id="tpm3PdgfrbDemo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.DEMOS],
 )
 def get_tpm3_pdgfrb(request: Request) -> DemoResponse:
     """Retrieve TPM3-PDGFRB assayed fusion.
@@ -256,6 +262,7 @@ def get_tpm3_pdgfrb(request: Request) -> DemoResponse:
     operation_id="ighMycDemo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.DEMOS],
 )
 def get_igh_myc(request: Request) -> DemoResponse:
     """Retrieve IGH-MYC assayed fusion.

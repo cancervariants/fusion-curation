@@ -1,4 +1,5 @@
 """Provide schemas for FastAPI responses."""
+from enum import Enum
 from typing import Dict, List, Literal, Optional, Tuple, Union
 
 from cool_seq_tool.schemas import GenomicData
@@ -323,3 +324,17 @@ class DemoResponse(Response):
     """Response model for demo fusion object retrieval endpoints."""
 
     fusion: Union[ClientAssayedFusion, ClientCategoricalFusion]
+
+
+class RouteTag(str, Enum):
+    """Define tags for API routes."""
+
+    UTILITIES = "Utilities"
+    CONSTRUCTORS = "Constructors"
+    VALIDATORS = "Validators"
+    COMPLETION = "Completion"
+    NOMENCLATURE = "Nomenclature"
+    DEMOS = "Demos"
+    META = "Meta"
+    SERVICE = "Service"
+    LOOKUP = "Lookup"

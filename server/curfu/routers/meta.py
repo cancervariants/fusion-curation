@@ -3,14 +3,17 @@ from cool_seq_tool.version import __version__ as cool_seq_tool_version
 from fastapi import APIRouter
 from fusor import __version__ as fusor_version
 
-from curfu.schemas import ServiceInfoResponse
+from curfu.schemas import RouteTag, ServiceInfoResponse
 from curfu.version import __version__ as curfu_version
 
 router = APIRouter()
 
 
 @router.get(
-    "/api/service_info", operation_id="serviceInfo", response_model=ServiceInfoResponse
+    "/api/service_info",
+    operation_id="serviceInfo",
+    response_model=ServiceInfoResponse,
+    tags=[RouteTag.META],
 )
 def get_service_info() -> ServiceInfoResponse:
     """Return service info."""

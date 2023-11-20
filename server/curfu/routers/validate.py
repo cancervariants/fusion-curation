@@ -4,7 +4,7 @@ from typing import Dict
 from fastapi import APIRouter, Body, Request
 from fusor.exceptions import FUSORParametersException
 
-from curfu.schemas import ResponseDict, ValidateFusionResponse
+from curfu.schemas import ResponseDict, RouteTag, ValidateFusionResponse
 
 router = APIRouter()
 
@@ -14,6 +14,7 @@ router = APIRouter()
     operation_id="validateFusion",
     response_model=ValidateFusionResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.VALIDATORS],
 )
 def validate_fusion(request: Request, fusion: Dict = Body()) -> ResponseDict:
     """Validate proposed Fusion object. Return warnings if invalid.
