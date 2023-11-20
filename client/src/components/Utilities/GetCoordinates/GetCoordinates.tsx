@@ -100,8 +100,8 @@ const GetCoordinates: React.FC = () => {
   const [selectedTranscript, setSelectedTranscript] = useState("");
 
   const [results, setResults] = useState<GenomicData | null>(null);
-  const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [responseWarnings, setResponseWarnings] = useState<string[]>([]);
 
   // programming horror
   const inputComplete =
@@ -143,29 +143,27 @@ const GetCoordinates: React.FC = () => {
   const clearWarnings = () => {
     setTxAcText("");
     setGeneText("");
-    setChromosomeText("");
     setStartText("");
     setEndText("");
     setExonStartText("");
     setExonEndText("");
+    setResponseWarnings([]);
   };
 
   const handleResponse = (coordsResponse: CoordsUtilsResponse) => {
     if (coordsResponse.warnings) {
-      // setResults(null);
-      // clearWarnings();
+      setResponseWarnings(coordsResponse.warnings);
+      setResults(null);
       coordsResponse.warnings.forEach((warning) => {
         if (warning.startsWith("Found more than one accession")) {
           setChromosomeText("Complete ID required");
         } else if (warning.startsWith("Unable to get exons for")) {
           setTxAcText("Unrecognized transcript");
-        } else if (warning.startsWith("Invalid chromosome")) {
-          setChromosomeText("Unrecognized value");
         } else if (
           warning == "Must find exactly one row for genomic data, but found: 0"
         ) {
-          setError(
-            "Unable to resolve coordinates lookup given provided parameters"
+          setResponseWarnings(
+            ["Unable to resolve coordinates lookup given provided parameters. Double check that the coordinates entered are valid for the selected Transcript."]
           );
         } else if (warning.startsWith("Exon ")) {
           const exonPattern = /Exon (\d*) does not exist on (.*)/;
@@ -251,13 +249,19 @@ const GetCoordinates: React.FC = () => {
               : null}
           </Table>
         );
-      } else if (error) {
-        return <Typography>{error}</Typography>;
+      } else if (responseWarnings?.length > 0) {
+        return <Typography>{responseWarnings}</Typography>;
       } else {
-        return <></>;
+        return <Typography>
+          An unknown error has occurred. Please{" "}
+          <Link href="https://github.com/cancervariants/fusion-curation/issues">
+            submit an issue on our GitHub
+          </Link>{" "}
+          and include replication steps, along with the values entered.
+        </Typography>
       }
     } else {
-      return <></>; // TODO error message
+      return <></>;
     }
   };
 
@@ -266,7 +270,6 @@ const GetCoordinates: React.FC = () => {
       <Box display="flex" justifyContent="space-between" width="100%">
         <ChromosomeField
           fieldValue={chromosome}
-          errorText={chromosomeText}
         />
         <Box mt="18px">
           <Box className={classes.strand}>
@@ -321,12 +324,15 @@ const GetCoordinates: React.FC = () => {
             {genomicCoordinateInfo}
             <Box className={classes.fieldsPair}>
               <TextField
+                type='number'
                 margin="dense"
                 label="Genomic Start"
                 value={start}
                 onChange={(event) => setStart(event.target.value)}
+                helperText={start ? startText : ""}
               />
               <TextField
+                type='number'
                 margin="dense"
                 label="Genomic End"
                 value={end}
@@ -347,15 +353,17 @@ const GetCoordinates: React.FC = () => {
             </Box>
             <Box className={classes.fieldsPair}>
               <TextField
+                type='number'
                 margin="dense"
                 style={{ minWidth: 125 }}
                 label="Starting Exon"
                 value={exonStart}
                 onChange={(event) => setExonStart(event.target.value)}
-                error={exonStart && exonStartText !== ""}
+                error={exonStart === "" && (exonStartText !== "")}
                 helperText={exonStart ? exonStartText : ""}
               />
               <TextField
+                type='number'
                 margin="dense"
                 style={{ minWidth: 125 }}
                 label="Starting Offset"
@@ -365,15 +373,17 @@ const GetCoordinates: React.FC = () => {
             </Box>
             <Box className={classes.fieldsPair}>
               <TextField
+                type='number'
                 margin="dense"
                 style={{ minWidth: 125 }}
                 label="Ending Exon"
                 value={exonEnd}
                 onChange={(event) => setExonEnd(event.target.value)}
-                error={exonEnd && exonEndText !== ""}
+                error={exonEnd !== "" && exonEndText !== ""}
                 helperText={exonEnd ? exonEndText : ""}
               />
               <TextField
+                type='number'
                 margin="dense"
                 style={{ minWidth: 125 }}
                 label="Ending Offset"

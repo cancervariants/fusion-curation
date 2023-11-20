@@ -61,7 +61,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   const [txStrand, setTxStrand] = useState<string>(element.input_strand || "+");
 
   const [txChrom, setTxChrom] = useState(element.input_chr || "");
-  const [txChromText, setTxChromText] = useState("");
 
   const [txStartingGenomic, setTxStartingGenomic] = useState(
     element.input_genomic_start || ""
@@ -118,7 +117,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     inputComplete &&
     hasRequiredEnds &&
     txGeneText === "" &&
-    txChromText === "" &&
     txAcText === "" &&
     txStartingGenomicText === "" &&
     txEndingGenomicText === "" &&
@@ -175,17 +173,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   };
 
   /**
-   * Check for, and handle, warning about invalid chromosome input
-   * @param responseWarnings warnings property of transcript segment response object
-   */
-  const checkChromosomeWarning = (responseWarnings: string[]) => {
-    const chromWarning = `Invalid chromosome: ${txChrom}`;
-    if (responseWarnings.includes(chromWarning)) {
-      setTxChromText("Unrecognized value");
-    }
-  };
-
-  /**
    * Check for, and handle, warnings about invalid genomic coord values. Called by
    * constructor methods.
    * @param responseWarnings warnings property of transcript segment response object
@@ -209,7 +196,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
    * Reset warnings related to genomic coordinate values
    */
   const clearGenomicCoordWarnings = () => {
-    setTxChromText("");
     setTxStartingGenomicText("");
     setTxEndingGenomicText("");
   };
@@ -244,7 +230,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             txSegmentResponse.warnings &&
             txSegmentResponse.warnings?.length > 0
           ) {
-            checkChromosomeWarning(txSegmentResponse.warnings);
             CheckGenomicCoordWarning(txSegmentResponse.warnings);
           } else {
             const inputParams = {
@@ -273,7 +258,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             txSegmentResponse.warnings?.length > 0
           ) {
             // TODO more warnings
-            checkChromosomeWarning(txSegmentResponse.warnings);
             CheckGenomicCoordWarning(txSegmentResponse.warnings);
           } else {
             const inputParams = {
@@ -439,7 +423,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       <Box className="mid-inputs">
         <ChromosomeField
           fieldValue={txChrom}
-          errorText={txChromText}
         />
         <Box mt="18px" width="125px">
           <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
