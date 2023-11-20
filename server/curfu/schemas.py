@@ -253,11 +253,15 @@ class GetTranscriptsResponse(Response):
     """Response model for MANE transcript retrieval endpoint."""
 
     transcripts: Optional[List[ManeGeneTranscript]] = None
+<<<<<<< HEAD
 
+=======
+>>>>>>> 005823a (feat: add transcript lookup for genes)
 
 class GetGeneTranscriptsResponse(Response):
     """Response model for MANE transcript retrieval endpoint."""
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     transcripts: Optional[List[str]] = None
@@ -267,6 +271,9 @@ class GetGeneTranscriptsResponse(Response):
 =======
     transcripts: Optional[Dict]
 >>>>>>> 047cc77 (feat: add transcript lookup for genes)
+=======
+    transcripts: Optional[List[str]] = None
+>>>>>>> 005823a (feat: add transcript lookup for genes)
 
 
 class ServiceInfoResponse(Response):
