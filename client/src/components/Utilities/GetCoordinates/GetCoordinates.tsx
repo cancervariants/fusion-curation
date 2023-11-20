@@ -26,6 +26,7 @@ import TabPaper from "../../main/shared/TabPaper/TabPaper";
 import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
 import ChromosomeField from "../../main/shared/ChromosomeField/ChromosomeField";
 import TranscriptField from "../../main/shared/TranscriptField/TranscriptField";
+import LoadingMessage from "../../main/shared/LoadingMessage/LoadingMessage";
 
 const GetCoordinates: React.FC = () => {
   const useStyles = makeStyles(() => ({
@@ -219,10 +220,7 @@ const GetCoordinates: React.FC = () => {
   const renderResults = (): React.ReactFragment => {
     if (isLoading) {
       return (
-        <Box alignContent="center" alignItems="center" justifyContent="center" display="flex" flexDirection="column">
-          <Box mb={2}>Retrieving results...</Box>
-          <CircularProgress />
-        </Box>
+        <LoadingMessage message="Fetching coordinates..." />
       )
     }
     if (inputValid) {
