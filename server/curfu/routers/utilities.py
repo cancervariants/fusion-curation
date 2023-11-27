@@ -12,8 +12,8 @@ from starlette.background import BackgroundTasks
 from curfu import logger
 from curfu.schemas import (
     CoordsUtilsResponse,
-    GetTranscriptsResponse,
     GetGeneTranscriptsResponse,
+    GetTranscriptsResponse,
     RouteTag,
     SequenceIDResponse,
 )
