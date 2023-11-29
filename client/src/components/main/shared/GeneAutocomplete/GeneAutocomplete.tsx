@@ -3,8 +3,8 @@ import { TextField, Typography, makeStyles } from "@material-ui/core";
 import Autocomplete, {
   AutocompleteRenderGroupParams,
 } from "@material-ui/lab/Autocomplete";
-import { getGeneSuggestions, getTranscriptsForGene } from "../../../../services/main";
-import { GetGeneTranscriptsResponse, SuggestGeneResponse } from "../../../../services/ResponseModels";
+import { getGeneSuggestions, getTranscripts, getTranscriptsForGene } from "../../../../services/main";
+import { GetGeneTranscriptsResponse, GetTranscriptsResponse, SuggestGeneResponse } from "../../../../services/ResponseModels";
 import HelpTooltip from "../HelpTooltip/HelpTooltip";
 import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
 
@@ -26,6 +26,8 @@ export type SuggestedGeneOption = {
 const defaultGeneOption: SuggestedGeneOption = {
   value: "",
   type: GeneSuggestionType.none,
+  chromosome: "",
+  strand: ""
 };
 
 interface Props {
@@ -100,11 +102,24 @@ export const GeneAutocomplete: React.FC<Props> = ({
       setStrand(selection.strand);
     }
     if (setTranscripts) {
+      // if user is pressing the X button to clear the autocomplete input, set tx info to default
+      if (selection === defaultGeneOption) {
+        setTranscripts([])
+        if (setDefaultTranscript) {
+          setDefaultTranscript("")
+        }
+        return;
+      }
       getTranscriptsForGene(selection.value).then((transcriptsResponse: GetGeneTranscriptsResponse) => {
         const transcripts = transcriptsResponse.transcripts
-        setTranscripts(transcripts);
+        const sortedTranscripts = transcripts.sort((a, b) => a.localeCompare(b))
+        setTranscripts(sortedTranscripts);
         if (setDefaultTranscript) {
-          setDefaultTranscript(transcripts[0])
+          // get preferred default transcript from MANE endpoint
+          getTranscripts(selection.value).then((transcriptsResponse: GetTranscriptsResponse) => {
+            const preferredTx = transcriptsResponse?.transcripts?.[0].RefSeq_nuc
+            setDefaultTranscript(preferredTx || transcripts[0])
+          });
         }
       });
     }
@@ -115,6 +130,7 @@ export const GeneAutocomplete: React.FC<Props> = ({
     if (inputValue.value === "") {
       setGeneText("");
       setGeneOptions([]);
+      updateSelection(defaultGeneOption)
       setLoading(false);
     } else {
       setLoading(true);
