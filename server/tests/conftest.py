@@ -182,9 +182,9 @@ def tpm3_tx_g_element(tpm3_descriptor):
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_152263.4",
         "exon_start": 6,
-        "exon_start_offset": 5,
+        "exon_start_offset": 72,
         "exon_end": 6,
-        "exon_end_offset": -70,
+        "exon_end_offset": -5,
         "gene_descriptor": tpm3_descriptor,
         "element_genomic_start": {
             "id": "fusor.location_descriptor:NC_000001.11",
@@ -195,8 +195,8 @@ def tpm3_tx_g_element(tpm3_descriptor):
                 "sequence_id": "refseq:NC_000001.11",
                 "interval": {
                     "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 154171483},
-                    "end": {"type": "Number", "value": 154171484},
+                    "start": {"type": "Number", "value": 154171416},
+                    "end": {"type": "Number", "value": 154171417},
                 },
             },
         },
@@ -209,8 +209,8 @@ def tpm3_tx_g_element(tpm3_descriptor):
                 "sequence_id": "refseq:NC_000001.11",
                 "interval": {
                     "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 154171482},
-                    "end": {"type": "Number", "value": 154171483},
+                    "start": {"type": "Number", "value": 154171417},
+                    "end": {"type": "Number", "value": 154171418},
                 },
             },
         },
