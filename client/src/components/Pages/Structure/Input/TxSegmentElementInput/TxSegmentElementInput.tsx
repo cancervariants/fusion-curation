@@ -1,11 +1,7 @@
 import {
   TextField,
   MenuItem,
-  Select,
-  Box,
   Typography,
-  FormControl,
-  InputLabel,
 } from "@material-ui/core";
 import {
   ClientTranscriptSegmentElement,
@@ -26,6 +22,7 @@ import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
 import ChromosomeField from "../../../../main/shared/ChromosomeField/ChromosomeField";
 import TranscriptField from "../../../../main/shared/TranscriptField/TranscriptField";
+import { Box, FormControl, InputLabel, Select } from "@mui/material";
 
 interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
@@ -428,8 +425,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 setTranscripts={setGeneTranscripts}
                 setDefaultTranscript={setSelectedTranscript}
               />
-              <FormControl>
-              <InputLabel>Transcript</InputLabel>
+              <FormControl variant="standard">
+                <InputLabel id="transcript-select-label">Transcript</InputLabel>
               <Select
                 labelId="transcript-select-label"
                 id="transcript-select"
@@ -617,7 +614,10 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             </>
           }
         >
+          <FormControl variant="standard">
+            <InputLabel id="select-input-data"></InputLabel>
           <Select
+            labelId="select-input-data"
             value={txInputType}
             onChange={(event) =>
               selectInputType(event.target.value as InputType)
@@ -633,6 +633,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
               Exon coordinates, transcript
             </MenuItem>
           </Select>
+          </FormControl>
         </HelpTooltip>
       </Box>
       {renderTxOptions()}
