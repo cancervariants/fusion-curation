@@ -9,6 +9,9 @@ import {
   makeStyles,
   Box,
   Link,
+  InputLabel,
+  FormControl,
+  CircularProgress,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
@@ -23,6 +26,7 @@ import TabPaper from "../../main/shared/TabPaper/TabPaper";
 import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
 import ChromosomeField from "../../main/shared/ChromosomeField/ChromosomeField";
 import TranscriptField from "../../main/shared/TranscriptField/TranscriptField";
+import LoadingMessage from "../../main/shared/LoadingMessage/LoadingMessage";
 
 const GetCoordinates: React.FC = () => {
   const useStyles = makeStyles(() => ({
@@ -44,7 +48,7 @@ const GetCoordinates: React.FC = () => {
     },
     inputParams: {
       display: "flex",
-      width: "70%",
+      width: "100%",
       flexDirection: "column",
       justifyContent: "center",
       alignItems: "flex-start",
@@ -93,17 +97,17 @@ const GetCoordinates: React.FC = () => {
   const [exonStartOffset, setExonStartOffset] = useState<string>("");
   const [exonEndOffset, setExonEndOffset] = useState<string>("");
 
+  const [geneTranscripts, setGeneTranscripts] = useState([]);
+  const [selectedTranscript, setSelectedTranscript] = useState("");
+
   const [results, setResults] = useState<GenomicData | null>(null);
-  const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [responseWarnings, setResponseWarnings] = useState<string[]>([]);
 
   // programming horror
   const inputComplete =
-    (inputType === "genomic_coords_gene" &&
+    (inputType === "genomic_coords" &&
       gene !== "" &&
-      chromosome !== "" &&
-      (start !== "" || end !== "")) ||
-    (inputType === "genomic_coords_tx" &&
-      txAc !== "" &&
       chromosome !== "" &&
       (start !== "" || end !== "")) ||
     (inputType === "exon_coords_tx" &&
@@ -140,29 +144,27 @@ const GetCoordinates: React.FC = () => {
   const clearWarnings = () => {
     setTxAcText("");
     setGeneText("");
-    setChromosomeText("");
     setStartText("");
     setEndText("");
     setExonStartText("");
     setExonEndText("");
+    setResponseWarnings([]);
   };
 
   const handleResponse = (coordsResponse: CoordsUtilsResponse) => {
     if (coordsResponse.warnings) {
+      setResponseWarnings(coordsResponse.warnings);
       setResults(null);
-      clearWarnings();
       coordsResponse.warnings.forEach((warning) => {
         if (warning.startsWith("Found more than one accession")) {
           setChromosomeText("Complete ID required");
         } else if (warning.startsWith("Unable to get exons for")) {
           setTxAcText("Unrecognized transcript");
-        } else if (warning.startsWith("Invalid chromosome")) {
-          setChromosomeText("Unrecognized value");
         } else if (
           warning == "Must find exactly one row for genomic data, but found: 0"
         ) {
-          setError(
-            "Unable to resolve coordinates lookup given provided parameters"
+          setResponseWarnings(
+            ["Unable to resolve coordinates lookup given provided parameters. Double check that the coordinates entered are valid for the selected Transcript."]
           );
         } else if (warning.startsWith("Exon ")) {
           const exonPattern = /Exon (\d*) does not exist on (.*)/;
@@ -180,9 +182,16 @@ const GetCoordinates: React.FC = () => {
       clearWarnings();
       setResults(coordsResponse.coordinates_data as GenomicData);
     }
+    setIsLoading(false);
+  };
+
+  const handleTranscriptSelect = (event: any) => {
+    setSelectedTranscript(event.target.value as string);
+    setTxAc(event.target.value as string);
   };
 
   const fetchResults = () => {
+    setIsLoading(true);
     if (inputType == "exon_coords_tx") {
       getGenomicCoords(
         gene,
@@ -192,12 +201,8 @@ const GetCoordinates: React.FC = () => {
         exonStartOffset,
         exonEndOffset
       ).then((coordsResponse) => handleResponse(coordsResponse));
-    } else if (inputType == "genomic_coords_gene") {
-      getExonCoords(chromosome, start, end, strand, gene).then(
-        (coordsResponse) => handleResponse(coordsResponse)
-      );
-    } else if (inputType == "genomic_coords_tx") {
-      getExonCoords(chromosome, start, end, strand, "", txAc).then(
+    } else if (inputType == "genomic_coords") {
+      getExonCoords(chromosome, start, end, strand, gene, txAc).then(
         (coordsResponse) => handleResponse(coordsResponse)
       );
     }
@@ -213,6 +218,11 @@ const GetCoordinates: React.FC = () => {
   );
 
   const renderResults = (): React.ReactFragment => {
+    if (isLoading) {
+      return (
+        <LoadingMessage message="Fetching coordinates..." />
+      )
+    }
     if (inputValid) {
       if (results) {
         return (
@@ -237,13 +247,19 @@ const GetCoordinates: React.FC = () => {
               : null}
           </Table>
         );
-      } else if (error) {
-        return <Typography>{error}</Typography>;
+      } else if (responseWarnings?.length > 0) {
+        return <Typography>{responseWarnings}</Typography>;
       } else {
-        return <></>;
+        return <Typography>
+          An unknown error has occurred. Please{" "}
+          <Link href="https://github.com/cancervariants/fusion-curation/issues">
+            submit an issue on our GitHub
+          </Link>{" "}
+          and include replication steps, along with the values entered.
+        </Typography>
       }
     } else {
-      return <></>; // TODO error message
+      return <></>;
     }
   };
 
@@ -252,10 +268,9 @@ const GetCoordinates: React.FC = () => {
       <Box display="flex" justifyContent="space-between" width="100%">
         <ChromosomeField
           fieldValue={chromosome}
-          errorText={chromosomeText}
         />
         <Box mt="18px">
-          <Box className={classes.strand} width="125px">
+          <Box className={classes.strand}>
             <StrandSwitch
               setStrand={setStrand}
               selectedStrand={strand}
@@ -271,7 +286,7 @@ const GetCoordinates: React.FC = () => {
 
   const renderInputOptions = () => {
     switch (inputType) {
-      case "genomic_coords_gene":
+      case "genomic_coords":
         return (
           <>
             <Box className={classes.fieldsPair}>
@@ -282,50 +297,42 @@ const GetCoordinates: React.FC = () => {
                 setGeneText={setGeneText}
                 setChromosome={setChromosome}
                 setStrand={setStrand}
+                setTranscripts={setGeneTranscripts}
+                setDefaultTranscript={setSelectedTranscript}
               />
+              <FormControl>
+              <InputLabel>Transcript</InputLabel>
+              <Select
+                labelId="transcript-select-label"
+                id="transcript-select"
+                value={selectedTranscript}
+                label="Transcript"
+                onChange={handleTranscriptSelect}
+                placeholder="Transcript"
+                style={{minWidth: "150px"}}
+              >
+                {geneTranscripts.map((tx, index) => (
+                  <MenuItem key={index} value={tx}>
+                    {tx}
+                  </MenuItem>
+                ))}
+              </Select>
+              </FormControl>
             </Box>
             {genomicCoordinateInfo}
             <Box className={classes.fieldsPair}>
               <TextField
+                type='number'
                 margin="dense"
-                style={{ width: 125 }}
-                label="Starting Position"
+                label="Genomic Start"
                 value={start}
                 onChange={(event) => setStart(event.target.value)}
+                helperText={start ? startText : ""}
               />
               <TextField
+                type='number'
                 margin="dense"
-                style={{ width: 125 }}
-                label="Ending Position"
-                value={end}
-                onChange={(event) => setEnd(event.target.value)}
-              />
-            </Box>
-          </>
-        );
-      case "genomic_coords_tx":
-        return (
-          <>
-            <Box className={classes.fieldsPair}>
-              <TranscriptField
-                fieldValue={txAc}
-                valueSetter={setTxAc}
-                errorText={txAcText}
-              />
-            </Box>
-            {genomicCoordinateInfo}
-            <Box className={classes.fieldsPair}>
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Starting Position"
-                value={start}
-                onChange={(event) => setStart(event.target.value)}
-              />
-              <TextField
-                margin="dense"
-                style={{ width: 125 }}
-                label="Ending Position"
+                label="Genomic End"
                 value={end}
                 onChange={(event) => setEnd(event.target.value)}
               />
@@ -344,17 +351,19 @@ const GetCoordinates: React.FC = () => {
             </Box>
             <Box className={classes.fieldsPair}>
               <TextField
+                type='number'
                 margin="dense"
-                style={{ width: 125 }}
+                style={{ minWidth: 125 }}
                 label="Starting Exon"
                 value={exonStart}
                 onChange={(event) => setExonStart(event.target.value)}
-                error={exonStart && exonStartText !== ""}
+                error={exonStart === "" && (exonStartText !== "")}
                 helperText={exonStart ? exonStartText : ""}
               />
               <TextField
+                type='number'
                 margin="dense"
-                style={{ width: 125 }}
+                style={{ minWidth: 125 }}
                 label="Starting Offset"
                 value={exonStartOffset}
                 onChange={(event) => setExonStartOffset(event.target.value)}
@@ -362,17 +371,19 @@ const GetCoordinates: React.FC = () => {
             </Box>
             <Box className={classes.fieldsPair}>
               <TextField
+                type='number'
                 margin="dense"
-                style={{ width: 125 }}
+                style={{ minWidth: 125 }}
                 label="Ending Exon"
                 value={exonEnd}
                 onChange={(event) => setExonEnd(event.target.value)}
-                error={exonEnd && exonEndText !== ""}
+                error={exonEnd !== "" && exonEndText !== ""}
                 helperText={exonEnd ? exonEndText : ""}
               />
               <TextField
+                type='number'
                 margin="dense"
-                style={{ width: 125 }}
+                style={{ minWidth: 125 }}
                 label="Ending Offset"
                 value={exonEndOffset}
                 onChange={(event) => setExonEndOffset(event.target.value)}
@@ -394,14 +405,11 @@ const GetCoordinates: React.FC = () => {
             <MenuItem value="default" disabled>
               Select input data
             </MenuItem>
-            <MenuItem value="genomic_coords_gene">
-              Genomic coordinates, gene
-            </MenuItem>
-            <MenuItem value="genomic_coords_tx">
-              Genomic coordinates, transcript
+            <MenuItem value="genomic_coords">
+              Genomic coordinates
             </MenuItem>
             <MenuItem value="exon_coords_tx">
-              Exon coordinates, transcript
+              Exon coordinates
             </MenuItem>
           </Select>
         </Box>

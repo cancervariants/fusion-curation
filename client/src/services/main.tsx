@@ -145,36 +145,17 @@ export const getTxSegmentElementECT = async (
   return responseJson;
 };
 
-export const getTxSegmentElementGCT = async (
-  transcript: string,
-  chromosome: string,
-  start: string,
-  end: string,
-  strand: string
-): Promise<TxSegmentElementResponse> => {
-  const params: Array<string> = [
-    `transcript=${transcript}`,
-    `chromosome=${chromosome}`,
-    `strand=${strand === "+" ? "%2B" : "-"}`,
-  ];
-  if (start !== "") params.push(`start=${start}`);
-  if (end !== "") params.push(`end=${end}`);
-  const url =
-    "api/construct/structural_element/tx_segment_gct?" + params.join("&");
-  const response = await fetch(url);
-  const responseJson = await response.json();
-  return responseJson;
-};
-
 export const getTxSegmentElementGCG = async (
   gene: string,
   chromosome: string,
+  transcript: string,
   start: string,
   end: string,
   strand: string
 ): Promise<TxSegmentElementResponse> => {
   const params: Array<string> = [
     `gene=${gene}`,
+    `transcript=${transcript}`,
     `chromosome=${chromosome}`,
     `strand=${strand === "+" ? "%2B" : "-"}`,
   ];
@@ -229,6 +210,14 @@ export const getTranscripts = async (
   term: string
 ): Promise<GetTranscriptsResponse> => {
   const response = await fetch(`/api/utilities/get_transcripts?term=${term}`);
+  const transcriptResponse = await response.json();
+  return transcriptResponse;
+};
+
+export const getTranscriptsForGene = async (
+  gene: string
+): Promise<GetTranscriptsResponse> => {
+  const response = await fetch(`/api/utilities/get_transcripts_for_gene?gene=${gene}`);
   const transcriptResponse = await response.json();
   return transcriptResponse;
 };

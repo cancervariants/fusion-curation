@@ -12,6 +12,7 @@ from starlette.background import BackgroundTasks
 from curfu import logger
 from curfu.schemas import (
     CoordsUtilsResponse,
+    GetGeneTranscriptsResponse,
     GetTranscriptsResponse,
     RouteTag,
     SequenceIDResponse,
@@ -49,6 +50,32 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
         return {"warnings": [f"No matching transcripts: {term}"]}
     else:
         return {"transcripts": transcripts}
+
+
+@router.get(
+    "/api/utilities/get_transcripts_for_gene",
+    operation_id="getTranscriptsFromGene",
+    response_model=GetGeneTranscriptsResponse,
+    response_model_exclude_none=True,
+)
+async def get_transcripts_for_gene(request: Request, gene: str) -> Dict:
+    """Get all transcripts for gene term.
+    \f
+    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+        FUSOR and UTA-associated tools.
+    :param str gene: gene term provided by user
+    :return: Dict containing transcripts if lookup succeeds, or warnings upon failure
+    """
+    normalized = request.app.state.fusor.gene_normalizer.normalize(gene)
+    symbol = normalized.gene_descriptor.label
+    transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(
+        gene=symbol
+    )
+    tx_for_gene = list(transcripts.rows_by_key("tx_ac"))
+    if transcripts.is_empty():
+        return {"warnings": [f"No matching transcripts: {gene}"], "transcripts": []}
+    else:
+        return {"transcripts": tx_for_gene}
 
 
 @router.get(
@@ -108,7 +135,7 @@ async def get_genome_coords(
     if exon_end is not None and exon_end_offset is None:
         exon_end_offset = 0
 
-    response = await request.app.state.fusor.cool_seq_tool.transcript_to_genomic_coordinates(  # noqa: E501
+    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.transcript_to_genomic_coordinates(  # noqa: E501
         gene=gene,
         transcript=transcript,
         exon_start=exon_start,
@@ -169,7 +196,7 @@ async def get_exon_coords(
             logger.warning(warning)
         return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    response = await request.app.state.fusor.cool_seq_tool.genomic_to_transcript_exon_coordinates(  # noqa: E501
+    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.genomic_to_transcript_exon_coordinates(  # noqa: E501
         chromosome,
         start=start,
         end=end,
@@ -259,7 +286,9 @@ async def get_sequence(
     """
     _, path = tempfile.mkstemp(suffix=".fasta")
     try:
-        request.app.state.fusor.cool_seq_tool.get_fasta_file(sequence_id, Path(path))
+        request.app.state.fusor.cool_seq_tool.seqrepo_access.get_fasta_file(
+            sequence_id, Path(path)
+        )
     except KeyError:
         resp = request.app.state.fusor.cool_seq_tool.seqrepo_access.translate_identifier(  # noqa: E501
             sequence_id, "refseq"
@@ -271,7 +300,7 @@ async def get_sequence(
         else:
             try:
                 new_seq_id = resp[0][0].split(":")[1]
-                request.app.state.fusor.cool_seq_tool.get_fasta_file(
+                request.app.state.fusor.cool_seq_tool.seqrepo_access.get_fasta_file(
                     new_seq_id, Path(path)
                 )
             except KeyError:

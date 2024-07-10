@@ -6,7 +6,7 @@ interface Props {
   fieldValue: string;
   valueSetter: CallableFunction;
   errorText: string;
-  keyHandler: KeyboardEventHandler<HTMLDivElement> | undefined;
+  keyHandler?: KeyboardEventHandler<HTMLDivElement> | undefined;
   width?: number | undefined;
 }
 

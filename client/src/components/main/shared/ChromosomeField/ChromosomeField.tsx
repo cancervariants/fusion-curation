@@ -1,16 +1,14 @@
 import { makeStyles, TextField, Typography } from "@material-ui/core";
-import React, { KeyboardEventHandler } from "react";
+import React from "react";
 import HelpTooltip from "../HelpTooltip/HelpTooltip";
 
 interface Props {
   fieldValue: string;
-  errorText: string;
   width?: number | undefined;
 }
 
 const ChromosomeField: React.FC<Props> = ({
   fieldValue,
-  errorText,
   width,
 }) => {
   const useStyles = makeStyles(() => ({
@@ -38,9 +36,7 @@ const ChromosomeField: React.FC<Props> = ({
       <TextField
         margin="dense"
         value={fieldValue}
-        error={errorText != ""}
         label="Chromosome"
-        helperText={errorText != "" ? errorText : null}
         contentEditable={false}
         className={classes.textField}
       />
