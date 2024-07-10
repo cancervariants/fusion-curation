@@ -107,6 +107,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     (txInputType === InputType.gcg &&
       txGene !== "" &&
       txChrom !== "" &&
+      selectedTranscript !== "" &&
       (txStartingGenomic !== "" || txEndingGenomic !== "")) ||
     (txInputType === InputType.ect &&
       txAc !== "" &&
@@ -227,6 +228,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
         getTxSegmentElementGCG(
           txGene,
           txChrom,
+          selectedTranscript,
           txStartingGenomic,
           txEndingGenomic,
           txStrand

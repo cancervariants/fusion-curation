@@ -147,8 +147,8 @@ export const getTxSegmentElementECT = async (
 
 export const getTxSegmentElementGCG = async (
   gene: string,
-  transcript: string,
   chromosome: string,
+  transcript: string,
   start: string,
   end: string,
   strand: string

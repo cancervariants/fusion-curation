@@ -92,8 +92,8 @@ async def build_tx_segment_ect(
 async def build_tx_segment_gcg(
     request: Request,
     gene: str,
-    transcript: str,
     chromosome: str,
+    transcript: str,
     start: Optional[int] = Query(None),
     end: Optional[int] = Query(None),
     strand: Optional[str] = Query(None),
@@ -104,8 +104,8 @@ async def build_tx_segment_gcg(
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param gene: gene (TODO how to identify?)
-    :param transcript: transcript accession identifier
     :param chromosome: chromosome (TODO how to identify?)
+    :param transcript: transcript accession identifier
     :param start: starting position (TODO assume residue-based?)
     :param end: ending position
     :return: Pydantic class with TranscriptSegment element if successful, and
