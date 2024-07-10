@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
-import { FusionContext } from "../../../../global/contexts/FusionContext";
-import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
-import { HelpPopover } from "../../../main/shared/HelpPopover/HelpPopover";
-import Builder from "../Builder/Builder";
+import { FusionContext } from "global/contexts/FusionContext";
+import { useColorTheme } from "global/contexts/Theme/ColorThemeContext";
 import { Typography, makeStyles, Link, Box } from "@material-ui/core";
+import { HelpPopover } from "components/main/shared/HelpPopover/HelpPopover";
+import Builder from "../Builder/Builder";
 
 interface Props {
   index: number;

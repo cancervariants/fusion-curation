@@ -15,7 +15,7 @@ import {
   RadioGroup,
 } from "@material-ui/core";
 import { useContext, useEffect, useState } from "react";
-import { FusionContext } from "../../../global/contexts/FusionContext";
+import { FusionContext } from "global/contexts/FusionContext";
 import "./FusionType.scss";
 
 interface Props {

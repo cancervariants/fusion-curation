@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
-import { SuggestionContext } from "../../../../global/contexts/SuggestionContext";
-import { FusionContext } from "../../../../global/contexts/FusionContext";
+import { SuggestionContext } from "global/contexts/SuggestionContext";
+import { FusionContext } from "global/contexts/FusionContext";
 import Grid from "@material-ui/core/Grid";
 
 import "./StructureDiagram.scss";

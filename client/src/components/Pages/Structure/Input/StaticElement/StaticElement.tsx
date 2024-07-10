@@ -1,5 +1,5 @@
-import { BaseStructuralElementProps } from "../StructuralElementInputProps";
-import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
+import { BaseStructuralElementProps } from "StructuralElementInputProps";
+import StructuralElementInputAccordion from "StructuralElementInputAccordion";
 
 const StaticElement: React.FC<BaseStructuralElementProps> = ({
   element,
@@ -12,7 +12,7 @@ const StaticElement: React.FC<BaseStructuralElementProps> = ({
     handleDelete,
     validated: true,
     icon,
-    pendingResponse: false
+    pendingResponse: false,
   });
 
 export default StaticElement;

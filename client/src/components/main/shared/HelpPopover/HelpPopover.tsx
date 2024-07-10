@@ -1,7 +1,7 @@
 import { Box, Popover, makeStyles } from "@material-ui/core";
 import React from "react";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
-import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
+import { useColorTheme } from "global/contexts/Theme/ColorThemeContext";
 
 interface HelpPopoverProps {
   children: React.ReactFragment;

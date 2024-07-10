@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { SuggestionContext } from "../../../../global/contexts/SuggestionContext";
+import { SuggestionContext } from "global/contexts/SuggestionContext";
 
 // MUI
 import { makeStyles } from "@material-ui/core/styles";

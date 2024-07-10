@@ -1,5 +1,5 @@
 import "./ReadingFrame.scss";
-import { FusionContext } from "../../../global/contexts/FusionContext";
+import { FusionContext } from "global/contexts/FusionContext";
 import React, { FormEvent, useContext, useEffect, useState } from "react";
 import {
   Box,
@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
+import { HelpPopover } from "components/main/shared/HelpPopover/HelpPopover";
 
 interface Props {
   index: number;

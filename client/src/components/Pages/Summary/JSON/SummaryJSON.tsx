@@ -16,7 +16,7 @@ import {
   TranscriptSegmentElement,
   UnknownGeneElement,
 } from "../../../../services/ResponseModels";
-import { FusionType } from "../Main/Summary";
+import { FusionType } from "Main/Summary";
 import "./SummaryJSON.scss";
 
 interface Props {

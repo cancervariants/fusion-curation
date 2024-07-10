@@ -7,12 +7,12 @@ import {
   Typography,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import { getSequenceIds } from "../../../services/main";
-import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
-import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
-import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
-import TabHeader from "../../main/shared/TabHeader/TabHeader";
-import TabPaper from "../../main/shared/TabPaper/TabPaper";
+import { getSequenceIds } from "services/main";
+import { useColorTheme } from "global/contexts/Theme/ColorThemeContext";
+import { HelpPopover } from "components/main/shared/HelpPopover/HelpPopover";
+import HelpTooltip from "components/main/shared/HelpTooltip/HelpTooltip";
+import TabHeader from "components/main/shared/TabHeader/TabHeader";
+import TabPaper from "components/main/shared/TabPaper/TabPaper";
 
 const GetSequenceIds: React.FC = () => {
   const [inputSequence, setInputSequence] = useState<string>("");

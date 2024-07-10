@@ -8,18 +8,14 @@ import {
 } from "react-beautiful-dnd";
 import { v4 as uuid } from "uuid";
 // global fusion
-import { FusionContext } from "../../../../global/contexts/FusionContext";
+import { FusionContext } from "global/contexts/FusionContext";
 // elements
-import { ClientElementUnion, ElementType } from "../../../../services/main";
+import { ClientElementUnion, ElementType } from "services/main";
 import {
   ClientMultiplePossibleGenesElement,
   ClientUnknownGeneElement,
-} from "../../../../services/ResponseModels";
-import GeneElementInput from "../Input/GeneElementInput/GeneElementInput";
-import LinkerElementInput from "../Input/LinkerElementInput/LinkerElementInput";
-import StaticElement from "../Input/StaticElement/StaticElement";
-import TemplatedSequenceElementInput from "../Input/TemplatedSequenceElementInput/TemplatedSequenceElementInput";
-import TxSegmentElementInput from "../Input/TxSegmentElementInput/TxSegmentElementInput";
+} from "services/ResponseModels";
+
 // style
 import "./Builder.scss";
 import BlurCircularOutlinedIcon from "@mui/icons-material/BlurCircularOutlined";
@@ -29,10 +25,15 @@ import HelpIcon from "@mui/icons-material/Help";
 import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import LinkIcon from "@mui/icons-material/Link";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
-import RegulatoryElementInput from "../Input/RegulatoryElementInput/RegulatoryElementInput";
 import { Box, Divider, Typography } from "@material-ui/core";
-import { MARGIN_OFFSETS } from "../../../../global/styles/theme";
-import HelpTooltip from "../../../main/shared/HelpTooltip/HelpTooltip";
+import { MARGIN_OFFSETS } from "global/styles/theme";
+import HelpTooltip from "components/main/shared/HelpTooltip/HelpTooltip";
+import GeneElementInput from "../Input/GeneElementInput/GeneElementInput";
+import LinkerElementInput from "../Input/LinkerElementInput/LinkerElementInput";
+import RegulatoryElementInput from "../Input/RegulatoryElementInput/RegulatoryElementInput";
+import StaticElement from "../Input/StaticElement/StaticElement";
+import TemplatedSequenceElementInput from "../Input/TemplatedSequenceElementInput/TemplatedSequenceElementInput";
+import TxSegmentElementInput from "../Input/TxSegmentElementInput/TxSegmentElementInput";
 
 const EDITABLE_ELEMENT_TYPES = [
   ElementType.geneElement,

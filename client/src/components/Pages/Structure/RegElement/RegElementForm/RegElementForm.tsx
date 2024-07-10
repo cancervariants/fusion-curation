@@ -8,9 +8,9 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import "./RegElementForm.scss";
 import React from "react";
-import { RegulatoryClass } from "../../../../../services/ResponseModels";
-import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
-import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneAutocomplete";
+import { RegulatoryClass } from "services/ResponseModels";
+import HelpTooltip from "main/shared/HelpTooltip/HelpTooltip";
+import { GeneAutocomplete } from "main/shared/GeneAutocomplete/GeneAutocomplete";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {

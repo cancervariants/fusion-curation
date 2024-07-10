@@ -7,8 +7,8 @@ import {
   ListItemText,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import { getInfo } from "../../../services/main";
-import { ServiceInfoResponse } from "../../../services/ResponseModels";
+import { getInfo } from "services/main";
+import { ServiceInfoResponse } from "services/ResponseModels";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import "./About.scss";
 

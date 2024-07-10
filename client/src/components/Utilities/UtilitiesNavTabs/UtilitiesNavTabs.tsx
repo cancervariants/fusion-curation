@@ -1,10 +1,10 @@
 import React from "react";
-import { GetTranscripts } from "../GetTranscripts/GetTranscripts";
 import { makeStyles, Theme } from "@material-ui/core/styles";
 import { AppBar, Tabs, Tab, Box, Paper } from "@material-ui/core";
-import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
+import { useColorTheme } from "global/contexts/Theme/ColorThemeContext";
 import GetCoordinates from "../GetCoordinates/GetCoordinates";
 import GetSequence from "../GetSequence/GetSequence";
+import { GetTranscripts } from "../GetTranscripts/GetTranscripts";
 
 interface TabPanelProps {
   children?: React.ReactNode;

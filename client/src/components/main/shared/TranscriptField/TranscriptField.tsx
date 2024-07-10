@@ -1,6 +1,6 @@
 import { makeStyles, TextField, Typography } from "@material-ui/core";
 import React, { KeyboardEventHandler } from "react";
-import HelpTooltip from "../HelpTooltip/HelpTooltip";
+import HelpTooltip from "HelpTooltip/HelpTooltip";
 
 interface Props {
   fieldValue: string;

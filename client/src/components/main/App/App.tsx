@@ -15,19 +15,17 @@ import {
   Typography,
 } from "@material-ui/core";
 // global contexts
-import { DomainOptionsContext } from "../../../global/contexts/DomainOptionsContext";
-import { FusionContext } from "../../../global/contexts/FusionContext";
-import { GeneContext } from "../../../global/contexts/GeneContext";
-import { SuggestionContext } from "../../../global/contexts/SuggestionContext";
+import { DomainOptionsContext } from "global/contexts/DomainOptionsContext";
+import { FusionContext } from "global/contexts/FusionContext";
+import { GeneContext } from "global/contexts/GeneContext";
+import { SuggestionContext } from "global/contexts/SuggestionContext";
 // style things
-import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
+import { useColorTheme } from "global/contexts/Theme/ColorThemeContext";
 import "../../../global/styles/global.scss";
-import theme, { MARGIN_OFFSETS } from "../../../global/styles/theme";
+import theme, { MARGIN_OFFSETS } from "global/styles/theme";
 import "./App.scss";
 // other components
-import UtilitiesNavTabs from "../../../components/Utilities/UtilitiesNavTabs/UtilitiesNavTabs";
-import NavTabs from "../Nav/NavTabs";
-import About from "../About/About";
+import UtilitiesNavTabs from "components/Utilities/UtilitiesNavTabs/UtilitiesNavTabs";
 // services things
 import {
   ClientElementUnion,
@@ -39,15 +37,17 @@ import {
   DomainParams,
   GeneDescriptor,
 } from "../../../services/ResponseModels";
-import LandingPage from "../Landing/LandingPage";
 import AppMenu from "./AppMenu";
 import DemoDropdown from "./DemoDropdown";
-import { HelpPopover } from "../shared/HelpPopover/HelpPopover";
 import {
   initialSettings,
   SettingsContext,
   SettingsType,
-} from "../../../global/contexts/SettingsContext";
+} from "global/contexts/SettingsContext";
+import About from "../About/About";
+import LandingPage from "../Landing/LandingPage";
+import NavTabs from "../Nav/NavTabs";
+import { HelpPopover } from "../shared/HelpPopover/HelpPopover";
 
 type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 

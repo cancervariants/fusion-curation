@@ -1,14 +1,14 @@
 import React, { useState, useEffect, KeyboardEvent } from "react";
 import { TextField, Box, Typography } from "@material-ui/core";
-import { StructuralElementInputProps } from "../StructuralElementInputProps";
+import { StructuralElementInputProps } from "StructuralElementInputProps";
 import {
   getTemplatedSequenceElement,
   getTemplatedSequenceNomenclature,
 } from "../../../../../services/main";
-import { ClientTemplatedSequenceElement } from "../../../../../services/ResponseModels";
-import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
-import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
-import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
+import { ClientTemplatedSequenceElement } from "services/ResponseModels";
+import StructuralElementInputAccordion from "StructuralElementInputAccordion";
+import StrandSwitch from "main/shared/StrandSwitch/StrandSwitch";
+import HelpTooltip from "main/shared/HelpTooltip/HelpTooltip";
 
 interface TemplatedSequenceElementInputProps
   extends StructuralElementInputProps {
@@ -18,7 +18,6 @@ interface TemplatedSequenceElementInputProps
 const TemplatedSequenceElementInput: React.FC<
   TemplatedSequenceElementInputProps
 > = ({ element, index, handleSave, handleDelete, icon }) => {
-
   const [chromosome, setChromosome] = useState<string>(
     element.input_chromosome || ""
   );
@@ -67,7 +66,7 @@ const TemplatedSequenceElementInput: React.FC<
       ) {
         // TODO visible error handling
         setInputError("element validation unsuccessful");
-        setPendingResponse(false)
+        setPendingResponse(false);
         return;
       } else if (templatedSequenceResponse.element) {
         setInputError("");
@@ -87,7 +86,7 @@ const TemplatedSequenceElementInput: React.FC<
           }
         });
       }
-      setPendingResponse(false)
+      setPendingResponse(false);
     });
   };
 
@@ -167,7 +166,7 @@ const TemplatedSequenceElementInput: React.FC<
     inputElements,
     validated,
     icon,
-    pendingResponse
+    pendingResponse,
   });
 };
 

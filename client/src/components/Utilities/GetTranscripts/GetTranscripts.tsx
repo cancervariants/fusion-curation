@@ -5,7 +5,6 @@ import {
   Box,
   Container,
   makeStyles,
-  Paper,
   Table,
   TableContainer,
   Typography,
@@ -16,17 +15,17 @@ import {
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import React, { useEffect, useState } from "react";
-import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
-import { getTranscripts } from "../../../services/main";
+import { useColorTheme } from "global/contexts/Theme/ColorThemeContext";
+import { getTranscripts } from "services/main";
 import {
   GetTranscriptsResponse,
   ManeGeneTranscript,
 } from "../../../services/ResponseModels";
-import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
-import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
-import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
-import TabHeader from "../../main/shared/TabHeader/TabHeader";
-import TabPaper from "../../main/shared/TabPaper/TabPaper";
+import { GeneAutocomplete } from "components/main/shared/GeneAutocomplete/GeneAutocomplete";
+import { HelpPopover } from "components/main/shared/HelpPopover/HelpPopover";
+import HelpTooltip from "components/main/shared/HelpTooltip/HelpTooltip";
+import TabHeader from "components/main/shared/TabHeader/TabHeader";
+import TabPaper from "components/main/shared/TabPaper/TabPaper";
 
 export const GetTranscripts: React.FC = () => {
   const [gene, setGene] = useState("");

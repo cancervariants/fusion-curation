@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
-import { Readable } from "../Readable/Readable";
+import { useColorTheme } from "global/contexts/Theme/ColorThemeContext";
+import { Readable } from "Readable/Readable";
 import { Tabs, Tab } from "@material-ui/core/";
-import { SummaryJSON } from "../JSON/SummaryJSON";
-import { FusionType } from "../Main/Summary";
+import { SummaryJSON } from "JSON/SummaryJSON";
+import { FusionType } from "Main/Summary";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;

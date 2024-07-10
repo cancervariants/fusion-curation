@@ -11,18 +11,18 @@ import {
   Link,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
-import { getGenomicCoords, getExonCoords } from "../../../services/main";
+import { getGenomicCoords, getExonCoords } from "services/main";
 import {
   CoordsUtilsResponse,
   GenomicData,
 } from "../../../services/ResponseModels";
-import StrandSwitch from "../../main/shared/StrandSwitch/StrandSwitch";
-import TabHeader from "../../main/shared/TabHeader/TabHeader";
-import TabPaper from "../../main/shared/TabPaper/TabPaper";
-import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
-import ChromosomeField from "../../main/shared/ChromosomeField/ChromosomeField";
-import TranscriptField from "../../main/shared/TranscriptField/TranscriptField";
+import ChromosomeField from "components/main/shared/ChromosomeField/ChromosomeField";
+import { GeneAutocomplete } from "components/main/shared/GeneAutocomplete/GeneAutocomplete";
+import { HelpPopover } from "components/main/shared/HelpPopover/HelpPopover";
+import StrandSwitch from "components/main/shared/StrandSwitch/StrandSwitch";
+import TabHeader from "components/main/shared/TabHeader/TabHeader";
+import TabPaper from "components/main/shared/TabPaper/TabPaper";
+import TranscriptField from "components/main/shared/TranscriptField/TranscriptField";
 
 const GetCoordinates: React.FC = () => {
   const useStyles = makeStyles(() => ({
@@ -250,10 +250,7 @@ const GetCoordinates: React.FC = () => {
   const genomicCoordinateInfo = (
     <>
       <Box display="flex" justifyContent="space-between" width="100%">
-        <ChromosomeField
-          fieldValue={chromosome}
-          errorText={chromosomeText}
-        />
+        <ChromosomeField fieldValue={chromosome} errorText={chromosomeText} />
         <Box mt="18px">
           <Box className={classes.strand} width="125px">
             <StrandSwitch

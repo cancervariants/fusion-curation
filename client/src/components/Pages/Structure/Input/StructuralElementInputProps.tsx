@@ -1,10 +1,10 @@
-import { ClientElementUnion } from "../../../../services/main";
+import { ClientElementUnion } from "services/main";
 
 export interface BaseStructuralElementProps {
   element: ClientElementUnion;
   handleDelete?: (id?: string) => void;
   icon: JSX.Element;
-  pendingResponse?: boolean
+  pendingResponse?: boolean;
 }
 
 export interface StructuralElementInputProps

@@ -8,8 +8,8 @@ import {
   Drawer,
   Switch,
 } from "@material-ui/core";
-import { ServiceInfoResponse } from "../../../services/ResponseModels";
-import { getInfo } from "../../../services/main";
+import { ServiceInfoResponse } from "services/ResponseModels";
+import { getInfo } from "services/main";
 
 const useStyles = makeStyles(() => ({
   menuLink: {

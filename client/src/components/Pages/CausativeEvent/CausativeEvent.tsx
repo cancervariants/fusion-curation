@@ -1,5 +1,5 @@
 import "./CausativeEvent.scss";
-import { FusionContext } from "../../../global/contexts/FusionContext";
+import { FusionContext } from "global/contexts/FusionContext";
 import React, { useContext, useState } from "react";
 import {
   Box,
@@ -11,8 +11,8 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
-import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
+import { HelpPopover } from "components/main/shared/HelpPopover/HelpPopover";
+import HelpTooltip from "components/main/shared/HelpTooltip/HelpTooltip";
 
 interface Props {
   index: number;

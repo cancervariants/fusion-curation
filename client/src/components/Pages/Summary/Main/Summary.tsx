@@ -1,5 +1,5 @@
 import "./Summary.scss";
-import { FusionContext } from "../../../../global/contexts/FusionContext";
+import { FusionContext } from "global/contexts/FusionContext";
 import React, { useContext, useEffect, useState } from "react";
 
 import {
@@ -19,8 +19,8 @@ import {
   TranscriptSegmentElement,
   UnknownGeneElement,
 } from "../../../../services/ResponseModels";
-import { Success } from "../Success/Success";
-import { Invalid } from "../Invalid/Invalid";
+import { Success } from "Success/Success";
+import { Invalid } from "Invalid/Invalid";
 
 export type FusionType = AssayedFusion | CategoricalFusion;
 

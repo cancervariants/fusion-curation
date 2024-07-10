@@ -1,5 +1,5 @@
-import { GeneSearch } from "../Search/GeneSearch";
-import { GeneResults } from "../Results/GeneResults";
+import { GeneSearch } from "Search/GeneSearch";
+import { GeneResults } from "Results/GeneResults";
 
 import "./Gene.scss";
 

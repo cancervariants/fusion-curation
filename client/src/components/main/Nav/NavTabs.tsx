@@ -1,15 +1,7 @@
 import React, { useContext } from "react";
 
 // Global fusion
-import { FusionContext } from "../../../global/contexts/FusionContext";
-
-// Pages
-import { Structure } from "../../Pages/Structure/Main/Structure";
-import { Summary } from "../../Pages/Summary/Main/Summary";
-import { Domain } from "../../Pages/Domains/Main/Domains";
-import { ReadingFrame } from "../../Pages/ReadingFrame/ReadingFrame";
-import { CausativeEvent } from "../../Pages/CausativeEvent/CausativeEvent";
-import { Assay } from "../../Pages/Assay/Assay";
+import { FusionContext } from "global/contexts/FusionContext";
 
 // MUI Stuff
 import { makeStyles, Theme } from "@material-ui/core/styles";
@@ -17,7 +9,13 @@ import { Tabs, Tab, Button } from "@material-ui/core";
 
 // Styles
 import "./NavTabs.scss";
-import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
+import { useColorTheme } from "global/contexts/Theme/ColorThemeContext";
+import { Domain } from "@material-ui/icons";
+import { Assay } from "components/Pages/Assay/Assay";
+import { CausativeEvent } from "components/Pages/CausativeEvent/CausativeEvent";
+import { ReadingFrame } from "components/Pages/ReadingFrame/ReadingFrame";
+import { Structure } from "components/Pages/Structure/Main/Structure";
+import { Summary } from "components/Pages/Summary/Main/Summary";
 
 interface TabPanelProps {
   children?: React.ReactNode;

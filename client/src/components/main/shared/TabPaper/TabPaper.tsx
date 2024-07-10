@@ -1,6 +1,6 @@
 import { Box, Divider, makeStyles, Paper } from "@material-ui/core";
 import React from "react";
-import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
+import { useColorTheme } from "global/contexts/Theme/ColorThemeContext";
 
 interface Props {
   leftColumn: React.ReactFragment;

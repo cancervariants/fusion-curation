@@ -1,8 +1,8 @@
 import "./Readable.scss";
-import { ClientStructuralElement } from "../../../../services/ResponseModels";
+import { ClientStructuralElement } from "services/ResponseModels";
 import React, { useContext, useEffect, useState } from "react";
 import Chip from "@material-ui/core/Chip";
-import { FusionContext } from "../../../../global/contexts/FusionContext";
+import { FusionContext } from "global/contexts/FusionContext";
 import {
   Table,
   TableCell,
@@ -11,9 +11,9 @@ import {
   TableRow,
   Typography,
 } from "@material-ui/core";
-import { eventDisplayMap } from "../../CausativeEvent/CausativeEvent";
-import { FusionType } from "../Main/Summary";
-import { getFusionNomenclature } from "../../../../services/main";
+import { eventDisplayMap } from "CausativeEvent/CausativeEvent";
+import { FusionType } from "Main/Summary";
+import { getFusionNomenclature } from "services/main";
 
 type Props = {
   validatedFusion: FusionType;
@@ -31,8 +31,8 @@ export const Readable: React.FC<Props> = ({ validatedFusion }) => {
     );
   }, [validatedFusion]);
 
-  const assayName = fusion.assay?.assay_name ? fusion.assay.assay_name : ""
-  const assayId = fusion.assay?.assay_id ? `(${fusion.assay.assay_id})` : ""
+  const assayName = fusion.assay?.assay_name ? fusion.assay.assay_name : "";
+  const assayId = fusion.assay?.assay_id ? `(${fusion.assay.assay_id})` : "";
 
   /**
    * Render rows specific to assayed fusion fields
@@ -55,7 +55,9 @@ export const Readable: React.FC<Props> = ({ validatedFusion }) => {
           <Typography className="row-name">Assay</Typography>
         </TableCell>
         <TableCell align="right">
-          <Typography>{fusion.assay ? `${assayName} ${assayId}` : ""}</Typography>
+          <Typography>
+            {fusion.assay ? `${assayName} ${assayId}` : ""}
+          </Typography>
         </TableCell>
       </TableRow>
     </>

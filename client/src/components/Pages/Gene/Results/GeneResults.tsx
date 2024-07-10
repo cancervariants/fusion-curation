@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import { SuggestionContext } from "../../../../global/contexts/SuggestionContext";
-import { StructureDiagram } from "../StructureDiagram/StructureDiagram";
-import { ColorKey } from "../ColorKey/ColorKey";
+import { SuggestionContext } from "global/contexts/SuggestionContext";
+import { StructureDiagram } from "StructureDiagram/StructureDiagram";
+import { ColorKey } from "ColorKey/ColorKey";
 import "./GeneResults.scss";
 
 export const GeneResults: React.FC = () => {

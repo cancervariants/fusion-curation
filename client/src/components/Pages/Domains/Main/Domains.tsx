@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
-import { FusionContext } from "../../../../global/contexts/FusionContext";
-import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
-import DomainForm from "../DomainForm/DomainForm";
-import { ClientFunctionalDomain } from "../../../../services/ResponseModels";
-import { GeneContext } from "../../../../global/contexts/GeneContext";
+import { FusionContext } from "global/contexts/FusionContext";
+import { useColorTheme } from "global/contexts/Theme/ColorThemeContext";
+import DomainForm from "DomainForm/DomainForm";
+import { ClientFunctionalDomain } from "services/ResponseModels";
+import { GeneContext } from "global/contexts/GeneContext";
 import {
   Avatar,
   Box,
@@ -12,7 +12,7 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import { HelpPopover } from "../../../main/shared/HelpPopover/HelpPopover";
+import { HelpPopover } from "main/shared/HelpPopover/HelpPopover";
 
 interface Props {
   index: number;

@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, makeStyles, Link, Paper } from "@material-ui/core";
 import Carousel from "react-material-ui-carousel";
-import theme from "../../../global/styles/theme";
+import theme from "global/styles/theme";
 import { red } from "@material-ui/core/colors";
 
 const useStyles = makeStyles((theme) => ({

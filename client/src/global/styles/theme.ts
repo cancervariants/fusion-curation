@@ -1,6 +1,5 @@
 import { createTheme } from "@material-ui/core/styles";
-
-import { COLORTHEMES } from "../contexts/Theme/Theme.model";
+import { COLORTHEMES } from "global/contexts/Theme/Theme.model";
 
 declare module "@material-ui/core/styles/createTheme" {
   interface Theme {

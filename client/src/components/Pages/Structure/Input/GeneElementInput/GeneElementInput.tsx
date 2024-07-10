@@ -3,13 +3,13 @@ import {
   ClientGeneElement,
   NomenclatureResponse,
 } from "../../../../../services/ResponseModels";
-import { StructuralElementInputProps } from "../StructuralElementInputProps";
-import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneAutocomplete";
+import { StructuralElementInputProps } from "StructuralElementInputProps";
+import { GeneAutocomplete } from "main/shared/GeneAutocomplete/GeneAutocomplete";
 import {
   getGeneElement,
   getGeneNomenclature,
 } from "../../../../../services/main";
-import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
+import StructuralElementInputAccordion from "StructuralElementInputAccordion";
 
 interface GeneElementInputProps extends StructuralElementInputProps {
   element: ClientGeneElement;
@@ -35,7 +35,7 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
   }, [gene, geneText]);
 
   const buildGeneElement = () => {
-    setPendingResponse(true)
+    setPendingResponse(true);
     getGeneElement(gene).then((geneElementResponse) => {
       if (
         geneElementResponse.warnings &&
@@ -58,7 +58,7 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
                 nomenclature: nomenclatureResponse.nomenclature,
               };
               handleSave(index, clientGeneElement);
-              setPendingResponse(false)
+              setPendingResponse(false);
             }
           }
         );
@@ -85,7 +85,7 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
     inputElements,
     validated,
     icon,
-    pendingResponse
+    pendingResponse,
   });
 };
 

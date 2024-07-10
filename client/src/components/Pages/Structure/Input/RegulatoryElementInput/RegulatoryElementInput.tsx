@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
-import { StructuralElementInputProps } from "../StructuralElementInputProps";
+import { StructuralElementInputProps } from "StructuralElementInputProps";
 import {
   ClientRegulatoryElement,
   RegulatoryClass,
 } from "../../../../../services/ResponseModels";
-import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
+import StructuralElementInputAccordion from "StructuralElementInputAccordion";
 import {
   getRegElementNomenclature,
   getRegulatoryElement,
 } from "../../../../../services/main";
-import { FusionContext } from "../../../../../global/contexts/FusionContext";
-import RegElementForm from "../../RegElement/RegElementForm/RegElementForm";
+import { FusionContext } from "global/contexts/FusionContext";
+import RegElementForm from "RegElement/RegElementForm/RegElementForm";
 
 /**
  * Lookup table used to map raw regulatory class enum values to options for the class

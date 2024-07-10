@@ -1,9 +1,9 @@
 import { TextField, Typography } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import { ClientLinkerElement } from "../../../../../services/ResponseModels";
-import { StructuralElementInputProps } from "../StructuralElementInputProps";
-import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
-import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
+import { ClientLinkerElement } from "services/ResponseModels";
+import { StructuralElementInputProps } from "StructuralElementInputProps";
+import StructuralElementInputAccordion from "StructuralElementInputAccordion";
+import HelpTooltip from "main/shared/HelpTooltip/HelpTooltip";
 
 interface LinkerElementInputProps extends StructuralElementInputProps {
   element: ClientLinkerElement;

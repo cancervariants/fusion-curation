@@ -8,9 +8,9 @@ import {
   Typography,
 } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
-import { FusionContext } from "../../../../global/contexts/FusionContext";
-import { DomainOptionsContext } from "../../../../global/contexts/DomainOptionsContext";
-import { GeneContext } from "../../../../global/contexts/GeneContext";
+import { FusionContext } from "global/contexts/FusionContext";
+import { DomainOptionsContext } from "global/contexts/DomainOptionsContext";
+import { GeneContext } from "global/contexts/GeneContext";
 import { v4 as uuid } from "uuid";
 import "./DomainForm.scss";
 import {
@@ -18,9 +18,9 @@ import {
   DomainParams,
   DomainStatus,
 } from "../../../../services/ResponseModels";
-import { getFunctionalDomain } from "../../../../services/main";
+import { getFunctionalDomain } from "services/main";
 import AddIcon from "@material-ui/icons/Add";
-import HelpTooltip from "../../../main/shared/HelpTooltip/HelpTooltip";
+import HelpTooltip from "main/shared/HelpTooltip/HelpTooltip";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {

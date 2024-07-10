@@ -3,10 +3,10 @@ import { TextField, Typography, makeStyles } from "@material-ui/core";
 import Autocomplete, {
   AutocompleteRenderGroupParams,
 } from "@material-ui/lab/Autocomplete";
-import { getGeneSuggestions } from "../../../../services/main";
-import { SuggestGeneResponse } from "../../../../services/ResponseModels";
-import HelpTooltip from "../HelpTooltip/HelpTooltip";
-import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
+import { getGeneSuggestions } from "services/main";
+import { SuggestGeneResponse } from "services/ResponseModels";
+import HelpTooltip from "HelpTooltip/HelpTooltip";
+import { useColorTheme } from "global/contexts/Theme/ColorThemeContext";
 
 export enum GeneSuggestionType {
   conceptId = "Concept ID",
@@ -90,7 +90,9 @@ export const GeneAutocomplete: React.FC<Props> = ({
     setGeneValue(selection);
     if (setChromosome) {
       // substring is to remove identifier from beginning of chromosome (ex: result in NC_000007.14 instead of NCBI:NC_000007.14)
-      setChromosome(selection.chromosome?.substring(selection.chromosome.indexOf(":") + 1));
+      setChromosome(
+        selection.chromosome?.substring(selection.chromosome.indexOf(":") + 1)
+      );
     }
     if (setStrand) {
       setStrand(selection.strand);

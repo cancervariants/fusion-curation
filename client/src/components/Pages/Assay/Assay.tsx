@@ -1,6 +1,6 @@
 // TODO: enforce CURIE requirements in fields
-import { FusionContext } from "../../../global/contexts/FusionContext";
-import { useColorTheme } from "../../../global/contexts/Theme/ColorThemeContext";
+import { FusionContext } from "global/contexts/FusionContext";
+import { useColorTheme } from "global/contexts/Theme/ColorThemeContext";
 import { FormEvent, useContext, useEffect, useState } from "react";
 import {
   Box,
@@ -12,9 +12,9 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Assay as FusionAssay } from "../../../services/ResponseModels";
+import { Assay as FusionAssay } from "services/ResponseModels";
 import React from "react";
-import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
+import HelpTooltip from "components/main/shared/HelpTooltip/HelpTooltip";
 
 interface Props {
   index: number;

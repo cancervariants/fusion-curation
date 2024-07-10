@@ -9,22 +9,22 @@ import {
   ClientTranscriptSegmentElement,
   TranscriptSegmentElement,
   TxSegmentElementResponse,
-} from "../../../../../services/ResponseModels";
+} from "services/ResponseModels";
 import React, { useEffect, useState, KeyboardEvent, useContext } from "react";
 import {
   getTxSegmentElementECT,
   getTxSegmentElementGCG,
   getTxSegmentElementGCT,
   getTxSegmentNomenclature,
-} from "../../../../../services/main";
-import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneAutocomplete";
-import { StructuralElementInputProps } from "../StructuralElementInputProps";
+} from "services/main";
+import { FusionContext } from "global/contexts/FusionContext";
+import ChromosomeField from "components/main/shared/ChromosomeField/ChromosomeField";
+import { GeneAutocomplete } from "components/main/shared/GeneAutocomplete/GeneAutocomplete";
+import HelpTooltip from "components/main/shared/HelpTooltip/HelpTooltip";
+import StrandSwitch from "components/main/shared/StrandSwitch/StrandSwitch";
+import TranscriptField from "components/main/shared/TranscriptField/TranscriptField";
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
-import { FusionContext } from "../../../../../global/contexts/FusionContext";
-import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
-import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
-import ChromosomeField from "../../../../main/shared/ChromosomeField/ChromosomeField";
-import TranscriptField from "../../../../main/shared/TranscriptField/TranscriptField";
+import { StructuralElementInputProps } from "../StructuralElementInputProps";
 
 interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
@@ -437,10 +437,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   const genomicCoordinateInfo = (
     <>
       <Box className="mid-inputs">
-        <ChromosomeField
-          fieldValue={txChrom}
-          errorText={txChromText}
-        />
+        <ChromosomeField fieldValue={txChrom} errorText={txChromText} />
         <Box mt="18px" width="125px">
           <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
         </Box>
