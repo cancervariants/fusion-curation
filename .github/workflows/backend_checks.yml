@@ -18,14 +18,15 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: black
-        uses: psf/black@stable
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          src: "./server"
+          python-version: "3.11"
 
-      - name: ruff
-        uses: chartboost/ruff-action@v1
-        with:
-          src: "./server"
+      - name: Install dependencies
+        run: python3 -m pip install "server/.[dev]"
+
+      - name: Check style
+        run: python3 -m ruff check server/ && python3 -m ruff format --check server/
