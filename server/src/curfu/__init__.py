@@ -1,9 +1,15 @@
 """Fusion curation interface."""
 import logging
+from importlib.metadata import PackageNotFoundError, version
 from os import environ
 from pathlib import Path
 
-from .version import __version__
+try:
+    __version__ = version("{{ cookiecutter.project_slug }}")
+except PackageNotFoundError:
+    __version__ = "unknown"
+finally:
+    del version, PackageNotFoundError
 
 # provide consistent paths
 APP_ROOT = Path(__file__).resolve().parents[0]

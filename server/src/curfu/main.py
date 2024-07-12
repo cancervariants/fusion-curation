@@ -7,6 +7,7 @@ from fusor import FUSOR
 from starlette.templating import _TemplateResponse as TemplateResponse
 
 from curfu import APP_ROOT
+from curfu import __version__ as curfu_version
 from curfu.domain_services import DomainService
 from curfu.gene_services import GeneService
 from curfu.routers import (
@@ -19,7 +20,6 @@ from curfu.routers import (
     utilities,
     validate,
 )
-from curfu.version import __version__ as curfu_version
 
 fastapi_app = FastAPI(
     title="Fusion Curation API",

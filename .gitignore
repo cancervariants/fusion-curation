@@ -179,5 +179,5 @@ frontend/node_modules
 node_modules/
 
 # Data
-server/curfu/data
+server/src/curfu/data
 client/node_modules
