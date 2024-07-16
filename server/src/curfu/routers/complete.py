@@ -1,11 +1,15 @@
 """Provide routes for autocomplete/term suggestion methods"""
-from typing import Dict, Any
+from typing import Any, Dict
 
-from fastapi import Query, APIRouter, Request
+from fastapi import APIRouter, Query, Request
 
-from curfu import MAX_SUGGESTIONS, ServiceWarning
-from curfu.schemas import ResponseDict, AssociatedDomainResponse, SuggestGeneResponse
-
+from curfu import MAX_SUGGESTIONS, LookupServiceError
+from curfu.schemas import (
+    AssociatedDomainResponse,
+    ResponseDict,
+    RouteTag,
+    SuggestGeneResponse,
+)
 
 router = APIRouter()
 
@@ -15,6 +19,7 @@ router = APIRouter()
     operation_id="suggestGene",
     response_model=SuggestGeneResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.COMPLETION],
 )
 def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
     """Provide completion suggestions for term provided by user.
@@ -53,6 +58,7 @@ def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
     operation_id="suggestDomain",
     response_model=AssociatedDomainResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.COMPLETION],
 )
 def suggest_domain(request: Request, gene_id: str = Query("")) -> ResponseDict:
     """Provide possible domains associated with a given gene to be selected by a user.
@@ -67,6 +73,6 @@ def suggest_domain(request: Request, gene_id: str = Query("")) -> ResponseDict:
     try:
         possible_matches = request.app.state.domains.get_possible_domains(gene_id)
         response["suggestions"] = possible_matches
-    except ServiceWarning:
+    except LookupServiceError:
         response["warnings"] = [f"No associated domains for {gene_id}"]
     return response

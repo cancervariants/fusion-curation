@@ -1,11 +1,11 @@
 """Provide core fixtures for testing Flask functions."""
+import asyncio
 from typing import Callable, Dict
 
 import pytest
-import asyncio
 from httpx import AsyncClient
 
-from curfu.main import app, start_fusor, get_gene_services, get_domain_services
+from curfu.main import app, get_domain_services, get_gene_services, start_fusor
 
 
 @pytest.fixture(scope="session")

@@ -19,7 +19,7 @@ import {
 } from "../../../../../services/main";
 import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
-import CompInputAccordion from "../StructuralElementInputAccordion";
+import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
 import { FusionContext } from "../../../../../global/contexts/FusionContext";
 import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
@@ -84,6 +84,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     element.exon_end_offset || ""
   );
   const [endingExonOffsetText, setEndingExonOffsetText] = useState("");
+
+  const [pendingResponse, setPendingResponse] = useState(false);
 
   /*
   Depending on this element's location in the structure array, the user
@@ -156,7 +158,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       ...responseElement,
       ...inputParams,
     };
-
     if (!hasRequiredEnds) {
       finishedElement.nomenclature = "ERROR";
     } else {
@@ -170,6 +171,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
         }
       });
     }
+    setPendingResponse(false);
   };
 
   /**
@@ -226,6 +228,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
    * Request construction of tx segment element from server and handle response
    */
   const buildTranscriptSegmentElement = () => {
+    setPendingResponse(true);
     // fire constructor request
     switch (txInputType) {
       case InputType.gcg:
@@ -297,11 +300,28 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             txSegmentResponse.warnings &&
             txSegmentResponse.warnings?.length > 0
           ) {
+            // transcript invalid
             const txWarning = `Unable to get exons for ${txAc}`;
             if (txSegmentResponse.warnings.includes(txWarning)) {
               setTxAcText("Unrecognized value");
             }
+            // exon(s) invalid
+            if (startingExon !== undefined) {
+              const startWarning = `Exon ${startingExon} does not exist on ${txAc}`;
+              if (txSegmentResponse.warnings.includes(startWarning)) {
+                setStartingExonText("Invalid");
+              }
+            }
+            if (endingExon !== undefined) {
+              const endWarning = `Exon ${endingExon} does not exist on ${txAc}`;
+              if (txSegmentResponse.warnings.includes(endWarning)) {
+                setEndingExonText("Invalid");
+              }
+            }
           } else {
+            setTxAcText("");
+            setStartingExonText("");
+            setEndingExonText("");
             const inputParams = {
               input_type: txInputType,
               input_tx: txAc,
@@ -419,9 +439,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       <Box className="mid-inputs">
         <ChromosomeField
           fieldValue={txChrom}
-          valueSetter={setTxChrom}
           errorText={txChromText}
-          keyHandler={handleEnterKey}
         />
         <Box mt="18px" width="125px">
           <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
@@ -649,7 +667,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     </>
   );
 
-  return CompInputAccordion({
+  return StructuralElementInputAccordion({
     expanded,
     setExpanded,
     element,
@@ -657,6 +675,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     inputElements,
     validated,
     icon,
+    pendingResponse,
   });
 };
 

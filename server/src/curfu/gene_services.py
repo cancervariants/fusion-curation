@@ -1,15 +1,20 @@
 """Wrapper for required Gene Normalization services."""
-from pathlib import Path
-from typing import List, Optional, Tuple, Dict, Union
 import csv
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple, Union
 
+from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 from gene.query import QueryHandler
 from gene.schemas import MatchType
-from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 
-from curfu import logger, ServiceWarning
+from curfu import LookupServiceError, logger
 from curfu.utils import get_data_file
 
+# term -> (normalized ID, normalized label)
+Map = Dict[str, Tuple[str, str, str]]
+
+# term -> (normalized ID, normalized label)
+Map = Dict[str, Tuple[str, str, str]]
 # term, symbol, concept ID, chromosome, strand
 Suggestion = Tuple[str, str, str, str, str]
 
@@ -17,7 +22,7 @@ Suggestion = Tuple[str, str, str, str, str]
 class GeneService:
     """Provide gene ID resolution and term autocorrect suggestions."""
 
-    def __init__(self, suggestions_file: Optional[Path] = None):
+    def __init__(self, suggestions_file: Optional[Path] = None) -> None:
         """Initialize gene service provider class.
 
         :param suggestions_file: path to existing suggestions file. If not provided,
@@ -60,13 +65,13 @@ class GeneService:
             if not gd or not gd.gene_id:
                 msg = f"Unexpected null property in normalized response for `{term}`"
                 logger.error(msg)
-                raise ServiceWarning(msg)
+                raise LookupServiceError(msg)
             concept_id = gd.gene_id
             symbol = gd.label
             if not symbol:
                 msg = f"Unable to retrieve symbol for gene {concept_id}"
                 logger.error(msg)
-                raise ServiceWarning(msg)
+                raise LookupServiceError(msg)
             term_lower = term.lower()
             term_cased = None
             if response.match_type == 100:
@@ -109,7 +114,7 @@ class GeneService:
         else:
             warn = f"Lookup of gene term {term} failed."
             logger.warning(warn)
-            raise ServiceWarning(warn)
+            raise LookupServiceError(warn)
 
     @staticmethod
     def _get_completion_results(term: str, lookup: Dict) -> List[Suggestion]:
@@ -134,8 +139,6 @@ class GeneService:
         :returns: dict returning list containing any number of suggestion tuples, where
             each is the correctly-cased term, normalized ID, normalized label, for each
             item type
-        :raises ServiceWarning: if number of matching suggestions exceeds
-            MAX_SUGGESTIONS
         """
         q_upper = query.upper()
         suggestions = {}
@@ -147,5 +150,4 @@ class GeneService:
             q_upper, self.prev_symbols_map
         )
         suggestions["aliases"] = self._get_completion_results(q_upper, self.aliases_map)
-
         return suggestions

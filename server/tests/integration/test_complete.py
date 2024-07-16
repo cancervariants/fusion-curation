@@ -4,7 +4,7 @@ from httpx import AsyncClient
 
 
 @pytest.mark.asyncio
-async def test_normalize_gene(async_client: AsyncClient):
+async def test_complete_gene(async_client: AsyncClient):
     """Test /complete/gene endpoint"""
     response = await async_client.get("/api/complete/gene?term=NTRK")
     assert response.status_code == 200

@@ -1,9 +1,10 @@
 """Provide client type generation tooling."""
 from pathlib import Path
+
 from pydantic2ts.cli.script import generate_typescript_defs
 
 
-def build_client_types():
+def build_client_types() -> None:
     """Construct type definitions for front-end client."""
     client_dir = Path(__file__).resolve().parents[3] / "client"
     generate_typescript_defs(

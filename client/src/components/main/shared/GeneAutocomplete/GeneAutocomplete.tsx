@@ -33,7 +33,7 @@ interface Props {
   setGene: CallableFunction;
   geneText: string;
   setGeneText: CallableFunction;
-  tooltipDirection:
+  tooltipDirection?:
     | "bottom"
     | "left"
     | "right"
@@ -89,7 +89,8 @@ export const GeneAutocomplete: React.FC<Props> = ({
     setGene(selection.value);
     setGeneValue(selection);
     if (setChromosome) {
-      setChromosome(selection.chromosome);
+      // substring is to remove identifier from beginning of chromosome (ex: result in NC_000007.14 instead of NCBI:NC_000007.14)
+      setChromosome(selection.chromosome?.substring(selection.chromosome.indexOf(":") + 1));
     }
     if (setStrand) {
       setStrand(selection.strand);

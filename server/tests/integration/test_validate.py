@@ -202,7 +202,8 @@ def wrong_type_fusion():
 async def check_validated_fusion_response(client, fixture: Dict, case_name: str):
     """Run basic checks on fusion validation response.
 
-    TODO
+    Todo:
+    ----
     * FUSOR should provide a "fusion equality" utility function -- incorporate it here
       when that's done
     """

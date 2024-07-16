@@ -1,7 +1,8 @@
 """Provide routes for nomenclature generation."""
 from typing import Dict
 
-from fastapi import Request, APIRouter, Body
+from fastapi import APIRouter, Body, Request
+from fusor.exceptions import FUSORParametersException
 from fusor.models import (
     GeneElement,
     RegulatoryElement,
@@ -14,12 +15,10 @@ from fusor.nomenclature import (
     templated_seq_nomenclature,
     tx_segment_nomenclature,
 )
-from fusor.exceptions import FUSORParametersException
 from pydantic import ValidationError
 
 from curfu import logger
-from curfu.schemas import NomenclatureResponse, ResponseDict
-
+from curfu.schemas import NomenclatureResponse, ResponseDict, RouteTag
 
 router = APIRouter()
 
@@ -29,12 +28,13 @@ router = APIRouter()
     operation_id="regulatoryElementNomenclature",
     response_model=NomenclatureResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.NOMENCLATURE],
 )
 def generate_regulatory_element_nomenclature(
     request: Request, regulatory_element: Dict = Body()
 ) -> ResponseDict:
-    """
-    Build regulatory element nomenclature.
+    """Build regulatory element nomenclature.
+
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
@@ -70,10 +70,11 @@ def generate_regulatory_element_nomenclature(
     operation_id="txSegmentNomenclature",
     response_model=NomenclatureResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.NOMENCLATURE],
 )
 def generate_tx_segment_nomenclature(tx_segment: Dict = Body()) -> ResponseDict:
-    """
-    Build transcript segment element nomenclature.
+    """Build transcript segment element nomenclature.
+
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
@@ -97,6 +98,7 @@ def generate_tx_segment_nomenclature(tx_segment: Dict = Body()) -> ResponseDict:
     operation_id="templatedSequenceNomenclature",
     response_model=NomenclatureResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.NOMENCLATURE],
 )
 def generate_templated_seq_nomenclature(
     request: Request, templated_sequence: Dict = Body()
@@ -137,6 +139,7 @@ def generate_templated_seq_nomenclature(
     operation_id="geneNomenclature",
     response_model=NomenclatureResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.NOMENCLATURE],
 )
 def generate_gene_nomenclature(gene_element: Dict = Body()) -> ResponseDict:
     """Build gene element nomenclature.
@@ -171,6 +174,7 @@ def generate_gene_nomenclature(gene_element: Dict = Body()) -> ResponseDict:
     operation_id="fusionNomenclature",
     response_model=NomenclatureResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.NOMENCLATURE],
 )
 def generate_fusion_nomenclature(
     request: Request, fusion: Dict = Body()

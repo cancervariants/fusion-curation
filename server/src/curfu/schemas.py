@@ -1,24 +1,24 @@
 """Provide schemas for FastAPI responses."""
-from typing import List, Optional, Tuple, Union, Literal, Dict
+from enum import Enum
+from typing import Dict, List, Literal, Optional, Tuple, Union
 
-from pydantic import BaseModel, Field, StrictStr, StrictInt, validator, Extra
-from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
+from cool_seq_tool.schemas import GenomicData
 from fusor.models import (
     AssayedFusion,
     CategoricalFusion,
+    FunctionalDomain,
     Fusion,
-    TranscriptSegmentElement,
-    LinkerElement,
-    TemplatedSequenceElement,
     GeneElement,
-    UnknownGeneElement,
+    LinkerElement,
     MultiplePossibleGenesElement,
     RegulatoryElement,
-    FunctionalDomain,
     Strand,
+    TemplatedSequenceElement,
+    TranscriptSegmentElement,
+    UnknownGeneElement,
 )
-from cool_seq_tool.schemas import GenomicData
-
+from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
+from pydantic import BaseModel, Extra, Field, StrictInt, StrictStr, validator
 
 ResponseWarnings = Optional[List[StrictStr]]
 
@@ -318,3 +318,17 @@ class DemoResponse(Response):
     """Response model for demo fusion object retrieval endpoints."""
 
     fusion: Union[ClientAssayedFusion, ClientCategoricalFusion]
+
+
+class RouteTag(str, Enum):
+    """Define tags for API routes."""
+
+    UTILITIES = "Utilities"
+    CONSTRUCTORS = "Constructors"
+    VALIDATORS = "Validators"
+    COMPLETION = "Completion"
+    NOMENCLATURE = "Nomenclature"
+    DEMOS = "Demos"
+    META = "Meta"
+    SERVICE = "Service"
+    LOOKUP = "Lookup"

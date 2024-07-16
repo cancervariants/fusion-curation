@@ -2,8 +2,8 @@
 from typing import Dict
 
 import pytest
-from httpx import AsyncClient
 from fusor.examples import bcr_abl1
+from httpx import AsyncClient
 
 
 @pytest.fixture(scope="module")
@@ -159,19 +159,19 @@ async def test_tx_segment_nomenclature(
         json=ntrk1_tx_element_start,
     )
     assert response.status_code == 200
-    assert response.json().get("nomenclature", "") == "refseq:NM_002529.3(NTRK1):e.2+1"
+    assert response.json().get("nomenclature", "") == "NM_002529.3(NTRK1):e.2+1"
 
     response = await async_client.post(
         "/api/nomenclature/transcript_segment?first=true&last=false", json=epcam_5_prime
     )
     assert response.status_code == 200
-    assert response.json().get("nomenclature", "") == "refseq:NM_002354.2(EPCAM):e.5"
+    assert response.json().get("nomenclature", "") == "NM_002354.2(EPCAM):e.5"
 
     response = await async_client.post(
         "/api/nomenclature/transcript_segment?first=false&last=true", json=epcam_3_prime
     )
     assert response.status_code == 200
-    assert response.json().get("nomenclature", "") == "refseq:NM_002354.2(EPCAM):e.5"
+    assert response.json().get("nomenclature", "") == "NM_002354.2(EPCAM):e.5"
 
     response = await async_client.post(
         "/api/nomenclature/transcript_segment?first=true&last=false", json=epcam_invalid
@@ -212,7 +212,7 @@ async def test_templated_sequence_nomenclature(
     assert response.status_code == 200
     assert (
         response.json().get("nomenclature", "")
-        == "refseq:NC_000001.11(chr 1):g.15455_15566(-)"
+        == "NC_000001.11(chr 1):g.15455_15566(-)"
     )
 
     response = await async_client.post(
@@ -246,5 +246,5 @@ async def test_fusion_nomenclature(async_client: AsyncClient):
     assert response.status_code == 200
     assert (
         response.json().get("nomenclature", "")
-        == "refseq:NM_004327.3(BCR):e.2+182::ACTAAAGCG::refseq:NM_005157.5(ABL1):e.2-173"
+        == "NM_004327.3(BCR):e.2+182::ACTAAAGCG::NM_005157.5(ABL1):e.2-173"
     )

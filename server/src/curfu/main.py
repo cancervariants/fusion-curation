@@ -3,26 +3,36 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from starlette.templating import _TemplateResponse as TemplateResponse
 from fusor import FUSOR
+from starlette.templating import _TemplateResponse as TemplateResponse
 
 from curfu import APP_ROOT
-from curfu.version import __version__ as curfu_version
-from curfu.gene_services import GeneService
+from curfu import __version__ as curfu_version
 from curfu.domain_services import DomainService
+from curfu.gene_services import GeneService
 from curfu.routers import (
+    complete,
+    constructors,
+    demo,
+    lookup,
+    meta,
     nomenclature,
     utilities,
-    constructors,
-    lookup,
-    complete,
     validate,
-    demo,
-    meta,
 )
 
-
 fastapi_app = FastAPI(
+    title="Fusion Curation API",
+    description="Provide data functions to support [VICC Fusion Curation interface](fusion-builder.cancervariants.org/).",
+    contact={
+        "name": "Alex H. Wagner",
+        "email": "Alex.Wagner@nationwidechildrens.org",
+        "url": "https://www.nationwidechildrens.org/specialties/institute-for-genomic-medicine/research-labs/wagner-lab",
+    },
+    license={
+        "name": "MIT",
+        "url": "https://github.com/cancervariants/fusion-curation/blob/main/LICENSE",
+    },
     version=curfu_version,
     swagger_ui_parameters={"tryItOutEnabled": True},
     docs_url="/docs",
@@ -52,8 +62,7 @@ BUILD_DIR = APP_ROOT / "build"
 
 
 def serve_react_app(app: FastAPI) -> FastAPI:
-    """
-    Wrap application initialization in Starlette route param converter.
+    """Wrap application initialization in Starlette route param converter.
 
     :param app: FastAPI application instance
     :return: application with React frontend mounted
@@ -65,10 +74,9 @@ def serve_react_app(app: FastAPI) -> FastAPI:
     )
     templates = Jinja2Templates(directory=BUILD_DIR.as_posix())
 
-    @app.get("/{full_path:path}")
+    @app.get("/{full_path:path}", include_in_schema=False)
     async def serve_react_app(request: Request, full_path: str) -> TemplateResponse:
-        """
-        Add arbitrary path support to FastAPI service.
+        """Add arbitrary path support to FastAPI service.
 
         React-router provides something akin to client-side routing based out
         of the Javascript embedded in index.html. However, FastAPI will intercede
@@ -117,7 +125,7 @@ def get_domain_services() -> DomainService:
 
 
 @app.on_event("startup")
-async def startup():
+async def startup() -> None:
     """Get FUSOR reference"""
     app.state.fusor = await start_fusor()
     app.state.genes = get_gene_services()
@@ -125,6 +133,6 @@ async def startup():
 
 
 @app.on_event("shutdown")
-async def shutdown():
+async def shutdown() -> None:
     """Clean up thread pool."""
     await app.state.fusor.cool_seq_tool.uta_db._connection_pool.close()

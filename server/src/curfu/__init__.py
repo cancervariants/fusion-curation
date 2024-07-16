@@ -1,10 +1,15 @@
 """Fusion curation interface."""
-from pathlib import Path
-from os import environ
 import logging
+from importlib.metadata import PackageNotFoundError, version
+from os import environ
+from pathlib import Path
 
-from .version import __version__
-
+try:
+    __version__ = version("curfu")
+except PackageNotFoundError:
+    __version__ = "unknown"
+finally:
+    del version, PackageNotFoundError
 
 # provide consistent paths
 APP_ROOT = Path(__file__).resolve().parents[0]
@@ -51,12 +56,8 @@ else:
     SEQREPO_DATA_PATH = environ["SEQREPO_DATA_PATH"]
 
 
-class ServiceWarning(Exception):
+class LookupServiceError(Exception):
     """Custom Exception to use when lookups fail in curation services."""
-
-    def __init__(self, *args, **kwargs):
-        """Initialize exception."""
-        super().__init__(*args, **kwargs)
 
 
 # define max acceptable matches for autocomplete suggestions

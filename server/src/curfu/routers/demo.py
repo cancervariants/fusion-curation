@@ -1,39 +1,40 @@
 """Provide routes for accessing demo objects to client."""
-from uuid import uuid4
 from typing import Union
+from uuid import uuid4
 
 from fastapi import APIRouter, Request
-from fusor import examples, FUSOR
+from fusor import FUSOR, examples
 from fusor.models import (
+    AssayedFusion,
+    CategoricalFusion,
+    FUSORTypes,
     RegulatoryElement,
     StructuralElementType,
-    CategoricalFusion,
-    AssayedFusion,
-    FUSORTypes,
 )
 from fusor.nomenclature import (
-    tx_segment_nomenclature,
-    templated_seq_nomenclature,
     gene_nomenclature,
     reg_element_nomenclature,
+    templated_seq_nomenclature,
+    tx_segment_nomenclature,
 )
 
 from curfu.schemas import (
-    DemoResponse,
-    ClientTranscriptSegmentElement,
-    ClientLinkerElement,
-    ClientTemplatedSequenceElement,
-    ClientGeneElement,
-    ClientUnknownGeneElement,
-    ClientMultiplePossibleGenesElement,
-    TranscriptSegmentElement,
-    LinkerElement,
-    TemplatedSequenceElement,
-    GeneElement,
-    UnknownGeneElement,
-    MultiplePossibleGenesElement,
-    ClientCategoricalFusion,
     ClientAssayedFusion,
+    ClientCategoricalFusion,
+    ClientGeneElement,
+    ClientLinkerElement,
+    ClientMultiplePossibleGenesElement,
+    ClientTemplatedSequenceElement,
+    ClientTranscriptSegmentElement,
+    ClientUnknownGeneElement,
+    DemoResponse,
+    GeneElement,
+    LinkerElement,
+    MultiplePossibleGenesElement,
+    RouteTag,
+    TemplatedSequenceElement,
+    TranscriptSegmentElement,
+    UnknownGeneElement,
 )
 
 router = APIRouter()
@@ -63,8 +64,7 @@ def clientify_structural_element(
     element: ElementUnion,
     fusor_instance: FUSOR,
 ) -> ClientElementUnion:
-    """
-    Add fields required by client to structural element object.
+    """Add fields required by client to structural element object.
     \f
     :param element: a structural element object
     :param fusor_instance: instantiated FUSOR object, passed down from FastAPI request
@@ -112,8 +112,8 @@ def clientify_structural_element(
 
 
 def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
-    """
-    Add client-required properties to fusion object.
+    """Add client-required properties to fusion object.
+
     :param fusion: fusion to append to
     :param fusor_instance: FUSOR object instance provided by FastAPI request context
     :return: completed client-ready fusion
@@ -157,6 +157,7 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
     operation_id="alkDemo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.DEMOS],
 )
 def get_alk(request: Request) -> DemoResponse:
     """Retrieve ALK assayed fusion.
@@ -177,6 +178,7 @@ def get_alk(request: Request) -> DemoResponse:
     operation_id="ewsr1Demo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.DEMOS],
 )
 def get_ewsr1(request: Request) -> DemoResponse:
     """Retrieve EWSR1 assayed fusion.
@@ -197,6 +199,7 @@ def get_ewsr1(request: Request) -> DemoResponse:
     operation_id="bcrAbl1Demo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.DEMOS],
 )
 def get_bcr_abl1(request: Request) -> DemoResponse:
     """Retrieve BCR-ABL1 categorical fusion.
@@ -217,6 +220,7 @@ def get_bcr_abl1(request: Request) -> DemoResponse:
     operation_id="tpm3Ntrk1Demo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.DEMOS],
 )
 def get_tpm3_ntrk1(request: Request) -> DemoResponse:
     """Retrieve TPM3-NTRK1 assayed fusion.
@@ -237,6 +241,7 @@ def get_tpm3_ntrk1(request: Request) -> DemoResponse:
     operation_id="tpm3PdgfrbDemo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.DEMOS],
 )
 def get_tpm3_pdgfrb(request: Request) -> DemoResponse:
     """Retrieve TPM3-PDGFRB assayed fusion.
@@ -257,6 +262,7 @@ def get_tpm3_pdgfrb(request: Request) -> DemoResponse:
     operation_id="ighMycDemo",
     response_model=DemoResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.DEMOS],
 )
 def get_igh_myc(request: Request) -> DemoResponse:
     """Retrieve IGH-MYC assayed fusion.

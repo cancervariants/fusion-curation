@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./App.scss";
-import { Box, Typography, makeStyles, Link, Drawer } from "@material-ui/core";
+import {
+  Box,
+  Typography,
+  makeStyles,
+  Link,
+  Drawer,
+  Switch,
+} from "@material-ui/core";
 import { ServiceInfoResponse } from "../../../services/ResponseModels";
 import { getInfo } from "../../../services/main";
 
@@ -16,28 +23,44 @@ const useStyles = makeStyles(() => ({
   upperSection: {
     marginLeft: "10px",
   },
-  lowerSection: {
-    marginBottom: "10px",
-    display: "flex",
-    justifyContent: "center",
-  },
   drawerContainer: {
     height: "100%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
   },
+  lowerSection: {
+    marginBottom: "10px",
+    display: "flex",
+    flexDirection: "column",
+  },
+  optionsContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    margin: "0px 10px 0px 10px",
+  },
+  optionsText: { fontSize: "0.8rem" },
+  versionContainer: {
+    display: "flex",
+    justifyContent: "center",
+    paddingTop: "10px",
+  },
   versionText: {
     fontSize: "0.7rem",
   },
 }));
 
-interface AppMenuProps {
-  open?: boolean;
-}
-
-export default function AppMenu(props: AppMenuProps): React.ReactElement {
+export default function AppMenu({
+  open,
+  settings,
+  setSettings,
+}): React.ReactElement {
   const [serviceInfo, setServiceInfo] = useState({} as ServiceInfoResponse);
+  const [tooltipsEnabled, setTooltipsEnabled] = useState(
+    settings.enableToolTips
+  );
 
   useEffect(() => {
     getInfo().then((infoResponse) => {
@@ -46,10 +69,16 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
   }, []);
 
   const classes = useStyles();
+
+  const handleTooltipsChange = (event) => {
+    setTooltipsEnabled(event.target.checked);
+    setSettings({ ...settings, enableToolTips: event.target.checked });
+  };
+
   return (
     <Drawer
       variant="permanent"
-      open={props.open}
+      open={open}
       anchor="left"
       className="menu-drawer"
     >
@@ -127,9 +156,21 @@ export default function AppMenu(props: AppMenuProps): React.ReactElement {
         </Box>
 
         <Box className={classes.lowerSection}>
-          <Typography className={classes.versionText}>
-            v{serviceInfo.curfu_version}
-          </Typography>
+          <Box className={classes.optionsContainer}>
+            <Typography className={classes.optionsText}>
+              Enable tooltips
+            </Typography>
+            <Switch
+              size="small"
+              checked={tooltipsEnabled}
+              onChange={handleTooltipsChange}
+            />
+          </Box>
+          <Box className={classes.versionContainer}>
+            <Typography className={classes.versionText}>
+              v{serviceInfo.curfu_version}
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </Drawer>

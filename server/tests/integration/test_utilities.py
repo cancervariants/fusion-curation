@@ -1,8 +1,7 @@
 """Test end-to-end correctness of utility routes."""
-from typing import Dict, Callable
+from typing import Callable, Dict
 
 import pytest
-
 
 response_callback_type = Callable[[Dict, Dict], None]
 

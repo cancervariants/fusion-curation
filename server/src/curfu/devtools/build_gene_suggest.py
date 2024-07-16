@@ -1,14 +1,14 @@
 """Provide tools to build backend data relating to gene identification."""
 import csv
-from typing import Dict, List, Optional
-from pathlib import Path
 from datetime import datetime as dt
+from pathlib import Path
 from timeit import default_timer as timer
-from biocommons.seqrepo.seqrepo import SeqRepo
+from typing import Dict, List, Optional
 
+import click
+from biocommons.seqrepo.seqrepo import SeqRepo
 from gene.database import create_db
 from gene.schemas import RecordType
-import click
 
 from curfu import APP_ROOT, SEQREPO_DATA_PATH, logger
 
@@ -19,7 +19,7 @@ class GeneSuggestionBuilder:
     Implemented as a class for easier sharing of database resources between methods.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize class."""
         self.gene_db = create_db()
         self.sr = SeqRepo(SEQREPO_DATA_PATH)
@@ -51,6 +51,7 @@ class GeneSuggestionBuilder:
         ensures that only unique, alphabetic values are included in the result.
 
         Note:
+        ----
         - The method performs a case-insensitive comparison when filtering unique
           values.
         - If the input list contains non-alphabetic values or duplicates, they will be
@@ -124,9 +125,8 @@ class GeneSuggestionBuilder:
                 writer.writerow(row)
 
     def build_gene_suggestion_file(self, output_dir: Path = APP_ROOT / "data") -> None:
-        """
-        Build the gene suggestions table file by processing gene records from the gene
-        database.
+        """Build the gene suggestions table file by processing gene records from the
+        gene database.
 
         - The gene database should be initialized before calling this method.
         - The gene suggestions table file will be saved in CSV format.

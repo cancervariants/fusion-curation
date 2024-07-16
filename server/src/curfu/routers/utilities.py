@@ -1,22 +1,22 @@
 """Provide routes for app utility endpoints"""
-from typing import Dict, Optional, List, Any
-import tempfile
 import os
+import tempfile
 from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Request, Query, HTTPException
+from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import FileResponse
+from gene import schemas as gene_schemas
 from starlette.background import BackgroundTasks
-from gene import schemas as GeneSchemas
 
 from curfu import logger
 from curfu.schemas import (
-    GetTranscriptsResponse,
     CoordsUtilsResponse,
+    GetTranscriptsResponse,
+    RouteTag,
     SequenceIDResponse,
 )
-from curfu.sequence_services import get_strand, InvalidInputException
-
+from curfu.sequence_services import InvalidInputError, get_strand
 
 router = APIRouter()
 
@@ -26,6 +26,7 @@ router = APIRouter()
     operation_id="getMANETranscripts",
     response_model=GetTranscriptsResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.UTILITIES],
 )
 def get_mane_transcripts(request: Request, term: str) -> Dict:
     """Get MANE transcripts for gene term.
@@ -36,7 +37,7 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
     :return: Dict containing transcripts if lookup succeeds, or warnings upon failure
     """
     normalized = request.app.state.fusor.gene_normalizer.normalize(term)
-    if normalized.match_type == GeneSchemas.MatchType.NO_MATCH:
+    if normalized.match_type == gene_schemas.MatchType.NO_MATCH:
         return {"warnings": [f"Normalization error: {term}"]}
     elif not normalized.gene_descriptor.gene_id.lower().startswith("hgnc"):
         return {"warnings": [f"No HGNC symbol: {term}"]}
@@ -55,6 +56,7 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
     operation_id="getGenomicCoords",
     response_model=CoordsUtilsResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.UTILITIES],
 )
 async def get_genome_coords(
     request: Request,
@@ -127,6 +129,7 @@ async def get_genome_coords(
     operation_id="getExonCoords",
     response_model=CoordsUtilsResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.UTILITIES],
 )
 async def get_exon_coords(
     request: Request,
@@ -157,7 +160,7 @@ async def get_exon_coords(
     if strand is not None:
         try:
             strand_validated = get_strand(strand)
-        except InvalidInputException:
+        except InvalidInputError:
             warnings.append(f"Received invalid strand value: {strand}")
     else:
         strand_validated = strand
@@ -186,6 +189,7 @@ async def get_exon_coords(
     operation_id="getSequenceId",
     response_model=SequenceIDResponse,
     response_model_exclude_none=True,
+    tags=[RouteTag.UTILITIES],
 )
 async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse:
     """Get GA4GH sequence ID and aliases given sequence sequence ID
@@ -235,6 +239,7 @@ async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse
     description="Given a known accession identifier, retrieve sequence data and return"
     "as a FASTA file",
     response_class=FileResponse,
+    tags=[RouteTag.UTILITIES],
 )
 async def get_sequence(
     request: Request,
