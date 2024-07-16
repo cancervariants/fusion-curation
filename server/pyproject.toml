@@ -1,6 +1,73 @@
+[project]
+name = "curfu"
+authors = [
+    {name = "Alex Wagner", email = "alex.wagner@nationwidechildrens.org"},
+    {name = "Kori Kuzma", email = "kori.kuzma@nationwidechildrens.org"},
+    {name = "James Stevenson", email = "james.stevenson@nationwidechildrens.org"},
+    {name = "Katie Stahl", email = "kathryn.stahl@nationwidechildrens.org"},
+    {name = "Jeremy Arbesfeld", email = "jeremy.arbesfeld@nationwidechildrens.org"}
+]
+readme = "README.md"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.10"
+description = "Curation tool for gene fusions"
+license = {file = "../LICENSE"}
+dependencies = [
+    "fastapi >= 0.72.0",
+    "aiofiles",
+    "asyncpg",
+    "fusor ~= 0.0.30-dev1",
+    "sqlparse >= 0.4.2",
+    "urllib3 >= 1.26.5",
+    "click",
+    "jinja2",
+    "boto3",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+tests = [
+    "pytest",
+    "pytest-asyncio >= 0.19.0",
+    "pytest-cov",
+    "coverage",
+    "httpx",
+]
+dev = [
+    "psycopg2-binary",
+    "ruff",
+    "black",
+    "pre-commit>=3.7.1",
+    "gene-normalizer ~= 0.1.39",
+    "pydantic-to-typescript",
+]
+
+[project.scripts]
+curfu_devtools = "curfu.cli:devtools"
+curfu = "curfu.cli:serve"
+
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta:__legacy__"
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools_scm]
+
+[tool.pytest.ini_options]
+addopts = "--cov=src --cov-report term-missing"
+testpaths = ["tests"]
 
 [tool.black]
 line-length = 88
