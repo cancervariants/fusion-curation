@@ -21,7 +21,6 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 description = "Curation tool for gene fusions"
-license = {file = "../LICENSE"}
 dependencies = [
     "fastapi >= 0.72.0",
     "aiofiles",
@@ -64,6 +63,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools_scm]
+root = "../."
 
 [tool.pytest.ini_options]
 addopts = "--cov=src --cov-report term-missing"
