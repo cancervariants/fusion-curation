@@ -1,4 +1,5 @@
 """Provide routes for basic data lookup endpoints"""
+
 from fastapi import APIRouter, Query, Request
 
 from curfu import LookupServiceError

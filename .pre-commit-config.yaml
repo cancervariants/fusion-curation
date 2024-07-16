@@ -8,16 +8,12 @@ repos:
       - id: end-of-file-fixer
       - id: check-merge-conflict
       - id: detect-aws-credentials
-  - repo: https://github.com/psf/black
-    rev: 23.7.0
-    hooks:
-      - id: black
-        language_version: python3.11
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.0.286
+    rev: v0.5.0
     hooks:
+      - id: ruff-format
       - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
+        args: [--fix, --exit-non-zero-on-fix, --config=server/pyproject.toml]
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: "v8.20.0"
     hooks:

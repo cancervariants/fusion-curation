@@ -1,5 +1,4 @@
 """Test /nomenclature/ endpoints."""
-from typing import Dict
 
 import pytest
 from fusor.examples import bcr_abl1
@@ -133,9 +132,9 @@ def templated_sequence_element():
     }
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_regulatory_element_nomenclature(
-    async_client: AsyncClient, regulatory_element: Dict
+    async_client: AsyncClient, regulatory_element: dict
 ):
     """Test correctness of regulatory element nomenclature endpoint."""
     response = await async_client.post(
@@ -145,13 +144,13 @@ async def test_regulatory_element_nomenclature(
     assert response.json().get("nomenclature", "") == "reg_p@G1(hgnc:9339)"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_tx_segment_nomenclature(
     async_client: AsyncClient,
-    ntrk1_tx_element_start: Dict,
-    epcam_5_prime: Dict,
-    epcam_3_prime: Dict,
-    epcam_invalid: Dict,
+    ntrk1_tx_element_start: dict,
+    epcam_5_prime: dict,
+    epcam_3_prime: dict,
+    epcam_invalid: dict,
 ):
     """Test correctness of transcript segment nomenclature response."""
     response = await async_client.post(
@@ -178,13 +177,13 @@ async def test_tx_segment_nomenclature(
     )
     assert response.status_code == 200
     assert response.json().get("warnings", []) == [
-        "1 validation error for TranscriptSegmentElement\ntranscript\n  field required (type=value_error.missing)"  # noqa: E501
+        "1 validation error for TranscriptSegmentElement\ntranscript\n  field required (type=value_error.missing)"
     ]
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_gene_element_nomenclature(
-    async_client: AsyncClient, alk_gene_element: Dict
+    async_client: AsyncClient, alk_gene_element: dict
 ):
     """Test correctness of gene element nomenclature endpoint."""
     response = await async_client.post("/api/nomenclature/gene", json=alk_gene_element)
@@ -197,13 +196,13 @@ async def test_gene_element_nomenclature(
     )
     assert response.status_code == 200
     assert response.json().get("warnings", []) == [
-        "2 validation errors for GeneElement\ngene_descriptor\n  field required (type=value_error.missing)\nassociated_gene\n  extra fields not permitted (type=value_error.extra)"  # noqa: E501
+        "2 validation errors for GeneElement\ngene_descriptor\n  field required (type=value_error.missing)\nassociated_gene\n  extra fields not permitted (type=value_error.extra)"
     ]
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_templated_sequence_nomenclature(
-    async_client: AsyncClient, templated_sequence_element: Dict
+    async_client: AsyncClient, templated_sequence_element: dict
 ):
     """Test correctness of templated sequence element endpoint."""
     response = await async_client.post(
@@ -235,11 +234,11 @@ async def test_templated_sequence_nomenclature(
     )
     assert response.status_code == 200
     assert response.json().get("warnings", []) == [
-        "1 validation error for TemplatedSequenceElement\nstrand\n  field required (type=value_error.missing)"  # noqa: E501
+        "1 validation error for TemplatedSequenceElement\nstrand\n  field required (type=value_error.missing)"
     ]
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_fusion_nomenclature(async_client: AsyncClient):
     """Test correctness of fusion nomneclature endpoint."""
     response = await async_client.post("/api/nomenclature/fusion", json=bcr_abl1.dict())

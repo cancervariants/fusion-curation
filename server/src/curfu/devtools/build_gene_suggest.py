@@ -1,9 +1,9 @@
 """Provide tools to build backend data relating to gene identification."""
+
 import csv
-from datetime import datetime as dt
+import datetime
 from pathlib import Path
 from timeit import default_timer as timer
-from typing import Dict, List, Optional
 
 import click
 from biocommons.seqrepo.seqrepo import SeqRepo
@@ -25,7 +25,7 @@ class GeneSuggestionBuilder:
         self.sr = SeqRepo(SEQREPO_DATA_PATH)
         self.genes = []
 
-    def _get_chromosome(self, record: Dict) -> Optional[str]:
+    def _get_chromosome(self, record: dict) -> str | None:
         """Extract readable chromosome identifier from gene extensions.
 
         :param record: stored normalized record
@@ -42,7 +42,7 @@ class GeneSuggestionBuilder:
         return None
 
     @staticmethod
-    def _make_list_column(values: List[str]) -> str:
+    def _make_list_column(values: list[str]) -> str:
         """Convert a list of strings into a comma-separated string, filtering out
         non-alphabetic values.
 
@@ -62,12 +62,13 @@ class GeneSuggestionBuilder:
         :param values: A list of strings to be converted into a comma-separated string.
         :return: A comma-separated string containing unique, alphabetic values from the
             input list.
+
         """
         unique = {v.upper() for v in values}
         filtered = {v for v in unique if any(char.isalpha() for char in v)}
         return ",".join(filtered)
 
-    def _process_gene_record(self, record: Dict) -> None:
+    def _process_gene_record(self, record: dict) -> None:
         """Add the gene record to processed suggestions.
 
         :param record: gene record object retrieved from DB
@@ -117,8 +118,10 @@ class GeneSuggestionBuilder:
             "chromosome",
             "strand",
         ]
-        today = dt.strftime(dt.today(), "%Y%m%d")
-        with open(output_dir / f"gene_suggest_{today}.csv", "w") as csvfile:
+        today = datetime.datetime.strftime(
+            datetime.datetime.now(tz=datetime.timezone.utc), "%Y%m%d"
+        )
+        with (output_dir / f"gene_suggest_{today}.csv").open("w") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for row in self.genes:

@@ -1,4 +1,5 @@
 """Provide FastAPI application and route declarations."""
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -75,7 +76,7 @@ def serve_react_app(app: FastAPI) -> FastAPI:
     templates = Jinja2Templates(directory=BUILD_DIR.as_posix())
 
     @app.get("/{full_path:path}", include_in_schema=False)
-    async def serve_react_app(request: Request, full_path: str) -> TemplateResponse:
+    async def serve_react_app(request: Request, full_path: str) -> TemplateResponse:  # noqa: ARG001
         """Add arbitrary path support to FastAPI service.
 
         React-router provides something akin to client-side routing based out
@@ -110,8 +111,7 @@ def get_gene_services() -> GeneService:
 
     :return: GeneService instance
     """
-    gene_services = GeneService()
-    return gene_services
+    return GeneService()
 
 
 def get_domain_services() -> DomainService:
@@ -135,4 +135,4 @@ async def startup() -> None:
 @app.on_event("shutdown")
 async def shutdown() -> None:
     """Clean up thread pool."""
-    await app.state.fusor.cool_seq_tool.uta_db._connection_pool.close()
+    await app.state.fusor.cool_seq_tool.uta_db._connection_pool.close()  # noqa: SLF001

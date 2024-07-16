@@ -1,4 +1,5 @@
 """Provide client type generation tooling."""
+
 from pathlib import Path
 
 from pydantic2ts.cli.script import generate_typescript_defs

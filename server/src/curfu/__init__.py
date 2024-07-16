@@ -1,4 +1,5 @@
 """Fusion curation interface."""
+
 import logging
 from importlib.metadata import PackageNotFoundError, version
 from os import environ
@@ -17,7 +18,7 @@ APP_ROOT = Path(__file__).resolve().parents[0]
 # establish environment-dependent params
 if "FUSION_EB_PROD" in environ:
     environ["FUSION_EB_PROD"] = "true"
-    LOG_FN = "/tmp/curfu.log"
+    LOG_FN = "/tmp/curfu.log"  # noqa: S108
 else:
     LOG_FN = "curfu.log"
 
@@ -50,10 +51,7 @@ else:
     UTA_DB_URL = "postgresql://uta_admin@localhost:5433/uta/uta_20210129"
 
 # get local seqrepo location
-if "SEQREPO_DATA_PATH" not in environ:
-    SEQREPO_DATA_PATH = f"{APP_ROOT}/data/seqrepo/latest"
-else:
-    SEQREPO_DATA_PATH = environ["SEQREPO_DATA_PATH"]
+SEQREPO_DATA_PATH = environ.get("SEQREPO_DATA_PATH", f"{APP_ROOT}/data/seqrepo/latest")
 
 
 class LookupServiceError(Exception):
