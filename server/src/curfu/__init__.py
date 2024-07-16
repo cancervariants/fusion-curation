@@ -5,7 +5,7 @@ from os import environ
 from pathlib import Path
 
 try:
-    __version__ = version("{{ cookiecutter.project_slug }}")
+    __version__ = version("curfu")
 except PackageNotFoundError:
     __version__ = "unknown"
 finally:
