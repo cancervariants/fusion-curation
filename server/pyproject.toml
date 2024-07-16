@@ -43,7 +43,7 @@ dev = [
     "psycopg2-binary",
     "ruff",
     "black",
-    "pre-commit",
+    "pre-commit>=3.7.1",
     "gene-normalizer ~= 0.1.39",
     "pydantic-to-typescript",
 ]
