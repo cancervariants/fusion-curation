@@ -6,8 +6,9 @@ Todo:
  * get_possible_domains shouldn't have to force uniqueness
 
 """
+
 import csv
-from typing import Dict, List
+from typing import ClassVar
 
 from curfu import LookupServiceError, logger
 from curfu.utils import get_data_file
@@ -16,7 +17,7 @@ from curfu.utils import get_data_file
 class DomainService:
     """Handler class providing requisite services for functional domain lookup."""
 
-    domains: Dict[str, List[Dict]] = {}
+    domains: ClassVar[dict[str, list[dict]]] = {}
 
     def load_mapping(self) -> None:
         """Load mapping file.
@@ -32,7 +33,7 @@ class DomainService:
         * RefSeq protein accession
         """
         domain_file = get_data_file("domain_lookup")
-        with open(domain_file, "r") as df:
+        with domain_file.open() as df:
             reader = csv.reader(df, delimiter="\t")
             for row in reader:
                 gene_id = row[0].lower()
@@ -48,7 +49,7 @@ class DomainService:
                 else:
                     self.domains[gene_id] = [domain_data]
 
-    def get_possible_domains(self, gene_id: str) -> List[Dict]:
+    def get_possible_domains(self, gene_id: str) -> list[dict]:
         """Given normalized gene ID, return associated domain names and IDs
 
         :return: List of valid domain names (up to n names) paired with domain IDs
@@ -56,7 +57,7 @@ class DomainService:
         """
         try:
             domains = self.domains[gene_id.lower()]
-        except KeyError:
+        except KeyError as e:
             logger.warning(f"Unable to retrieve associated domains for {gene_id}")
-            raise LookupServiceError
+            raise LookupServiceError from e
         return domains

@@ -1,9 +1,10 @@
 """Test lookup endpoints"""
+
 import pytest
 from httpx import AsyncClient
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_normalize_gene(async_client: AsyncClient):
     """Test /api/lookup/gene endpoint"""
     response = await async_client.get("/api/lookup/gene?term=NTRK1")

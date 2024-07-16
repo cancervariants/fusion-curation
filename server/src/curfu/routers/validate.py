@@ -1,5 +1,4 @@
 """Provide validation endpoint to confirm correctness of fusion object structure."""
-from typing import Dict
 
 from fastapi import APIRouter, Body, Request
 from fusor.exceptions import FUSORParametersException
@@ -16,7 +15,7 @@ router = APIRouter()
     response_model_exclude_none=True,
     tags=[RouteTag.VALIDATORS],
 )
-def validate_fusion(request: Request, fusion: Dict = Body()) -> ResponseDict:
+def validate_fusion(request: Request, fusion: dict = Body()) -> ResponseDict:
     """Validate proposed Fusion object. Return warnings if invalid.
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR.

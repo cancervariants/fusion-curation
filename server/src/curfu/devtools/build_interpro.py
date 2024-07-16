@@ -1,13 +1,12 @@
 """Provide utilities relating to data fetched from InterPro service."""
+
 import csv
+import datetime
 import gzip
-import os
 import shutil
 import xml.etree.ElementTree as ET  # noqa: N817
-from datetime import datetime
 from pathlib import Path
 from timeit import default_timer as timer
-from typing import Dict, Optional, Set, Tuple
 
 import click
 from gene.database import create_db
@@ -17,10 +16,10 @@ from curfu import APP_ROOT, logger
 from curfu.devtools import ftp_download
 
 # uniprot accession id -> (normalized ID, normalized label)
-UniprotRefs = Dict[str, Tuple[str, str]]
+UniprotRefs = dict[str, tuple[str, str]]
 
 # (uniprot accession id, ncbi gene id) -> refseq NP_ accession
-UniprotAcRefs = Dict[Tuple[str, str], str]
+UniprotAcRefs = dict[tuple[str, str], str]
 
 # consistent formatting for saved files
 DATE_FMT = "%Y%m%d"
@@ -33,21 +32,23 @@ def download_protein2ipr(output_dir: Path) -> None:
     logger.info("Retrieving Uniprot mapping data from InterPro")
 
     gz_file_path = output_dir / "protein2ipr.dat.gz"
-    with open(gz_file_path, "w") as fp:
-
-        def writefile(data):  # noqa
-            fp.write(data)
-
+    with gz_file_path.open("w") as fp:
         ftp_download(
-            "ftp.ebi.ac.uk", "pub/databases/interpro", "protein2ipr.dat.gz", writefile
+            "ftp.ebi.ac.uk",
+            "pub/databases/interpro",
+            "protein2ipr.dat.gz",
+            lambda data: fp.write(data),
         )
 
-    today = datetime.strftime(datetime.today(), DATE_FMT)
+    today = datetime.datetime.strftime(
+        datetime.datetime.now(tz=datetime.timezone.utc), DATE_FMT
+    )
     outfile_path = output_dir / f"protein2ipr_{today}.dat"
-    with open(outfile_path, "wb") as f_out, gzip.open(gz_file_path, "rb") as f_in:
+    with outfile_path.open("wb") as f_out, gzip.open(gz_file_path, "rb") as f_in:
         shutil.copyfileobj(f_in, f_out)
-    os.remove(gz_file_path)
-    assert outfile_path.exists()
+    gz_file_path.unlink()
+    if not outfile_path.exists():
+        raise Exception
 
     logger.info("Successfully retrieved UniProt mapping data for Interpro")
 
@@ -84,9 +85,9 @@ def get_uniprot_refs() -> UniprotRefs:
                 if uniprot_id in uniprot_ids:
                     continue
                 norm_response = q.normalize(uniprot_id)
-                norm_id = norm_response.gene_descriptor.gene_id  # type: ignore
-                norm_label = norm_response.gene_descriptor.label  # type: ignore
-                uniprot_ids[uniprot_id] = (norm_id, norm_label)  # type: ignore
+                norm_id = norm_response.gene_descriptor.gene_id
+                norm_label = norm_response.gene_descriptor.label
+                uniprot_ids[uniprot_id] = (norm_id, norm_label)
         if not last_evaluated_key:
             break
 
@@ -95,9 +96,11 @@ def get_uniprot_refs() -> UniprotRefs:
     logger.info(msg)
     click.echo(msg)
 
-    today = datetime.strftime(datetime.today(), DATE_FMT)
+    today = datetime.datetime.strftime(
+        datetime.datetime.now(tz=datetime.timezone.utc), DATE_FMT
+    )
     save_path = APP_ROOT / "data" / f"uniprot_refs_{today}.tsv"
-    with open(save_path, "w") as out:
+    with save_path.open("w") as out:
         for uniprot_ref, data in uniprot_ids.items():
             out.write(f"{uniprot_ref.split(':')[1].upper()}\t{data[0]}\t{data[1]}\n")
 
@@ -111,30 +114,33 @@ def download_uniprot_sprot(output_dir: Path) -> Path:
     logger.info("Retrieving UniProtKB data.")
 
     gz_file_path = output_dir / "uniprot_sprot.xml.gz"
-    with open(gz_file_path, "w") as fp:
+    with gz_file_path.open("w") as fp:
         ftp_download(
             "ftp.uniprot.org",
             "pub/databases/uniprot/current_release/knowledgebase/complete/",
             "uniprot_sprot.xml.gz",
             lambda data: fp.write(data),
         )
-    today = datetime.strftime(datetime.today(), DATE_FMT)
+    today = datetime.datetime.strftime(
+        datetime.datetime.now(tz=datetime.timezone.utc), DATE_FMT
+    )
     outfile_path = output_dir / f"uniprot_sprot_{today}.dat"
-    with open(outfile_path, "wb") as f_out, gzip.open(gz_file_path, "rb") as f_in:
+    with outfile_path.open("wb") as f_out, gzip.open(gz_file_path, "rb") as f_in:
         shutil.copyfileobj(f_in, f_out)
-    os.remove(gz_file_path)
-    assert outfile_path.exists()
+    gz_file_path.unlink()
+    if not outfile_path.exists():
+        raise Exception
 
     logger.info("Successfully retrieved UniProtKB data.")
     return outfile_path
 
 
 def get_interpro_uniprot_rels(
-    protein_ipr_path: Optional[Path],
+    protein_ipr_path: Path | None,
     output_dir: Path,
-    domain_ids: Set[str],
-    uniprot_refs: Dict,
-) -> Dict[str, Dict[str, Tuple[str, str, str, str, str]]]:
+    domain_ids: set[str],
+    uniprot_refs: dict,
+) -> dict[str, dict[str, tuple[str, str, str, str, str]]]:
     """Process InterPro to UniProtKB relations, using UniProt references to connect
     genes with domains
 
@@ -146,9 +152,11 @@ def get_interpro_uniprot_rels(
     """
     if not protein_ipr_path:
         download_protein2ipr(output_dir)
-        today = datetime.strftime(datetime.today(), DATE_FMT)
+        today = datetime.datetime.strftime(
+            datetime.datetime.now(tz=datetime.timezone.utc), DATE_FMT
+        )
         protein_ipr_path = output_dir / f"protein2ipr_{today}.dat"
-    protein_ipr = open(protein_ipr_path, "r")
+    protein_ipr = protein_ipr_path.open()
     protein_ipr_reader = csv.reader(protein_ipr, delimiter="\t")
 
     interpro_uniprot = {}
@@ -179,8 +187,8 @@ def get_interpro_uniprot_rels(
 
 
 def get_protein_accessions(
-    relevant_proteins: Set[str], uniprot_sprot_path: Optional[Path]
-) -> Dict[Tuple[str, str], str]:
+    relevant_proteins: set[str], uniprot_sprot_path: Path | None
+) -> dict[tuple[str, str], str]:
     """Scan uniprot_sprot.xml and extract RefSeq protein accession identifiers for
     relevant Uniprot accessions.
     :param Set[str] relevant_proteins: captured Uniprot accessions, for proteins coded
@@ -192,7 +200,7 @@ def get_protein_accessions(
     start = timer()
     if not uniprot_sprot_path:
         uniprot_sprot_path = download_uniprot_sprot(APP_ROOT / "data")
-    parser = ET.iterparse(uniprot_sprot_path, ("start", "end"))
+    parser = ET.iterparse(uniprot_sprot_path, ("start", "end"))  # noqa: S314
     accessions_map = {}
     cur_ac = ""
     cur_refseq_ac = ""
@@ -262,10 +270,10 @@ def get_protein_accessions(
 
 
 def build_gene_domain_maps(
-    interpro_types: Set[str],
-    protein_ipr_path: Optional[Path] = None,
-    uniprot_sprot_path: Optional[Path] = None,
-    uniprot_refs_path: Optional[Path] = None,
+    interpro_types: set[str],
+    protein_ipr_path: Path | None = None,
+    uniprot_sprot_path: Path | None = None,
+    uniprot_refs_path: Path | None = None,
     output_dir: Path = APP_ROOT / "data",
 ) -> None:
     """Produce the gene-to-domain lookup table at out_path using the Interpro-Uniprot
@@ -279,16 +287,15 @@ def build_gene_domain_maps(
         directory.
     """
     start_time = timer()
-    today = datetime.strftime(datetime.today(), DATE_FMT)
+    today = datetime.strftime(datetime.datetime.now(tz=datetime.timezone.utc), DATE_FMT)
 
     # get relevant Interpro IDs
     interpro_data_bin = []
-
-    def get_interpro_data(data):  # noqa
-        interpro_data_bin.append(data)
-
     ftp_download(
-        "ftp.ebi.ac.uk", "pub/databases/interpro", "entry.list", get_interpro_data
+        "ftp.ebi.ac.uk",
+        "pub/databases/interpro",
+        "entry.list",
+        lambda data: interpro_data_bin.append(data),
     )
     # load interpro IDs directly to memory -- no need to save to file
     interpro_data_tsv = "".join([d.decode("UTF-8") for d in interpro_data_bin]).split(
@@ -297,16 +304,16 @@ def build_gene_domain_maps(
     interpro_types = {t.lower() for t in interpro_types}
     interpro_reader = csv.reader(interpro_data_tsv, delimiter="\t")
     interpro_reader.__next__()  # skip header
-    domain_ids = set(
-        [row[0] for row in interpro_reader if row and row[1].lower() in interpro_types]
-    )
+    domain_ids = {
+        row[0] for row in interpro_reader if row and row[1].lower() in interpro_types
+    }
 
     # get Uniprot to gene references
     if not uniprot_refs_path:
         uniprot_refs: UniprotRefs = get_uniprot_refs()
     else:
         uniprot_refs = {}
-        with open(uniprot_refs_path, "r") as f:
+        with uniprot_refs_path.open() as f:
             reader = csv.reader(f, delimiter="\t")
             for row in reader:
                 uniprot_refs[row[0]] = (row[1], row[2])
@@ -317,11 +324,11 @@ def build_gene_domain_maps(
     )
 
     # get refseq accessions for uniprot proteins
-    uniprot_acs = {k[0] for k in interpro_uniprot.keys()}
+    uniprot_acs = {k[0] for k in interpro_uniprot}
     prot_acs = get_protein_accessions(uniprot_acs, uniprot_sprot_path)
 
     outfile_path = output_dir / f"domain_lookup_{today}.tsv"
-    outfile = open(outfile_path, "w")
+    outfile = outfile_path.open("w")
     for k, v_list in interpro_uniprot.items():
         for v in v_list.values():
             if k[0] in uniprot_acs:
@@ -329,7 +336,7 @@ def build_gene_domain_maps(
                 if not refseq_ac:
                     logger.warning(f"Unable to lookup refseq ac for {k}, {v}")
                     continue
-                items = [k[1]] + list(v) + [refseq_ac]
+                items = [k[1], *list(v), refseq_ac]
                 line = "\t".join(items) + "\n"
                 outfile.write(line)
     outfile.close()

@@ -1,5 +1,4 @@
 """Test /validate endpoint."""
-from typing import Dict
 
 import pytest
 from httpx import AsyncClient
@@ -199,13 +198,14 @@ def wrong_type_fusion():
     }
 
 
-async def check_validated_fusion_response(client, fixture: Dict, case_name: str):
+async def check_validated_fusion_response(client, fixture: dict, case_name: str):
     """Run basic checks on fusion validation response.
 
     Todo:
     ----
     * FUSOR should provide a "fusion equality" utility function -- incorporate it here
       when that's done
+
     """
     response = await client.post("/api/validate", json=fixture["input"])
 
@@ -219,7 +219,7 @@ async def check_validated_fusion_response(client, fixture: Dict, case_name: str)
     ), f"{case_name}: warnings incorrect"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_validate_fusion(
     async_client: AsyncClient,
     alk_fusion,

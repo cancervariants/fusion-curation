@@ -1,7 +1,7 @@
 """Provide command-line interface to application and associated utilities."""
+
 import os
 from pathlib import Path
-from typing import Optional
 
 import click
 
@@ -21,8 +21,8 @@ def serve(port: int) -> None:
     """
     # calling uvicorn.run() doesn't get logs printed to console --
     # performing a syscall for now until a more elegant solution appears
-    os.system(
-        f"uvicorn curfu.main:app --reload --port={port} --reload-dir={str(APP_ROOT.absolute())}"
+    os.system(  # noqa: S605
+        f"uvicorn curfu.main:app --reload --port={port} --reload-dir={APP_ROOT.absolute()!s}"
     )
 
 
@@ -57,29 +57,16 @@ Possible values: {`active_site`, `binding_site`, `conserved_site`, `domain`, `fa
     "--uniprot", "-u", help="Path to uniprot_sprot_YYYYMMDD.xml", default=None
 )
 def domains(
-    types: str, protein2ipr: Optional[str], refs: Optional[str], uniprot: Optional[str]
+    types: str, protein2ipr: str | None, refs: str | None, uniprot: str | None
 ) -> None:
     """Build domain mappings for use in Fusion Curation app.
     \f
     :param str types: comma-separated list
     """
     types_split = set(types.lower().replace(" ", "").split(","))
-
-    if protein2ipr:
-        protein2ipr_path = Path(protein2ipr)
-    else:
-        protein2ipr_path = None
-
-    if uniprot:
-        uniprot_path = Path(uniprot)
-    else:
-        uniprot_path = None
-
-    if refs:
-        refs_path = Path(refs)
-    else:
-        refs_path = None
-
+    protein2ipr_path = Path(protein2ipr) if protein2ipr else None
+    uniprot_path = Path(uniprot) if uniprot else None
+    refs_path = Path(refs) if refs else None
     build_gene_domain_maps(
         interpro_types=types_split,
         protein_ipr_path=protein2ipr_path,

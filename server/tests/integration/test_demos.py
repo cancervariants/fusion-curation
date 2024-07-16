@@ -1,9 +1,10 @@
 """Test demo endpoints"""
+
 import pytest
 from httpx import AsyncClient
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_demo(async_client: AsyncClient):
     """Test /api/demo/ endpoints.
     Probably not worth it to check individual property values, but the Pydantic models

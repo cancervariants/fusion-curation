@@ -1,5 +1,5 @@
 """Provide routes for accessing demo objects to client."""
-from typing import Union
+
 from uuid import uuid4
 
 from fastapi import APIRouter, Request
@@ -40,24 +40,24 @@ from curfu.schemas import (
 router = APIRouter()
 
 
-ElementUnion = Union[
-    TranscriptSegmentElement,
-    LinkerElement,
-    TemplatedSequenceElement,
-    GeneElement,
-    UnknownGeneElement,
-    MultiplePossibleGenesElement,
-]
-ClientElementUnion = Union[
-    ClientTranscriptSegmentElement,
-    ClientLinkerElement,
-    ClientTemplatedSequenceElement,
-    ClientGeneElement,
-    ClientUnknownGeneElement,
-    ClientMultiplePossibleGenesElement,
-]
-Fusion = Union[CategoricalFusion, AssayedFusion]
-ClientFusion = Union[ClientCategoricalFusion, ClientAssayedFusion]
+ElementUnion = (
+    TranscriptSegmentElement
+    | LinkerElement
+    | TemplatedSequenceElement
+    | GeneElement
+    | UnknownGeneElement
+    | MultiplePossibleGenesElement
+)
+ClientElementUnion = (
+    ClientTranscriptSegmentElement
+    | ClientLinkerElement
+    | ClientTemplatedSequenceElement
+    | ClientGeneElement
+    | ClientUnknownGeneElement
+    | ClientMultiplePossibleGenesElement
+)
+Fusion = CategoricalFusion | AssayedFusion
+ClientFusion = ClientCategoricalFusion | ClientAssayedFusion
 
 
 def clientify_structural_element(
@@ -77,14 +77,14 @@ def clientify_structural_element(
     if element.type == StructuralElementType.UNKNOWN_GENE_ELEMENT:
         element_args["nomenclature"] = "?"
         return ClientUnknownGeneElement(**element_args)
-    elif element.type == StructuralElementType.MULTIPLE_POSSIBLE_GENES_ELEMENT:
+    if element.type == StructuralElementType.MULTIPLE_POSSIBLE_GENES_ELEMENT:
         element_args["nomenclature"] = "v"
         return ClientMultiplePossibleGenesElement(**element_args)
-    elif element.type == StructuralElementType.LINKER_SEQUENCE_ELEMENT:
+    if element.type == StructuralElementType.LINKER_SEQUENCE_ELEMENT:
         nm = element.linker_sequence.sequence
         element_args["nomenclature"] = nm
         return ClientLinkerElement(**element_args)
-    elif element.type == StructuralElementType.TEMPLATED_SEQUENCE_ELEMENT:
+    if element.type == StructuralElementType.TEMPLATED_SEQUENCE_ELEMENT:
         nm = templated_seq_nomenclature(element, fusor_instance.seqrepo)
         element_args["nomenclature"] = nm
         element_args["input_chromosome"] = element.region.location.sequence_id.split(
@@ -93,11 +93,11 @@ def clientify_structural_element(
         element_args["input_start"] = element.region.location.interval.start.value
         element_args["input_end"] = element.region.location.interval.end.value
         return ClientTemplatedSequenceElement(**element_args)
-    elif element.type == StructuralElementType.GENE_ELEMENT:
+    if element.type == StructuralElementType.GENE_ELEMENT:
         nm = gene_nomenclature(element)
         element_args["nomenclature"] = nm
         return ClientGeneElement(**element_args)
-    elif element.type == StructuralElementType.TRANSCRIPT_SEGMENT_ELEMENT:
+    if element.type == StructuralElementType.TRANSCRIPT_SEGMENT_ELEMENT:
         nm = tx_segment_nomenclature(element)
         element_args["nomenclature"] = nm
         element_args["input_type"] = "exon_coords_tx"
@@ -107,8 +107,8 @@ def clientify_structural_element(
         element_args["input_exon_end"] = element.exon_end
         element_args["input_exon_end_offset"] = element.exon_end_offset
         return ClientTranscriptSegmentElement(**element_args)
-    else:
-        raise ValueError("Unknown element type provided")
+    msg = "Unknown element type provided"
+    raise ValueError(msg)
 
 
 def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
@@ -119,12 +119,13 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
     :return: completed client-ready fusion
     """
     fusion_args = fusion.dict()
-    client_elements = []
-    for element in fusion.structural_elements:
-        client_elements.append(clientify_structural_element(element, fusor_instance))
+    client_elements = [
+        clientify_structural_element(element, fusor_instance)
+        for element in fusion.structural_elements
+    ]
     fusion_args["structural_elements"] = client_elements
 
-    if "regulatory_element" in fusion_args and fusion_args["regulatory_element"]:
+    if fusion_args.get("regulatory_element"):
         reg_element_args = fusion_args["regulatory_element"]
         nomenclature = reg_element_nomenclature(
             RegulatoryElement(**reg_element_args), fusor_instance.seqrepo
@@ -134,7 +135,8 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
         if regulatory_class == "enhancer":
             reg_element_args["display_class"] = "Enhancer"
         else:
-            raise Exception("Undefined reg element class used in demo")
+            msg = "Undefined reg element class used in demo"
+            raise Exception(msg)
         fusion_args["regulatory_element"] = reg_element_args
 
     if fusion.type == FUSORTypes.CATEGORICAL_FUSION:
@@ -146,10 +148,10 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
                 client_domains.append(client_domain)
             fusion_args["critical_functional_domains"] = client_domains
         return ClientCategoricalFusion(**fusion_args)
-    elif fusion.type == FUSORTypes.ASSAYED_FUSION:
+    if fusion.type == FUSORTypes.ASSAYED_FUSION:
         return ClientAssayedFusion(**fusion_args)
-    else:
-        raise ValueError("Unknown fusion type provided")
+    msg = "Unknown fusion type provided"
+    raise ValueError(msg)
 
 
 @router.get(
@@ -166,10 +168,7 @@ def get_alk(request: Request) -> DemoResponse:
         FUSOR and UTA-associated tools.
     """
     return DemoResponse(
-        **{
-            "fusion": clientify_fusion(examples.alk, request.app.state.fusor),
-            "warnings": [],
-        }
+        fusion=clientify_fusion(examples.alk, request.app.state.fusor), warnings=[]
     )
 
 
@@ -187,10 +186,7 @@ def get_ewsr1(request: Request) -> DemoResponse:
         FUSOR and UTA-associated tools.
     """
     return DemoResponse(
-        **{
-            "fusion": clientify_fusion(examples.ewsr1, request.app.state.fusor),
-            "warnings": [],
-        }
+        fusion=clientify_fusion(examples.ewsr1, request.app.state.fusor), warnings=[]
     )
 
 
@@ -208,10 +204,7 @@ def get_bcr_abl1(request: Request) -> DemoResponse:
         FUSOR and UTA-associated tools.
     """
     return DemoResponse(
-        **{
-            "fusion": clientify_fusion(examples.bcr_abl1, request.app.state.fusor),
-            "warnings": [],
-        }
+        fusion=clientify_fusion(examples.bcr_abl1, request.app.state.fusor), warnings=[]
     )
 
 
@@ -229,10 +222,8 @@ def get_tpm3_ntrk1(request: Request) -> DemoResponse:
         FUSOR and UTA-associated tools.
     """
     return DemoResponse(
-        **{
-            "fusion": clientify_fusion(examples.tpm3_ntrk1, request.app.state.fusor),
-            "warnings": [],
-        }
+        fusion=clientify_fusion(examples.tpm3_ntrk1, request.app.state.fusor),
+        warnings=[],
     )
 
 
@@ -250,10 +241,8 @@ def get_tpm3_pdgfrb(request: Request) -> DemoResponse:
         FUSOR and UTA-associated tools.
     """
     return DemoResponse(
-        **{
-            "fusion": clientify_fusion(examples.tpm3_pdgfrb, request.app.state.fusor),
-            "warnings": [],
-        }
+        fusion=clientify_fusion(examples.tpm3_pdgfrb, request.app.state.fusor),
+        warnings=[],
     )
 
 
@@ -270,8 +259,5 @@ def get_igh_myc(request: Request) -> DemoResponse:
         FUSOR and UTA-associated tools.
     """
     return DemoResponse(
-        **{
-            "fusion": clientify_fusion(examples.igh_myc, request.app.state.fusor),
-            "warnings": [],
-        }
+        fusion=clientify_fusion(examples.igh_myc, request.app.state.fusor), warnings=[]
     )

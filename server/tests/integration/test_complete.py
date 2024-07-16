@@ -1,9 +1,10 @@
 """Test lookup endpoints"""
+
 import pytest
 from httpx import AsyncClient
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_complete_gene(async_client: AsyncClient):
     """Test /complete/gene endpoint"""
     response = await async_client.get("/api/complete/gene?term=NTRK")

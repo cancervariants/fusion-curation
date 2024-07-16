@@ -1,6 +1,7 @@
 """Utility functions for application setup."""
+
 import ftplib
-from typing import Callable
+from collections.abc import Callable
 
 from curfu import logger
 
@@ -18,7 +19,7 @@ def ftp_download(domain: str, path: str, fname: str, callback: Callable) -> None
             ftp.retrbinary(f"RETR {fname}", callback)
     except ftplib.all_errors as e:
         logger.error(f"FTP download failed: {e}")
-        raise Exception(e)
+        raise Exception(e) from e
 
 
 # default interpro entry types to try to gather for domains

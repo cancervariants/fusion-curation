@@ -1,15 +1,14 @@
 """Test end-to-end correctness of constructor routes."""
-from typing import Dict
 
 import pytest
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_build_gene_element(check_response, alk_gene_element):
     """Test correct functioning of gene element construction route."""
 
     def check_gene_element_response(
-        response: Dict, expected_response: Dict, expected_id: str = "unset"
+        response: dict, expected_response: dict, expected_id: str = "unset"
     ):
         assert ("element" in response) == ("element" in expected_response)
         if ("element" not in response) and ("element" not in expected_response):
@@ -46,9 +45,9 @@ async def test_build_gene_element(check_response, alk_gene_element):
 
 @pytest.fixture(scope="session")
 def check_tx_element_response():
-    """Provide callback function to check correctness of transcript element constructor."""  # noqa: E501 D202
+    """Provide callback function to check correctness of transcript element constructor."""
 
-    def check_tx_element_response(response: Dict, expected_response: Dict):
+    def check_tx_element_response(response: dict, expected_response: dict):
         assert ("element" in response) == ("element" in expected_response)
         if ("element" not in response) and ("element" not in expected_response):
             assert "warnings" in response
@@ -82,7 +81,7 @@ def check_tx_element_response():
 def check_reg_element_response():
     """Provide callback function check correctness of regulatory element constructor."""
 
-    def check_re_response(response: Dict, expected_response: Dict):
+    def check_re_response(response: dict, expected_response: dict):
         assert ("regulatory_element" in response) == (
             "regulatory_element" in expected_response
         )
@@ -111,7 +110,7 @@ def check_reg_element_response():
 def check_templated_sequence_response():
     """Provide callback function to check templated sequence constructor response"""
 
-    def check_temp_seq_response(response: Dict, expected_response: Dict):
+    def check_temp_seq_response(response: dict, expected_response: dict):
         assert ("element" in response) == ("element" in expected_response)
         if ("element" not in response) and ("element" not in expected_response):
             assert "warnings" in response
@@ -159,7 +158,7 @@ def check_templated_sequence_response():
     return check_temp_seq_response
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_build_tx_segment_ect(
     check_response, check_tx_element_response, ntrk1_tx_element_start
 ):
@@ -167,7 +166,7 @@ async def test_build_tx_segment_ect(
     coordinates and transcript.
     """
     await check_response(
-        "/api/construct/structural_element/tx_segment_ect?transcript=NM_002529.3&exon_start=2&exon_start_offset=1",  # noqa: E501
+        "/api/construct/structural_element/tx_segment_ect?transcript=NM_002529.3&exon_start=2&exon_start_offset=1",
         {"element": ntrk1_tx_element_start},
         check_tx_element_response,
     )
@@ -181,13 +180,13 @@ async def test_build_tx_segment_ect(
 
     # test handle invalid transcript
     await check_response(
-        "/api/construct/structural_element/tx_segment_ect?transcript=NM_0012529.3&exon_start=3",  # noqa: E501
+        "/api/construct/structural_element/tx_segment_ect?transcript=NM_0012529.3&exon_start=3",
         {"warnings": ["Unable to get exons for NM_0012529.3"]},
         check_tx_element_response,
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_build_segment_gct(
     check_response, check_tx_element_response, tpm3_tx_t_element
 ):
@@ -195,18 +194,18 @@ async def test_build_segment_gct(
     genomic coordinates and transcript.
     """
     await check_response(
-        "/api/construct/structural_element/tx_segment_gct?transcript=NM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",  # noqa: E501
+        "/api/construct/structural_element/tx_segment_gct?transcript=NM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",
         {"element": tpm3_tx_t_element},
         check_tx_element_response,
     )
     await check_response(
-        "/api/construct/structural_element/tx_segment_gct?transcript=refseq%3ANM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",  # noqa: E501
+        "/api/construct/structural_element/tx_segment_gct?transcript=refseq%3ANM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",
         {"element": tpm3_tx_t_element},
         check_tx_element_response,
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_build_segment_gcg(
     check_response, check_tx_element_response, tpm3_tx_g_element
 ):
@@ -214,13 +213,13 @@ async def test_build_segment_gcg(
     genomic coordinates and gene name.
     """
     await check_response(
-        "/api/construct/structural_element/tx_segment_gcg?gene=TPM3&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",  # noqa: E501
+        "/api/construct/structural_element/tx_segment_gcg?gene=TPM3&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",
         {"element": tpm3_tx_g_element},
         check_tx_element_response,
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_build_reg_element(check_response, check_reg_element_response):
     """Test correctness of regulatory element constructor endpoint."""
     await check_response(
@@ -241,13 +240,13 @@ async def test_build_reg_element(check_response, check_reg_element_response):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_build_templated_sequence(
     check_response, check_templated_sequence_response
 ):
     """Test correct functioning of templated sequence constructor"""
     await check_response(
-        "/api/construct/structural_element/templated_sequence?start=154171415&end=154171417&sequence_id=NC_000001.11&strand=-",  # noqa: E501
+        "/api/construct/structural_element/templated_sequence?start=154171415&end=154171417&sequence_id=NC_000001.11&strand=-",
         {
             "element": {
                 "type": "TemplatedSequenceElement",
@@ -272,7 +271,7 @@ async def test_build_templated_sequence(
     )
 
     await check_response(
-        "/api/construct/structural_element/templated_sequence?start=154171415&end=154171417&sequence_id=refseq%3ANC_000001.11&strand=-",  # noqa: E501
+        "/api/construct/structural_element/templated_sequence?start=154171415&end=154171417&sequence_id=refseq%3ANC_000001.11&strand=-",
         {
             "element": {
                 "type": "TemplatedSequenceElement",
