@@ -156,16 +156,17 @@ ignore = [
 # ANN102 - missing-type-cls
 # S101 - assert
 # B011 - assert-false
-# F821 - undefined-name
 # F401 - unused-import
 # N805 - invalid-first-argument-name-for-method
 # D301 - escape-sequence-in-docstring
-"tests/*" = ["ANN001", "ANN2", "ANN102", "S101", "B011"]
-"setup.py" = ["F821"]
+# INP001 - implicit-namespace-package
+# ARG001 - unused-function-argument
+# B008 - function-call-in-default-argument
+"**/tests/*" = ["ANN001", "ANN2", "ANN102", "S101", "B011", "INP001", "ARG001"]
 "*__init__.py" = ["F401"]
-"curfu/schemas.py" = ["ANN201", "N805", "ANN001"]
-"curfu/routers/*" = ["D301"]
-"curfu/cli.py" = ["D301"]
+"**/src/curfu/schemas.py" = ["ANN201", "N805", "ANN001"]
+"**/src/curfu/routers/*" = ["D301", "B008"]
+"**/src/curfu/cli.py" = ["D301"]
 
 [tool.ruff.format]
 docstring-code-format = true

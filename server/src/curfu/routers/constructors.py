@@ -1,5 +1,4 @@
 """Provide routes for element construction endpoints"""
-from typing import Optional
 
 from fastapi import APIRouter, Query, Request
 from fusor.models import DomainStatus, RegulatoryClass, Strand
@@ -38,11 +37,9 @@ def build_gene_element(request: Request, term: str = Query("")) -> GeneElementRe
     :return: Pydantic class with gene element if successful and warnings otherwise
     """
     gene_element, warnings = request.app.state.fusor.gene_element(term)
-    if not warnings:
-        warnings_l = []
-    else:
-        warnings_l = [warnings]
-    return GeneElementResponse(element=gene_element, warnings=warnings_l)
+    return GeneElementResponse(
+        element=gene_element, warnings=[] if not warnings else [warnings]
+    )
 
 
 @router.get(
@@ -55,9 +52,9 @@ def build_gene_element(request: Request, term: str = Query("")) -> GeneElementRe
 async def build_tx_segment_ect(
     request: Request,
     transcript: str,
-    exon_start: Optional[int] = Query(None),
+    exon_start: int | None = Query(None),
     exon_start_offset: int = Query(0),
-    exon_end: Optional[int] = Query(None),
+    exon_end: int | None = Query(None),
     exon_end_offset: int = Query(0),
 ) -> TxSegmentElementResponse:
     """Construct Transcript Segment element by providing transcript and exon
@@ -94,9 +91,9 @@ async def build_tx_segment_gct(
     request: Request,
     transcript: str,
     chromosome: str,
-    start: Optional[int] = Query(None),
-    end: Optional[int] = Query(None),
-    strand: Optional[str] = Query(None),
+    start: int | None = Query(None),
+    end: int | None = Query(None),
+    strand: str | None = Query(None),
 ) -> TxSegmentElementResponse:
     """Construct Transcript Segment element by providing transcript and genomic
     coordinates (chromosome, start, end positions).
@@ -142,9 +139,9 @@ async def build_tx_segment_gcg(
     request: Request,
     gene: str,
     chromosome: str,
-    start: Optional[int] = Query(None),
-    end: Optional[int] = Query(None),
-    strand: Optional[str] = Query(None),
+    start: int | None = Query(None),
+    end: int | None = Query(None),
+    strand: str | None = Query(None),
 ) -> TxSegmentElementResponse:
     """Construct Transcript Segment element by providing gene and genomic
     coordinates (chromosome, start, end positions).

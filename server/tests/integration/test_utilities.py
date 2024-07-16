@@ -1,16 +1,17 @@
 """Test end-to-end correctness of utility routes."""
-from typing import Callable, Dict
+
+from collections.abc import Callable
 
 import pytest
 
-response_callback_type = Callable[[Dict, Dict], None]
+response_callback_type = Callable[[dict, dict], None]
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_get_mane_transcript(check_response):
     """Test MANE transcript retrieval endpoint."""
 
-    def check_mane_response(response: Dict, expected_response: Dict):
+    def check_mane_response(response: dict, expected_response: dict):
         assert ("transcripts" in response) == ("transcripts" in expected_response)
         if not (response.get("transcripts")) and not (
             expected_response.get("transcripts")
@@ -73,11 +74,11 @@ async def test_get_mane_transcript(check_response):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_get_genomic_coords(check_response):
     """Test coordinates utility endpoint using genomic coords."""
 
-    def check_genomic_coords_response(response: Dict, expected_response: Dict):
+    def check_genomic_coords_response(response: dict, expected_response: dict):
         assert ("coordinates_data" in response) == (
             "coordinates_data" in expected_response
         )
@@ -109,21 +110,21 @@ async def test_get_genomic_coords(check_response):
     )
 
     await check_response(
-        "/api/utilities/get_genomic?transcript=NM_002529.3&exon_start=1&exon_end=6&gene=FAKE_GENE",  # noqa: E501
+        "/api/utilities/get_genomic?transcript=NM_002529.3&exon_start=1&exon_end=6&gene=FAKE_GENE",
         {
             "warnings": [
-                "Unable to find a result where NM_002529.3 has transcript coordinates 0 and 268 between an exon's start and end coordinates on gene FAKE_GENE"  # noqa: E501
+                "Unable to find a result where NM_002529.3 has transcript coordinates 0 and 268 between an exon's start and end coordinates on gene FAKE_GENE"
             ]
         },
         check_genomic_coords_response,
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_get_exon_coords(check_response):
     """Test /utilities/get_exon endpoint"""
 
-    def check_coords_response(response: Dict, expected_response: Dict):
+    def check_coords_response(response: dict, expected_response: dict):
         """Provide to check_response to test specific response params"""
         assert ("coordinates_data" in response) == (
             "coordinates_data" in expected_response
@@ -135,7 +136,7 @@ async def test_get_exon_coords(check_response):
         assert response["coordinates_data"] == expected_response["coordinates_data"]
 
     await check_response(
-        "/api/utilities/get_exon?chromosome=1&transcript=NM_152263.3&start=154192135&strand=-",  # noqa: E501
+        "/api/utilities/get_exon?chromosome=1&transcript=NM_152263.3&start=154192135&strand=-",
         {
             "coordinates_data": {
                 "gene": "TPM3",
@@ -165,18 +166,18 @@ async def test_get_exon_coords(check_response):
         "/api/utilities/get_exon?chromosome=NC_000001.11&start=154192131&gene=TPM3",
         {
             "warnings": [
-                "Unable to find mane data for NC_000001.11 with position 154192130 on gene TPM3"  # noqa: E501
+                "Unable to find mane data for NC_000001.11 with position 154192130 on gene TPM3"
             ]
         },
         check_coords_response,
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_get_sequence_id(check_response):
     """Test sequence ID lookup utility endpoint"""
 
-    def check_sequence_id_response(response: Dict, expected_response: Dict):
+    def check_sequence_id_response(response: dict, expected_response: dict):
         """Provide to check_response to test specific response params"""
         assert response["sequence"] == expected_response["sequence"]
         if response.get("ga4gh_id") or expected_response.get("ga4gh_id"):

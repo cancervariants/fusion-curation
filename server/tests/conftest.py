@@ -1,11 +1,11 @@
 """Provide core fixtures for testing Flask functions."""
+
 import asyncio
-from typing import Callable, Dict
+from collections.abc import Callable
 
 import pytest
-from httpx import AsyncClient
-
 from curfu.main import app, get_domain_services, get_gene_services, start_fusor
+from httpx import AsyncClient
 
 
 @pytest.fixture(scope="session")
@@ -27,7 +27,7 @@ async def async_client():
     await client.aclose()
 
 
-response_callback_type = Callable[[Dict, Dict], None]
+response_callback_type = Callable[[dict, dict], None]
 
 
 @pytest.fixture(scope="session")
@@ -36,9 +36,9 @@ async def check_response(async_client):
 
     async def check_response(
         query: str,
-        expected_response: Dict,
+        expected_response: dict,
         data_callback: response_callback_type,
-        **kwargs
+        **kwargs,
     ):
         """Check that requested URL provides expected response.
         :param str query: URL endpoint with included query terms
