@@ -1,7 +1,11 @@
 [project]
 name = "curfu"
 authors = [
-    {name = "Wagner Lab"},
+    {name = "Alex Wagner", email = "alex.wagner@nationwidechildrens.org"},
+    {name = "Kori Kuzma", email = "kori.kuzma@nationwidechildrens.org"},
+    {name = "James Stevenson", email = "james.stevenson@nationwidechildrens.org"},
+    {name = "Katie Stahl", email = "kathryn.stahl@nationwidechildrens.org"},
+    {name = "Jeremy Arbesfeld", email = "jeremy.arbesfeld@nationwidechildrens.org"}
 ]
 readme = "README.md"
 classifiers = [
