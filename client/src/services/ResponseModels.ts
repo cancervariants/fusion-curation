@@ -427,7 +427,7 @@ export interface Assay {
  * Response model for domain ID autocomplete suggestion endpoint.
  */
 export interface AssociatedDomainResponse {
-  warnings: string[] | null;
+  warnings?: string[] | null;
   geneId: string;
   suggestions: DomainParams[] | null;
 }
@@ -628,8 +628,8 @@ export interface ClientStructuralElement {
  * Response model for genomic coordinates retrieval
  */
 export interface CoordsUtilsResponse {
-  warnings: string[] | null;
-  coordinatesData: GenomicData | null;
+  warnings?: string[] | null;
+  coordinates_data: GenomicData | null;
 }
 /**
  * Model containing genomic and transcript exon data.
@@ -650,7 +650,7 @@ export interface GenomicData {
  * Response model for demo fusion object retrieval endpoints.
  */
 export interface DemoResponse {
-  warnings: string[] | null;
+  warnings?: string[] | null;
   fusion: ClientAssayedFusion | ClientCategoricalFusion;
 }
 /**
@@ -668,21 +668,21 @@ export interface ExonCoordsRequest {
  * Response model for gene element construction endoint.
  */
 export interface GeneElementResponse {
-  warnings: string[] | null;
+  warnings?: string[] | null;
   element: GeneElement | null;
 }
 /**
  * Response model for functional domain constructor endpoint.
  */
 export interface GetDomainResponse {
-  warnings: string[] | null;
+  warnings?: string[] | null;
   domain: FunctionalDomain | null;
 }
 /**
  * Response model for MANE transcript retrieval endpoint.
  */
 export interface GetTranscriptsResponse {
-  warnings: string[] | null;
+  warnings?: string[] | null;
   transcripts: ManeGeneTranscript[] | null;
 }
 /**
@@ -700,22 +700,22 @@ export interface ManeGeneTranscript {
   Ensembl_prot: string;
   MANE_status: string;
   GRCh38_chr: string;
-  chr_start: string;
-  chr_end: string;
+  chr_start: number;
+  chr_end: number;
   chr_strand: string;
 }
 /**
  * Response model for regulatory element nomenclature endpoint.
  */
 export interface NomenclatureResponse {
-  warnings: string[] | null;
+  warnings?: string[] | null;
   nomenclature: string | null;
 }
 /**
  * Response model for gene normalization endpoint.
  */
 export interface NormalizeGeneResponse {
-  warnings: string[] | null;
+  warnings?: string[] | null;
   term: string;
   conceptId: string | null;
   symbol: string | null;
@@ -725,20 +725,20 @@ export interface NormalizeGeneResponse {
  * Response model for regulatory element constructor.
  */
 export interface RegulatoryElementResponse {
-  warnings: string[] | null;
+  warnings?: string[] | null;
   regulatoryElement: RegulatoryElement;
 }
 /**
  * Abstract Response class for defining API response structures.
  */
 export interface Response {
-  warnings: string[] | null;
+  warnings?: string[] | null;
 }
 /**
  * Response model for sequence ID retrieval endpoint.
  */
 export interface SequenceIDResponse {
-  warnings: string[] | null;
+  warnings?: string[] | null;
   sequence: string;
   refseqId: string | null;
   ga4ghId: string | null;
@@ -748,7 +748,7 @@ export interface SequenceIDResponse {
  * Response model for service_info endpoint.
  */
 export interface ServiceInfoResponse {
-  warnings: string[] | null;
+  warnings?: string[] | null;
   curfu_version: string;
   fusor_version: string;
   cool_seq_tool_version: string;
@@ -757,32 +757,32 @@ export interface ServiceInfoResponse {
  * Response model for gene autocomplete suggestions endpoint.
  */
 export interface SuggestGeneResponse {
-  warnings: string[] | null;
+  warnings?: string[] | null;
   term: string;
-  matchesCount: number;
-  conceptId: [unknown, unknown, unknown, unknown, unknown][] | null;
+  matches_count: number;
+  concept_id: [unknown, unknown, unknown, unknown, unknown][] | null;
   symbol: [unknown, unknown, unknown, unknown, unknown][] | null;
-  prevSymbols: [unknown, unknown, unknown, unknown, unknown][] | null;
+  prev_symbols: [unknown, unknown, unknown, unknown, unknown][] | null;
   aliases: [unknown, unknown, unknown, unknown, unknown][] | null;
 }
 /**
  * Response model for transcript segment element construction endpoint.
  */
 export interface TemplatedSequenceElementResponse {
-  warnings: string[] | null;
+  warnings?: string[] | null;
   element: TemplatedSequenceElement | null;
 }
 /**
  * Response model for transcript segment element construction endpoint.
  */
 export interface TxSegmentElementResponse {
-  warnings: string[] | null;
+  warnings?: string[] | null;
   element: TranscriptSegmentElement | null;
 }
 /**
  * Response model for Fusion validation endpoint.
  */
 export interface ValidateFusionResponse {
-  warnings: string[] | null;
+  warnings?: string[] | null;
   fusion: CategoricalFusion | AssayedFusion | null;
 }

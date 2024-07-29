@@ -241,13 +241,14 @@ export const getExonCoords = async (
   gene?: string,
   txAc?: string
 ): Promise<CoordsUtilsResponse> => {
+  console.log(txAc);
   const argsArray = [
     `chromosome=${chromosome}`,
     `strand=${strand === "+" ? "%2B" : "-"}`,
-    gene !== "" ? `gene=${gene}` : "",
-    txAc !== "" ? `transcript=${txAc}` : "",
-    start !== "" ? `start=${start}` : "",
-    end !== "" ? `end=${end}` : "",
+    gene && gene !== "" ? `gene=${gene}` : "",
+    txAc && txAc !== "" ? `transcript=${txAc}` : "",
+    start && start !== "" ? `start=${start}` : "",
+    end && end !== "" ? `end=${end}` : "",
   ];
   const args = argsArray.filter((a) => a !== "").join("&");
   const response = await fetch(`/api/utilities/get_exon?${args}`);

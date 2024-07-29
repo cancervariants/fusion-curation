@@ -103,7 +103,7 @@ class ClientRegulatoryElement(RegulatoryElement):
 class Response(BaseModel):
     """Abstract Response class for defining API response structures."""
 
-    warnings: ResponseWarnings
+    warnings: ResponseWarnings | None = None
 
     class Config:
         """Configure class"""
@@ -142,11 +142,11 @@ class SuggestGeneResponse(Response):
     """Response model for gene autocomplete suggestions endpoint."""
 
     term: StrictStr
-    matchesCount: int
+    matches_count: int
     # complete term, normalized symbol, normalized concept ID, chromosome ID, strand
-    conceptId: list[tuple[str, str, str, str, str]] | None
+    concept_id: list[tuple[str, str, str, str, str]] | None
     symbol: list[tuple[str, str, str, str, str]] | None
-    prevSymbols: list[tuple[str, str, str, str, str]] | None
+    prev_symbols: list[tuple[str, str, str, str, str]] | None
     aliases: list[tuple[str, str, str, str, str]] | None
 
 
@@ -207,7 +207,7 @@ class ExonCoordsRequest(BaseModel):
 class CoordsUtilsResponse(Response):
     """Response model for genomic coordinates retrieval"""
 
-    coordinatesData: GenomicData | None
+    coordinates_data: GenomicData | None
 
 
 class SequenceIDResponse(Response):
@@ -233,8 +233,8 @@ class ManeGeneTranscript(BaseModel):
     Ensembl_prot: str
     MANE_status: str
     GRCh38_chr: str
-    chr_start: str
-    chr_end: str
+    chr_start: int
+    chr_end: int
     chr_strand: str
 
 

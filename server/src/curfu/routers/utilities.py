@@ -39,7 +39,7 @@ def get_mane_transcripts(request: Request, term: str) -> dict:
     normalized = request.app.state.fusor.gene_normalizer.normalize(term)
     if normalized.match_type == gene_schemas.MatchType.NO_MATCH:
         return {"warnings": [f"Normalization error: {term}"]}
-    if not normalized.gene.id.lower().startswith("hgnc"):
+    if not normalized.gene.id.replace("normalize.gene.", "").lower().startswith("hgnc"):
         return {"warnings": [f"No HGNC symbol: {term}"]}
     symbol = normalized.gene.label
     transcripts = request.app.state.fusor.cool_seq_tool.mane_transcript_mappings.get_gene_mane_data(
@@ -99,7 +99,7 @@ async def get_genome_coords(
     if warnings:
         for warning in warnings:
             logger.warning(warning)
-        return CoordsUtilsResponse(warnings=warnings, coordinatesData=None)
+        return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
     # TODO necessary for now
     if exon_start is not None and exon_start_offset is None:
@@ -120,9 +120,9 @@ async def get_genome_coords(
     )
     warnings = response.warnings
     if warnings:
-        return CoordsUtilsResponse(warnings=warnings, coordinatesData=None)
+        return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    return CoordsUtilsResponse(coordinatesData=response.genomic_data, warnings=None)
+    return CoordsUtilsResponse(coordinates_data=response.genomic_data, warnings=None)
 
 
 @router.get(
@@ -168,10 +168,10 @@ async def get_exon_coords(
     if warnings:
         for warning in warnings:
             logger.warning(warning)
-        return CoordsUtilsResponse(warnings=warnings, coordinatesData=None)
+        return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    response = await request.app.state.fusor.cool_seq_tool.genomic_to_transcript_exon_coordinates(
-        chromosome,
+    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.genomic_to_transcript_exon_coordinates(
+        alt_ac=chromosome,
         start=start,
         end=end,
         strand=strand_validated,
@@ -180,9 +180,9 @@ async def get_exon_coords(
     )
     warnings = response.warnings
     if warnings:
-        return CoordsUtilsResponse(warnings=warnings, coordinatesData=None)
+        return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    return CoordsUtilsResponse(coordinatesData=response.genomic_data, warnings=None)
+    return CoordsUtilsResponse(coordinates_data=response.genomic_data, warnings=None)
 
 
 @router.get(
