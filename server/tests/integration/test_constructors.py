@@ -14,8 +14,8 @@ async def test_build_gene_element(check_response, alk_gene_element):
         if ("element" not in response) and ("element" not in expected_response):
             return
         assert response["element"]["type"] == expected_response["element"]["type"]
-        response_gd = response["element"]["gene_descriptor"]
-        expected_gd = expected_response["element"]["gene_descriptor"]
+        response_gd = response["element"]["gene"]
+        expected_gd = expected_response["element"]["gene"]
         assert response_gd["id"] == expected_id
         assert response_gd["type"] == expected_gd["type"]
         assert response_gd["label"] == expected_gd["label"]
@@ -56,9 +56,7 @@ def check_tx_element_response():
         response_element = response["element"]
         expected_element = expected_response["element"]
         assert response_element["transcript"] == expected_element["transcript"]
-        assert (
-            response_element["gene_descriptor"] == expected_element["gene_descriptor"]
-        )
+        assert response_element["gene"] == expected_element["gene"]
         assert response_element.get("exon_start") == expected_element.get("exon_start")
         assert response_element.get("exon_start_offset") == expected_element.get(
             "exon_start_offset"
@@ -82,22 +80,22 @@ def check_reg_element_response():
     """Provide callback function check correctness of regulatory element constructor."""
 
     def check_re_response(response: dict, expected_response: dict):
-        assert ("regulatory_element" in response) == (
-            "regulatory_element" in expected_response
+        assert ("regulatoryElement" in response) == (
+            "regulatoryElement" in expected_response
         )
-        if ("regulatory_element" not in response) and (
-            "regulatory_element" not in expected_response
+        if ("regulatoryElement" not in response) and (
+            "regulatoryElement" not in expected_response
         ):
             assert "warnings" in response
             assert set(response["warnings"]) == set(expected_response["warnings"])
             return
-        response_re = response["regulatory_element"]
-        expected_re = expected_response["regulatory_element"]
+        response_re = response["regulatoryElement"]
+        expected_re = expected_response["regulatoryElement"]
         assert response_re["type"] == expected_re["type"]
         assert response_re.get("regulatory_class") == expected_re.get(
             "regulatory_class"
         )
-        assert response_re.get("feature_id") == expected_re.get("feature_id")
+        assert response_re.get("featureId") == expected_re.get("featureId")
         assert response_re.get("associated_gene") == expected_re.get("associated_gene")
         assert response_re.get("location_descriptor") == expected_re.get(
             "location_descriptor"
@@ -223,14 +221,14 @@ async def test_build_segment_gcg(
 async def test_build_reg_element(check_response, check_reg_element_response):
     """Test correctness of regulatory element constructor endpoint."""
     await check_response(
-        "/api/construct/regulatory_element?element_class=promoter&gene_name=braf",
+        "/api/construct/regulatoryElement?element_class=promoter&gene_name=braf",
         {
-            "regulatory_element": {
+            "regulatoryElement": {
                 "associated_gene": {
                     "gene_id": "hgnc:1097",
                     "id": "normalize.gene:braf",
                     "label": "BRAF",
-                    "type": "GeneDescriptor",
+                    "type": "Gene",
                 },
                 "regulatory_class": "promoter",
                 "type": "RegulatoryElement",
@@ -252,7 +250,7 @@ async def test_build_templated_sequence(
                 "type": "TemplatedSequenceElement",
                 "region": {
                     "id": "fusor.location_descriptor:NC_000001.11",
-                    "type": "LocationDescriptor",
+                    "type": "SequenceLocation",
                     "location_id": "ga4gh:VSL.K_suWpotWJZL0EFYUqoZckNq4bqEjH-z",
                     "location": {
                         "type": "SequenceLocation",
@@ -277,7 +275,7 @@ async def test_build_templated_sequence(
                 "type": "TemplatedSequenceElement",
                 "region": {
                     "id": "fusor.location_descriptor:NC_000001.11",
-                    "type": "LocationDescriptor",
+                    "type": "SequenceLocation",
                     "location_id": "ga4gh:VSL.K_suWpotWJZL0EFYUqoZckNq4bqEjH-z",
                     "location": {
                         "type": "SequenceLocation",

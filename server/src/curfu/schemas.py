@@ -32,28 +32,28 @@ Warnings = list[str]
 class ClientStructuralElement(BaseModel):
     """Abstract class to provide identification properties used by client."""
 
-    element_id: StrictStr
+    elementId: StrictStr
     nomenclature: StrictStr
 
 
 class ClientTranscriptSegmentElement(TranscriptSegmentElement, ClientStructuralElement):
     """TranscriptSegment element class used client-side."""
 
-    input_type: (
+    inputType: (
         Literal["genomic_coords_gene"]
         | Literal["genomic_coords_tx"]
         | Literal["exon_coords_tx"]
     )
-    input_tx: str | None
-    input_strand: Strand | None
-    input_gene: str | None
-    input_chr: str | None
-    input_genomic_start: str | None
-    input_genomic_end: str | None
-    input_exon_start: str | None
-    input_exon_start_offset: str | None
-    input_exon_end: str | None
-    input_exon_end_offset: str | None
+    inputTx: str | None
+    inputStrand: Strand | None
+    inputGene: str | None
+    inputChr: str | None
+    inputGenomicStart: str | None
+    inputGenomicEnd: str | None
+    inputExonStart: str | None
+    inputExonStartOffset: str | None
+    inputExonEnd: str | None
+    inputExonEndOffset: str | None
 
 
 class ClientLinkerElement(LinkerElement, ClientStructuralElement):
@@ -63,9 +63,9 @@ class ClientLinkerElement(LinkerElement, ClientStructuralElement):
 class ClientTemplatedSequenceElement(TemplatedSequenceElement, ClientStructuralElement):
     """Templated sequence element used client-side."""
 
-    input_chromosome: str | None
-    input_start: str | None
-    input_end: str | None
+    inputChromosome: str | None
+    inputStart: str | None
+    inputEnd: str | None
 
 
 class ClientGeneElement(GeneElement, ClientStructuralElement):
@@ -85,7 +85,7 @@ class ClientMultiplePossibleGenesElement(
 class ClientFunctionalDomain(FunctionalDomain):
     """Define functional domain object used client-side."""
 
-    domain_id: str
+    domainId: str
 
     class Config:
         """Configure class."""
@@ -96,7 +96,7 @@ class ClientFunctionalDomain(FunctionalDomain):
 class ClientRegulatoryElement(RegulatoryElement):
     """Define regulatory element object used client-side."""
 
-    display_class: str
+    displayClass: str
     nomenclature: str
 
 
@@ -133,7 +133,7 @@ class NormalizeGeneResponse(Response):
     """Response model for gene normalization endpoint."""
 
     term: StrictStr
-    concept_id: StrictStr | None
+    conceptId: StrictStr | None
     symbol: StrictStr | None
     cased: StrictStr | None
 
@@ -142,22 +142,22 @@ class SuggestGeneResponse(Response):
     """Response model for gene autocomplete suggestions endpoint."""
 
     term: StrictStr
-    matches_count: int
+    matchesCount: int
     # complete term, normalized symbol, normalized concept ID, chromosome ID, strand
-    concept_id: list[tuple[str, str, str, str, str]] | None
+    conceptId: list[tuple[str, str, str, str, str]] | None
     symbol: list[tuple[str, str, str, str, str]] | None
-    prev_symbols: list[tuple[str, str, str, str, str]] | None
+    prevSymbols: list[tuple[str, str, str, str, str]] | None
     aliases: list[tuple[str, str, str, str, str]] | None
 
 
 class DomainParams(BaseModel):
     """Fields for individual domain suggestion entries"""
 
-    interpro_id: StrictStr
-    domain_name: StrictStr
+    interproId: StrictStr
+    domainName: StrictStr
     start: int
     end: int
-    refseq_ac: StrictStr
+    refseqAc: StrictStr
 
 
 class GetDomainResponse(Response):
@@ -169,7 +169,7 @@ class GetDomainResponse(Response):
 class AssociatedDomainResponse(Response):
     """Response model for domain ID autocomplete suggestion endpoint."""
 
-    gene_id: StrictStr
+    geneId: StrictStr
     suggestions: list[DomainParams] | None
 
 
@@ -182,12 +182,12 @@ class ValidateFusionResponse(Response):
 class ExonCoordsRequest(BaseModel):
     """Request model for genomic coordinates retrieval"""
 
-    tx_ac: StrictStr
+    txAc: StrictStr
     gene: StrictStr | None = ""
-    exon_start: StrictInt | None = 0
-    exon_start_offset: StrictInt | None = 0
-    exon_end: StrictInt | None = 0
-    exon_end_offset: StrictInt | None = 0
+    exonStart: StrictInt | None = 0
+    exonStartOffset: StrictInt | None = 0
+    exonEnd: StrictInt | None = 0
+    exonEndOffset: StrictInt | None = 0
 
     @validator("gene")
     def validate_gene(cls, v) -> str:
@@ -196,7 +196,7 @@ class ExonCoordsRequest(BaseModel):
             return ""
         return v
 
-    @validator("exon_start", "exon_start_offset", "exon_end", "exon_end_offset")
+    @validator("exonStart", "exonStartOffset", "exonEnd", "exonEndOffset")
     def validate_number(cls, v) -> int:
         """Replace None with 0 for numeric fields."""
         if v is None:
@@ -207,15 +207,15 @@ class ExonCoordsRequest(BaseModel):
 class CoordsUtilsResponse(Response):
     """Response model for genomic coordinates retrieval"""
 
-    coordinates_data: GenomicData | None
+    coordinatesData: GenomicData | None
 
 
 class SequenceIDResponse(Response):
     """Response model for sequence ID retrieval endpoint."""
 
     sequence: StrictStr
-    refseq_id: StrictStr | None
-    ga4gh_id: StrictStr | None
+    refseqId: StrictStr | None
+    ga4ghId: StrictStr | None
     aliases: list[StrictStr] | None
 
 
@@ -262,15 +262,15 @@ class ClientCategoricalFusion(CategoricalFusion):
     global FusionContext.
     """
 
-    regulatory_element: ClientRegulatoryElement | None = None
-    structural_elements: list[
+    regulatoryElement: ClientRegulatoryElement | None = None
+    structure: list[
         ClientTranscriptSegmentElement
         | ClientGeneElement
         | ClientTemplatedSequenceElement
         | ClientLinkerElement
         | ClientMultiplePossibleGenesElement
     ]
-    critical_functional_domains: list[ClientFunctionalDomain] | None
+    criticalFunctionalDomains: list[ClientFunctionalDomain] | None
 
 
 class ClientAssayedFusion(AssayedFusion):
@@ -278,8 +278,8 @@ class ClientAssayedFusion(AssayedFusion):
     global FusionContext.
     """
 
-    regulatory_element: ClientRegulatoryElement | None = None
-    structural_elements: list[
+    regulatoryElement: ClientRegulatoryElement | None = None
+    structure: list[
         ClientTranscriptSegmentElement
         | ClientGeneElement
         | ClientTemplatedSequenceElement
@@ -297,7 +297,7 @@ class NomenclatureResponse(Response):
 class RegulatoryElementResponse(Response):
     """Response model for regulatory element constructor."""
 
-    regulatory_element: RegulatoryElement
+    regulatoryElement: RegulatoryElement
 
 
 class DemoResponse(Response):

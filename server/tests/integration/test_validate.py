@@ -10,12 +10,12 @@ def alk_fusion():
     return {
         "input": {
             "type": "CategoricalFusion",
-            "structural_elements": [
+            "structure": [
                 {
                     "type": "GeneElement",
-                    "gene_descriptor": {
+                    "gene": {
                         "id": "normalize.gene:ALK",
-                        "type": "GeneDescriptor",
+                        "type": "Gene",
                         "label": "ALK",
                         "gene_id": "hgnc:427",
                     },
@@ -25,12 +25,12 @@ def alk_fusion():
         },
         "output": {
             "type": "CategoricalFusion",
-            "structural_elements": [
+            "structure": [
                 {
                     "type": "GeneElement",
-                    "gene_descriptor": {
+                    "gene": {
                         "id": "normalize.gene:ALK",
-                        "type": "GeneDescriptor",
+                        "type": "Gene",
                         "label": "ALK",
                         "gene_id": "hgnc:427",
                     },
@@ -48,11 +48,11 @@ def ewsr1_fusion():
     return {
         "input": {
             "type": "AssayedFusion",
-            "structural_elements": [
+            "structure": [
                 {
                     "type": "GeneElement",
-                    "gene_descriptor": {
-                        "type": "GeneDescriptor",
+                    "gene": {
+                        "type": "Gene",
                         "id": "normalize.gene:EWSR1",
                         "label": "EWSR1",
                         "gene_id": "hgnc:3508",
@@ -60,25 +60,25 @@ def ewsr1_fusion():
                 },
                 {"type": "UnknownGeneElement"},
             ],
-            "causative_event": {
+            "causativeEvent": {
                 "type": "CausativeEvent",
-                "event_type": "rearrangement",
+                "eventType": "rearrangement",
             },
             "assay": {
                 "type": "Assay",
-                "method_uri": "pmid:33576979",
-                "assay_id": "obi:OBI_0003094",
-                "assay_name": "fluorescence in-situ hybridization assay",
-                "fusion_detection": "inferred",
+                "methodUri": "pmid:33576979",
+                "assayId": "obi:OBI_0003094",
+                "assayName": "fluorescence in-situ hybridization assay",
+                "fusionDetection": "inferred",
             },
         },
         "output": {
             "type": "AssayedFusion",
-            "structural_elements": [
+            "structure": [
                 {
                     "type": "GeneElement",
-                    "gene_descriptor": {
-                        "type": "GeneDescriptor",
+                    "gene": {
+                        "type": "Gene",
                         "id": "normalize.gene:EWSR1",
                         "label": "EWSR1",
                         "gene_id": "hgnc:3508",
@@ -86,16 +86,16 @@ def ewsr1_fusion():
                 },
                 {"type": "UnknownGeneElement"},
             ],
-            "causative_event": {
+            "causativeEvent": {
                 "type": "CausativeEvent",
-                "event_type": "rearrangement",
+                "eventType": "rearrangement",
             },
             "assay": {
                 "type": "Assay",
-                "method_uri": "pmid:33576979",
-                "assay_id": "obi:OBI_0003094",
-                "assay_name": "fluorescence in-situ hybridization assay",
-                "fusion_detection": "inferred",
+                "methodUri": "pmid:33576979",
+                "assayId": "obi:OBI_0003094",
+                "assayName": "fluorescence in-situ hybridization assay",
+                "fusionDetection": "inferred",
             },
         },
         "warnings": None,
@@ -109,9 +109,9 @@ def ewsr1_fusion_fill_types():
     """
     return {
         "input": {
-            "structural_elements": [
+            "structure": [
                 {
-                    "gene_descriptor": {
+                    "gene": {
                         "id": "normalize.gene:EWSR1",
                         "label": "EWSR1",
                         "gene_id": "hgnc:3508",
@@ -119,24 +119,24 @@ def ewsr1_fusion_fill_types():
                 },
                 {"type": "UnknownGeneElement"},
             ],
-            "causative_event": {
+            "causativeEvent": {
                 "type": "CausativeEvent",
-                "event_type": "rearrangement",
+                "eventType": "rearrangement",
             },
             "assay": {
-                "method_uri": "pmid:33576979",
-                "assay_id": "obi:OBI_0003094",
-                "assay_name": "fluorescence in-situ hybridization assay",
-                "fusion_detection": "inferred",
+                "methodUri": "pmid:33576979",
+                "assayId": "obi:OBI_0003094",
+                "assayName": "fluorescence in-situ hybridization assay",
+                "fusionDetection": "inferred",
             },
         },
         "output": {
             "type": "AssayedFusion",
-            "structural_elements": [
+            "structure": [
                 {
                     "type": "GeneElement",
-                    "gene_descriptor": {
-                        "type": "GeneDescriptor",
+                    "gene": {
+                        "type": "Gene",
                         "id": "normalize.gene:EWSR1",
                         "label": "EWSR1",
                         "gene_id": "hgnc:3508",
@@ -144,16 +144,16 @@ def ewsr1_fusion_fill_types():
                 },
                 {"type": "UnknownGeneElement"},
             ],
-            "causative_event": {
+            "causativeEvent": {
                 "type": "CausativeEvent",
-                "event_type": "rearrangement",
+                "eventType": "rearrangement",
             },
             "assay": {
                 "type": "Assay",
-                "method_uri": "pmid:33576979",
-                "assay_id": "obi:OBI_0003094",
-                "assay_name": "fluorescence in-situ hybridization assay",
-                "fusion_detection": "inferred",
+                "methodUri": "pmid:33576979",
+                "assayId": "obi:OBI_0003094",
+                "assayName": "fluorescence in-situ hybridization assay",
+                "fusionDetection": "inferred",
             },
         },
         "warnings": None,
@@ -166,11 +166,11 @@ def wrong_type_fusion():
     return {
         "input": {
             "type": "CategoricalFusion",
-            "structural_elements": [
+            "structure": [
                 {
                     "type": "GeneElement",
-                    "gene_descriptor": {
-                        "type": "GeneDescriptor",
+                    "gene": {
+                        "type": "Gene",
                         "id": "normalize.gene:EWSR1",
                         "label": "EWSR1",
                         "gene_id": "hgnc:3508",
@@ -178,22 +178,22 @@ def wrong_type_fusion():
                 },
                 {"type": "UnknownGeneElement"},
             ],
-            "causative_event": {
+            "causativeEvent": {
                 "type": "CausativeEvent",
-                "event_type": "rearrangement",
+                "eventType": "rearrangement",
             },
             "assay": {
                 "type": "Assay",
-                "method_uri": "pmid:33576979",
-                "assay_id": "obi:OBI_0003094",
-                "assay_name": "fluorescence in-situ hybridization assay",
-                "fusion_detection": "inferred",
+                "methodUri": "pmid:33576979",
+                "assayId": "obi:OBI_0003094",
+                "assayName": "fluorescence in-situ hybridization assay",
+                "fusionDetection": "inferred",
             },
         },
         "output": None,
         "warnings": [
             "Unable to construct fusion with provided args: FUSOR.categorical_fusion()"
-            " got an unexpected keyword argument 'causative_event'"
+            " got an unexpected keyword argument 'causativeEvent'"
         ],
     }
 

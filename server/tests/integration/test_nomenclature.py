@@ -26,15 +26,15 @@ def epcam_5_prime():
         "transcript": "refseq:NM_002354.2",
         "exon_end": 5,
         "exon_end_offset": 0,
-        "gene_descriptor": {
+        "gene": {
             "id": "normalize.gene:EPCAM",
-            "type": "GeneDescriptor",
+            "type": "Gene",
             "label": "EPCAM",
             "gene_id": "hgnc:11529",
         },
         "element_genomic_end": {
             "id": "fusor.location_descriptor:NC_000002.12",
-            "type": "LocationDescriptor",
+            "type": "SequenceLocation",
             "label": "NC_000002.12",
             "location": {
                 "type": "SequenceLocation",
@@ -57,15 +57,15 @@ def epcam_3_prime():
         "transcript": "refseq:NM_002354.2",
         "exon_start": 5,
         "exon_start_offset": 0,
-        "gene_descriptor": {
+        "gene": {
             "id": "normalize.gene:EPCAM",
-            "type": "GeneDescriptor",
+            "type": "Gene",
             "label": "EPCAM",
             "gene_id": "hgnc:11529",
         },
         "element_genomic_start": {
             "id": "fusor.location_descriptor:NC_000002.12",
-            "type": "LocationDescriptor",
+            "type": "SequenceLocation",
             "label": "NC_000002.12",
             "location": {
                 "type": "SequenceLocation",
@@ -87,15 +87,15 @@ def epcam_invalid():
         "type": "TranscriptSegmentElement",
         "exon_end": 5,
         "exon_end_offset": 0,
-        "gene_descriptor": {
+        "gene": {
             "id": "normalize.gene:EPCAM",
-            "type": "GeneDescriptor",
+            "type": "Gene",
             "label": "EPCAM",
             "gene_id": "hgnc:11529",
         },
         "element_genomic_end": {
             "id": "fusor.location_descriptor:NC_000002.12",
-            "type": "LocationDescriptor",
+            "type": "SequenceLocation",
             "label": "NC_000002.12",
             "location": {
                 "type": "SequenceLocation",
@@ -118,7 +118,7 @@ def templated_sequence_element():
         "strand": "-",
         "region": {
             "id": "NC_000001.11:15455-15566",
-            "type": "LocationDescriptor",
+            "type": "SequenceLocation",
             "location": {
                 "sequence_id": "refseq:NC_000001.11",
                 "interval": {
@@ -196,7 +196,7 @@ async def test_gene_element_nomenclature(
     )
     assert response.status_code == 200
     assert response.json().get("warnings", []) == [
-        "2 validation errors for GeneElement\ngene_descriptor\n  field required (type=value_error.missing)\nassociated_gene\n  extra fields not permitted (type=value_error.extra)"
+        "2 validation errors for GeneElement\ngene\n  field required (type=value_error.missing)\nassociated_gene\n  extra fields not permitted (type=value_error.extra)"
     ]
 
 
@@ -220,7 +220,7 @@ async def test_templated_sequence_nomenclature(
             "type": "TemplatedSequenceElement",
             "region": {
                 "id": "NC_000001.11:15455-15566",
-                "type": "LocationDescriptor",
+                "type": "SequenceLocation",
                 "location": {
                     "interval": {
                         "start": {"type": "Number", "value": 15455},

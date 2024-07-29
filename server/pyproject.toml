@@ -161,9 +161,12 @@ ignore = [
 # INP001 - implicit-namespace-package
 # ARG001 - unused-function-argument
 # B008 - function-call-in-default-argument
+# N803 - invalid-argument-name
+# N805 - invalid-first-argument-name-for-method
+# N815 - mixed-case-variable-in-class-scope
 "**/tests/*" = ["ANN001", "ANN2", "ANN102", "S101", "B011", "INP001", "ARG001"]
 "*__init__.py" = ["F401"]
-"**/src/curfu/schemas.py" = ["ANN201", "N805", "ANN001"]
+"**/src/curfu/schemas.py" = ["ANN201", "N805", "ANN001", "N803", "N805", "N815"]
 "**/src/curfu/routers/*" = ["D301", "B008"]
 "**/src/curfu/cli.py" = ["D301"]
 

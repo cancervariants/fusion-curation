@@ -121,32 +121,32 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
     fusion_args = fusion.dict()
     client_elements = [
         clientify_structural_element(element, fusor_instance)
-        for element in fusion.structural_elements
+        for element in fusion.structure
     ]
-    fusion_args["structural_elements"] = client_elements
+    fusion_args["structure"] = client_elements
 
-    if fusion_args.get("regulatory_element"):
-        reg_element_args = fusion_args["regulatory_element"]
+    if fusion_args.get("regulatoryElement"):
+        reg_element_args = fusion_args["regulatoryElement"]
         nomenclature = reg_element_nomenclature(
             RegulatoryElement(**reg_element_args), fusor_instance.seqrepo
         )
         reg_element_args["nomenclature"] = nomenclature
-        regulatory_class = fusion_args["regulatory_element"]["regulatory_class"]
+        regulatory_class = fusion_args["regulatoryElement"]["regulatory_class"]
         if regulatory_class == "enhancer":
             reg_element_args["display_class"] = "Enhancer"
         else:
             msg = "Undefined reg element class used in demo"
             raise Exception(msg)
-        fusion_args["regulatory_element"] = reg_element_args
+        fusion_args["regulatoryElement"] = reg_element_args
 
     if fusion.type == FUSORTypes.CATEGORICAL_FUSION:
-        if fusion.critical_functional_domains:
+        if fusion.criticalFunctionalDomains:
             client_domains = []
-            for domain in fusion.critical_functional_domains:
+            for domain in fusion.criticalFunctionalDomains:
                 client_domain = domain.dict()
                 client_domain["domain_id"] = str(uuid4())
                 client_domains.append(client_domain)
-            fusion_args["critical_functional_domains"] = client_domains
+            fusion_args["criticalFunctionalDomains"] = client_domains
         return ClientCategoricalFusion(**fusion_args)
     if fusion.type == FUSORTypes.ASSAYED_FUSION:
         return ClientAssayedFusion(**fusion_args)

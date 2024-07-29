@@ -34,13 +34,13 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
    * transmit to validation endpoint, and update local copy.
    */
   useEffect(() => {
-    const structuralElements: ElementUnion[] = fusion.structural_elements?.map(
+    const structuralElements: ElementUnion[] = fusion.structure?.map(
       (element: ClientElementUnion) => {
         switch (element.type) {
           case "GeneElement":
             const geneElement: GeneElement = {
               type: element.type,
-              gene_descriptor: element.gene_descriptor,
+              gene: element.gene,
             };
             return geneElement;
           case "LinkerSequenceElement":
@@ -64,7 +64,7 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
               exon_start_offset: element.exon_start_offset,
               exon_end: element.exon_end,
               exon_end_offset: element.exon_end_offset,
-              gene_descriptor: element.gene_descriptor,
+              gene: element.gene,
               element_genomic_start: element.element_genomic_start,
               element_genomic_end: element.element_genomic_end,
             };
@@ -82,23 +82,23 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
         }
       }
     );
-    const regulatoryElements = fusion.regulatory_elements?.map((re) => ({
+    const regulatoryElements = fusion.regulatoryElements?.map((re) => ({
       type: re.type,
       associated_gene: re.associated_gene,
       regulatory_class: re.regulatory_class,
-      feature_id: re.feature_id,
+      featureId: re.featureId,
       genomic_location: re.genomic_location,
     }));
     let formattedFusion: AssayedFusion | CategoricalFusion;
     if (fusion.type === "AssayedFusion") {
       formattedFusion = {
         ...fusion,
-        structural_elements: structuralElements,
-        regulatory_elements: regulatoryElements,
+        structure: structuralElements,
+        regulatoryElements: regulatoryElements,
       };
     } else {
       const criticalDomains: FunctionalDomain[] =
-        fusion.critical_functional_domains?.map((domain) => ({
+        fusion.criticalFunctionalDomains?.map((domain) => ({
           _id: domain._id,
           label: domain.label,
           status: domain.status,
@@ -107,9 +107,9 @@ export const SummaryJSON: React.FC<Props> = ({ fusion }) => {
         }));
       formattedFusion = {
         ...fusion,
-        structural_elements: structuralElements,
-        regulatory_elements: regulatoryElements,
-        critical_functional_domains: criticalDomains,
+        structure: structuralElements,
+        regulatoryElements: regulatoryElements,
+        criticalFunctionalDomains: criticalDomains,
       };
     }
 

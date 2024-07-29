@@ -31,8 +31,8 @@ export const Readable: React.FC<Props> = ({ validatedFusion }) => {
     );
   }, [validatedFusion]);
 
-  const assayName = fusion.assay?.assay_name ? fusion.assay.assay_name : ""
-  const assayId = fusion.assay?.assay_id ? `(${fusion.assay.assay_id})` : ""
+  const assayName = fusion.assay?.assayName ? fusion.assay.assayName : "";
+  const assayId = fusion.assay?.assayId ? `(${fusion.assay.assayId})` : "";
 
   /**
    * Render rows specific to assayed fusion fields
@@ -46,7 +46,7 @@ export const Readable: React.FC<Props> = ({ validatedFusion }) => {
         </TableCell>
         <TableCell align="right">
           <Typography>
-            {eventDisplayMap[fusion.causative_event?.event_type] || ""}
+            {eventDisplayMap[fusion.causativeEvent?.eventType] || ""}
           </Typography>
         </TableCell>
       </TableRow>
@@ -55,7 +55,9 @@ export const Readable: React.FC<Props> = ({ validatedFusion }) => {
           <Typography className="row-name">Assay</Typography>
         </TableCell>
         <TableCell align="right">
-          <Typography>{fusion.assay ? `${assayName} ${assayId}` : ""}</Typography>
+          <Typography>
+            {fusion.assay ? `${assayName} ${assayId}` : ""}
+          </Typography>
         </TableCell>
       </TableRow>
     </>
@@ -72,9 +74,9 @@ export const Readable: React.FC<Props> = ({ validatedFusion }) => {
           <Typography className="row-name">Functional domains</Typography>
         </TableCell>
         <TableCell align="right">
-          {fusion.critical_functional_domains &&
-            fusion.critical_functional_domains.length > 0 &&
-            fusion.critical_functional_domains.map((domain, index) => (
+          {fusion.criticalFunctionalDomains &&
+            fusion.criticalFunctionalDomains.length > 0 &&
+            fusion.criticalFunctionalDomains.map((domain, index) => (
               <Typography
                 key={index}
               >{`${domain.status}: ${domain.label}`}</Typography>
@@ -87,9 +89,9 @@ export const Readable: React.FC<Props> = ({ validatedFusion }) => {
         </TableCell>
         <TableCell align="right">
           <Typography>
-            {fusion.r_frame_preserved === true
+            {fusion.readingFramePreserved === true
               ? "Preserved"
-              : fusion.r_frame_preserved === false
+              : fusion.readingFramePreserved === false
               ? "Not preserved"
               : "Unspecified"}
           </Typography>
@@ -111,7 +113,7 @@ export const Readable: React.FC<Props> = ({ validatedFusion }) => {
                 <Typography className="row-name">Structure</Typography>
               </TableCell>
               <TableCell align="right">
-                {fusion.structural_elements.map(
+                {fusion.structure.map(
                   (element: ClientStructuralElement, index: number) => (
                     <Chip key={index} label={element.nomenclature} />
                   )
@@ -123,8 +125,8 @@ export const Readable: React.FC<Props> = ({ validatedFusion }) => {
                 <Typography className="row-name">Regulatory Element</Typography>
               </TableCell>
               <TableCell align="right">
-                {fusion.regulatory_element ? (
-                  <Chip label={fusion.regulatory_element.nomenclature} />
+                {fusion.regulatoryElement ? (
+                  <Chip label={fusion.regulatoryElement.nomenclature} />
                 ) : (
                   ""
                 )}

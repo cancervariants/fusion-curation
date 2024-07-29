@@ -428,18 +428,18 @@ export interface Assay {
  */
 export interface AssociatedDomainResponse {
   warnings: string[] | null;
-  gene_id: string;
+  geneId: string;
   suggestions: DomainParams[] | null;
 }
 /**
  * Fields for individual domain suggestion entries
  */
 export interface DomainParams {
-  interpro_id: string;
-  domain_name: string;
+  interproId: string;
+  domainName: string;
   start: number;
   end: number;
-  refseq_ac: string;
+  refseqAc: string;
 }
 /**
  * Categorical gene fusions are generalized concepts representing a class
@@ -490,25 +490,17 @@ export interface FunctionalDomain {
  */
 export interface ClientAssayedFusion {
   type?: "AssayedFusion";
-  regulatoryElement?: RegulatoryElement | null;
+  regulatoryElement?: ClientRegulatoryElement | null;
   structure: (
-    | TranscriptSegmentElement
-    | GeneElement
-    | TemplatedSequenceElement
-    | LinkerElement
-    | UnknownGeneElement
-  )[];
-  readingFramePreserved?: boolean | null;
-  causativeEvent?: CausativeEvent | null;
-  assay?: Assay | null;
-  regulatory_element?: ClientRegulatoryElement | null;
-  structural_elements: (
     | ClientTranscriptSegmentElement
     | ClientGeneElement
     | ClientTemplatedSequenceElement
     | ClientLinkerElement
     | ClientUnknownGeneElement
   )[];
+  readingFramePreserved?: boolean | null;
+  causativeEvent?: CausativeEvent | null;
+  assay?: Assay | null;
 }
 /**
  * Define regulatory element object used client-side.
@@ -519,14 +511,14 @@ export interface ClientRegulatoryElement {
   featureId?: string | null;
   associatedGene?: Gene | null;
   featureLocation?: SequenceLocation | null;
-  display_class: string;
+  displayClass: string;
   nomenclature: string;
 }
 /**
  * TranscriptSegment element class used client-side.
  */
 export interface ClientTranscriptSegmentElement {
-  element_id: string;
+  elementId: string;
   nomenclature: string;
   type?: "TranscriptSegmentElement";
   transcript: string;
@@ -537,23 +529,23 @@ export interface ClientTranscriptSegmentElement {
   gene: Gene;
   elementGenomicStart?: SequenceLocation | null;
   elementGenomicEnd?: SequenceLocation | null;
-  input_type: "genomic_coords_gene" | "genomic_coords_tx" | "exon_coords_tx";
-  input_tx: string | null;
-  input_strand: Strand | null;
-  input_gene: string | null;
-  input_chr: string | null;
-  input_genomic_start: string | null;
-  input_genomic_end: string | null;
-  input_exon_start: string | null;
-  input_exon_start_offset: string | null;
-  input_exon_end: string | null;
-  input_exon_end_offset: string | null;
+  inputType: "genomic_coords_gene" | "genomic_coords_tx" | "exon_coords_tx";
+  inputTx: string | null;
+  inputStrand: Strand | null;
+  inputGene: string | null;
+  inputChr: string | null;
+  inputGenomicStart: string | null;
+  inputGenomicEnd: string | null;
+  inputExonStart: string | null;
+  inputExonStartOffset: string | null;
+  inputExonEnd: string | null;
+  inputExonEndOffset: string | null;
 }
 /**
  * Gene element used client-side.
  */
 export interface ClientGeneElement {
-  element_id: string;
+  elementId: string;
   nomenclature: string;
   type?: "GeneElement";
   gene: Gene;
@@ -562,20 +554,20 @@ export interface ClientGeneElement {
  * Templated sequence element used client-side.
  */
 export interface ClientTemplatedSequenceElement {
-  element_id: string;
+  elementId: string;
   nomenclature: string;
   type?: "TemplatedSequenceElement";
   region: SequenceLocation;
   strand: Strand;
-  input_chromosome: string | null;
-  input_start: string | null;
-  input_end: string | null;
+  inputChromosome: string | null;
+  inputStart: string | null;
+  inputEnd: string | null;
 }
 /**
  * Linker element class used client-side.
  */
 export interface ClientLinkerElement {
-  element_id: string;
+  elementId: string;
   nomenclature: string;
   type?: "LinkerSequenceElement";
   linkerSequence: LiteralSequenceExpression;
@@ -584,7 +576,7 @@ export interface ClientLinkerElement {
  * Unknown gene element used client-side.
  */
 export interface ClientUnknownGeneElement {
-  element_id: string;
+  elementId: string;
   nomenclature: string;
   type?: "UnknownGeneElement";
 }
@@ -594,31 +586,22 @@ export interface ClientUnknownGeneElement {
  */
 export interface ClientCategoricalFusion {
   type?: "CategoricalFusion";
-  regulatoryElement?: RegulatoryElement | null;
+  regulatoryElement?: ClientRegulatoryElement | null;
   structure: (
-    | TranscriptSegmentElement
-    | GeneElement
-    | TemplatedSequenceElement
-    | LinkerElement
-    | MultiplePossibleGenesElement
-  )[];
-  readingFramePreserved?: boolean | null;
-  criticalFunctionalDomains?: FunctionalDomain[] | null;
-  regulatory_element?: ClientRegulatoryElement | null;
-  structural_elements: (
     | ClientTranscriptSegmentElement
     | ClientGeneElement
     | ClientTemplatedSequenceElement
     | ClientLinkerElement
     | ClientMultiplePossibleGenesElement
   )[];
-  critical_functional_domains: ClientFunctionalDomain[] | null;
+  readingFramePreserved?: boolean | null;
+  criticalFunctionalDomains: ClientFunctionalDomain[] | null;
 }
 /**
  * Multiple possible gene element used client-side.
  */
 export interface ClientMultiplePossibleGenesElement {
-  element_id: string;
+  elementId: string;
   nomenclature: string;
   type?: "MultiplePossibleGenesElement";
 }
@@ -632,13 +615,13 @@ export interface ClientFunctionalDomain {
   id: string | null;
   label?: string | null;
   sequenceLocation?: SequenceLocation | null;
-  domain_id: string;
+  domainId: string;
 }
 /**
  * Abstract class to provide identification properties used by client.
  */
 export interface ClientStructuralElement {
-  element_id: string;
+  elementId: string;
   nomenclature: string;
 }
 /**
@@ -646,7 +629,7 @@ export interface ClientStructuralElement {
  */
 export interface CoordsUtilsResponse {
   warnings: string[] | null;
-  coordinates_data: GenomicData | null;
+  coordinatesData: GenomicData | null;
 }
 /**
  * Model containing genomic and transcript exon data.
@@ -674,12 +657,12 @@ export interface DemoResponse {
  * Request model for genomic coordinates retrieval
  */
 export interface ExonCoordsRequest {
-  tx_ac: string;
+  txAc: string;
   gene?: string | null;
-  exon_start?: number | null;
-  exon_start_offset?: number | null;
-  exon_end?: number | null;
-  exon_end_offset?: number | null;
+  exonStart?: number | null;
+  exonStartOffset?: number | null;
+  exonEnd?: number | null;
+  exonEndOffset?: number | null;
 }
 /**
  * Response model for gene element construction endoint.
@@ -734,7 +717,7 @@ export interface NomenclatureResponse {
 export interface NormalizeGeneResponse {
   warnings: string[] | null;
   term: string;
-  concept_id: string | null;
+  conceptId: string | null;
   symbol: string | null;
   cased: string | null;
 }
@@ -743,7 +726,7 @@ export interface NormalizeGeneResponse {
  */
 export interface RegulatoryElementResponse {
   warnings: string[] | null;
-  regulatory_element: RegulatoryElement;
+  regulatoryElement: RegulatoryElement;
 }
 /**
  * Abstract Response class for defining API response structures.
@@ -757,8 +740,8 @@ export interface Response {
 export interface SequenceIDResponse {
   warnings: string[] | null;
   sequence: string;
-  refseq_id: string | null;
-  ga4gh_id: string | null;
+  refseqId: string | null;
+  ga4ghId: string | null;
   aliases: string[] | null;
 }
 /**
@@ -776,10 +759,10 @@ export interface ServiceInfoResponse {
 export interface SuggestGeneResponse {
   warnings: string[] | null;
   term: string;
-  matches_count: number;
-  concept_id: [unknown, unknown, unknown, unknown, unknown][] | null;
+  matchesCount: number;
+  conceptId: [unknown, unknown, unknown, unknown, unknown][] | null;
   symbol: [unknown, unknown, unknown, unknown, unknown][] | null;
-  prev_symbols: [unknown, unknown, unknown, unknown, unknown][] | null;
+  prevSymbols: [unknown, unknown, unknown, unknown, unknown][] | null;
   aliases: [unknown, unknown, unknown, unknown, unknown][] | null;
 }
 /**

@@ -54,10 +54,9 @@ const ELEMENT_TEMPLATE = [
     type: ElementType.geneElement,
     nomenclature: "",
     element_id: uuid(),
-    gene_descriptor: {
+    gene: {
       id: "",
       type: "",
-      gene_id: "",
       label: "",
     },
   },
@@ -69,9 +68,8 @@ const ELEMENT_TEMPLATE = [
     exon_start_offset: null,
     exon_end: null,
     exon_end_offset: null,
-    gene_descriptor: {
+    gene: {
       id: "",
-      gene_id: "",
       type: "",
       label: "",
     },
@@ -136,10 +134,10 @@ const Builder: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!("structural_elements" in fusion)) {
+    if (!("structure" in fusion)) {
       setFusion({
         ...fusion,
-        ...{ structural_elements: [] },
+        ...{ structure: [] },
       });
     }
   }, [fusion]);
@@ -153,11 +151,11 @@ const Builder: React.FC = () => {
     newItem.element_id = uuid();
 
     if (draggableId.includes("RegulatoryElement")) {
-      setFusion({ ...fusion, ...{ regulatory_element: newItem } });
+      setFusion({ ...fusion, ...{ regulatoryElement: newItem } });
     } else {
-      const destClone = Array.from(fusion.structural_elements);
+      const destClone = Array.from(fusion.structure);
       destClone.splice(destination.index, 0, newItem);
-      setFusion({ ...fusion, ...{ structural_elements: destClone } });
+      setFusion({ ...fusion, ...{ structure: destClone } });
     }
 
     // auto-save elements that don't need any additional input
@@ -172,30 +170,28 @@ const Builder: React.FC = () => {
 
   const reorder = (result: DropResult) => {
     const { source, destination } = result;
-    const sourceClone = Array.from(fusion.structural_elements);
+    const sourceClone = Array.from(fusion.structure);
     const [movedElement] = sourceClone.splice(source.index, 1);
     sourceClone.splice(destination.index, 0, movedElement);
-    setFusion({ ...fusion, ...{ structural_elements: sourceClone } });
+    setFusion({ ...fusion, ...{ structure: sourceClone } });
   };
 
   // Update global fusion object
   const handleSave = (index: number, newElement: ClientElementUnion) => {
-    const items = Array.from(fusion.structural_elements);
+    const items = Array.from(fusion.structure);
     const spliceLength = EDITABLE_ELEMENT_TYPES.includes(
       newElement.type as ElementType
     )
       ? 1
       : 0;
     items.splice(index, spliceLength, newElement);
-    setFusion({ ...fusion, ...{ structural_elements: items } });
+    setFusion({ ...fusion, ...{ structure: items } });
   };
 
   const handleDelete = (uuid: string) => {
-    let items: Array<ClientElementUnion> = Array.from(
-      fusion.structural_elements
-    );
+    let items: Array<ClientElementUnion> = Array.from(fusion.structure);
     items = items.filter((item) => item?.element_id !== uuid);
-    setFusion({ ...fusion, ...{ structural_elements: items } });
+    setFusion({ ...fusion, ...{ structure: items } });
   };
 
   const elementNameMap = {
@@ -331,14 +327,14 @@ const Builder: React.FC = () => {
     }
   };
 
-  const nomenclatureParts = fusion.structural_elements
+  const nomenclatureParts = fusion.structure
     .filter(
       (element: ClientElementUnion) => Boolean(element) && element.nomenclature
     )
     .map((element: ClientElementUnion) => element.nomenclature);
 
-  if (fusion.regulatory_element && fusion.regulatory_element.nomenclature) {
-    nomenclatureParts.unshift(fusion.regulatory_element.nomenclature);
+  if (fusion.regulatoryElement && fusion.regulatoryElement.nomenclature) {
+    nomenclatureParts.unshift(fusion.regulatoryElement.nomenclature);
   }
   const nomenclature = nomenclatureParts.map(
     (nom: string, index: number) => `${index ? "::" : ""}${nom}`
@@ -432,7 +428,7 @@ const Builder: React.FC = () => {
                           index={index}
                           isDragDisabled={
                             type === ElementType.regulatoryElement &&
-                            fusion.regulatory_element !== undefined
+                            fusion.regulatoryElement !== undefined
                           }
                         >
                           {(provided, snapshot) => {
@@ -447,7 +443,7 @@ const Builder: React.FC = () => {
                                     className={
                                       "option-item" +
                                       (type === ElementType.regulatoryElement &&
-                                      fusion.regulatory_element !== undefined
+                                      fusion.regulatoryElement !== undefined
                                         ? " disabled_reg_element"
                                         : "")
                                     }
@@ -504,20 +500,20 @@ const Builder: React.FC = () => {
                 >
                   <h2
                     className={`${
-                      fusion.structural_elements?.length === 0 &&
-                      !fusion.regulatory_element
+                      fusion.structure?.length === 0 &&
+                      !fusion.regulatoryElement
                         ? "instruction"
                         : "hidden"
                     }`}
                   >
                     Drag elements here
                   </h2>
-                  {fusion.regulatory_element && (
+                  {fusion.regulatoryElement && (
                     <>
                       <Box
-                        className={`block ${fusion?.regulatory_element?.type}`}
+                        className={`block ${fusion?.regulatoryElement?.type}`}
                       >
-                        {renderElement(fusion?.regulatory_element, 0)}
+                        {renderElement(fusion?.regulatoryElement, 0)}
                       </Box>
                       <Divider
                         orientation="vertical"
@@ -525,7 +521,7 @@ const Builder: React.FC = () => {
                       />
                     </>
                   )}
-                  {fusion.structural_elements?.map(
+                  {fusion.structure?.map(
                     (element: ClientElementUnion, index: number) => {
                       return (
                         element && (

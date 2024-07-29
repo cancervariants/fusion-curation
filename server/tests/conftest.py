@@ -67,7 +67,7 @@ def alk_descriptor():
     """Gene descriptor for ALK gene"""
     return {
         "id": "normalize.gene:hgnc%3A427",
-        "type": "GeneDescriptor",
+        "type": "Gene",
         "label": "ALK",
         "gene_id": "hgnc:427",
     }
@@ -78,7 +78,7 @@ def tpm3_descriptor():
     """Gene descriptor for TPM3 gene"""
     return {
         "id": "normalize.gene:TPM3",
-        "type": "GeneDescriptor",
+        "type": "Gene",
         "label": "TPM3",
         "gene_id": "hgnc:12012",
     }
@@ -89,7 +89,7 @@ def ntrk1_descriptor():
     """Gene descriptor for NTRK1 gene"""
     return {
         "id": "normalize.gene:NTRK1",
-        "type": "GeneDescriptor",
+        "type": "Gene",
         "label": "NTRK1",
         "gene_id": "hgnc:8031",
     }
@@ -98,7 +98,7 @@ def ntrk1_descriptor():
 @pytest.fixture(scope="module")
 def alk_gene_element(alk_descriptor):
     """Provide GeneElement containing ALK gene"""
-    return {"type": "GeneElement", "gene_descriptor": alk_descriptor}
+    return {"type": "GeneElement", "gene": alk_descriptor}
 
 
 @pytest.fixture(scope="module")
@@ -111,10 +111,10 @@ def ntrk1_tx_element_start(ntrk1_descriptor):
         "transcript": "refseq:NM_002529.3",
         "exon_start": 2,
         "exon_start_offset": 1,
-        "gene_descriptor": ntrk1_descriptor,
+        "gene": ntrk1_descriptor,
         "element_genomic_start": {
             "id": "fusor.location_descriptor:NC_000001.11",
-            "type": "LocationDescriptor",
+            "type": "SequenceLocation",
             "label": "NC_000001.11",
             "location": {
                 "type": "SequenceLocation",
@@ -141,10 +141,10 @@ def tpm3_tx_t_element(tpm3_descriptor):
         "exon_start_offset": 72,
         "exon_end": 6,
         "exon_end_offset": -5,
-        "gene_descriptor": tpm3_descriptor,
+        "gene": tpm3_descriptor,
         "element_genomic_start": {
             "id": "fusor.location_descriptor:NC_000001.11",
-            "type": "LocationDescriptor",
+            "type": "SequenceLocation",
             "label": "NC_000001.11",
             "location": {
                 "type": "SequenceLocation",
@@ -158,7 +158,7 @@ def tpm3_tx_t_element(tpm3_descriptor):
         },
         "element_genomic_end": {
             "id": "fusor.location_descriptor:NC_000001.11",
-            "type": "LocationDescriptor",
+            "type": "SequenceLocation",
             "label": "NC_000001.11",
             "location": {
                 "type": "SequenceLocation",
@@ -185,10 +185,10 @@ def tpm3_tx_g_element(tpm3_descriptor):
         "exon_start_offset": 5,
         "exon_end": 6,
         "exon_end_offset": -70,
-        "gene_descriptor": tpm3_descriptor,
+        "gene": tpm3_descriptor,
         "element_genomic_start": {
             "id": "fusor.location_descriptor:NC_000001.11",
-            "type": "LocationDescriptor",
+            "type": "SequenceLocation",
             "label": "NC_000001.11",
             "location": {
                 "type": "SequenceLocation",
@@ -202,7 +202,7 @@ def tpm3_tx_g_element(tpm3_descriptor):
         },
         "element_genomic_end": {
             "id": "fusor.location_descriptor:NC_000001.11",
-            "type": "LocationDescriptor",
+            "type": "SequenceLocation",
             "label": "NC_000001.11",
             "location": {
                 "type": "SequenceLocation",

@@ -217,9 +217,9 @@ export const getFunctionalDomain = async (
   geneId: string
 ): Promise<GetDomainResponse> => {
   const url =
-    `/api/construct/domain?status=${domainStatus}&name=${domain.domain_name}` +
-    `&domain_id=${domain.interpro_id}&gene_id=${geneId}` +
-    `&sequence_id=${domain.refseq_ac}&start=${domain.start}&end=${domain.end}`;
+    `/api/construct/domain?status=${domainStatus}&name=${domain.domainName}` +
+    `&domain_id=${domain.interproId}&gene_id=${geneId}` +
+    `&sequence_id=${domain.refseqAc}&start=${domain.start}&end=${domain.end}`;
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
@@ -308,7 +308,7 @@ export const getInfo = async (): Promise<ServiceInfoResponse> => {
 export const getRegElementNomenclature = async (
   regulatoryElement: RegulatoryElement
 ): Promise<NomenclatureResponse> => {
-  const response = await fetch("/api/nomenclature/regulatory_element", {
+  const response = await fetch("/api/nomenclature/regulatoryElement", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -411,7 +411,7 @@ export const getRegulatoryElement = async (
   geneName: string
 ): Promise<RegulatoryElementResponse> => {
   const response = await fetch(
-    `/api/construct/regulatory_element?element_class=${regulatoryClass}&gene_name=${geneName}`
+    `/api/construct/regulatoryElement?element_class=${regulatoryClass}&gene_name=${geneName}`
   );
   const responseJson = await response.json();
   return responseJson;
