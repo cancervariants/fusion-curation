@@ -31,25 +31,41 @@ export type RegulatoryClass =
   | "terminator"
   | "other";
 /**
- * A `W3C Compact URI <https://www.w3.org/TR/curie/>`_ formatted string. A CURIE string has the structure ``prefix``:``reference``, as defined by the W3C syntax.
+ * Indicates that the value is taken from a set of controlled strings defined elsewhere. Technically, a code is restricted to a string which has at least one character and no leading or  trailing whitespace, and where there is no whitespace other than single spaces in the contents.
  */
-export type CURIE = string;
+export type Code = string;
 /**
- * A range comparator.
+ * A mapping relation between concepts as defined by the Simple Knowledge
+ * Organization System (SKOS).
  */
-export type Comparator = "<=" | ">=";
+export type Relation =
+  | "closeMatch"
+  | "exactMatch"
+  | "broadMatch"
+  | "narrowMatch"
+  | "relatedMatch";
 /**
- * A character string representing cytobands derived from the *International System for Human Cytogenomic Nomenclature* (ISCN) `guidelines <http://doi.org/10.1159/isbn.978-3-318-06861-0>`_.
+ * An IRI Reference (either an IRI or a relative-reference), according to `RFC3986 section 4.1  <https://datatracker.ietf.org/doc/html/rfc3986#section-4.1>` and `RFC3987 section 2.1 <https://datatracker.ietf.org/doc/html/rfc3987#section-2.1>`. MAY be a JSON Pointer as an IRI fragment, as  described by `RFC6901 section 6 <https://datatracker.ietf.org/doc/html/rfc6901#section-6>`.
  */
-export type HumanCytoband = string;
+export type IRI = string;
 /**
- * Define possible values for strand
+ * The interpretation of the character codes referred to by the refget accession,
+ * where "aa" specifies an amino acid character set, and "na" specifies a nucleic acid
+ * character set.
  */
-export type Strand = "+" | "-";
+export type ResidueAlphabet = "aa" | "na";
 /**
- * A character string of Residues that represents a biological sequence using the conventional sequence order (5'-to-3' for nucleic acid sequences, and amino-to-carboxyl for amino acid sequences). IUPAC ambiguity codes are permitted in Sequences.
+ * An inclusive range of values bounded by one or more integers.
  */
-export type Sequence = string;
+export type Range = [number | null, number | null];
+/**
+ * A character string of Residues that represents a biological sequence using the conventional sequence order (5'-to-3' for nucleic acid sequences, and amino-to-carboxyl for amino acid sequences). IUPAC ambiguity codes are permitted in Sequence Strings.
+ */
+export type SequenceString = string;
+/**
+ * Create enum for positive and negative strand
+ */
+export type Strand = 1 | -1;
 /**
  * Permissible values for describing the underlying causative event driving an
  * assayed fusion.
@@ -72,169 +88,246 @@ export type DomainStatus = "lost" | "preserved";
  */
 export interface AssayedFusion {
   type?: "AssayedFusion";
-  regulatory_element?: RegulatoryElement;
-  structural_elements: (
+  regulatoryElement?: RegulatoryElement | null;
+  structure: (
     | TranscriptSegmentElement
     | GeneElement
     | TemplatedSequenceElement
     | LinkerElement
     | UnknownGeneElement
   )[];
-  causative_event: CausativeEvent;
-  assay: Assay;
+  readingFramePreserved?: boolean | null;
+  causativeEvent?: CausativeEvent | null;
+  assay?: Assay | null;
 }
 /**
  * Define RegulatoryElement class.
  *
- * `feature_id` would ideally be constrained as a CURIE, but Encode, our preferred
+ * `featureId` would ideally be constrained as a CURIE, but Encode, our preferred
  * feature ID source, doesn't currently have a registered CURIE structure for EH_
  * identifiers. Consequently, we permit any kind of free text.
  */
 export interface RegulatoryElement {
   type?: "RegulatoryElement";
-  regulatory_class: RegulatoryClass;
-  feature_id?: string;
-  associated_gene?: Gene;
-  feature_location?: SequenceLocation;
+  regulatoryClass: RegulatoryClass;
+  featureId?: string | null;
+  associatedGene?: Gene | null;
+  featureLocation?: SequenceLocation | null;
 }
 /**
- * The Extension class provides VODs with a means to extend descriptions
- * with other attributes unique to a content provider. These extensions are
- * not expected to be natively understood under VRS, but may be used
- * for pre-negotiated exchange of message attributes when needed.
- */
-export interface Extension {
-  type?: "Extension";
-  name: string;
-  value?: unknown;
-}
-/**
- * A reference to a Gene as defined by an authority. For human genes, the use of
- * `hgnc <https://registry.identifiers.org/registry/hgnc>`_ as the gene authority is
- * RECOMMENDED.
+ * A basic physical and functional unit of heredity.
  */
 export interface Gene {
+  /**
+   * The 'logical' identifier of the entity in the system of record, e.g. a UUID. This 'id' is unique within a given system. The identified entity may have a different 'id' in a different system, or may refer to an 'id' for the shared concept in another system (e.g. a CURIE).
+   */
+  id?: string | null;
+  /**
+   * MUST be "Gene".
+   */
   type?: "Gene";
-  id: string;
-  label: string;
+  /**
+   * A primary label for the entity.
+   */
+  label?: string | null;
+  /**
+   * A free-text description of the entity.
+   */
+  description?: string | null;
+  /**
+   * Alternative name(s) for the Entity.
+   */
+  alternativeLabels?: string[] | null;
+  /**
+   * A list of extensions to the entity. Extensions are not expected to be natively understood, but may be used for pre-negotiated exchange of message attributes between systems.
+   */
+  extensions?: Extension[] | null;
+  /**
+   * A list of mappings to concepts in terminologies or code systems. Each mapping should include a coding and a relation.
+   */
+  mappings?: ConceptMapping[] | null;
+  [k: string]: unknown;
 }
 /**
- * A referenced Sequence
+ * The Extension class provides entities with a means to include additional
+ * attributes that are outside of the specified standard but needed by a given content
+ * provider or system implementer. These extensions are not expected to be natively
+ * understood, but may be used for pre-negotiated exchange of message attributes
+ * between systems.
  */
-export interface SequenceReference {
-  // refseq id of the referenced sequence
-  id?: CURIE;
-  type?: "SequenceReference";
-  // VRS computed identifier for the sequence accession
-  refgetAccession: string;
+export interface Extension {
+  /**
+   * A name for the Extension. Should be indicative of its meaning and/or the type of information it value represents.
+   */
+  name: string;
+  /**
+   * The value of the Extension - can be any primitive or structured object
+   */
+  value?:
+    | number
+    | string
+    | boolean
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | null;
+  /**
+   * A description of the meaning or utility of the Extension, to explain the type of information it is meant to hold.
+   */
+  description?: string | null;
+  [k: string]: unknown;
 }
 /**
- * A Location defined by the start/end coordinates on a referenced Sequence.
+ * A mapping to a concept in a terminology or code system.
+ */
+export interface ConceptMapping {
+  /**
+   * A structured representation of a code for a defined concept in a terminology or code system.
+   */
+  coding: Coding;
+  /**
+   * A mapping relation between concepts as defined by the Simple Knowledge Organization System (SKOS).
+   */
+  relation: Relation;
+  [k: string]: unknown;
+}
+/**
+ * A structured representation of a code for a defined concept in a terminology or
+ * code system.
+ */
+export interface Coding {
+  /**
+   * The human-readable name for the coded concept, as defined by the code system.
+   */
+  label?: string | null;
+  /**
+   * The terminology/code system that defined the code. May be reported as a free-text name (e.g. 'Sequence Ontology'), but it is preferable to provide a uri/url for the system. When the 'code' is reported as a CURIE, the 'system' should be reported as the uri that the CURIE's prefix expands to (e.g. 'http://purl.obofoundry.org/so.owl/' for the Sequence Ontology).
+   */
+  system: string;
+  /**
+   * Version of the terminology or code system that provided the code.
+   */
+  version?: string | null;
+  /**
+   * A symbol uniquely identifying the concept, as in a syntax defined by the code system. CURIE format is preferred where possible (e.g. 'SO:0000704' is the CURIE form of the Sequence Ontology code for 'gene').
+   */
+  code: Code;
+  [k: string]: unknown;
+}
+/**
+ * A `Location` defined by an interval on a referenced `Sequence`.
  */
 export interface SequenceLocation {
   /**
-   * A VRS Computed Identifier for the Sequence location.
+   * The 'logical' identifier of the entity in the system of record, e.g. a UUID. This 'id' is unique within a given system. The identified entity may have a different 'id' in a different system, or may refer to an 'id' for the shared concept in another system (e.g. a CURIE).
    */
-  id?: CURIE;
+  id?: string | null;
+  /**
+   * MUST be "SequenceLocation"
+   */
   type?: "SequenceLocation";
-  sequenceReference: SequenceReference;
-  // start coordinate of the sequence location
-  start: number;
-  // end coordinate of the sequence location
-  end: number;
+  /**
+   * A primary label for the entity.
+   */
+  label?: string | null;
+  /**
+   * A free-text description of the entity.
+   */
+  description?: string | null;
+  /**
+   * Alternative name(s) for the Entity.
+   */
+  alternativeLabels?: string[] | null;
+  /**
+   * A list of extensions to the entity. Extensions are not expected to be natively understood, but may be used for pre-negotiated exchange of message attributes between systems.
+   */
+  extensions?: Extension[] | null;
+  /**
+   * A list of mappings to concepts in terminologies or code systems. Each mapping should include a coding and a relation.
+   */
+  mappings?: ConceptMapping[] | null;
+  /**
+   * A sha512t24u digest created using the VRS Computed Identifier algorithm.
+   */
+  digest?: string | null;
+  /**
+   * A reference to a `Sequence` on which the location is defined.
+   */
+  sequenceReference?: IRI | SequenceReference | null;
+  /**
+   * The start coordinate or range of the SequenceLocation. The minimum value of this coordinate or range is 0. MUST represent a coordinate or range less than the value of `end`.
+   */
+  start?: Range | number | null;
+  /**
+   * The end coordinate or range of the SequenceLocation. The minimum value of this coordinate or range is 0. MUST represent a coordinate or range greater than the value of `start`.
+   */
+  end?: Range | number | null;
+  /**
+   * The literal sequence encoded by the `sequenceReference` at these coordinates.
+   */
+  sequence?: SequenceString | null;
+  [k: string]: unknown;
 }
 /**
- * A bounded, inclusive range of numbers.
+ * A sequence of nucleic or amino acid character codes.
  */
-export interface DefiniteRange {
-  type?: "DefiniteRange";
+export interface SequenceReference {
   /**
-   * The minimum value; inclusive
+   * The 'logical' identifier of the entity in the system of record, e.g. a UUID. This 'id' is unique within a given system. The identified entity may have a different 'id' in a different system, or may refer to an 'id' for the shared concept in another system (e.g. a CURIE).
    */
-  min: number;
+  id?: string | null;
   /**
-   * The maximum value; inclusive
+   * MUST be "SequenceReference"
    */
-  max: number;
-}
-/**
- * A half-bounded range of numbers represented as a number bound and associated
- * comparator. The bound operator is interpreted as follows: '>=' are all numbers
- * greater than and including `value`, '<=' are all numbers less than and including
- * `value`.
- */
-export interface IndefiniteRange {
-  type?: "IndefiniteRange";
+  type?: "SequenceReference";
   /**
-   * The bounded value; inclusive
+   * A primary label for the entity.
    */
-  value: number;
+  label?: string | null;
   /**
-   * MUST be one of '<=' or '>=', indicating which direction the range is indefinite
+   * A free-text description of the entity.
    */
-  comparator: Comparator;
-}
-/**
- * A simple integer value as a VRS class.
- */
-export interface Number {
-  type?: "Number";
+  description?: string | null;
   /**
-   * The value represented by Number
+   * Alternative name(s) for the Entity.
    */
-  value: number;
-}
-/**
- * A Location on a chromosome defined by a species and chromosome name.
- */
-export interface ChromosomeLocation {
+  alternativeLabels?: string[] | null;
   /**
-   * Location Id. MUST be unique within document.
+   * A list of extensions to the entity. Extensions are not expected to be natively understood, but may be used for pre-negotiated exchange of message attributes between systems.
    */
-  _id?: CURIE;
-  type?: "ChromosomeLocation";
+  extensions?: Extension[] | null;
   /**
-   * CURIE representing a species from the `NCBI species taxonomy <https://registry.identifiers.org/registry/taxonomy>`_. Default: 'taxonomy:9606' (human)
+   * A list of mappings to concepts in terminologies or code systems. Each mapping should include a coding and a relation.
    */
-  species_id?: CURIE & string;
+  mappings?: ConceptMapping[] | null;
   /**
-   * The symbolic chromosome name. For humans, For humans, chromosome names MUST be one of 1..22, X, Y (case-sensitive)
+   * A `GA4GH RefGet <http://samtools.github.io/hts-specs/refget.html>` identifier for the referenced sequence, using the sha512t24u digest.
    */
-  chr: string;
+  refgetAccession: string;
   /**
-   * The chromosome region defined by a CytobandInterval
+   * The interpretation of the character codes referred to by the refget accession, where 'aa' specifies an amino acid character set, and 'na' specifies a nucleic acid character set.
    */
-  interval: CytobandInterval;
-}
-/**
- * A contiguous span on a chromosome defined by cytoband features. The span includes
- * the constituent regions described by the start and end cytobands, as well as any
- * intervening regions.
- */
-export interface CytobandInterval {
-  type?: "CytobandInterval";
+  residueAlphabet?: ResidueAlphabet | null;
   /**
-   * The start cytoband region. MUST specify a region nearer the terminal end (telomere) of the chromosome p-arm than `end`.
+   * A boolean indicating whether the molecule represented by the sequence is circular (true) or linear (false).
    */
-  start: HumanCytoband;
-  /**
-   * The end cytoband region. MUST specify a region nearer the terminal end (telomere) of the chromosome q-arm than `start`.
-   */
-  end: HumanCytoband;
+  circular?: boolean | null;
+  [k: string]: unknown;
 }
 /**
  * Define TranscriptSegment class
  */
 export interface TranscriptSegmentElement {
   type?: "TranscriptSegmentElement";
-  transcript: CURIE;
-  exon_start?: number;
-  exon_start_offset?: number;
-  exon_end?: number;
-  exon_end_offset?: number;
+  transcript: string;
+  exonStart?: number | null;
+  exonStartOffset?: number | null;
+  exonEnd?: number | null;
+  exonEndOffset?: number | null;
   gene: Gene;
-  element_genomic_start?: SequenceLocation;
-  element_genomic_end?: SequenceLocation;
+  elementGenomicStart?: SequenceLocation | null;
+  elementGenomicEnd?: SequenceLocation | null;
 }
 /**
  * Define Gene Element class.
@@ -258,7 +351,45 @@ export interface TemplatedSequenceElement {
  */
 export interface LinkerElement {
   type?: "LinkerSequenceElement";
-  linker_sequence: SequenceDescriptor;
+  linkerSequence: LiteralSequenceExpression;
+}
+/**
+ * An explicit expression of a Sequence.
+ */
+export interface LiteralSequenceExpression {
+  /**
+   * The 'logical' identifier of the entity in the system of record, e.g. a UUID. This 'id' is unique within a given system. The identified entity may have a different 'id' in a different system, or may refer to an 'id' for the shared concept in another system (e.g. a CURIE).
+   */
+  id?: string | null;
+  /**
+   * MUST be "LiteralSequenceExpression"
+   */
+  type?: "LiteralSequenceExpression";
+  /**
+   * A primary label for the entity.
+   */
+  label?: string | null;
+  /**
+   * A free-text description of the entity.
+   */
+  description?: string | null;
+  /**
+   * Alternative name(s) for the Entity.
+   */
+  alternativeLabels?: string[] | null;
+  /**
+   * A list of extensions to the entity. Extensions are not expected to be natively understood, but may be used for pre-negotiated exchange of message attributes between systems.
+   */
+  extensions?: Extension[] | null;
+  /**
+   * A list of mappings to concepts in terminologies or code systems. Each mapping should include a coding and a relation.
+   */
+  mappings?: ConceptMapping[] | null;
+  /**
+   * the literal sequence
+   */
+  sequence: SequenceString;
+  [k: string]: unknown;
 }
 /**
  * Define UnknownGene class. This is primarily intended to represent a
@@ -279,32 +410,32 @@ export interface UnknownGeneElement {
  */
 export interface CausativeEvent {
   type?: "CausativeEvent";
-  event_type: EventType;
-  event_description?: string;
+  eventType: EventType;
+  eventDescription?: string | null;
 }
 /**
  * Information pertaining to the assay used in identifying the fusion.
  */
 export interface Assay {
   type?: "Assay";
-  assay_name: string;
-  assay_id: CURIE;
-  method_uri: CURIE;
-  fusion_detection: Evidence;
+  assayName?: string | null;
+  assayId?: string | null;
+  methodUri?: string | null;
+  fusionDetection?: Evidence | null;
 }
 /**
  * Response model for domain ID autocomplete suggestion endpoint.
  */
 export interface AssociatedDomainResponse {
-  warnings?: string[];
+  warnings: string[] | null;
   gene_id: string;
-  suggestions?: DomainParams[];
+  suggestions: DomainParams[] | null;
 }
 /**
  * Fields for individual domain suggestion entries
  */
 export interface DomainParams {
-  interpro_id: CURIE;
+  interpro_id: string;
   domain_name: string;
   start: number;
   end: number;
@@ -318,16 +449,16 @@ export interface DomainParams {
  */
 export interface CategoricalFusion {
   type?: "CategoricalFusion";
-  regulatory_element?: RegulatoryElement;
-  structural_elements: (
+  regulatoryElement?: RegulatoryElement | null;
+  structure: (
     | TranscriptSegmentElement
     | GeneElement
     | TemplatedSequenceElement
     | LinkerElement
     | MultiplePossibleGenesElement
   )[];
-  r_frame_preserved?: boolean;
-  critical_functional_domains?: FunctionalDomain[];
+  readingFramePreserved?: boolean | null;
+  criticalFunctionalDomains?: FunctionalDomain[] | null;
 }
 /**
  * Define MultiplePossibleGenesElement class. This is primarily intended to
@@ -348,10 +479,10 @@ export interface MultiplePossibleGenesElement {
 export interface FunctionalDomain {
   type?: "FunctionalDomain";
   status: DomainStatus;
-  associated_gene: Gene;
-  _id?: CURIE;
-  label?: string;
-  sequence_location?: SequenceLocation;
+  associatedGene: Gene;
+  id: string | null;
+  label?: string | null;
+  sequenceLocation?: SequenceLocation | null;
 }
 /**
  * Assayed fusion with client-oriented structural element models. Used in
@@ -359,7 +490,18 @@ export interface FunctionalDomain {
  */
 export interface ClientAssayedFusion {
   type?: "AssayedFusion";
-  regulatory_element?: ClientRegulatoryElement;
+  regulatoryElement?: RegulatoryElement | null;
+  structure: (
+    | TranscriptSegmentElement
+    | GeneElement
+    | TemplatedSequenceElement
+    | LinkerElement
+    | UnknownGeneElement
+  )[];
+  readingFramePreserved?: boolean | null;
+  causativeEvent?: CausativeEvent | null;
+  assay?: Assay | null;
+  regulatory_element?: ClientRegulatoryElement | null;
   structural_elements: (
     | ClientTranscriptSegmentElement
     | ClientGeneElement
@@ -367,18 +509,16 @@ export interface ClientAssayedFusion {
     | ClientLinkerElement
     | ClientUnknownGeneElement
   )[];
-  causative_event: CausativeEvent;
-  assay: Assay;
 }
 /**
  * Define regulatory element object used client-side.
  */
 export interface ClientRegulatoryElement {
   type?: "RegulatoryElement";
-  regulatory_class: RegulatoryClass;
-  feature_id?: string;
-  associated_gene?: Gene;
-  feature_location?: SequenceLocation;
+  regulatoryClass: RegulatoryClass;
+  featureId?: string | null;
+  associatedGene?: Gene | null;
+  featureLocation?: SequenceLocation | null;
   display_class: string;
   nomenclature: string;
 }
@@ -389,25 +529,25 @@ export interface ClientTranscriptSegmentElement {
   element_id: string;
   nomenclature: string;
   type?: "TranscriptSegmentElement";
-  transcript: CURIE;
-  exon_start?: number;
-  exon_start_offset?: number;
-  exon_end?: number;
-  exon_end_offset?: number;
+  transcript: string;
+  exonStart?: number | null;
+  exonStartOffset?: number | null;
+  exonEnd?: number | null;
+  exonEndOffset?: number | null;
   gene: Gene;
-  element_genomic_start?: SequenceLocation;
-  element_genomic_end?: SequenceLocation;
+  elementGenomicStart?: SequenceLocation | null;
+  elementGenomicEnd?: SequenceLocation | null;
   input_type: "genomic_coords_gene" | "genomic_coords_tx" | "exon_coords_tx";
-  input_tx?: string;
-  input_strand?: Strand;
-  input_gene?: string;
-  input_chr?: string;
-  input_genomic_start?: string;
-  input_genomic_end?: string;
-  input_exon_start?: string;
-  input_exon_start_offset?: string;
-  input_exon_end?: string;
-  input_exon_end_offset?: string;
+  input_tx: string | null;
+  input_strand: Strand | null;
+  input_gene: string | null;
+  input_chr: string | null;
+  input_genomic_start: string | null;
+  input_genomic_end: string | null;
+  input_exon_start: string | null;
+  input_exon_start_offset: string | null;
+  input_exon_end: string | null;
+  input_exon_end_offset: string | null;
 }
 /**
  * Gene element used client-side.
@@ -427,9 +567,9 @@ export interface ClientTemplatedSequenceElement {
   type?: "TemplatedSequenceElement";
   region: SequenceLocation;
   strand: Strand;
-  input_chromosome?: string;
-  input_start?: string;
-  input_end?: string;
+  input_chromosome: string | null;
+  input_start: string | null;
+  input_end: string | null;
 }
 /**
  * Linker element class used client-side.
@@ -438,7 +578,7 @@ export interface ClientLinkerElement {
   element_id: string;
   nomenclature: string;
   type?: "LinkerSequenceElement";
-  linker_sequence: SequenceDescriptor;
+  linkerSequence: LiteralSequenceExpression;
 }
 /**
  * Unknown gene element used client-side.
@@ -454,7 +594,17 @@ export interface ClientUnknownGeneElement {
  */
 export interface ClientCategoricalFusion {
   type?: "CategoricalFusion";
-  regulatory_element?: ClientRegulatoryElement;
+  regulatoryElement?: RegulatoryElement | null;
+  structure: (
+    | TranscriptSegmentElement
+    | GeneElement
+    | TemplatedSequenceElement
+    | LinkerElement
+    | MultiplePossibleGenesElement
+  )[];
+  readingFramePreserved?: boolean | null;
+  criticalFunctionalDomains?: FunctionalDomain[] | null;
+  regulatory_element?: ClientRegulatoryElement | null;
   structural_elements: (
     | ClientTranscriptSegmentElement
     | ClientGeneElement
@@ -462,8 +612,7 @@ export interface ClientCategoricalFusion {
     | ClientLinkerElement
     | ClientMultiplePossibleGenesElement
   )[];
-  r_frame_preserved?: boolean;
-  critical_functional_domains?: ClientFunctionalDomain[];
+  critical_functional_domains: ClientFunctionalDomain[] | null;
 }
 /**
  * Multiple possible gene element used client-side.
@@ -479,10 +628,10 @@ export interface ClientMultiplePossibleGenesElement {
 export interface ClientFunctionalDomain {
   type?: "FunctionalDomain";
   status: DomainStatus;
-  associated_gene: Gene;
-  _id?: CURIE;
-  label?: string;
-  sequence_location?: SequenceLocation;
+  associatedGene: Gene;
+  id: string | null;
+  label?: string | null;
+  sequenceLocation?: SequenceLocation | null;
   domain_id: string;
 }
 /**
@@ -496,8 +645,8 @@ export interface ClientStructuralElement {
  * Response model for genomic coordinates retrieval
  */
 export interface CoordsUtilsResponse {
-  warnings?: string[];
-  coordinates_data?: GenomicData;
+  warnings: string[] | null;
+  coordinates_data: GenomicData | null;
 }
 /**
  * Model containing genomic and transcript exon data.
@@ -505,20 +654,20 @@ export interface CoordsUtilsResponse {
 export interface GenomicData {
   gene: string;
   chr: string;
-  start?: number;
-  end?: number;
-  exon_start?: number;
-  exon_start_offset?: number;
-  exon_end?: number;
-  exon_end_offset?: number;
+  start?: number | null;
+  end?: number | null;
+  exon_start?: number | null;
+  exon_start_offset?: number | null;
+  exon_end?: number | null;
+  exon_end_offset?: number | null;
   transcript: string;
-  strand: number;
+  strand: Strand;
 }
 /**
  * Response model for demo fusion object retrieval endpoints.
  */
 export interface DemoResponse {
-  warnings?: string[];
+  warnings: string[] | null;
   fusion: ClientAssayedFusion | ClientCategoricalFusion;
 }
 /**
@@ -526,32 +675,32 @@ export interface DemoResponse {
  */
 export interface ExonCoordsRequest {
   tx_ac: string;
-  gene?: string;
-  exon_start?: number;
-  exon_start_offset?: number;
-  exon_end?: number;
-  exon_end_offset?: number;
+  gene?: string | null;
+  exon_start?: number | null;
+  exon_start_offset?: number | null;
+  exon_end?: number | null;
+  exon_end_offset?: number | null;
 }
 /**
  * Response model for gene element construction endoint.
  */
 export interface GeneElementResponse {
-  warnings?: string[];
-  element?: GeneElement;
+  warnings: string[] | null;
+  element: GeneElement | null;
 }
 /**
  * Response model for functional domain constructor endpoint.
  */
 export interface GetDomainResponse {
-  warnings?: string[];
-  domain?: FunctionalDomain;
+  warnings: string[] | null;
+  domain: FunctionalDomain | null;
 }
 /**
  * Response model for MANE transcript retrieval endpoint.
  */
 export interface GetTranscriptsResponse {
-  warnings?: string[];
-  transcripts?: ManeGeneTranscript[];
+  warnings: string[] | null;
+  transcripts: ManeGeneTranscript[] | null;
 }
 /**
  * Base object containing MANE-provided gene transcript metadata
@@ -576,47 +725,47 @@ export interface ManeGeneTranscript {
  * Response model for regulatory element nomenclature endpoint.
  */
 export interface NomenclatureResponse {
-  warnings?: string[];
-  nomenclature?: string;
+  warnings: string[] | null;
+  nomenclature: string | null;
 }
 /**
  * Response model for gene normalization endpoint.
  */
 export interface NormalizeGeneResponse {
-  warnings?: string[];
+  warnings: string[] | null;
   term: string;
-  concept_id?: CURIE;
-  symbol?: string;
-  cased?: string;
+  concept_id: string | null;
+  symbol: string | null;
+  cased: string | null;
 }
 /**
  * Response model for regulatory element constructor.
  */
 export interface RegulatoryElementResponse {
-  warnings?: string[];
+  warnings: string[] | null;
   regulatory_element: RegulatoryElement;
 }
 /**
  * Abstract Response class for defining API response structures.
  */
 export interface Response {
-  warnings?: string[];
+  warnings: string[] | null;
 }
 /**
  * Response model for sequence ID retrieval endpoint.
  */
 export interface SequenceIDResponse {
-  warnings?: string[];
+  warnings: string[] | null;
   sequence: string;
-  refseq_id?: string;
-  ga4gh_id?: string;
-  aliases?: string[];
+  refseq_id: string | null;
+  ga4gh_id: string | null;
+  aliases: string[] | null;
 }
 /**
  * Response model for service_info endpoint.
  */
 export interface ServiceInfoResponse {
-  warnings?: string[];
+  warnings: string[] | null;
   curfu_version: string;
   fusor_version: string;
   cool_seq_tool_version: string;
@@ -625,32 +774,32 @@ export interface ServiceInfoResponse {
  * Response model for gene autocomplete suggestions endpoint.
  */
 export interface SuggestGeneResponse {
-  warnings?: string[];
+  warnings: string[] | null;
   term: string;
   matches_count: number;
-  concept_id?: [string, string, string, string, string][];
-  symbol?: [string, string, string, string, string][];
-  prev_symbols?: [string, string, string, string, string][];
-  aliases?: [string, string, string, string, string][];
+  concept_id: [unknown, unknown, unknown, unknown, unknown][] | null;
+  symbol: [unknown, unknown, unknown, unknown, unknown][] | null;
+  prev_symbols: [unknown, unknown, unknown, unknown, unknown][] | null;
+  aliases: [unknown, unknown, unknown, unknown, unknown][] | null;
 }
 /**
  * Response model for transcript segment element construction endpoint.
  */
 export interface TemplatedSequenceElementResponse {
-  warnings?: string[];
-  element?: TemplatedSequenceElement;
+  warnings: string[] | null;
+  element: TemplatedSequenceElement | null;
 }
 /**
  * Response model for transcript segment element construction endpoint.
  */
 export interface TxSegmentElementResponse {
-  warnings?: string[];
-  element?: TranscriptSegmentElement;
+  warnings: string[] | null;
+  element: TranscriptSegmentElement | null;
 }
 /**
  * Response model for Fusion validation endpoint.
  */
 export interface ValidateFusionResponse {
-  warnings?: string[];
-  fusion?: CategoricalFusion | AssayedFusion;
+  warnings: string[] | null;
+  fusion: CategoricalFusion | AssayedFusion | null;
 }

@@ -47,7 +47,7 @@ dev = [
     "black",
     "pre-commit>=3.7.1",
     "gene-normalizer ~= 0.4.0",
-    "pydantic-to-typescript",
+    "pydantic-to-typescript2",
 ]
 
 [project.scripts]
