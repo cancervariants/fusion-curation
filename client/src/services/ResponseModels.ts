@@ -94,27 +94,13 @@ export interface RegulatoryElement {
   type?: "RegulatoryElement";
   regulatory_class: RegulatoryClass;
   feature_id?: string;
-  associated_gene?: GeneDescriptor;
-  feature_location?: LocationDescriptor;
-}
-/**
- * This descriptor is intended to reference VRS Gene value objects.
- */
-export interface GeneDescriptor {
-  id: CURIE;
-  type?: "GeneDescriptor";
-  label?: string;
-  description?: string;
-  xrefs?: CURIE[];
-  alternate_labels?: string[];
-  extensions?: Extension[];
-  gene_id?: CURIE;
-  gene?: Gene;
+  associated_gene?: Gene;
+  feature_location?: SequenceLocation;
 }
 /**
  * The Extension class provides VODs with a means to extend descriptions
  * with other attributes unique to a content provider. These extensions are
- * not expected to be natively understood under VRSATILE, but may be used
+ * not expected to be natively understood under VRS, but may be used
  * for pre-negotiated exchange of message attributes when needed.
  */
 export interface Extension {
@@ -129,57 +115,33 @@ export interface Extension {
  */
 export interface Gene {
   type?: "Gene";
-  /**
-   * A CURIE reference to a Gene concept
-   */
-  gene_id: CURIE;
+  id: string;
+  label: string;
 }
 /**
- * This descriptor is intended to reference VRS Location value objects.
+ * A referenced Sequence
  */
-export interface LocationDescriptor {
-  id: CURIE;
-  type?: "LocationDescriptor";
-  label?: string;
-  description?: string;
-  xrefs?: CURIE[];
-  alternate_labels?: string[];
-  extensions?: Extension[];
-  location_id?: CURIE;
-  location?: SequenceLocation | ChromosomeLocation;
+export interface SequenceReference {
+  // refseq id of the referenced sequence
+  id?: CURIE;
+  type?: "SequenceReference";
+  // VRS computed identifier for the sequence accession
+  refgetAccession: string;
 }
 /**
- * A Location defined by an interval on a referenced Sequence.
+ * A Location defined by the start/end coordinates on a referenced Sequence.
  */
 export interface SequenceLocation {
   /**
-   * Variation Id. MUST be unique within document.
+   * A VRS Computed Identifier for the Sequence location.
    */
-  _id?: CURIE;
+  id?: CURIE;
   type?: "SequenceLocation";
-  /**
-   * A VRS Computed Identifier for the reference Sequence.
-   */
-  sequence_id: CURIE;
-  /**
-   * Reference sequence region defined by a SequenceInterval.
-   */
-  interval: SequenceInterval | SimpleInterval;
-}
-/**
- * A SequenceInterval represents a span on a Sequence. Positions are always
- * represented by contiguous spans using interbase coordinates or coordinate ranges.
- */
-export interface SequenceInterval {
-  type?: "SequenceInterval";
-  /**
-   * The start coordinate or range of the interval. The minimum value of this coordinate or range is 0. MUST represent a coordinate or range less than the value of `end`.
-   */
-  start: DefiniteRange | IndefiniteRange | Number;
-  /**
-   * The end coordinate or range of the interval. The minimum value of this coordinate or range is 0. MUST represent a coordinate or range greater than the value of `start`.
-   */
-  end: DefiniteRange | IndefiniteRange | Number;
+  sequenceReference: SequenceReference;
+  // start coordinate of the sequence location
+  start: number;
+  // end coordinate of the sequence location
+  end: number;
 }
 /**
  * A bounded, inclusive range of numbers.
@@ -221,22 +183,6 @@ export interface Number {
    * The value represented by Number
    */
   value: number;
-}
-/**
- * DEPRECATED: A SimpleInterval represents a span of sequence. Positions are always
- * represented by contiguous spans using interbase coordinates.
- * This class is deprecated. Use SequenceInterval instead.
- */
-export interface SimpleInterval {
-  type?: "SimpleInterval";
-  /**
-   * The start coordinate
-   */
-  start: number;
-  /**
-   * The end coordinate
-   */
-  end: number;
 }
 /**
  * A Location on a chromosome defined by a species and chromosome name.
@@ -286,16 +232,16 @@ export interface TranscriptSegmentElement {
   exon_start_offset?: number;
   exon_end?: number;
   exon_end_offset?: number;
-  gene_descriptor: GeneDescriptor;
-  element_genomic_start?: LocationDescriptor;
-  element_genomic_end?: LocationDescriptor;
+  gene: Gene;
+  element_genomic_start?: SequenceLocation;
+  element_genomic_end?: SequenceLocation;
 }
 /**
  * Define Gene Element class.
  */
 export interface GeneElement {
   type?: "GeneElement";
-  gene_descriptor: GeneDescriptor;
+  gene: Gene;
 }
 /**
  * Define Templated Sequence Element class.
@@ -304,7 +250,7 @@ export interface GeneElement {
  */
 export interface TemplatedSequenceElement {
   type?: "TemplatedSequenceElement";
-  region: LocationDescriptor;
+  region: SequenceLocation;
   strand: Strand;
 }
 /**
@@ -313,21 +259,6 @@ export interface TemplatedSequenceElement {
 export interface LinkerElement {
   type?: "LinkerSequenceElement";
   linker_sequence: SequenceDescriptor;
-}
-/**
- * This descriptor is intended to reference VRS Sequence value objects.
- */
-export interface SequenceDescriptor {
-  id: CURIE;
-  type?: "SequenceDescriptor";
-  label?: string;
-  description?: string;
-  xrefs?: CURIE[];
-  alternate_labels?: string[];
-  extensions?: Extension[];
-  sequence_id?: CURIE;
-  sequence?: Sequence;
-  residue_type?: CURIE;
 }
 /**
  * Define UnknownGene class. This is primarily intended to represent a
@@ -417,10 +348,10 @@ export interface MultiplePossibleGenesElement {
 export interface FunctionalDomain {
   type?: "FunctionalDomain";
   status: DomainStatus;
-  associated_gene: GeneDescriptor;
+  associated_gene: Gene;
   _id?: CURIE;
   label?: string;
-  sequence_location?: LocationDescriptor;
+  sequence_location?: SequenceLocation;
 }
 /**
  * Assayed fusion with client-oriented structural element models. Used in
@@ -446,8 +377,8 @@ export interface ClientRegulatoryElement {
   type?: "RegulatoryElement";
   regulatory_class: RegulatoryClass;
   feature_id?: string;
-  associated_gene?: GeneDescriptor;
-  feature_location?: LocationDescriptor;
+  associated_gene?: Gene;
+  feature_location?: SequenceLocation;
   display_class: string;
   nomenclature: string;
 }
@@ -463,9 +394,9 @@ export interface ClientTranscriptSegmentElement {
   exon_start_offset?: number;
   exon_end?: number;
   exon_end_offset?: number;
-  gene_descriptor: GeneDescriptor;
-  element_genomic_start?: LocationDescriptor;
-  element_genomic_end?: LocationDescriptor;
+  gene: Gene;
+  element_genomic_start?: SequenceLocation;
+  element_genomic_end?: SequenceLocation;
   input_type: "genomic_coords_gene" | "genomic_coords_tx" | "exon_coords_tx";
   input_tx?: string;
   input_strand?: Strand;
@@ -485,7 +416,7 @@ export interface ClientGeneElement {
   element_id: string;
   nomenclature: string;
   type?: "GeneElement";
-  gene_descriptor: GeneDescriptor;
+  gene: Gene;
 }
 /**
  * Templated sequence element used client-side.
@@ -494,7 +425,7 @@ export interface ClientTemplatedSequenceElement {
   element_id: string;
   nomenclature: string;
   type?: "TemplatedSequenceElement";
-  region: LocationDescriptor;
+  region: SequenceLocation;
   strand: Strand;
   input_chromosome?: string;
   input_start?: string;
@@ -548,10 +479,10 @@ export interface ClientMultiplePossibleGenesElement {
 export interface ClientFunctionalDomain {
   type?: "FunctionalDomain";
   status: DomainStatus;
-  associated_gene: GeneDescriptor;
+  associated_gene: Gene;
   _id?: CURIE;
   label?: string;
-  sequence_location?: LocationDescriptor;
+  sequence_location?: SequenceLocation;
   domain_id: string;
 }
 /**

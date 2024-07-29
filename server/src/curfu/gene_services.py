@@ -3,7 +3,6 @@
 import csv
 from pathlib import Path
 
-from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 from gene.query import QueryHandler
 from gene.schemas import MatchType
 
@@ -50,7 +49,7 @@ class GeneService:
     @staticmethod
     def get_normalized_gene(
         term: str, normalizer: QueryHandler
-    ) -> tuple[CURIE, str, str | CURIE | None]:
+    ) -> tuple[str, str, str | str | None]:
         """Get normalized ID given gene symbol/label/alias.
         :param str term: user-entered gene term
         :param QueryHandler normalizer:  gene normalizer instance

@@ -18,14 +18,13 @@ from fusor.models import (
     TranscriptSegmentElement,
     UnknownGeneElement,
 )
-from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
 from pydantic import BaseModel, Extra, Field, StrictInt, StrictStr, validator
 
 ResponseWarnings = list[StrictStr] | None
 
 ResponseDict = dict[
     str,
-    str | int | CURIE | list[str] | list[tuple[str, str, str, str]] | FunctionalDomain,
+    str | int | str | list[str] | list[tuple[str, str, str, str]] | FunctionalDomain,
 ]
 Warnings = list[str]
 
@@ -134,7 +133,7 @@ class NormalizeGeneResponse(Response):
     """Response model for gene normalization endpoint."""
 
     term: StrictStr
-    concept_id: CURIE | None
+    concept_id: StrictStr | None
     symbol: StrictStr | None
     cased: StrictStr | None
 
@@ -154,7 +153,7 @@ class SuggestGeneResponse(Response):
 class DomainParams(BaseModel):
     """Fields for individual domain suggestion entries"""
 
-    interpro_id: CURIE
+    interpro_id: StrictStr
     domain_name: StrictStr
     start: int
     end: int
