@@ -37,6 +37,8 @@ import {
   RegulatoryClass,
   RegulatoryElementResponse,
   ClientRegulatoryElement,
+  FormattedAssayedFusion,
+  FormattedCategoricalFusion,
 } from "./ResponseModels";
 
 export enum ElementType {
@@ -64,6 +66,20 @@ export type ElementUnion =
   | LinkerElement
   | UnknownGeneElement
   | RegulatoryElement
+  | TemplatedSequenceElement
+  | TranscriptSegmentElement;
+
+export type AssayedFusionElements =
+  | GeneElement
+  | LinkerElement
+  | UnknownGeneElement
+  | TemplatedSequenceElement
+  | TranscriptSegmentElement;
+
+export type CategoricalFusionElements =
+  | MultiplePossibleGenesElement
+  | GeneElement
+  | LinkerElement
   | TemplatedSequenceElement
   | TranscriptSegmentElement;
 
@@ -387,7 +403,7 @@ export const getGeneNomenclature = async (
  * @returns nomenclature if successful
  */
 export const getFusionNomenclature = async (
-  fusion: AssayedFusion | CategoricalFusion
+  fusion: FormattedAssayedFusion | FormattedCategoricalFusion
 ): Promise<NomenclatureResponse> => {
   const response = await fetch("/api/nomenclature/fusion", {
     method: "POST",

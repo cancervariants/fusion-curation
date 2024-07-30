@@ -5,10 +5,14 @@ from typing import Literal
 
 from cool_seq_tool.schemas import GenomicData
 from fusor.models import (
+    AbstractFusion,
+    Assay,
     AssayedFusion,
+    AssayedFusionElements,
     CategoricalFusion,
+    CategoricalFusionElements,
+    CausativeEvent,
     FunctionalDomain,
-    Fusion,
     GeneElement,
     LinkerElement,
     MultiplePossibleGenesElement,
@@ -176,7 +180,7 @@ class AssociatedDomainResponse(Response):
 class ValidateFusionResponse(Response):
     """Response model for Fusion validation endpoint."""
 
-    fusion: Fusion | None
+    fusion: AbstractFusion | None
 
 
 class ExonCoordsRequest(BaseModel):
@@ -286,6 +290,31 @@ class ClientAssayedFusion(AssayedFusion):
         | ClientLinkerElement
         | ClientUnknownGeneElement
     ]
+
+
+class FormattedAssayedFusion(BaseModel):
+    """Assayed fusion with parameters defined as expected in fusor assayed_fusion function
+    validate attempts to validate a fusion by constructing it by sending kwargs. In the models and frontend, these are camelCase,
+    but the assayed_fusion and categorical_fusion constructors expect snake_case
+    """
+
+    structure: AssayedFusionElements
+    causative_event: CausativeEvent | None = None
+    assay: Assay | None = None
+    regulatory_element: RegulatoryElement | None = None
+    reading_frame_preserved: bool | None = None
+
+
+class FormattedCategoricalFusion(BaseModel):
+    """Categorical fusion with parameters defined as expected in fusor categorical_fusion function
+    validate attempts to validate a fusion by constructing it by sending kwargs. In the models and frontend, these are camelCase,
+    but the assayed_fusion and categorical_fusion constructors expect snake_case
+    """
+
+    structure: CategoricalFusionElements
+    regulatory_element: RegulatoryElement | None = None
+    critical_functional_domains: list[FunctionalDomain] | None = None
+    reading_frame_preserved: bool | None = None
 
 
 class NomenclatureResponse(Response):

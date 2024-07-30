@@ -186,8 +186,7 @@ def generate_fusion_nomenclature(
     :return: response with fusion nomenclature
     """
     try:
-        valid_fusion = request.app.state.fusor.fusion(**fusion)
+        nomenclature = request.app.state.fusor.generate_nomenclature(fusion)
+        return {"nomenclature": nomenclature}
     except FUSORParametersException as e:
         return {"warnings": [str(e)]}
-    nomenclature = request.app.state.fusor.generate_nomenclature(valid_fusion)
-    return {"nomenclature": nomenclature}

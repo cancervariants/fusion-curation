@@ -6,9 +6,9 @@
 */
 
 /**
- * Form of evidence supporting identification of the fusion.
+ * Specify possible Fusion types.
  */
-export type Evidence = "observed" | "inferred";
+export type FusionType = "CategoricalFusion" | "AssayedFusion";
 /**
  * Define possible classes of Regulatory Elements. Options are the possible values
  * for /regulatory_class value property in the INSDC controlled vocabulary:
@@ -67,6 +67,20 @@ export type Range = [number | null, number | null];
  */
 export type SequenceString = string;
 /**
+ * Define possible structural element type values.
+ */
+export type StructuralElementType =
+  | "TranscriptSegmentElement"
+  | "TemplatedSequenceElement"
+  | "LinkerSequenceElement"
+  | "GeneElement"
+  | "UnknownGeneElement"
+  | "MultiplePossibleGenesElement";
+/**
+ * Form of evidence supporting identification of the fusion.
+ */
+export type Evidence = "observed" | "inferred";
+/**
  * Create enum for positive and negative strand
  */
 export type Strand = 1 | -1;
@@ -81,34 +95,13 @@ export type EventType = "rearrangement" | "read-through" | "trans-splicing";
 export type DomainStatus = "lost" | "preserved";
 
 /**
- * Information pertaining to the assay used in identifying the fusion.
+ * Define Fusion class
  */
-export interface Assay {
-  type?: "Assay";
-  assayName?: string | null;
-  assayId?: string | null;
-  methodUri?: string | null;
-  fusionDetection?: Evidence | null;
-}
-/**
- * Assayed gene fusions from biological specimens are directly detected using
- * RNA-based gene fusion assays, or alternatively may be inferred from genomic
- * rearrangements detected by whole genome sequencing or by coarser-scale cytogenomic
- * assays. Example: an EWSR1 fusion inferred from a breakapart FISH assay.
- */
-export interface AssayedFusion {
-  type?: "AssayedFusion";
+export interface AbstractFusion {
+  type: FusionType;
   regulatoryElement?: RegulatoryElement | null;
-  structure: (
-    | TranscriptSegmentElement
-    | GeneElement
-    | TemplatedSequenceElement
-    | LinkerElement
-    | UnknownGeneElement
-  )[];
+  structure: BaseStructuralElement[];
   readingFramePreserved?: boolean | null;
-  causativeEvent?: CausativeEvent | null;
-  assay?: Assay | null;
 }
 /**
  * Define RegulatoryElement class.
@@ -324,6 +317,43 @@ export interface SequenceReference {
    */
   circular?: boolean | null;
   [k: string]: unknown;
+}
+/**
+ * Define base structural element class.
+ */
+export interface BaseStructuralElement {
+  type: StructuralElementType;
+  [k: string]: unknown;
+}
+/**
+ * Information pertaining to the assay used in identifying the fusion.
+ */
+export interface Assay {
+  type?: "Assay";
+  assayName?: string | null;
+  assayId?: string | null;
+  methodUri?: string | null;
+  fusionDetection?: Evidence | null;
+}
+/**
+ * Assayed gene fusions from biological specimens are directly detected using
+ * RNA-based gene fusion assays, or alternatively may be inferred from genomic
+ * rearrangements detected by whole genome sequencing or by coarser-scale cytogenomic
+ * assays. Example: an EWSR1 fusion inferred from a breakapart FISH assay.
+ */
+export interface AssayedFusion {
+  type?: "AssayedFusion";
+  regulatoryElement?: RegulatoryElement | null;
+  structure: (
+    | TranscriptSegmentElement
+    | GeneElement
+    | TemplatedSequenceElement
+    | LinkerElement
+    | UnknownGeneElement
+  )[];
+  readingFramePreserved?: boolean | null;
+  causativeEvent?: CausativeEvent | null;
+  assay?: Assay | null;
 }
 /**
  * Define TranscriptSegment class
@@ -665,6 +695,41 @@ export interface ExonCoordsRequest {
   exonEndOffset?: number | null;
 }
 /**
+ * Assayed fusion with parameters defined as expected in fusor assayed_fusion function
+ * validate attempts to validate a fusion by constructing it by sending kwargs. In the models and frontend, these are camelCase,
+ * but the assayed_fusion and categorical_fusion constructors expect snake_case
+ */
+export interface FormattedAssayedFusion {
+  structure: (
+    | TranscriptSegmentElement
+    | GeneElement
+    | TemplatedSequenceElement
+    | LinkerElement
+    | UnknownGeneElement
+  )[];
+  causative_event?: CausativeEvent | null;
+  assay?: Assay | null;
+  regulatory_element?: RegulatoryElement | null;
+  reading_frame_preserved?: boolean | null;
+}
+/**
+ * Categorical fusion with parameters defined as expected in fusor categorical_fusion function
+ * validate attempts to validate a fusion by constructing it by sending kwargs. In the models and frontend, these are camelCase,
+ * but the assayed_fusion and categorical_fusion constructors expect snake_case
+ */
+export interface FormattedCategoricalFusion {
+  structure: (
+    | TranscriptSegmentElement
+    | GeneElement
+    | TemplatedSequenceElement
+    | LinkerElement
+    | MultiplePossibleGenesElement
+  )[];
+  regulatory_element?: RegulatoryElement | null;
+  critical_functional_domains?: FunctionalDomain[] | null;
+  reading_frame_preserved?: boolean | null;
+}
+/**
  * Response model for gene element construction endoint.
  */
 export interface GeneElementResponse {
@@ -784,5 +849,5 @@ export interface TxSegmentElementResponse {
  */
 export interface ValidateFusionResponse {
   warnings?: string[] | null;
-  fusion: CategoricalFusion | AssayedFusion | null;
+  fusion: AbstractFusion | null;
 }
