@@ -6,9 +6,9 @@
 */
 
 /**
- * Specify possible Fusion types.
+ * Form of evidence supporting identification of the fusion.
  */
-export type FusionType = "CategoricalFusion" | "AssayedFusion";
+export type Evidence = "observed" | "inferred";
 /**
  * Define possible classes of Regulatory Elements. Options are the possible values
  * for /regulatory_class value property in the INSDC controlled vocabulary:
@@ -67,20 +67,6 @@ export type Range = [number | null, number | null];
  */
 export type SequenceString = string;
 /**
- * Define possible structural element type values.
- */
-export type StructuralElementType =
-  | "TranscriptSegmentElement"
-  | "TemplatedSequenceElement"
-  | "LinkerSequenceElement"
-  | "GeneElement"
-  | "UnknownGeneElement"
-  | "MultiplePossibleGenesElement";
-/**
- * Form of evidence supporting identification of the fusion.
- */
-export type Evidence = "observed" | "inferred";
-/**
  * Create enum for positive and negative strand
  */
 export type Strand = 1 | -1;
@@ -95,13 +81,34 @@ export type EventType = "rearrangement" | "read-through" | "trans-splicing";
 export type DomainStatus = "lost" | "preserved";
 
 /**
- * Define Fusion class
+ * Information pertaining to the assay used in identifying the fusion.
  */
-export interface AbstractFusion {
-  type: FusionType;
+export interface Assay {
+  type?: "Assay";
+  assayName?: string | null;
+  assayId?: string | null;
+  methodUri?: string | null;
+  fusionDetection?: Evidence | null;
+}
+/**
+ * Assayed gene fusions from biological specimens are directly detected using
+ * RNA-based gene fusion assays, or alternatively may be inferred from genomic
+ * rearrangements detected by whole genome sequencing or by coarser-scale cytogenomic
+ * assays. Example: an EWSR1 fusion inferred from a breakapart FISH assay.
+ */
+export interface AssayedFusion {
+  type?: "AssayedFusion";
   regulatoryElement?: RegulatoryElement | null;
-  structure: BaseStructuralElement[];
+  structure: (
+    | TranscriptSegmentElement
+    | GeneElement
+    | TemplatedSequenceElement
+    | LinkerElement
+    | UnknownGeneElement
+  )[];
   readingFramePreserved?: boolean | null;
+  causativeEvent?: CausativeEvent | null;
+  assay?: Assay | null;
 }
 /**
  * Define RegulatoryElement class.
@@ -317,43 +324,6 @@ export interface SequenceReference {
    */
   circular?: boolean | null;
   [k: string]: unknown;
-}
-/**
- * Define base structural element class.
- */
-export interface BaseStructuralElement {
-  type: StructuralElementType;
-  [k: string]: unknown;
-}
-/**
- * Information pertaining to the assay used in identifying the fusion.
- */
-export interface Assay {
-  type?: "Assay";
-  assayName?: string | null;
-  assayId?: string | null;
-  methodUri?: string | null;
-  fusionDetection?: Evidence | null;
-}
-/**
- * Assayed gene fusions from biological specimens are directly detected using
- * RNA-based gene fusion assays, or alternatively may be inferred from genomic
- * rearrangements detected by whole genome sequencing or by coarser-scale cytogenomic
- * assays. Example: an EWSR1 fusion inferred from a breakapart FISH assay.
- */
-export interface AssayedFusion {
-  type?: "AssayedFusion";
-  regulatoryElement?: RegulatoryElement | null;
-  structure: (
-    | TranscriptSegmentElement
-    | GeneElement
-    | TemplatedSequenceElement
-    | LinkerElement
-    | UnknownGeneElement
-  )[];
-  readingFramePreserved?: boolean | null;
-  causativeEvent?: CausativeEvent | null;
-  assay?: Assay | null;
 }
 /**
  * Define TranscriptSegment class
@@ -849,5 +819,5 @@ export interface TxSegmentElementResponse {
  */
 export interface ValidateFusionResponse {
   warnings?: string[] | null;
-  fusion: AbstractFusion | null;
+  fusion: CategoricalFusion | AssayedFusion | null;
 }

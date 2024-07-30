@@ -60,7 +60,7 @@ export const Success: React.FC<Props> = ({ fusion }) => {
         </TabPanel>
         <TabPanel value={currentTab} index={1}>
           <div className="summary-sub-tab">
-            {fusion && <SummaryJSON fusion={fusion} />}
+            {fusion && <SummaryJSON formattedFusion={fusion} />}
           </div>
         </TabPanel>
       </div>

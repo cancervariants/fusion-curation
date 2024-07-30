@@ -5,7 +5,6 @@ from typing import Literal
 
 from cool_seq_tool.schemas import GenomicData
 from fusor.models import (
-    AbstractFusion,
     Assay,
     AssayedFusion,
     AssayedFusionElements,
@@ -13,6 +12,7 @@ from fusor.models import (
     CategoricalFusionElements,
     CausativeEvent,
     FunctionalDomain,
+    Fusion,
     GeneElement,
     LinkerElement,
     MultiplePossibleGenesElement,
@@ -180,7 +180,7 @@ class AssociatedDomainResponse(Response):
 class ValidateFusionResponse(Response):
     """Response model for Fusion validation endpoint."""
 
-    fusion: AbstractFusion | None
+    fusion: Fusion | None
 
 
 class ExonCoordsRequest(BaseModel):
