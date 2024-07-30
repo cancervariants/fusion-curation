@@ -133,7 +133,7 @@ class NormalizeGeneResponse(Response):
     """Response model for gene normalization endpoint."""
 
     term: StrictStr
-    conceptId: StrictStr | None
+    concept_id: StrictStr | None
     symbol: StrictStr | None
     cased: StrictStr | None
 
@@ -169,7 +169,7 @@ class GetDomainResponse(Response):
 class AssociatedDomainResponse(Response):
     """Response model for domain ID autocomplete suggestion endpoint."""
 
-    geneId: StrictStr
+    gene_id: StrictStr
     suggestions: list[DomainParams] | None
 
 
@@ -214,8 +214,8 @@ class SequenceIDResponse(Response):
     """Response model for sequence ID retrieval endpoint."""
 
     sequence: StrictStr
-    refseqId: StrictStr | None
-    ga4ghId: StrictStr | None
+    refseq_id: StrictStr | None
+    ga4gh_id: StrictStr | None
     aliases: list[StrictStr] | None
 
 
@@ -297,7 +297,7 @@ class NomenclatureResponse(Response):
 class RegulatoryElementResponse(Response):
     """Response model for regulatory element constructor."""
 
-    regulatoryElement: RegulatoryElement
+    regulatory_element: RegulatoryElement
 
 
 class DemoResponse(Response):
