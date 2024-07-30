@@ -257,7 +257,6 @@ export const getExonCoords = async (
   gene?: string,
   txAc?: string
 ): Promise<CoordsUtilsResponse> => {
-  console.log(txAc);
   const argsArray = [
     `chromosome=${chromosome}`,
     `strand=${strand === "+" ? "%2B" : "-"}`,

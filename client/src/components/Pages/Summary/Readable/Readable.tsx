@@ -1,5 +1,9 @@
 import "./Readable.scss";
-import { ClientStructuralElement } from "../../../../services/ResponseModels";
+import {
+  ClientStructuralElement,
+  FormattedAssayedFusion,
+  FormattedCategoricalFusion,
+} from "../../../../services/ResponseModels";
 import React, { useContext, useEffect, useState } from "react";
 import Chip from "@material-ui/core/Chip";
 import { FusionContext } from "../../../../global/contexts/FusionContext";
@@ -12,24 +16,25 @@ import {
   Typography,
 } from "@material-ui/core";
 import { eventDisplayMap } from "../../CausativeEvent/CausativeEvent";
-import { FusionType } from "../Main/Summary";
 import { getFusionNomenclature } from "../../../../services/main";
 
 type Props = {
-  validatedFusion: FusionType;
+  formattedFusion: FormattedAssayedFusion | FormattedCategoricalFusion;
 };
 
-export const Readable: React.FC<Props> = ({ validatedFusion }) => {
+export const Readable: React.FC<Props> = ({
+  formattedFusion: formattedFusion,
+}) => {
   // the validated fusion object is available as a parameter, but we'll use the
   // client-ified version to grab things like nomenclature and display values
   const { fusion } = useContext(FusionContext);
   const [nomenclature, setNomenclature] = useState<string>("");
 
   useEffect(() => {
-    getFusionNomenclature(validatedFusion).then((nmResponse) =>
+    getFusionNomenclature(formattedFusion).then((nmResponse) =>
       setNomenclature(nmResponse.nomenclature as string)
     );
-  }, [validatedFusion]);
+  }, [formattedFusion]);
 
   const assayName = fusion.assay?.assayName ? fusion.assay.assayName : "";
   const assayId = fusion.assay?.assayId ? `(${fusion.assay.assayId})` : "";

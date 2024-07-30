@@ -36,6 +36,9 @@ export const Summary: React.FC<Props> = ({ setVisibleTab }) => {
   const [validatedFusion, setValidatedFusion] = useState<
     AssayedFusion | CategoricalFusion | null
   >(null);
+  const [formattedFusion, setFormattedFusion] = useState<
+    FormattedAssayedFusion | FormattedCategoricalFusion | null
+  >(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const { fusion } = useContext(FusionContext);
 
@@ -154,15 +157,15 @@ export const Summary: React.FC<Props> = ({ setVisibleTab }) => {
       };
     }
     requestValidatedFusion(formattedFusion);
+    setFormattedFusion(formattedFusion);
   }, [fusion]);
-
-  console.log(validatedFusion);
 
   return (
     <>
       {(!validationErrors || validationErrors.length === 0) &&
+      formattedFusion &&
       validatedFusion ? (
-        <Success fusion={validatedFusion} />
+        <Success fusion={formattedFusion} />
       ) : (
         <>
           {validationErrors && validationErrors.length > 0 ? (
