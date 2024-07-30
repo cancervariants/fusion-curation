@@ -18,16 +18,15 @@ interface TemplatedSequenceElementInputProps
 const TemplatedSequenceElementInput: React.FC<
   TemplatedSequenceElementInputProps
 > = ({ element, index, handleSave, handleDelete, icon }) => {
-
   const [chromosome, setChromosome] = useState<string>(
-    element.input_chromosome || ""
+    element.inputChromosome || ""
   );
   const [strand, setStrand] = useState<string>(element.strand || "+");
   const [startPosition, setStartPosition] = useState<string>(
-    element.input_start || ""
+    element.inputStart || ""
   );
   const [endPosition, setEndPosition] = useState<string>(
-    element.input_end || ""
+    element.inputEnd || ""
   );
   const [inputError, setInputError] = useState<string>("");
 
@@ -67,7 +66,7 @@ const TemplatedSequenceElementInput: React.FC<
       ) {
         // TODO visible error handling
         setInputError("element validation unsuccessful");
-        setPendingResponse(false)
+        setPendingResponse(false);
         return;
       } else if (templatedSequenceResponse.element) {
         setInputError("");
@@ -79,7 +78,7 @@ const TemplatedSequenceElementInput: React.FC<
               ...templatedSequenceResponse.element,
               element_id: element.element_id,
               nomenclature: nomenclatureResponse.nomenclature,
-              input_chromosome: chromosome,
+              inputChromosome: chromosome,
               input_start: startPosition,
               input_end: endPosition,
             };
@@ -87,7 +86,7 @@ const TemplatedSequenceElementInput: React.FC<
           }
         });
       }
-      setPendingResponse(false)
+      setPendingResponse(false);
     });
   };
 
@@ -167,7 +166,7 @@ const TemplatedSequenceElementInput: React.FC<
     inputElements,
     validated,
     icon,
-    pendingResponse
+    pendingResponse,
   });
 };
 

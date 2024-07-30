@@ -3,6 +3,8 @@ import { FusionContext } from "../../../../global/contexts/FusionContext";
 import React, { useContext, useEffect, useState } from "react";
 
 import {
+  AssayedFusionElements,
+  CategoricalFusionElements,
   ClientElementUnion,
   ElementUnion,
   validateFusion,
@@ -10,7 +12,8 @@ import {
 import {
   AssayedFusion,
   CategoricalFusion,
-  FunctionalDomain,
+  FormattedAssayedFusion,
+  FormattedCategoricalFusion,
   GeneElement,
   LinkerElement,
   MultiplePossibleGenesElement,
@@ -33,6 +36,9 @@ export const Summary: React.FC<Props> = ({ setVisibleTab }) => {
   const [validatedFusion, setValidatedFusion] = useState<
     AssayedFusion | CategoricalFusion | null
   >(null);
+  const [formattedFusion, setFormattedFusion] = useState<
+    FormattedAssayedFusion | FormattedCategoricalFusion | null
+  >(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const { fusion } = useContext(FusionContext);
 
@@ -54,7 +60,7 @@ export const Summary: React.FC<Props> = ({ setVisibleTab }) => {
       case "LinkerSequenceElement":
         const linkerElement: LinkerElement = {
           type: element.type,
-          linker_sequence: element.linker_sequence,
+          linkerSequence: element.linkerSequence,
         };
         return linkerElement;
       case "TemplatedSequenceElement":
@@ -68,13 +74,13 @@ export const Summary: React.FC<Props> = ({ setVisibleTab }) => {
         const txSegmentElement: TranscriptSegmentElement = {
           type: element.type,
           transcript: element.transcript,
-          exon_start: element.exon_start,
-          exon_start_offset: element.exon_start_offset,
-          exon_end: element.exon_end,
-          exon_end_offset: element.exon_end_offset,
+          exonStart: element.exonStart,
+          exonStartOffset: element.exonStartOffset,
+          exonEnd: element.exonEnd,
+          exonEndOffset: element.exonEndOffset,
           gene: element.gene,
-          element_genomic_start: element.element_genomic_start,
-          element_genomic_end: element.element_genomic_end,
+          elementGenomicStart: element.elementGenomicStart,
+          elementGenomicEnd: element.elementGenomicEnd,
         };
         return txSegmentElement;
       case "MultiplePossibleGenesElement":
@@ -93,7 +99,7 @@ export const Summary: React.FC<Props> = ({ setVisibleTab }) => {
    * @param formattedFusion fusion with client-oriented properties dropped
    */
   const requestValidatedFusion = (
-    formattedFusion: AssayedFusion | CategoricalFusion
+    formattedFusion: FormattedAssayedFusion | FormattedCategoricalFusion
   ) => {
     // make request
     validateFusion(formattedFusion).then((response) => {
@@ -107,52 +113,49 @@ export const Summary: React.FC<Props> = ({ setVisibleTab }) => {
         }
       } else {
         setValidationErrors([]);
+        console.log(response.fusion);
         setValidatedFusion(
           response.fusion as CategoricalFusion | AssayedFusion
         );
+        setFormattedFusion(formattedFusion);
       }
     });
   };
 
   /**
    * On component render, restructure fusion to drop properties used for client state purposes,
+   * fix expected casing for fusor fusion constructors,
    * transmit to validation endpoint, and update local copy.
    */
   useEffect(() => {
-    const structuralElements: ElementUnion[] = fusion.structure?.map(
+    const structure: ElementUnion[] = fusion.structure?.map(
       (element: ClientElementUnion) => fusorifyStructuralElement(element)
     );
     let regulatoryElement: RegulatoryElement | null = null;
     if (fusion.regulatoryElement) {
       regulatoryElement = {
         type: fusion.regulatoryElement.type,
-        associated_gene: fusion.regulatoryElement.associated_gene,
-        regulatory_class: fusion.regulatoryElement.regulatory_class,
+        associatedGene: fusion.regulatoryElement.associatedGene,
+        regulatoryClass: fusion.regulatoryElement.regulatoryClass,
         featureId: fusion.regulatoryElement.featureId,
-        feature_location: fusion.regulatoryElement.feature_location,
+        featureLocation: fusion.regulatoryElement.featureLocation,
       };
     }
-    let formattedFusion: AssayedFusion | CategoricalFusion;
+    let formattedFusion: FormattedAssayedFusion | FormattedCategoricalFusion;
     if (fusion.type === "AssayedFusion") {
       formattedFusion = {
-        ...fusion,
-        structure: structuralElements,
-        regulatoryElement: regulatoryElement,
+        structure: structure as AssayedFusionElements[],
+        causative_event: fusion.causativeEvent,
+        assay: fusion.assay,
+        regulatory_element: regulatoryElement,
+        reading_frame_preserved: fusion.readingFramePreserved,
       };
     } else {
-      const criticalDomains: FunctionalDomain[] =
-        fusion.criticalFunctionalDomains?.map((domain: FunctionalDomain) => ({
-          _id: domain._id,
-          label: domain.label,
-          status: domain.status,
-          associated_gene: domain.associated_gene,
-          sequence_location: domain.sequence_location,
-        }));
       formattedFusion = {
-        ...fusion,
-        structure: structuralElements,
-        regulatoryElement: regulatoryElement,
-        criticalFunctionalDomains: criticalDomains,
+        structure: structure as CategoricalFusionElements[],
+        regulatory_element: regulatoryElement,
+        critical_functional_domains: fusion.criticalFunctionalDomains,
+        reading_frame_preserved: fusion.readingFramePreserved,
       };
     }
     requestValidatedFusion(formattedFusion);

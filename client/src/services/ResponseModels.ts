@@ -6,6 +6,10 @@
 */
 
 /**
+ * Form of evidence supporting identification of the fusion.
+ */
+export type Evidence = "observed" | "inferred";
+/**
  * Define possible classes of Regulatory Elements. Options are the possible values
  * for /regulatory_class value property in the INSDC controlled vocabulary:
  * https://www.insdc.org/controlled-vocabulary-regulatoryclass
@@ -72,14 +76,20 @@ export type Strand = 1 | -1;
  */
 export type EventType = "rearrangement" | "read-through" | "trans-splicing";
 /**
- * Form of evidence supporting identification of the fusion.
- */
-export type Evidence = "observed" | "inferred";
-/**
  * Define possible statuses of functional domains.
  */
 export type DomainStatus = "lost" | "preserved";
 
+/**
+ * Information pertaining to the assay used in identifying the fusion.
+ */
+export interface Assay {
+  type?: "Assay";
+  assayName?: string | null;
+  assayId?: string | null;
+  methodUri?: string | null;
+  fusionDetection?: Evidence | null;
+}
 /**
  * Assayed gene fusions from biological specimens are directly detected using
  * RNA-based gene fusion assays, or alternatively may be inferred from genomic
@@ -414,21 +424,11 @@ export interface CausativeEvent {
   eventDescription?: string | null;
 }
 /**
- * Information pertaining to the assay used in identifying the fusion.
- */
-export interface Assay {
-  type?: "Assay";
-  assayName?: string | null;
-  assayId?: string | null;
-  methodUri?: string | null;
-  fusionDetection?: Evidence | null;
-}
-/**
  * Response model for domain ID autocomplete suggestion endpoint.
  */
 export interface AssociatedDomainResponse {
   warnings?: string[] | null;
-  geneId: string;
+  gene_id: string;
   suggestions: DomainParams[] | null;
 }
 /**
@@ -717,7 +717,7 @@ export interface NomenclatureResponse {
 export interface NormalizeGeneResponse {
   warnings?: string[] | null;
   term: string;
-  conceptId: string | null;
+  concept_id: string | null;
   symbol: string | null;
   cased: string | null;
 }
@@ -726,7 +726,7 @@ export interface NormalizeGeneResponse {
  */
 export interface RegulatoryElementResponse {
   warnings?: string[] | null;
-  regulatoryElement: RegulatoryElement;
+  regulatory_element: RegulatoryElement;
 }
 /**
  * Abstract Response class for defining API response structures.
@@ -740,8 +740,8 @@ export interface Response {
 export interface SequenceIDResponse {
   warnings?: string[] | null;
   sequence: string;
-  refseqId: string | null;
-  ga4ghId: string | null;
+  refseq_id: string | null;
+  ga4gh_id: string | null;
   aliases: string[] | null;
 }
 /**

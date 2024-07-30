@@ -72,7 +72,7 @@ def clientify_structural_element(
     :return: client-ready structural element
     """
     element_args = element.dict()
-    element_args["element_id"] = str(uuid4())
+    element_args["elementId"] = str(uuid4())
 
     if element.type == StructuralElementType.UNKNOWN_GENE_ELEMENT:
         element_args["nomenclature"] = "?"
@@ -87,11 +87,11 @@ def clientify_structural_element(
     if element.type == StructuralElementType.TEMPLATED_SEQUENCE_ELEMENT:
         nm = templated_seq_nomenclature(element, fusor_instance.seqrepo)
         element_args["nomenclature"] = nm
-        element_args["input_chromosome"] = element.region.location.sequence_id.split(
+        element_args["inputChromosome"] = element.region.sequenceReference.id.split(
             ":"
         )[1]
-        element_args["input_start"] = element.region.location.interval.start.value
-        element_args["input_end"] = element.region.location.interval.end.value
+        element_args["inputStart"] = element.region.start
+        element_args["inputEnd"] = element.region.end
         return ClientTemplatedSequenceElement(**element_args)
     if element.type == StructuralElementType.GENE_ELEMENT:
         nm = gene_nomenclature(element)
@@ -100,12 +100,12 @@ def clientify_structural_element(
     if element.type == StructuralElementType.TRANSCRIPT_SEGMENT_ELEMENT:
         nm = tx_segment_nomenclature(element)
         element_args["nomenclature"] = nm
-        element_args["input_type"] = "exon_coords_tx"
-        element_args["input_tx"] = element.transcript.split(":")[1]
-        element_args["input_exon_start"] = element.exon_start
-        element_args["input_exon_start_offset"] = element.exon_start_offset
-        element_args["input_exon_end"] = element.exon_end
-        element_args["input_exon_end_offset"] = element.exon_end_offset
+        element_args["inputType"] = "exon_coords_tx"
+        element_args["inputTx"] = element.transcript.split(":")[1]
+        element_args["inputExonStart"] = element.exonStart
+        element_args["inputExonStartOffset"] = element.exonStartOffset
+        element_args["inputExonEnd"] = element.exonEnd
+        element_args["inputExonEndOffset"] = element.exonEndOffset
         return ClientTranscriptSegmentElement(**element_args)
     msg = "Unknown element type provided"
     raise ValueError(msg)
@@ -131,9 +131,9 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
             RegulatoryElement(**reg_element_args), fusor_instance.seqrepo
         )
         reg_element_args["nomenclature"] = nomenclature
-        regulatory_class = fusion_args["regulatoryElement"]["regulatory_class"]
+        regulatory_class = fusion_args["regulatoryElement"]["regulatoryClass"]
         if regulatory_class == "enhancer":
-            reg_element_args["display_class"] = "Enhancer"
+            reg_element_args["displayClass"] = "Enhancer"
         else:
             msg = "Undefined reg element class used in demo"
             raise Exception(msg)
@@ -144,7 +144,7 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
             client_domains = []
             for domain in fusion.criticalFunctionalDomains:
                 client_domain = domain.dict()
-                client_domain["domain_id"] = str(uuid4())
+                client_domain["domainId"] = str(uuid4())
                 client_domains.append(client_domain)
             fusion_args["criticalFunctionalDomains"] = client_domains
         return ClientCategoricalFusion(**fusion_args)

@@ -47,12 +47,12 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   const { fusion } = useContext(FusionContext);
 
   const [txInputType, setTxInputType] = useState<InputType>(
-    (element.input_type as InputType) || InputType.default
+    (element.inputType as InputType) || InputType.default
   );
 
   // "Text" variables refer to helper or warning text to set under input fields
   // TODO: this needs refactored so badly
-  const [txAc, setTxAc] = useState(element.input_tx || "");
+  const [txAc, setTxAc] = useState(element.inputTx || "");
   const [txAcText, setTxAcText] = useState("");
 
   const [txGene, setTxGene] = useState(element.input_gene || "");
@@ -248,7 +248,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             CheckGenomicCoordWarning(txSegmentResponse.warnings);
           } else {
             const inputParams = {
-              input_type: txInputType,
+              inputType: txInputType,
               input_strand: txStrand,
               input_gene: txGene,
               input_chr: txChrom,
@@ -277,8 +277,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             CheckGenomicCoordWarning(txSegmentResponse.warnings);
           } else {
             const inputParams = {
-              input_type: txInputType,
-              input_tx: txAc,
+              inputType: txInputType,
+              inputTx: txAc,
               input_strand: txStrand,
               input_chr: txChrom,
               input_genomic_start: txStartingGenomic,
@@ -323,8 +323,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             setStartingExonText("");
             setEndingExonText("");
             const inputParams = {
-              input_type: txInputType,
-              input_tx: txAc,
+              inputType: txInputType,
+              inputTx: txAc,
             };
             handleTxElementResponse(txSegmentResponse, inputParams);
           }
@@ -437,10 +437,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   const genomicCoordinateInfo = (
     <>
       <Box className="mid-inputs">
-        <ChromosomeField
-          fieldValue={txChrom}
-          errorText={txChromText}
-        />
+        <ChromosomeField fieldValue={txChrom} errorText={txChromText} />
         <Box mt="18px" width="125px">
           <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
         </Box>
