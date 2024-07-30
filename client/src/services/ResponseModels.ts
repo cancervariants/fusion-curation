@@ -530,16 +530,16 @@ export interface ClientTranscriptSegmentElement {
   elementGenomicStart?: SequenceLocation | null;
   elementGenomicEnd?: SequenceLocation | null;
   inputType: "genomic_coords_gene" | "genomic_coords_tx" | "exon_coords_tx";
-  inputTx: string | null;
-  inputStrand: Strand | null;
-  inputGene: string | null;
-  inputChr: string | null;
-  inputGenomicStart: string | null;
-  inputGenomicEnd: string | null;
-  inputExonStart: string | null;
-  inputExonStartOffset: string | null;
-  inputExonEnd: string | null;
-  inputExonEndOffset: string | null;
+  inputTx?: string | null;
+  inputStrand?: Strand | null;
+  inputGene?: string | null;
+  inputChr?: string | null;
+  inputGenomicStart?: number | null;
+  inputGenomicEnd?: number | null;
+  inputExonStart?: number | null;
+  inputExonStartOffset?: number | null;
+  inputExonEnd?: number | null;
+  inputExonEndOffset?: number | null;
 }
 /**
  * Gene element used client-side.
@@ -560,8 +560,8 @@ export interface ClientTemplatedSequenceElement {
   region: SequenceLocation;
   strand: Strand;
   inputChromosome: string | null;
-  inputStart: string | null;
-  inputEnd: string | null;
+  inputStart: number | null;
+  inputEnd: number | null;
 }
 /**
  * Linker element class used client-side.
