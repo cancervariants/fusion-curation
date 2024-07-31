@@ -429,7 +429,7 @@ export interface CausativeEvent {
 export interface AssociatedDomainResponse {
   warnings?: string[] | null;
   gene_id: string;
-  suggestions: DomainParams[] | null;
+  suggestions?: DomainParams[] | null;
 }
 /**
  * Fields for individual domain suggestion entries
@@ -670,6 +670,7 @@ export interface ExonCoordsRequest {
  * but the assayed_fusion and categorical_fusion constructors expect snake_case
  */
 export interface FormattedAssayedFusion {
+  fusion_type?: AssayedFusion & string;
   structure: (
     | TranscriptSegmentElement
     | GeneElement
@@ -688,6 +689,7 @@ export interface FormattedAssayedFusion {
  * but the assayed_fusion and categorical_fusion constructors expect snake_case
  */
 export interface FormattedCategoricalFusion {
+  fusion_type?: CategoricalFusion & string;
   structure: (
     | TranscriptSegmentElement
     | GeneElement

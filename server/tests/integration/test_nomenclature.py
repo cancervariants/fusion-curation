@@ -9,8 +9,8 @@ from httpx import AsyncClient
 def regulatory_element():
     """Provide regulatory element fixture."""
     return {
-        "regulatory_class": "promoter",
-        "associated_gene": {
+        "regulatoryClass": "promoter",
+        "associatedGene": {
             "id": "gene:G1",
             "gene": {"gene_id": "hgnc:9339"},
             "label": "G1",
@@ -192,11 +192,11 @@ async def test_gene_element_nomenclature(
 
     response = await async_client.post(
         "/api/nomenclature/gene",
-        json={"type": "GeneElement", "associated_gene": {"id": "hgnc:427"}},
+        json={"type": "GeneElement", "associatedGene": {"id": "hgnc:427"}},
     )
     assert response.status_code == 200
     assert response.json().get("warnings", []) == [
-        "2 validation errors for GeneElement\ngene\n  field required (type=value_error.missing)\nassociated_gene\n  extra fields not permitted (type=value_error.extra)"
+        "2 validation errors for GeneElement\ngene\n  field required (type=value_error.missing)\nassociatedGene\n  extra fields not permitted (type=value_error.extra)"
     ]
 
 

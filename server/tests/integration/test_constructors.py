@@ -96,7 +96,7 @@ def check_reg_element_response():
             "regulatory_class"
         )
         assert response_re.get("featureId") == expected_re.get("featureId")
-        assert response_re.get("associated_gene") == expected_re.get("associated_gene")
+        assert response_re.get("associatedGene") == expected_re.get("associatedGene")
         assert response_re.get("location_descriptor") == expected_re.get(
             "location_descriptor"
         )
@@ -224,7 +224,7 @@ async def test_build_reg_element(check_response, check_reg_element_response):
         "/api/construct/regulatoryElement?element_class=promoter&gene_name=braf",
         {
             "regulatoryElement": {
-                "associated_gene": {
+                "associatedGene": {
                     "gene_id": "hgnc:1097",
                     "id": "normalize.gene:braf",
                     "label": "BRAF",

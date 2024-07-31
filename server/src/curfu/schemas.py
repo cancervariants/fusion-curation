@@ -13,6 +13,7 @@ from fusor.models import (
     CausativeEvent,
     FunctionalDomain,
     Fusion,
+    FusionType,
     GeneElement,
     LinkerElement,
     MultiplePossibleGenesElement,
@@ -174,7 +175,7 @@ class AssociatedDomainResponse(Response):
     """Response model for domain ID autocomplete suggestion endpoint."""
 
     gene_id: StrictStr
-    suggestions: list[DomainParams] | None
+    suggestions: list[DomainParams] | None = None
 
 
 class ValidateFusionResponse(Response):
@@ -298,6 +299,7 @@ class FormattedAssayedFusion(BaseModel):
     but the assayed_fusion and categorical_fusion constructors expect snake_case
     """
 
+    fusion_type: FusionType.ASSAYED_FUSION = FusionType.ASSAYED_FUSION
     structure: AssayedFusionElements
     causative_event: CausativeEvent | None = None
     assay: Assay | None = None
@@ -311,6 +313,7 @@ class FormattedCategoricalFusion(BaseModel):
     but the assayed_fusion and categorical_fusion constructors expect snake_case
     """
 
+    fusion_type: FusionType.CATEGORICAL_FUSION = FusionType.CATEGORICAL_FUSION
     structure: CategoricalFusionElements
     regulatory_element: RegulatoryElement | None = None
     critical_functional_domains: list[FunctionalDomain] | None = None

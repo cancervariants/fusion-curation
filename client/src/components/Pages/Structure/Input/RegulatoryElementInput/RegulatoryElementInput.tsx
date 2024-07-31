@@ -55,10 +55,10 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
   >(fusion.regulatoryElement);
 
   const [elementClass, setElementClass] = useState<RegulatoryClass | "default">(
-    regElement?.regulatory_class || "default"
+    regElement?.regulatoryClass || "default"
   );
   const [gene, setGene] = useState<string>(
-    regElement?.associated_gene?.label || ""
+    regElement?.associatedGene?.label || ""
   );
   const [geneText, setGeneText] = useState<string>("");
 
@@ -75,7 +75,7 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
       if (reResponse.warnings && reResponse.warnings.length > 0) {
         throw new Error(reResponse.warnings[0]);
       }
-      getRegElementNomenclature(reResponse.regulatoryElement).then(
+      getRegElementNomenclature(reResponse.regulatory_element).then(
         (nomenclatureResponse) => {
           if (
             nomenclatureResponse.warnings &&
@@ -84,7 +84,7 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
             throw new Error(nomenclatureResponse.warnings[0]);
           }
           const newRegElement: ClientRegulatoryElement = {
-            ...reResponse.regulatoryElement,
+            ...reResponse.regulatory_element,
             displayClass: regulatoryClassItems[elementClass][1],
             nomenclature: nomenclatureResponse.nomenclature,
           };

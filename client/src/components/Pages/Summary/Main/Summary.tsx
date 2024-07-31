@@ -142,6 +142,7 @@ export const Summary: React.FC<Props> = ({ setVisibleTab }) => {
     let formattedFusion: FormattedAssayedFusion | FormattedCategoricalFusion;
     if (fusion.type === "AssayedFusion") {
       formattedFusion = {
+        fusion_type: fusion.type,
         structure: structure as AssayedFusionElements[],
         causative_event: fusion.causativeEvent,
         assay: fusion.assay,
@@ -150,12 +151,14 @@ export const Summary: React.FC<Props> = ({ setVisibleTab }) => {
       };
     } else {
       formattedFusion = {
+        fusion_type: fusion.type,
         structure: structure as CategoricalFusionElements[],
         regulatory_element: regulatoryElement,
         critical_functional_domains: fusion.criticalFunctionalDomains,
         reading_frame_preserved: fusion.readingFramePreserved,
       };
     }
+    console.log(formattedFusion);
     requestValidatedFusion(formattedFusion);
     setFormattedFusion(formattedFusion);
   }, [fusion]);

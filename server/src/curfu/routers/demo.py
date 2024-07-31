@@ -81,7 +81,7 @@ def clientify_structural_element(
         element_args["nomenclature"] = "v"
         return ClientMultiplePossibleGenesElement(**element_args)
     if element.type == StructuralElementType.LINKER_SEQUENCE_ELEMENT:
-        nm = element.linker_sequence.sequence
+        nm = element.linkerSequence.sequence.root
         element_args["nomenclature"] = nm
         return ClientLinkerElement(**element_args)
     if element.type == StructuralElementType.TEMPLATED_SEQUENCE_ELEMENT:
