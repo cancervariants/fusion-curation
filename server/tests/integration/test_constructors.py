@@ -19,7 +19,6 @@ async def test_build_gene_element(check_response, alk_gene_element):
         assert response_gd["id"] == expected_id
         assert response_gd["type"] == expected_gd["type"]
         assert response_gd["label"] == expected_gd["label"]
-        assert response_gd["gene_id"] == expected_gd["gene_id"]
 
     alk_gene_response = {"warnings": [], "element": alk_gene_element}
 
@@ -27,13 +26,13 @@ async def test_build_gene_element(check_response, alk_gene_element):
         "/api/construct/structural_element/gene?term=hgnc:427",
         alk_gene_response,
         check_gene_element_response,
-        expected_id="normalize.gene:hgnc%3A427",
+        expected_id="hgnc:427",
     )
     await check_response(
         "/api/construct/structural_element/gene?term=ALK",
         alk_gene_response,
         check_gene_element_response,
-        expected_id="normalize.gene:ALK",
+        expected_id="hgnc:427",
     )
     fake_id = "hgnc:99999999"
     await check_response(
@@ -57,19 +56,19 @@ def check_tx_element_response():
         expected_element = expected_response["element"]
         assert response_element["transcript"] == expected_element["transcript"]
         assert response_element["gene"] == expected_element["gene"]
-        assert response_element.get("exon_start") == expected_element.get("exon_start")
-        assert response_element.get("exon_start_offset") == expected_element.get(
-            "exon_start_offset"
+        assert response_element.get("exonStart") == expected_element.get("exonStart")
+        assert response_element.get("exonStartOffset") == expected_element.get(
+            "exonStartOffset"
         )
-        assert response_element.get("exon_end") == expected_element.get("exon_end")
-        assert response_element.get("exon_end_offset") == expected_element.get(
-            "exon_end_offset"
+        assert response_element.get("exonEnd") == expected_element.get("exonEnd")
+        assert response_element.get("exonEndOffset") == expected_element.get(
+            "exonEndOffset"
         )
-        assert response_element.get("element_genomic_start") == expected_element.get(
-            "element_genomic_start"
+        assert response_element.get("elementGenomicStart") == expected_element.get(
+            "elementGenomicStart"
         )
-        assert response_element.get("element_genomic_end") == expected_element.get(
-            "element_genomic_end"
+        assert response_element.get("elementGenomicEnd") == expected_element.get(
+            "elementGenomicEnd"
         )
 
     return check_tx_element_response
@@ -92,13 +91,11 @@ def check_reg_element_response():
         response_re = response["regulatoryElement"]
         expected_re = expected_response["regulatoryElement"]
         assert response_re["type"] == expected_re["type"]
-        assert response_re.get("regulatory_class") == expected_re.get(
-            "regulatory_class"
-        )
+        assert response_re.get("regulatoryClass") == expected_re.get("regulatoryClass")
         assert response_re.get("featureId") == expected_re.get("featureId")
         assert response_re.get("associatedGene") == expected_re.get("associatedGene")
-        assert response_re.get("location_descriptor") == expected_re.get(
-            "location_descriptor"
+        assert response_re.get("sequenceLocation") == expected_re.get(
+            "sequenceLocation"
         )
 
     return check_re_response
@@ -121,37 +118,11 @@ def check_templated_sequence_response():
         assert response_elem["region"]["id"] == expected_elem["region"]["id"]
         assert response_elem["region"]["type"] == expected_elem["region"]["type"]
         assert (
-            response_elem["region"]["location_id"]
-            == expected_elem["region"]["location_id"]
+            response_elem["region"]["sequenceReference"]["id"]
+            == expected_elem["region"]["sequenceReference"]["id"]
         )
-        assert (
-            response_elem["region"]["location"]["type"]
-            == expected_elem["region"]["location"]["type"]
-        )
-        assert (
-            response_elem["region"]["location"]["sequence_id"]
-            == expected_elem["region"]["location"]["sequence_id"]
-        )
-        assert (
-            response_elem["region"]["location"]["interval"]["type"]
-            == expected_elem["region"]["location"]["interval"]["type"]
-        )
-        assert (
-            response_elem["region"]["location"]["interval"]["start"]["type"]
-            == expected_elem["region"]["location"]["interval"]["start"]["type"]
-        )
-        assert (
-            response_elem["region"]["location"]["interval"]["start"]["value"]
-            == expected_elem["region"]["location"]["interval"]["start"]["value"]
-        )
-        assert (
-            response_elem["region"]["location"]["interval"]["end"]["type"]
-            == expected_elem["region"]["location"]["interval"]["end"]["type"]
-        )
-        assert (
-            response_elem["region"]["location"]["interval"]["end"]["value"]
-            == expected_elem["region"]["location"]["interval"]["end"]["value"]
-        )
+        assert response_elem["region"]["start"] == expected_elem["region"]["start"]
+        assert response_elem["region"]["end"] == expected_elem["region"]["end"]
 
     return check_temp_seq_response
 
@@ -164,21 +135,21 @@ async def test_build_tx_segment_ect(
     coordinates and transcript.
     """
     await check_response(
-        "/api/construct/structural_element/tx_segment_ect?transcript=NM_002529.3&exon_start=2&exon_start_offset=1",
+        "/api/construct/structural_element/tx_segment_ect?transcript=NM_002529.3&exonStart=2&exonStartOffset=1",
         {"element": ntrk1_tx_element_start},
         check_tx_element_response,
     )
 
-    # test require exon_start or exon_end
+    # test require exonStart or exonEnd
     await check_response(
         "/api/construct/structural_element/tx_segment_ect?transcript=NM_002529.3",
-        {"warnings": ["Must provide either `exon_start` or `exon_end`"]},
+        {"warnings": ["Must provide either `exonStart` or `exonEnd`"]},
         check_tx_element_response,
     )
 
     # test handle invalid transcript
     await check_response(
-        "/api/construct/structural_element/tx_segment_ect?transcript=NM_0012529.3&exon_start=3",
+        "/api/construct/structural_element/tx_segment_ect?transcript=NM_0012529.3&exonStart=3",
         {"warnings": ["Unable to get exons for NM_0012529.3"]},
         check_tx_element_response,
     )
@@ -225,12 +196,11 @@ async def test_build_reg_element(check_response, check_reg_element_response):
         {
             "regulatoryElement": {
                 "associatedGene": {
-                    "gene_id": "hgnc:1097",
-                    "id": "normalize.gene:braf",
+                    "id": "hgnc:1097",
                     "label": "BRAF",
                     "type": "Gene",
                 },
-                "regulatory_class": "promoter",
+                "regulatoryClass": "promoter",
                 "type": "RegulatoryElement",
             }
         },

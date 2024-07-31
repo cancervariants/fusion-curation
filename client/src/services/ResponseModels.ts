@@ -534,12 +534,12 @@ export interface ClientTranscriptSegmentElement {
   inputStrand?: Strand | null;
   inputGene?: string | null;
   inputChr?: string | null;
-  inputGenomicStart?: number | null;
-  inputGenomicEnd?: number | null;
-  inputExonStart?: number | null;
-  inputExonStartOffset?: number | null;
-  inputExonEnd?: number | null;
-  inputExonEndOffset?: number | null;
+  inputGenomicStart?: string | null;
+  inputGenomicEnd?: string | null;
+  inputExonStart?: string | null;
+  inputExonStartOffset?: string | null;
+  inputExonEnd?: string | null;
+  inputExonEndOffset?: string | null;
 }
 /**
  * Gene element used client-side.
@@ -560,8 +560,8 @@ export interface ClientTemplatedSequenceElement {
   region: SequenceLocation;
   strand: Strand;
   inputChromosome: string | null;
-  inputStart: number | null;
-  inputEnd: number | null;
+  inputStart: string | null;
+  inputEnd: string | null;
 }
 /**
  * Linker element class used client-side.

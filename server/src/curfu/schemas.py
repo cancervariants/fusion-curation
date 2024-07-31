@@ -53,12 +53,12 @@ class ClientTranscriptSegmentElement(TranscriptSegmentElement, ClientStructuralE
     inputStrand: Strand | None = None
     inputGene: str | None = None
     inputChr: str | None = None
-    inputGenomicStart: int | None = None
-    inputGenomicEnd: int | None = None
-    inputExonStart: int | None = None
-    inputExonStartOffset: int | None = None
-    inputExonEnd: int | None = None
-    inputExonEndOffset: int | None = None
+    inputGenomicStart: str | None = None
+    inputGenomicEnd: str | None = None
+    inputExonStart: str | None = None
+    inputExonStartOffset: str | None = None
+    inputExonEnd: str | None = None
+    inputExonEndOffset: str | None = None
 
 
 class ClientLinkerElement(LinkerElement, ClientStructuralElement):
@@ -69,8 +69,8 @@ class ClientTemplatedSequenceElement(TemplatedSequenceElement, ClientStructuralE
     """Templated sequence element used client-side."""
 
     inputChromosome: str | None
-    inputStart: int | None
-    inputEnd: int | None
+    inputStart: str | None
+    inputEnd: str | None
 
 
 class ClientGeneElement(GeneElement, ClientStructuralElement):

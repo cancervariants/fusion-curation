@@ -58,7 +58,9 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   const [txGene, setTxGene] = useState(element.inputGene || "");
   const [txGeneText, setTxGeneText] = useState("");
 
-  const [txStrand, setTxStrand] = useState<string>(element.inputStrand || "+");
+  const [txStrand, setTxStrand] = useState<string>(
+    element.inputStrand === 1 ? "+" : "-"
+  );
 
   const [txChrom, setTxChrom] = useState(element.inputChr || "");
   const [txChromText, setTxChromText] = useState("");

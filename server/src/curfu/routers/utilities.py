@@ -107,16 +107,14 @@ async def get_genome_coords(
     if exon_end is not None and exon_end_offset is None:
         exon_end_offset = 0
 
-    response = (
-        await request.app.state.fusor.cool_seq_tool.transcript_to_genomic_coordinates(
-            gene=gene,
-            transcript=transcript,
-            exon_start=exon_start,
-            exon_end=exon_end,
-            exon_start_offset=exon_start_offset,
-            exon_end_offset=exon_end_offset,
-            residue_mode="inter-residue",
-        )
+    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.transcript_to_genomic_coordinates(
+        gene=gene,
+        transcript=transcript,
+        exon_start=exon_start,
+        exon_end=exon_end,
+        exon_start_offset=exon_start_offset,
+        exon_end_offset=exon_end_offset,
+        residue_mode="inter-residue",
     )
     warnings = response.warnings
     if warnings:

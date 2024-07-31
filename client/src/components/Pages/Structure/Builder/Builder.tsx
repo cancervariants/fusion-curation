@@ -53,7 +53,7 @@ const ELEMENT_TEMPLATE = [
   {
     type: ElementType.geneElement,
     nomenclature: "",
-    element_id: uuid(),
+    elementId: uuid(),
     gene: {
       id: "",
       type: "",
@@ -63,11 +63,11 @@ const ELEMENT_TEMPLATE = [
   {
     type: ElementType.transcriptSegmentElement,
     nomenclature: "",
-    element_id: uuid(),
-    exon_start: null,
-    exon_start_offset: null,
-    exon_end: null,
-    exon_end_offset: null,
+    elementId: uuid(),
+    exonStart: null,
+    exonStartOffset: null,
+    exonEnd: null,
+    exonEndOffset: null,
     gene: {
       id: "",
       type: "",
@@ -77,12 +77,12 @@ const ELEMENT_TEMPLATE = [
   {
     nomenclature: "",
     type: ElementType.linkerSequenceElement,
-    element_id: uuid(),
+    elementId: uuid(),
   },
   {
     nomenclature: "",
     type: ElementType.templatedSequenceElement,
-    element_id: uuid(),
+    elementId: uuid(),
     id: "",
     location: {
       sequence_id: "",
@@ -102,18 +102,18 @@ const ELEMENT_TEMPLATE = [
   },
   {
     type: ElementType.unknownGeneElement,
-    element_id: uuid(),
+    elementId: uuid(),
     nomenclature: "?",
   },
   {
     type: ElementType.multiplePossibleGenesElement,
-    element_id: uuid(),
+    elementId: uuid(),
     nomenclature: "v",
   },
   {
     type: ElementType.regulatoryElement,
     nomenclature: "",
-    element_id: uuid(),
+    elementId: uuid(),
   },
 ];
 
@@ -148,7 +148,7 @@ const Builder: React.FC = () => {
     const sourceClone = Array.from(ELEMENT_TEMPLATE);
     const item = sourceClone[source.index];
     const newItem = Object.assign({}, item);
-    newItem.element_id = uuid();
+    newItem.elementId = uuid();
 
     if (draggableId.includes("RegulatoryElement")) {
       setFusion({ ...fusion, ...{ regulatoryElement: newItem } });
@@ -190,7 +190,7 @@ const Builder: React.FC = () => {
 
   const handleDelete = (uuid: string) => {
     let items: Array<ClientElementUnion> = Array.from(fusion.structure);
-    items = items.filter((item) => item?.element_id !== uuid);
+    items = items.filter((item) => item?.elementId !== uuid);
     setFusion({ ...fusion, ...{ structure: items } });
   };
 
@@ -414,7 +414,7 @@ const Builder: React.FC = () => {
                 style={{ display: "flex" }}
               >
                 <Box className="options-container">
-                  {ELEMENT_TEMPLATE.map(({ element_id, type }, index) => {
+                  {ELEMENT_TEMPLATE.map(({ elementId, type }, index) => {
                     if (
                       (fusion.type === "AssayedFusion" &&
                         type !== ElementType.multiplePossibleGenesElement) ||
@@ -423,8 +423,8 @@ const Builder: React.FC = () => {
                     ) {
                       return (
                         <Draggable
-                          key={element_id}
-                          draggableId={type + element_id}
+                          key={elementId}
+                          draggableId={type + elementId}
                           index={index}
                           isDragDisabled={
                             type === ElementType.regulatoryElement &&
@@ -466,7 +466,7 @@ const Builder: React.FC = () => {
                                 {snapshot.isDragging && (
                                   <Box
                                     style={{ transform: "none !important" }}
-                                    key={element_id}
+                                    key={elementId}
                                     className={`option-item clone ${type}`}
                                   >
                                     {elementNameMap[type].icon}{" "}
@@ -526,8 +526,8 @@ const Builder: React.FC = () => {
                       return (
                         element && (
                           <Draggable
-                            key={element.element_id}
-                            draggableId={element.element_id}
+                            key={element.elementId}
+                            draggableId={element.elementId}
                             index={index}
                           >
                             {(provided) => (

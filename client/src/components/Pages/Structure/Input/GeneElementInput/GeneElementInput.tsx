@@ -10,6 +10,7 @@ import {
   getGeneNomenclature,
 } from "../../../../../services/main";
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
+import React from "react";
 
 interface GeneElementInputProps extends StructuralElementInputProps {
   element: ClientGeneElement;
@@ -70,7 +71,6 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
       setGene={setGene}
       geneText={geneText}
       setGeneText={setGeneText}
-      style={{ width: 125 }}
       tooltipDirection="left"
     />
   );

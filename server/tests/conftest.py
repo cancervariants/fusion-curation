@@ -4,6 +4,7 @@ import asyncio
 from collections.abc import Callable
 
 import pytest
+import pytest_asyncio
 from curfu.main import app, get_domain_services, get_gene_services, start_fusor
 from httpx import AsyncClient
 
@@ -16,7 +17,7 @@ def event_loop(request):
     loop.close()
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session")
 async def async_client():
     """Provide httpx async client fixture."""
     app.state.fusor = await start_fusor()
@@ -30,7 +31,7 @@ async def async_client():
 response_callback_type = Callable[[dict, dict], None]
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session")
 async def check_response(async_client):
     """Provide base response check function. Use in individual tests."""
 
@@ -66,10 +67,9 @@ async def check_response(async_client):
 def alk_descriptor():
     """Gene descriptor for ALK gene"""
     return {
-        "id": "normalize.gene:hgnc%3A427",
         "type": "Gene",
         "label": "ALK",
-        "gene_id": "hgnc:427",
+        "id": "hgnc:427",
     }
 
 
@@ -77,10 +77,9 @@ def alk_descriptor():
 def tpm3_descriptor():
     """Gene descriptor for TPM3 gene"""
     return {
-        "id": "normalize.gene:TPM3",
         "type": "Gene",
         "label": "TPM3",
-        "gene_id": "hgnc:12012",
+        "id": "hgnc:12012",
     }
 
 
@@ -88,10 +87,9 @@ def tpm3_descriptor():
 def ntrk1_descriptor():
     """Gene descriptor for NTRK1 gene"""
     return {
-        "id": "normalize.gene:NTRK1",
         "type": "Gene",
         "label": "NTRK1",
-        "gene_id": "hgnc:8031",
+        "id": "hgnc:8031",
     }
 
 
@@ -109,22 +107,14 @@ def ntrk1_tx_element_start(ntrk1_descriptor):
     return {
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_002529.3",
-        "exon_start": 2,
-        "exon_start_offset": 1,
+        "exonStart": 2,
+        "exonStartOffset": 1,
         "gene": ntrk1_descriptor,
-        "element_genomic_start": {
+        "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",
             "type": "SequenceLocation",
-            "label": "NC_000001.11",
-            "location": {
-                "type": "SequenceLocation",
-                "sequence_id": "refseq:NC_000001.11",
-                "interval": {
-                    "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 156864429},
-                    "end": {"type": "Number", "value": 156864430},
-                },
-            },
+            "start": 156864429,
+            "end": 156864430,
         },
     }
 
@@ -137,38 +127,22 @@ def tpm3_tx_t_element(tpm3_descriptor):
     return {
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_152263.4",
-        "exon_start": 6,
-        "exon_start_offset": 72,
-        "exon_end": 6,
-        "exon_end_offset": -5,
+        "exonStart": 6,
+        "exonStartOffset": 72,
+        "exonEnd": 6,
+        "exonEndOffset": -5,
         "gene": tpm3_descriptor,
-        "element_genomic_start": {
+        "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",
             "type": "SequenceLocation",
-            "label": "NC_000001.11",
-            "location": {
-                "type": "SequenceLocation",
-                "sequence_id": "refseq:NC_000001.11",
-                "interval": {
-                    "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 154171416},
-                    "end": {"type": "Number", "value": 154171417},
-                },
-            },
+            "start": 154171416,
+            "end": 154171417,
         },
-        "element_genomic_end": {
+        "elementGenomicEnd": {
             "id": "fusor.location_descriptor:NC_000001.11",
             "type": "SequenceLocation",
-            "label": "NC_000001.11",
-            "location": {
-                "type": "SequenceLocation",
-                "sequence_id": "refseq:NC_000001.11",
-                "interval": {
-                    "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 154171417},
-                    "end": {"type": "Number", "value": 154171418},
-                },
-            },
+            "start": 154171417,
+            "end": 154171418,
         },
     }
 
@@ -181,37 +155,21 @@ def tpm3_tx_g_element(tpm3_descriptor):
     return {
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_152263.4",
-        "exon_start": 6,
-        "exon_start_offset": 5,
-        "exon_end": 6,
-        "exon_end_offset": -70,
+        "exonStart": 6,
+        "exonStartOffset": 5,
+        "exonEnd": 6,
+        "exonEndOffset": -70,
         "gene": tpm3_descriptor,
-        "element_genomic_start": {
+        "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",
             "type": "SequenceLocation",
-            "label": "NC_000001.11",
-            "location": {
-                "type": "SequenceLocation",
-                "sequence_id": "refseq:NC_000001.11",
-                "interval": {
-                    "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 154171483},
-                    "end": {"type": "Number", "value": 154171484},
-                },
-            },
+            "start": 154171483,
+            "end": 154171484,
         },
-        "element_genomic_end": {
+        "elementGenomicEnd": {
             "id": "fusor.location_descriptor:NC_000001.11",
             "type": "SequenceLocation",
-            "label": "NC_000001.11",
-            "location": {
-                "type": "SequenceLocation",
-                "sequence_id": "refseq:NC_000001.11",
-                "interval": {
-                    "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 154171482},
-                    "end": {"type": "Number", "value": 154171483},
-                },
-            },
+            "start": 154171482,
+            "end": 154171483,
         },
     }

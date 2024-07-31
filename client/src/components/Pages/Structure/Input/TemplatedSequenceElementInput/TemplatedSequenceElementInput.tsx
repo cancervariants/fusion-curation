@@ -21,12 +21,14 @@ const TemplatedSequenceElementInput: React.FC<
   const [chromosome, setChromosome] = useState<string>(
     element.inputChromosome || ""
   );
-  const [strand, setStrand] = useState<string>(element.strand || "+");
+  const [strand, setStrand] = useState<string>(
+    element.strand === 1 ? "+" : "-"
+  );
   const [startPosition, setStartPosition] = useState<string>(
-    element.inputStart || ""
+    element.inputStart !== null ? `${element.inputStart}` : ""
   );
   const [endPosition, setEndPosition] = useState<string>(
-    element.inputEnd || ""
+    element.inputEnd !== null ? `${element.inputEnd}` : ""
   );
   const [inputError, setInputError] = useState<string>("");
 
@@ -74,13 +76,14 @@ const TemplatedSequenceElementInput: React.FC<
           templatedSequenceResponse.element
         ).then((nomenclatureResponse) => {
           if (nomenclatureResponse.nomenclature) {
+            console.log(templatedSequenceResponse.element);
             const templatedSequenceElement: ClientTemplatedSequenceElement = {
               ...templatedSequenceResponse.element,
-              element_id: element.element_id,
+              elementId: element.elementId,
               nomenclature: nomenclatureResponse.nomenclature,
               inputChromosome: chromosome,
-              input_start: startPosition,
-              input_end: endPosition,
+              inputStart: Number(startPosition),
+              inputEnd: Number(endPosition),
             };
             handleSave(index, templatedSequenceElement);
           }
