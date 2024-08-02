@@ -506,13 +506,14 @@ export interface ClientAssayedFusion {
  * Define regulatory element object used client-side.
  */
 export interface ClientRegulatoryElement {
+  elementId: string;
+  nomenclature: string;
   type?: "RegulatoryElement";
   regulatoryClass: RegulatoryClass;
   featureId?: string | null;
   associatedGene?: Gene | null;
   featureLocation?: SequenceLocation | null;
   displayClass: string;
-  nomenclature: string;
 }
 /**
  * TranscriptSegment element class used client-side.

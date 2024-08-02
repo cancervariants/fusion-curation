@@ -24,11 +24,16 @@ const TemplatedSequenceElementInput: React.FC<
   const [strand, setStrand] = useState<string>(
     element.strand === 1 ? "+" : "-"
   );
+  console.log(element.inputStart);
   const [startPosition, setStartPosition] = useState<string>(
-    element.inputStart !== null ? `${element.inputStart}` : ""
+    element.inputStart !== null && element.inputStart !== undefined
+      ? `${element.inputStart}`
+      : ""
   );
   const [endPosition, setEndPosition] = useState<string>(
-    element.inputEnd !== null ? `${element.inputEnd}` : ""
+    element.inputEnd !== null && element.inputEnd !== undefined
+      ? `${element.inputEnd}`
+      : ""
   );
   const [inputError, setInputError] = useState<string>("");
 
@@ -62,6 +67,7 @@ const TemplatedSequenceElementInput: React.FC<
       startPosition,
       endPosition
     ).then((templatedSequenceResponse) => {
+      console.log(templatedSequenceResponse);
       if (
         templatedSequenceResponse.warnings &&
         templatedSequenceResponse.warnings?.length > 0
@@ -76,14 +82,15 @@ const TemplatedSequenceElementInput: React.FC<
           templatedSequenceResponse.element
         ).then((nomenclatureResponse) => {
           if (nomenclatureResponse.nomenclature) {
-            console.log(templatedSequenceResponse.element);
             const templatedSequenceElement: ClientTemplatedSequenceElement = {
               ...templatedSequenceResponse.element,
               elementId: element.elementId,
               nomenclature: nomenclatureResponse.nomenclature,
+              region: element.region,
+              strand: element.strand,
               inputChromosome: chromosome,
-              inputStart: Number(startPosition),
-              inputEnd: Number(endPosition),
+              inputStart: startPosition,
+              inputEnd: endPosition,
             };
             handleSave(index, templatedSequenceElement);
           }

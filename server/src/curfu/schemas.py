@@ -98,7 +98,7 @@ class ClientFunctionalDomain(FunctionalDomain):
         extra = Extra.forbid
 
 
-class ClientRegulatoryElement(RegulatoryElement):
+class ClientRegulatoryElement(RegulatoryElement, ClientStructuralElement):
     """Define regulatory element object used client-side."""
 
     displayClass: str

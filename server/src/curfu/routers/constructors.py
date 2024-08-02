@@ -1,7 +1,7 @@
 """Provide routes for element construction endpoints"""
 
 from fastapi import APIRouter, Query, Request
-from fusor.models import DomainStatus, RegulatoryClass, Strand
+from fusor.models import DomainStatus, RegulatoryClass
 from pydantic import ValidationError
 
 from curfu import logger
@@ -198,7 +198,7 @@ def build_templated_sequence_element(
         otherwise
     """
     try:
-        strand_n = Strand(strand)
+        strand_n = get_strand(strand)
     except ValueError:
         warning = f"Received invalid strand value: {strand}"
         logger.warning(warning)
@@ -208,7 +208,6 @@ def build_templated_sequence_element(
         end=end,
         sequence_id=parse_identifier(sequence_id),
         strand=strand_n,
-        add_location_id=True,
     )
     return TemplatedSequenceElementResponse(element=element, warnings=[])
 

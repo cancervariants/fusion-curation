@@ -86,7 +86,7 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
           const newRegElement: ClientRegulatoryElement = {
             ...reResponse.regulatory_element,
             displayClass: regulatoryClassItems[elementClass][1],
-            nomenclature: nomenclatureResponse.nomenclature,
+            nomenclature: nomenclatureResponse.nomenclature || "",
           };
           setRegElement(newRegElement);
           setFusion({ ...fusion, ...{ regulatoryElement: newRegElement } });
