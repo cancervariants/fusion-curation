@@ -65,7 +65,7 @@ def clientify_structural_element(
     fusor_instance: FUSOR,
 ) -> ClientElementUnion:
     """Add fields required by client to structural element object.
-    \f
+
     :param element: a structural element object
     :param fusor_instance: instantiated FUSOR object, passed down from FastAPI request
         context
@@ -165,6 +165,7 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
 )
 def get_alk(request: Request) -> DemoResponse:
     """Retrieve ALK assayed fusion.
+
     \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
@@ -183,6 +184,7 @@ def get_alk(request: Request) -> DemoResponse:
 )
 def get_ewsr1(request: Request) -> DemoResponse:
     """Retrieve EWSR1 assayed fusion.
+
     \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
@@ -219,6 +221,7 @@ def get_bcr_abl1(request: Request) -> DemoResponse:
 )
 def get_tpm3_ntrk1(request: Request) -> DemoResponse:
     """Retrieve TPM3-NTRK1 assayed fusion.
+
     \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
@@ -238,6 +241,7 @@ def get_tpm3_ntrk1(request: Request) -> DemoResponse:
 )
 def get_tpm3_pdgfrb(request: Request) -> DemoResponse:
     """Retrieve TPM3-PDGFRB assayed fusion.
+
     \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
@@ -257,6 +261,8 @@ def get_tpm3_pdgfrb(request: Request) -> DemoResponse:
 )
 def get_igh_myc(request: Request) -> DemoResponse:
     """Retrieve IGH-MYC assayed fusion.
+
+    \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     """
