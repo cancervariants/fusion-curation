@@ -29,7 +29,7 @@ ResponseWarnings = list[StrictStr] | None
 
 ResponseDict = dict[
     str,
-    str | int | str | list[str] | list[tuple[str, str, str, str]] | FunctionalDomain,
+    str | int | list[str] | list[tuple[str, str, str, str]] | FunctionalDomain | None,
 ]
 Warnings = list[str]
 
