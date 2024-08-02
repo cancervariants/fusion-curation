@@ -23,13 +23,15 @@ requires-python = ">=3.10"
 description = "Curation tool for gene fusions"
 dependencies = [
     "fastapi >= 0.72.0",
-    "aiofiles",
-    "asyncpg",
-    "sqlparse >= 0.4.2",
-    "urllib3 >= 1.26.5",
+    "starlette",
+    "jinja2",  # required for file service
     "click",
-    "jinja2",
     "boto3",
+    "botocore",
+    "fusor ~= 0.2.0",
+    "cool-seq-tool ~= 0.5.1",
+    "pydantic >= 2.0",
+    "gene-normalizer ~= 0.4.0",
 ]
 dynamic = ["version"]
 
@@ -46,9 +48,7 @@ dev = [
     "ruff",
     "black",
     "pre-commit>=3.7.1",
-    "gene-normalizer ~= 0.4.0",
     "pydantic-to-typescript2",
-    "fusor ~= 0.2.0",
 ]
 
 [project.scripts]
