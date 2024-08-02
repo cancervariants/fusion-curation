@@ -102,10 +102,10 @@ def clientify_structural_element(
         element_args["nomenclature"] = nm
         element_args["inputType"] = "exon_coords_tx"
         element_args["inputTx"] = element.transcript.split(":")[1]
-        element_args["inputExonStart"] = element.exonStart
-        element_args["inputExonStartOffset"] = element.exonStartOffset
-        element_args["inputExonEnd"] = element.exonEnd
-        element_args["inputExonEndOffset"] = element.exonEndOffset
+        element_args["inputExonStart"] = str(element.exonStart)
+        element_args["inputExonStartOffset"] = str(element.exonStartOffset)
+        element_args["inputExonEnd"] = str(element.exonEnd)
+        element_args["inputExonEndOffset"] = str(element.exonEndOffset)
         element_args["inputGene"] = element.gene.label
         return ClientTranscriptSegmentElement(**element_args)
     msg = "Unknown element type provided"
@@ -138,6 +138,7 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
         else:
             msg = "Undefined reg element class used in demo"
             raise Exception(msg)
+        reg_element_args["elementId"] = str(uuid4())
         fusion_args["regulatoryElement"] = reg_element_args
 
     if fusion.type == FUSORTypes.CATEGORICAL_FUSION:
