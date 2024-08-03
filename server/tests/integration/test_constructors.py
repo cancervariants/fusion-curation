@@ -75,7 +75,7 @@ def check_tx_element_response(check_sequence_location):
 
 
 @pytest.fixture(scope="session")
-def check_reg_element_response():
+def check_reg_element_response(check_sequence_location):
     """Provide callback function check correctness of regulatory element constructor."""
 
     def check_re_response(response: dict, expected_response: dict):
@@ -94,15 +94,15 @@ def check_reg_element_response():
         assert response_re.get("regulatoryClass") == expected_re.get("regulatoryClass")
         assert response_re.get("featureId") == expected_re.get("featureId")
         assert response_re.get("associatedGene") == expected_re.get("associatedGene")
-        assert response_re.get("sequenceLocation") == expected_re.get(
-            "sequenceLocation"
-        )
+        sequence_location = response_re.get("sequenceLocation")
+        if sequence_location:
+            check_sequence_location(sequence_location)
 
     return check_re_response
 
 
 @pytest.fixture(scope="session")
-def check_templated_sequence_response():
+def check_templated_sequence_response(check_sequence_location):
     """Provide callback function to check templated sequence constructor response"""
 
     def check_temp_seq_response(response: dict, expected_response: dict):
@@ -116,11 +116,7 @@ def check_templated_sequence_response():
         assert response_elem["type"] == expected_elem["type"]
         assert response_elem["strand"] == expected_elem["strand"]
         assert response_elem["region"]["id"] == expected_elem["region"]["id"]
-        assert response_elem["region"]["type"] == expected_elem["region"]["type"]
-        assert (
-            response_elem["region"]["sequenceReference"]["id"]
-            == expected_elem["region"]["sequenceReference"]["id"]
-        )
+        check_sequence_location(response_elem["region"] or {})
         assert response_elem["region"]["start"] == expected_elem["region"]["start"]
         assert response_elem["region"]["end"] == expected_elem["region"]["end"]
 

@@ -71,6 +71,7 @@ def check_sequence_location():
 
     def check_sequence_location(sequence_location):
         assert "ga4gh:SL." in sequence_location.get("id")
+        assert sequence_location.get("type") == "SequenceLocation"
         sequence_reference = sequence_location.get("sequenceReference", {})
         assert "refseq:" in sequence_reference.get("id")
         assert sequence_reference.get("refgetAccession")
