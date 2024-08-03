@@ -672,13 +672,12 @@ export interface ExonCoordsRequest {
  */
 export interface FormattedAssayedFusion {
   fusion_type?: AssayedFusion & string;
-  structure: (
+  structure:
     | TranscriptSegmentElement
     | GeneElement
     | TemplatedSequenceElement
     | LinkerElement
-    | UnknownGeneElement
-  )[];
+    | UnknownGeneElement;
   causative_event?: CausativeEvent | null;
   assay?: Assay | null;
   regulatory_element?: RegulatoryElement | null;
@@ -691,13 +690,12 @@ export interface FormattedAssayedFusion {
  */
 export interface FormattedCategoricalFusion {
   fusion_type?: CategoricalFusion & string;
-  structure: (
+  structure:
     | TranscriptSegmentElement
     | GeneElement
     | TemplatedSequenceElement
     | LinkerElement
-    | MultiplePossibleGenesElement
-  )[];
+    | MultiplePossibleGenesElement;
   regulatory_element?: RegulatoryElement | null;
   critical_functional_domains?: FunctionalDomain[] | null;
   reading_frame_preserved?: boolean | null;

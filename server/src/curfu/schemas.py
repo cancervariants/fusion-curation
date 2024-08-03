@@ -181,7 +181,7 @@ class AssociatedDomainResponse(Response):
 class ValidateFusionResponse(Response):
     """Response model for Fusion validation endpoint."""
 
-    fusion: Fusion | None
+    fusion: Fusion | None = None
 
 
 class ExonCoordsRequest(BaseModel):

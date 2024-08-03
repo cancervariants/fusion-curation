@@ -94,7 +94,7 @@ export type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
  * to add additional annotations if we want to later.
  */
 export const validateFusion = async (
-  fusion: AssayedFusion | CategoricalFusion
+  fusion: FormattedAssayedFusion | FormattedCategoricalFusion
 ): Promise<ValidateFusionResponse> => {
   const response = await fetch("/api/validate", {
     method: "POST",
