@@ -66,7 +66,6 @@ const TemplatedSequenceElementInput: React.FC<
       startPosition,
       endPosition
     ).then((templatedSequenceResponse) => {
-      console.log(templatedSequenceResponse);
       if (
         templatedSequenceResponse.warnings &&
         templatedSequenceResponse.warnings?.length > 0
