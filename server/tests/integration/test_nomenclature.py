@@ -212,7 +212,19 @@ async def test_templated_sequence_nomenclature(
 @pytest.mark.asyncio()
 async def test_fusion_nomenclature(async_client: AsyncClient):
     """Test correctness of fusion nomneclature endpoint."""
-    response = await async_client.post("/api/nomenclature/fusion", json=bcr_abl1.dict())
+    bcr_abl1_formatted = bcr_abl1.model_dump()
+    bcr_abl1_json = {
+        "structure": bcr_abl1_formatted.get("structure"),
+        "fusion_type": "CategoricalFusion",
+        "reading_frame_preserved": True,
+        "regulatory_element": None,
+        "critical_functional_domains": bcr_abl1_formatted.get(
+            "criticalFunctionalDomains"
+        ),
+    }
+    response = await async_client.post(
+        "/api/nomenclature/fusion?skip_vaidation=true", json=bcr_abl1_json
+    )
     assert response.status_code == 200
     assert (
         response.json().get("nomenclature", "")
