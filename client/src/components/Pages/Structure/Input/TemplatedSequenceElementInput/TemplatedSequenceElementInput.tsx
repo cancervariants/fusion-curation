@@ -24,7 +24,6 @@ const TemplatedSequenceElementInput: React.FC<
   const [strand, setStrand] = useState<string>(
     element.strand === 1 ? "+" : "-"
   );
-  console.log(element.inputStart);
   const [startPosition, setStartPosition] = useState<string>(
     element.inputStart !== null && element.inputStart !== undefined
       ? `${element.inputStart}`
@@ -86,8 +85,10 @@ const TemplatedSequenceElementInput: React.FC<
               ...templatedSequenceResponse.element,
               elementId: element.elementId,
               nomenclature: nomenclatureResponse.nomenclature,
-              region: element.region,
-              strand: element.strand,
+              region:
+                templatedSequenceResponse?.element?.region || element.region,
+              strand:
+                templatedSequenceResponse?.element?.strand || element.strand,
               inputChromosome: chromosome,
               inputStart: startPosition,
               inputEnd: endPosition,

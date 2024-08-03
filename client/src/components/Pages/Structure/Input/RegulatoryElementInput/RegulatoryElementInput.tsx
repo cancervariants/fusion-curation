@@ -85,6 +85,7 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
           }
           const newRegElement: ClientRegulatoryElement = {
             ...reResponse.regulatory_element,
+            elementId: element.elementId,
             displayClass: regulatoryClassItems[elementClass][1],
             nomenclature: nomenclatureResponse.nomenclature || "",
           };

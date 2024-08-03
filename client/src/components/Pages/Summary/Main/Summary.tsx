@@ -50,6 +50,7 @@ export const Summary: React.FC<Props> = ({ setVisibleTab }) => {
   const fusorifyStructuralElement = (
     element: ClientElementUnion
   ): ElementUnion => {
+    console.log(element);
     switch (element.type) {
       case "GeneElement":
         const geneElement: GeneElement = {

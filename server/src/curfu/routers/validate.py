@@ -26,7 +26,6 @@ def validate_fusion(request: Request, fusion: dict = Body()) -> ResponseDict:
     """
     fusor = request.app.state.fusor
     response = {}
-    verified_fusion = fusor.fusion(**fusion)
     try:
         verified_fusion = fusor.fusion(**fusion)
     except FUSORParametersException as e:
