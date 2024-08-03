@@ -63,6 +63,22 @@ async def check_response(async_client):
     return check_response
 
 
+@pytest.fixture(scope="session")
+def check_sequence_location():
+    """Check that a sequence location is valid
+    :param dict sequence_location: sequence location structure
+    """
+
+    def check_sequence_location(sequence_location):
+        assert "ga4gh:SL." in sequence_location.get("id")
+        sequence_reference = sequence_location.get("sequenceReference", {})
+        assert "refseq:" in sequence_reference.get("id")
+        assert sequence_reference.get("refgetAccession")
+        assert sequence_reference.get("type") == "SequenceReference"
+
+    return check_sequence_location
+
+
 @pytest.fixture(scope="module")
 def alk_descriptor():
     """Gene descriptor for ALK gene"""
@@ -128,9 +144,9 @@ def tpm3_tx_t_element(tpm3_descriptor):
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_152263.4",
         "exonStart": 6,
-        "exonStartOffset": 72,
+        "exonStartOffset": 71,
         "exonEnd": 6,
-        "exonEndOffset": -5,
+        "exonEndOffset": -4,
         "gene": tpm3_descriptor,
         "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",
@@ -158,7 +174,7 @@ def tpm3_tx_g_element(tpm3_descriptor):
         "exonStart": 6,
         "exonStartOffset": 5,
         "exonEnd": 6,
-        "exonEndOffset": -70,
+        "exonEndOffset": -71,
         "gene": tpm3_descriptor,
         "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",

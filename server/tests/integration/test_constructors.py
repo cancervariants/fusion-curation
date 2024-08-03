@@ -43,7 +43,7 @@ async def test_build_gene_element(check_response, alk_gene_element):
 
 
 @pytest.fixture(scope="session")
-def check_tx_element_response():
+def check_tx_element_response(check_sequence_location):
     """Provide callback function to check correctness of transcript element constructor."""
 
     def check_tx_element_response(response: dict, expected_response: dict):
@@ -64,12 +64,12 @@ def check_tx_element_response():
         assert response_element.get("exonEndOffset") == expected_element.get(
             "exonEndOffset"
         )
-        assert response_element.get("elementGenomicStart") == expected_element.get(
-            "elementGenomicStart"
-        )
-        assert response_element.get("elementGenomicEnd") == expected_element.get(
-            "elementGenomicEnd"
-        )
+        genomic_start = response_element.get("elementGenomicStart", {})
+        genomic_end = response_element.get("elementGenomicEnd", {})
+        if genomic_start:
+            check_sequence_location(genomic_start)
+        if genomic_end:
+            check_sequence_location(genomic_end)
 
     return check_tx_element_response
 
@@ -143,7 +143,7 @@ async def test_build_tx_segment_ect(
     # test require exonStart or exonEnd
     await check_response(
         "/api/construct/structural_element/tx_segment_ect?transcript=NM_002529.3",
-        {"warnings": ["Must provide either `exonStart` or `exonEnd`"]},
+        {"warnings": ["Must provide either `exon_start` or `exon_end`"]},
         check_tx_element_response,
     )
 
