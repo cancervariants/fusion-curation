@@ -30,8 +30,6 @@ import {
   ClientCategoricalFusion,
   ClientAssayedFusion,
   ValidateFusionResponse,
-  AssayedFusion,
-  CategoricalFusion,
   NomenclatureResponse,
   RegulatoryElement,
   RegulatoryClass,
@@ -427,7 +425,7 @@ export const getRegulatoryElement = async (
   geneName: string
 ): Promise<RegulatoryElementResponse> => {
   const response = await fetch(
-    `/api/construct/regulatoryElement?element_class=${regulatoryClass}&gene_name=${geneName}`
+    `/api/construct/regulatory_element?element_class=${regulatoryClass}&gene_name=${geneName}`
   );
   const responseJson = await response.json();
   return responseJson;

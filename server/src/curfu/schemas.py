@@ -23,7 +23,7 @@ from fusor.models import (
     TranscriptSegmentElement,
     UnknownGeneElement,
 )
-from pydantic import BaseModel, Extra, Field, StrictInt, StrictStr, validator
+from pydantic import BaseModel, Field, StrictInt, StrictStr, field_validator
 
 ResponseWarnings = list[StrictStr] | None
 
@@ -95,7 +95,7 @@ class ClientFunctionalDomain(FunctionalDomain):
     class Config:
         """Configure class."""
 
-        extra = Extra.forbid
+        extra = "forbid"
 
 
 class ClientRegulatoryElement(RegulatoryElement, ClientStructuralElement):
@@ -113,7 +113,7 @@ class Response(BaseModel):
     class Config:
         """Configure class"""
 
-        extra = Extra.forbid
+        extra = "forbid"
 
 
 class GeneElementResponse(Response):
@@ -194,14 +194,14 @@ class ExonCoordsRequest(BaseModel):
     exonEnd: StrictInt | None = 0
     exonEndOffset: StrictInt | None = 0
 
-    @validator("gene")
+    @field_validator("gene")
     def validate_gene(cls, v) -> str:
         """Replace None with empty string."""
         if v is None:
             return ""
         return v
 
-    @validator("exonStart", "exonStartOffset", "exonEnd", "exonEndOffset")
+    @field_validator("exonStart", "exonStartOffset", "exonEnd", "exonEndOffset")
     def validate_number(cls, v) -> int:
         """Replace None with 0 for numeric fields."""
         if v is None:
@@ -329,7 +329,7 @@ class NomenclatureResponse(Response):
 class RegulatoryElementResponse(Response):
     """Response model for regulatory element constructor."""
 
-    regulatory_element: RegulatoryElement
+    regulatoryElement: RegulatoryElement
 
 
 class DemoResponse(Response):

@@ -283,4 +283,4 @@ def build_regulatory_element(
     element, warnings = request.app.state.fusor.regulatory_element(
         normalized_class, gene_name
     )
-    return {"regulatory_element": element, "warnings": warnings}
+    return {"regulatoryElement": element, "warnings": warnings}

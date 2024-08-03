@@ -135,7 +135,7 @@ async def test_build_tx_segment_ect(
     coordinates and transcript.
     """
     await check_response(
-        "/api/construct/structural_element/tx_segment_ect?transcript=NM_002529.3&exonStart=2&exonStartOffset=1",
+        "/api/construct/structural_element/tx_segment_ect?transcript=NM_002529.3&exon_start=2&exon_start_offset=1",
         {"element": ntrk1_tx_element_start},
         check_tx_element_response,
     )
@@ -149,7 +149,7 @@ async def test_build_tx_segment_ect(
 
     # test handle invalid transcript
     await check_response(
-        "/api/construct/structural_element/tx_segment_ect?transcript=NM_0012529.3&exonStart=3",
+        "/api/construct/structural_element/tx_segment_ect?transcript=NM_0012529.3&exon_start=3",
         {"warnings": ["Unable to get exons for NM_0012529.3"]},
         check_tx_element_response,
     )
@@ -192,7 +192,7 @@ async def test_build_segment_gcg(
 async def test_build_reg_element(check_response, check_reg_element_response):
     """Test correctness of regulatory element constructor endpoint."""
     await check_response(
-        "/api/construct/regulatoryElement?element_class=promoter&gene_name=braf",
+        "/api/construct/regulatory_element?element_class=promoter&gene_name=braf",
         {
             "regulatoryElement": {
                 "associatedGene": {
@@ -213,52 +213,31 @@ async def test_build_templated_sequence(
     check_response, check_templated_sequence_response
 ):
     """Test correct functioning of templated sequence constructor"""
+    expected = {
+        "element": {
+            "type": "TemplatedSequenceElement",
+            "region": {
+                "id": "ga4gh:SL.thjDCmA1u2mB0vLGjgQbCOEg81eP5hdO",
+                "type": "SequenceLocation",
+                "sequenceReference": {
+                    "id": "refseq:NC_000001.11",
+                    "refgetAccession": "",
+                    "type": "SequenceReference",
+                },
+                "start": 154171414,
+                "end": 154171417,
+            },
+            "strand": -1,
+        },
+    }
     await check_response(
         "/api/construct/structural_element/templated_sequence?start=154171415&end=154171417&sequence_id=NC_000001.11&strand=-",
-        {
-            "element": {
-                "type": "TemplatedSequenceElement",
-                "region": {
-                    "id": "fusor.location_descriptor:NC_000001.11",
-                    "type": "SequenceLocation",
-                    "location_id": "ga4gh:VSL.K_suWpotWJZL0EFYUqoZckNq4bqEjH-z",
-                    "location": {
-                        "type": "SequenceLocation",
-                        "sequence_id": "refseq:NC_000001.11",
-                        "interval": {
-                            "type": "SequenceInterval",
-                            "start": {"type": "Number", "value": 154171414},
-                            "end": {"type": "Number", "value": 154171417},
-                        },
-                    },
-                },
-                "strand": "-",
-            },
-        },
+        expected,
         check_templated_sequence_response,
     )
 
     await check_response(
         "/api/construct/structural_element/templated_sequence?start=154171415&end=154171417&sequence_id=refseq%3ANC_000001.11&strand=-",
-        {
-            "element": {
-                "type": "TemplatedSequenceElement",
-                "region": {
-                    "id": "fusor.location_descriptor:NC_000001.11",
-                    "type": "SequenceLocation",
-                    "location_id": "ga4gh:VSL.K_suWpotWJZL0EFYUqoZckNq4bqEjH-z",
-                    "location": {
-                        "type": "SequenceLocation",
-                        "sequence_id": "refseq:NC_000001.11",
-                        "interval": {
-                            "type": "SequenceInterval",
-                            "start": {"type": "Number", "value": 154171414},
-                            "end": {"type": "Number", "value": 154171417},
-                        },
-                    },
-                },
-                "strand": "-",
-            },
-        },
+        expected,
         check_templated_sequence_response,
     )

@@ -762,7 +762,7 @@ export interface NormalizeGeneResponse {
  */
 export interface RegulatoryElementResponse {
   warnings?: string[] | null;
-  regulatory_element: RegulatoryElement;
+  regulatoryElement: RegulatoryElement;
 }
 /**
  * Abstract Response class for defining API response structures.
@@ -820,5 +820,5 @@ export interface TxSegmentElementResponse {
  */
 export interface ValidateFusionResponse {
   warnings?: string[] | null;
-  fusion: CategoricalFusion | AssayedFusion | null;
+  fusion?: CategoricalFusion | AssayedFusion | null;
 }

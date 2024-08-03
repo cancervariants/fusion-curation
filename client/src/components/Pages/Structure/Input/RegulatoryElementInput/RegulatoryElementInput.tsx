@@ -75,7 +75,7 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
       if (reResponse.warnings && reResponse.warnings.length > 0) {
         throw new Error(reResponse.warnings[0]);
       }
-      getRegElementNomenclature(reResponse.regulatory_element).then(
+      getRegElementNomenclature(reResponse.regulatoryElement).then(
         (nomenclatureResponse) => {
           if (
             nomenclatureResponse.warnings &&
@@ -84,7 +84,7 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
             throw new Error(nomenclatureResponse.warnings[0]);
           }
           const newRegElement: ClientRegulatoryElement = {
-            ...reResponse.regulatory_element,
+            ...reResponse.regulatoryElement,
             elementId: element.elementId,
             displayClass: regulatoryClassItems[elementClass][1],
             nomenclature: nomenclatureResponse.nomenclature || "",
