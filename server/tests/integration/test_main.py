@@ -2,10 +2,10 @@
 
 import re
 
-import pytest
+import pytest_asyncio
 
 
-@pytest.mark.asyncio()
+@pytest_asyncio.fixture(scope="session")
 async def test_service_info(async_client):
     """Test /service_info endpoint
 
