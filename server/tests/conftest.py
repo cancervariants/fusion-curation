@@ -1,20 +1,11 @@
 """Provide core fixtures for testing Flask functions."""
 
-import asyncio
 from collections.abc import Callable
 
 import pytest
 import pytest_asyncio
 from curfu.main import app, get_domain_services, get_gene_services, start_fusor
-from httpx import AsyncClient
-
-
-@pytest.fixture(scope="session")
-def event_loop(request):
-    """Create an instance of the default event loop for each test case."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
+from httpx import ASGITransport, AsyncClient
 
 
 @pytest_asyncio.fixture(scope="session")
@@ -23,7 +14,7 @@ async def async_client():
     app.state.fusor = await start_fusor()
     app.state.genes = get_gene_services()
     app.state.domains = get_domain_services()
-    client = AsyncClient(app=app, base_url="http://test")
+    client = AsyncClient(transport=ASGITransport(app=app), base_url="http://test")
     yield client
     await client.aclose()
 
