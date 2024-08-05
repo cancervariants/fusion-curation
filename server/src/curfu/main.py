@@ -1,5 +1,8 @@
 """Provide FastAPI application and route declarations."""
 
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -124,15 +127,15 @@ def get_domain_services() -> DomainService:
     return domain_service
 
 
-@app.on_event("startup")
-async def startup() -> None:
-    """Get FUSOR reference"""
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator:
+    """Configure FastAPI instance lifespan.
+
+    :param app: FastAPI app instance
+    :return: async context handler
+    """
     app.state.fusor = await start_fusor()
     app.state.genes = get_gene_services()
     app.state.domains = get_domain_services()
-
-
-@app.on_event("shutdown")
-async def shutdown() -> None:
-    """Clean up thread pool."""
+    yield
     await app.state.fusor.cool_seq_tool.uta_db._connection_pool.close()  # noqa: SLF001
