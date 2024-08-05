@@ -14,10 +14,9 @@ def alk_fusion():
                 {
                     "type": "GeneElement",
                     "gene": {
-                        "id": "normalize.gene:ALK",
+                        "id": "hgnc:427",
                         "type": "Gene",
                         "label": "ALK",
-                        "gene_id": "hgnc:427",
                     },
                 },
                 {"type": "MultiplePossibleGenesElement"},
@@ -29,10 +28,9 @@ def alk_fusion():
                 {
                     "type": "GeneElement",
                     "gene": {
-                        "id": "normalize.gene:ALK",
+                        "id": "hgnc:427",
                         "type": "Gene",
                         "label": "ALK",
-                        "gene_id": "hgnc:427",
                     },
                 },
                 {"type": "MultiplePossibleGenesElement"},
@@ -51,19 +49,11 @@ def ewsr1_fusion():
             "structure": [
                 {
                     "type": "GeneElement",
-                    "gene": {
-                        "type": "Gene",
-                        "id": "normalize.gene:EWSR1",
-                        "label": "EWSR1",
-                        "gene_id": "hgnc:3508",
-                    },
+                    "gene": {"type": "Gene", "label": "EWSR1", "id": "hgnc:3508"},
                 },
                 {"type": "UnknownGeneElement"},
             ],
-            "causativeEvent": {
-                "type": "CausativeEvent",
-                "eventType": "rearrangement",
-            },
+            "causativeEvent": {"type": "CausativeEvent", "eventType": "rearrangement"},
             "assay": {
                 "type": "Assay",
                 "methodUri": "pmid:33576979",
@@ -77,19 +67,11 @@ def ewsr1_fusion():
             "structure": [
                 {
                     "type": "GeneElement",
-                    "gene": {
-                        "type": "Gene",
-                        "id": "normalize.gene:EWSR1",
-                        "label": "EWSR1",
-                        "gene_id": "hgnc:3508",
-                    },
+                    "gene": {"type": "Gene", "label": "EWSR1", "id": "hgnc:3508"},
                 },
                 {"type": "UnknownGeneElement"},
             ],
-            "causativeEvent": {
-                "type": "CausativeEvent",
-                "eventType": "rearrangement",
-            },
+            "causativeEvent": {"type": "CausativeEvent", "eventType": "rearrangement"},
             "assay": {
                 "type": "Assay",
                 "methodUri": "pmid:33576979",
@@ -109,20 +91,14 @@ def ewsr1_fusion_fill_types():
     """
     return {
         "input": {
+            "type": "AssayedFusion",
             "structure": [
                 {
-                    "gene": {
-                        "id": "normalize.gene:EWSR1",
-                        "label": "EWSR1",
-                        "gene_id": "hgnc:3508",
-                    },
+                    "gene": {"type": "Gene", "label": "EWSR1", "id": "hgnc:3508"},
                 },
                 {"type": "UnknownGeneElement"},
             ],
-            "causativeEvent": {
-                "type": "CausativeEvent",
-                "eventType": "rearrangement",
-            },
+            "causativeEvent": {"eventType": "rearrangement"},
             "assay": {
                 "methodUri": "pmid:33576979",
                 "assayId": "obi:OBI_0003094",
@@ -135,19 +111,11 @@ def ewsr1_fusion_fill_types():
             "structure": [
                 {
                     "type": "GeneElement",
-                    "gene": {
-                        "type": "Gene",
-                        "id": "normalize.gene:EWSR1",
-                        "label": "EWSR1",
-                        "gene_id": "hgnc:3508",
-                    },
+                    "gene": {"type": "Gene", "label": "EWSR1", "id": "hgnc:3508"},
                 },
                 {"type": "UnknownGeneElement"},
             ],
-            "causativeEvent": {
-                "type": "CausativeEvent",
-                "eventType": "rearrangement",
-            },
+            "causativeEvent": {"type": "CausativeEvent", "eventType": "rearrangement"},
             "assay": {
                 "type": "Assay",
                 "methodUri": "pmid:33576979",
