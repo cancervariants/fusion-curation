@@ -108,8 +108,8 @@ async def get_genome_coords(
         exon_end_offset = 0
 
     response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.transcript_to_genomic_coordinates(
-        gene=gene,
         transcript=transcript,
+        gene=gene,
         exon_start=exon_start,
         exon_end=exon_end,
         exon_start_offset=exon_start_offset,
