@@ -23,7 +23,14 @@ from fusor.models import (
     TranscriptSegmentElement,
     UnknownGeneElement,
 )
-from pydantic import BaseModel, Field, StrictInt, StrictStr, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    StrictInt,
+    StrictStr,
+    field_validator,
+)
 
 ResponseWarnings = list[StrictStr] | None
 
@@ -92,10 +99,7 @@ class ClientFunctionalDomain(FunctionalDomain):
 
     domainId: str
 
-    class Config:
-        """Configure class."""
-
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class ClientRegulatoryElement(RegulatoryElement, ClientStructuralElement):
@@ -110,10 +114,7 @@ class Response(BaseModel):
 
     warnings: ResponseWarnings | None = None
 
-    class Config:
-        """Configure class"""
-
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class GeneElementResponse(Response):
