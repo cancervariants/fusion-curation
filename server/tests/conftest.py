@@ -81,8 +81,8 @@ def check_sequence_location():
 
 
 @pytest.fixture(scope="module")
-def alk_descriptor():
-    """Gene descriptor for ALK gene"""
+def alk_gene():
+    """Gene object for ALK"""
     return {
         "type": "Gene",
         "label": "ALK",
@@ -91,8 +91,8 @@ def alk_descriptor():
 
 
 @pytest.fixture(scope="module")
-def tpm3_descriptor():
-    """Gene descriptor for TPM3 gene"""
+def tpm3_gene():
+    """Gene object for TPM3"""
     return {
         "type": "Gene",
         "label": "TPM3",
@@ -101,8 +101,8 @@ def tpm3_descriptor():
 
 
 @pytest.fixture(scope="module")
-def ntrk1_descriptor():
-    """Gene descriptor for NTRK1 gene"""
+def ntrk1_gene():
+    """Gene object for NTRK1"""
     return {
         "type": "Gene",
         "label": "NTRK1",
@@ -111,13 +111,13 @@ def ntrk1_descriptor():
 
 
 @pytest.fixture(scope="module")
-def alk_gene_element(alk_descriptor):
+def alk_gene_element(alk_gene):
     """Provide GeneElement containing ALK gene"""
-    return {"type": "GeneElement", "gene": alk_descriptor}
+    return {"type": "GeneElement", "gene": alk_gene}
 
 
 @pytest.fixture(scope="module")
-def ntrk1_tx_element_start(ntrk1_descriptor):
+def ntrk1_tx_element_start(ntrk1_gene):
     """Provide TranscriptSegmentElement for NTRK1 constructed with exon coordinates,
     and only providing starting position.
     """
@@ -126,7 +126,7 @@ def ntrk1_tx_element_start(ntrk1_descriptor):
         "transcript": "refseq:NM_002529.3",
         "exonStart": 2,
         "exonStartOffset": 1,
-        "gene": ntrk1_descriptor,
+        "gene": ntrk1_gene,
         "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",
             "type": "SequenceLocation",
@@ -137,7 +137,7 @@ def ntrk1_tx_element_start(ntrk1_descriptor):
 
 
 @pytest.fixture(scope="module")
-def tpm3_tx_t_element(tpm3_descriptor):
+def tpm3_tx_t_element(tpm3_gene):
     """Provide TranscriptSegmentElement for TPM3 gene constructed using genomic coordinates
     and transcript.
     """
@@ -148,7 +148,7 @@ def tpm3_tx_t_element(tpm3_descriptor):
         "exonStartOffset": 71,
         "exonEnd": 6,
         "exonEndOffset": -4,
-        "gene": tpm3_descriptor,
+        "gene": tpm3_gene,
         "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",
             "type": "SequenceLocation",
