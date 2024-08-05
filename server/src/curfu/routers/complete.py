@@ -25,11 +25,11 @@ router = APIRouter()
 def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
     """Provide completion suggestions for term provided by user.
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param str term: entered gene term
-    :return: JSON response with suggestions listed, or warnings if unable to
-        provide suggestions.
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
+    :param term: entered gene term
+    :return: JSON response with suggestions listed, or warnings if unable to provide
+        suggestions.
     """
     response: ResponseDict = {"term": term}
     possible_matches = request.app.state.genes.suggest_genes(term)
@@ -64,9 +64,9 @@ def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
 def suggest_domain(request: Request, gene_id: str = Query("")) -> ResponseDict:
     """Provide possible domains associated with a given gene to be selected by a user.
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param str gene_id: normalized gene concept ID
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
+    :param gene_id: normalized gene concept ID
     :return: JSON response with a list of possible domain name and ID options, or
         warning(s) if relevant
     """
