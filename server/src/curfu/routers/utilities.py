@@ -31,9 +31,9 @@ router = APIRouter()
 def get_mane_transcripts(request: Request, term: str) -> dict:
     """Get MANE transcripts for gene term.
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+    :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
-    :param str term: gene term provided by user
+    :param term: gene term provided by user
     :return: Dict containing transcripts if lookup succeeds, or warnings upon failure
     """
     normalized = request.app.state.fusor.gene_normalizer.normalize(term)
@@ -68,14 +68,14 @@ async def get_genome_coords(
 ) -> CoordsUtilsResponse:
     """Convert provided exon positions to genomic coordinates
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+    :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
-    :param Optional[str] gene: gene symbol/ID on which exons lie
-    :param Optional[str] transcript: transcript accession ID
-    :param Optional[int] exon_start: starting exon number
-    :param Optional[int] exon_end: ending exon number
-    :param int exon_start_offset: base offset count from starting exon
-    :param int exon_end_offset: base offset count from end exon
+    :param gene: gene symbol/ID on which exons lie
+    :param transcript: transcript accession ID
+    :param exon_start: starting exon number
+    :param exon_end: ending exon number
+    :param exon_start_offset: base offset count from starting exon
+    :param exon_end_offset: base offset count from end exon
     :return: CoordsUtilsResponse containing relevant data or warnings if unsuccesful
     """
     warnings = []
@@ -140,14 +140,14 @@ async def get_exon_coords(
 ) -> CoordsUtilsResponse:
     """Convert provided genomic coordinates to exon coordinates
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param str chromosome: chromosome, either as a number/X/Y or as an accession
-    :param Optional[int] start: genomic start position
-    :param Optional[int] end: genomic end position
-    :param Optional[str] strand: strand of genomic position
-    :param Optional[str] gene: gene symbol or ID
-    :param Optional[str] transcript: transcript accession ID
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
+    :param chromosome: chromosome, either as a number/X/Y or as an accession
+    :param start: genomic start position
+    :param end: genomic end position
+    :param strand: strand of genomic position
+    :param gene: gene symbol or ID
+    :param transcript: transcript accession ID
     :return: response with exon coordinates if successful, or warnings if failed
     """
     warnings: list[str] = []
@@ -192,9 +192,9 @@ async def get_exon_coords(
 async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse:
     """Get GA4GH sequence ID and aliases given sequence sequence ID
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use
-        to access FUSOR and UTA-associated tools.
-    :param str sequence_id: user-provided sequence identifier to translate
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
+    :param sequence_id: user-provided sequence identifier to translate
     :return: Response object with ga4gh ID and aliases
     """
     params: dict[str, Any] = {"sequence": sequence}
@@ -248,8 +248,8 @@ async def get_sequence(
     """Get sequence for requested sequence ID.
 
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use
-        to access FUSOR and UTA-associated tools.
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
     :param background_tasks: Starlette background tasks object. Use to clean up
         tempfile after get method returns.
     :param sequence_id: accession ID, sans namespace, eg `NM_152263.3`

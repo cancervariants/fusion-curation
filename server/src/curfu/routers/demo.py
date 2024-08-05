@@ -167,7 +167,7 @@ def get_alk(request: Request) -> DemoResponse:
     """Retrieve ALK assayed fusion.
 
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+    :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     """
     return DemoResponse(
@@ -186,8 +186,8 @@ def get_ewsr1(request: Request) -> DemoResponse:
     """Retrieve EWSR1 assayed fusion.
 
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
     """
     return DemoResponse(
         fusion=clientify_fusion(examples.ewsr1, request.app.state.fusor), warnings=[]
@@ -204,8 +204,8 @@ def get_ewsr1(request: Request) -> DemoResponse:
 def get_bcr_abl1(request: Request) -> DemoResponse:
     """Retrieve BCR-ABL1 categorical fusion.
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
     """
     return DemoResponse(
         fusion=clientify_fusion(examples.bcr_abl1, request.app.state.fusor), warnings=[]
@@ -223,8 +223,8 @@ def get_tpm3_ntrk1(request: Request) -> DemoResponse:
     """Retrieve TPM3-NTRK1 assayed fusion.
 
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
     """
     return DemoResponse(
         fusion=clientify_fusion(examples.tpm3_ntrk1, request.app.state.fusor),
@@ -243,8 +243,8 @@ def get_tpm3_pdgfrb(request: Request) -> DemoResponse:
     """Retrieve TPM3-PDGFRB assayed fusion.
 
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
     """
     return DemoResponse(
         fusion=clientify_fusion(examples.tpm3_pdgfrb, request.app.state.fusor),
@@ -263,8 +263,8 @@ def get_igh_myc(request: Request) -> DemoResponse:
     """Retrieve IGH-MYC assayed fusion.
 
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
     """
     return DemoResponse(
         fusion=clientify_fusion(examples.igh_myc, request.app.state.fusor), warnings=[]
