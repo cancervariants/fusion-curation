@@ -18,9 +18,9 @@ router = APIRouter()
 def normalize_gene(request: Request, term: str = Query("")) -> ResponseDict:
     """Normalize gene term provided by user.
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param str term: gene symbol/alias/name/etc
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
+    :param term: gene symbol/alias/name/etc
     :return: JSON response with normalized ID if successful and warnings otherwise
     """
     response: ResponseDict = {"term": term}

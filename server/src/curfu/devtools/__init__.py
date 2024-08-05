@@ -8,9 +8,9 @@ from curfu import logger
 
 def ftp_download(domain: str, path: str, fname: str, callback: Callable) -> None:
     """Acquire file via FTP.
-    :param str domain: domain name for remote file host
-    :param str path: path within host to desired file
-    :param str fname: name of desired file as provided on host
+    :param domain: domain name for remote file host
+    :param path: path within host to desired file
+    :param fname: name of desired file as provided on host
     """
     try:
         with ftplib.FTP(domain) as ftp:
