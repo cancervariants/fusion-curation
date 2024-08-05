@@ -27,7 +27,7 @@ DATE_FMT = "%Y%m%d"
 
 def download_protein2ipr(output_dir: Path) -> None:
     """Download, unpack, and store Uniprot-InterPro translation table
-    :param Path output_dir: location to save file within
+    :param output_dir: location to save file within
     """
     logger.info("Retrieving Uniprot mapping data from InterPro")
 
@@ -109,7 +109,7 @@ def get_uniprot_refs() -> UniprotRefs:
 
 def download_uniprot_sprot(output_dir: Path) -> Path:
     """Retrieve UniProtKB data.
-    :param Path output_dir: directory to save UniProtKB data in.
+    :param output_dir: directory to save UniProtKB data in.
     """
     logger.info("Retrieving UniProtKB data.")
 
@@ -144,10 +144,10 @@ def get_interpro_uniprot_rels(
     """Process InterPro to UniProtKB relations, using UniProt references to connect
     genes with domains
 
-    :param Optional[path] protein_ipr_path: path to protein2ipr_YYYYMMDD.dat if given
-    :param Path output_dir: Path to save output data in
-    :param Set[str] domain_ids: InterPro domain IDs to use
-    :param Dict uniprot_refs: UniProt references from gene normalizer DB
+    :param protein_ipr_path: path to protein2ipr_YYYYMMDD.dat if given
+    :param output_dir: Path to save output data in
+    :param domain_ids: InterPro domain IDs to use
+    :param uniprot_refs: UniProt references from gene normalizer DB
     :return: Dict mapping Uniprot accession ID to collected domain data,
     """
     if not protein_ipr_path:
@@ -191,9 +191,9 @@ def get_protein_accessions(
 ) -> dict[tuple[str, str], str]:
     """Scan uniprot_sprot.xml and extract RefSeq protein accession identifiers for
     relevant Uniprot accessions.
-    :param Set[str] relevant_proteins: captured Uniprot accessions, for proteins coded
+    :param relevant_proteins: captured Uniprot accessions, for proteins coded
         by human genes and containing InterPro functional domains
-    :param Optional[Path] uniprot_sprot_path: path to local uniprot_sprot.xml file.
+    :param uniprot_sprot_path: path to local uniprot_sprot.xml file.
     :return: Dict where keys are tuple containing Uniprot accession ID and NCBI gene ID,
         and values are known RefSeq protein accessions
     """
@@ -279,11 +279,11 @@ def build_gene_domain_maps(
     """Produce the gene-to-domain lookup table at out_path using the Interpro-Uniprot
     translation table, the Interpro names table, and the VICC Gene Normalizer.
 
-    :param Set[str] interpro_types: types of interpro fields to check references for
-    :param Path protein_ipr_path: path to protein2ipr_{date}.dat if available
-    :param Optional[Path] uniprot_refs_path: path to existing uniprot_refs_<date>.tsv
+    :param interpro_types: types of interpro fields to check references for
+    :param protein_ipr_path: path to protein2ipr_{date}.dat if available
+    :param uniprot_refs_path: path to existing uniprot_refs_<date>.tsv
         file if available.
-    :param Path output_dir: location to save output file within. Defaults to app data
+    :param output_dir: location to save output file within. Defaults to app data
         directory.
     """
     start_time = timer()

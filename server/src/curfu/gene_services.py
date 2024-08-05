@@ -52,10 +52,10 @@ class GeneService:
         term: str, normalizer: QueryHandler
     ) -> tuple[CURIE, str, str | CURIE | None]:
         """Get normalized ID given gene symbol/label/alias.
-        :param str term: user-entered gene term
-        :param QueryHandler normalizer:  gene normalizer instance
-        :returns: concept ID, str, if successful
-        :raises ServiceWarning: if lookup fails
+        :param term: user-entered gene term
+        :param normalizer:  gene normalizer instance
+        :return: concept ID, str, if successful
+        :raise ServiceWarning: if lookup fails
         """
         response = normalizer.normalize(term)
         if response.match_type != MatchType.NO_MATCH:
@@ -131,8 +131,8 @@ class GeneService:
     def suggest_genes(self, query: str) -> dict[str, list[Suggestion]]:
         """Provide autocomplete suggestions based on submitted term.
 
-        :param str query: text entered by user
-        :returns: dict returning list containing any number of suggestion tuples, where
+        :param query: text entered by user
+        :return: dict returning list containing any number of suggestion tuples, where
             each is the correctly-cased term, normalized ID, normalized label, for each
             item type
         """
