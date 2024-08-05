@@ -19,7 +19,7 @@ from fusor.models import (
     UnknownGeneElement,
 )
 from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
-from pydantic import BaseModel, Extra, Field, StrictInt, StrictStr, validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, validator
 
 ResponseWarnings = list[StrictStr] | None
 
@@ -88,10 +88,7 @@ class ClientFunctionalDomain(FunctionalDomain):
 
     domain_id: str
 
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
+    model_config = ConfigDict(extra="forbid")
 
 
 class ClientRegulatoryElement(RegulatoryElement):
@@ -106,10 +103,7 @@ class Response(BaseModel):
 
     warnings: ResponseWarnings
 
-    class Config:
-        """Configure class"""
-
-        extra = Extra.forbid
+    model_config = ConfigDict(extra="forbid")
 
 
 class GeneElementResponse(Response):
