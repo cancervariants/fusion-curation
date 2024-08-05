@@ -53,7 +53,7 @@ def ewsr1_fusion():
                 },
                 {"type": "UnknownGeneElement"},
             ],
-            "causativeEvent": {"type": "CausativeEvent", "eventType": "rearrangement"},
+            "causative_event": {"type": "CausativeEvent", "eventType": "rearrangement"},
             "assay": {
                 "type": "Assay",
                 "methodUri": "pmid:33576979",
@@ -98,7 +98,7 @@ def ewsr1_fusion_fill_types():
                 },
                 {"type": "UnknownGeneElement"},
             ],
-            "causativeEvent": {"eventType": "rearrangement"},
+            "causative_event": {"eventType": "rearrangement"},
             "assay": {
                 "methodUri": "pmid:33576979",
                 "assayId": "obi:OBI_0003094",
@@ -146,7 +146,7 @@ def wrong_type_fusion():
                 },
                 {"type": "UnknownGeneElement"},
             ],
-            "causativeEvent": {
+            "causative_event": {
                 "type": "CausativeEvent",
                 "eventType": "rearrangement",
             },
@@ -160,8 +160,7 @@ def wrong_type_fusion():
         },
         "output": None,
         "warnings": [
-            "Unable to construct fusion with provided args: FUSOR.categorical_fusion()"
-            " got an unexpected keyword argument 'causativeEvent'"
+            "Unable to construct fusion with provided args: FUSOR.categorical_fusion() got an unexpected keyword argument 'causative_event'"
         ],
     }
 
