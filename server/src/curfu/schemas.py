@@ -219,9 +219,9 @@ class SequenceIDResponse(Response):
     """Response model for sequence ID retrieval endpoint."""
 
     sequence: StrictStr
-    refseq_id: StrictStr | None
-    ga4gh_id: StrictStr | None
-    aliases: list[StrictStr] | None
+    refseq_id: StrictStr | None = None
+    ga4gh_id: StrictStr | None = None
+    aliases: list[StrictStr] | None = None
 
 
 class ManeGeneTranscript(BaseModel):

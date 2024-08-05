@@ -197,7 +197,7 @@ async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse
     :param str sequence_id: user-provided sequence identifier to translate
     :return: Response object with ga4gh ID and aliases
     """
-    params: dict[str, Any] = {"sequence": sequence, "ga4gh_id": None, "aliases": []}
+    params: dict[str, Any] = {"sequence": sequence}
     sr = request.app.state.fusor.cool_seq_tool.seqrepo_access
 
     sr_ids, errors = sr.translate_identifier(sequence)
@@ -234,8 +234,7 @@ async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse
 @router.get(
     "/api/utilities/download_sequence",
     summary="Get sequence for ID",
-    description="Given a known accession identifier, retrieve sequence data and return"
-    "as a FASTA file",
+    description="Given a known accession identifier, retrieve sequence data and return as a FASTA file",
     response_class=FileResponse,
     tags=[RouteTag.UTILITIES],
 )
@@ -247,6 +246,7 @@ async def get_sequence(
     ),
 ) -> FileResponse:
     """Get sequence for requested sequence ID.
+
     \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use
         to access FUSOR and UTA-associated tools.
@@ -257,7 +257,9 @@ async def get_sequence(
     """
     _, path = tempfile.mkstemp(suffix=".fasta")
     try:
-        request.app.state.fusor.cool_seq_tool.get_fasta_file(sequence_id, Path(path))
+        request.app.state.fusor.cool_seq_tool.seqrepo_access.get_fasta_file(
+            sequence_id, Path(path)
+        )
     except KeyError as ke:
         resp = (
             request.app.state.fusor.cool_seq_tool.seqrepo_access.translate_identifier(
