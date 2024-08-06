@@ -322,7 +322,7 @@ export const getInfo = async (): Promise<ServiceInfoResponse> => {
 export const getRegElementNomenclature = async (
   regulatoryElement: RegulatoryElement
 ): Promise<NomenclatureResponse> => {
-  const response = await fetch("/api/nomenclature/regulatoryElement", {
+  const response = await fetch("/api/nomenclature/regulatory_element", {
     method: "POST",
     headers: {
       Accept: "application/json",
