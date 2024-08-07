@@ -28,6 +28,21 @@ from curfu.routers import (
 
 _logger = logging.getLogger(__name__)
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator:
+    """Configure FastAPI instance lifespan.
+
+    :param app: FastAPI app instance
+    :return: async context handler
+    """
+    app.state.fusor = await start_fusor()
+    app.state.genes = get_gene_services()
+    app.state.domains = get_domain_services()
+    yield
+    await app.state.fusor.cool_seq_tool.uta_db._connection_pool.close()  # noqa: SLF001
+
+
 fastapi_app = FastAPI(
     title="Fusion Curation API",
     description="Provide data functions to support [VICC Fusion Curation interface](fusion-builder.cancervariants.org/).",
@@ -44,6 +59,7 @@ fastapi_app = FastAPI(
     swagger_ui_parameters={"tryItOutEnabled": True},
     docs_url="/docs",
     openapi_url="/openapi.json",
+    lifespan=lifespan,
 )
 
 fastapi_app.include_router(utilities.router)
@@ -142,17 +158,3 @@ def get_domain_services() -> DomainService:
     domain_service = DomainService()
     domain_service.load_mapping()
     return domain_service
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator:
-    """Configure FastAPI instance lifespan.
-
-    :param app: FastAPI app instance
-    :return: async context handler
-    """
-    app.state.fusor = await start_fusor()
-    app.state.genes = get_gene_services()
-    app.state.domains = get_domain_services()
-    yield
-    await app.state.fusor.cool_seq_tool.uta_db._connection_pool.close()  # noqa: SLF001

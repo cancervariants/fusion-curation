@@ -5,10 +5,15 @@ from typing import Literal
 
 from cool_seq_tool.schemas import GenomicData
 from fusor.models import (
+    Assay,
     AssayedFusion,
+    AssayedFusionElements,
     CategoricalFusion,
+    CategoricalFusionElements,
+    CausativeEvent,
     FunctionalDomain,
     Fusion,
+    FusionType,
     GeneElement,
     LinkerElement,
     MultiplePossibleGenesElement,
@@ -18,14 +23,20 @@ from fusor.models import (
     TranscriptSegmentElement,
     UnknownGeneElement,
 )
-from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    StrictInt,
+    StrictStr,
+    field_validator,
+)
 
 ResponseWarnings = list[StrictStr] | None
 
 ResponseDict = dict[
     str,
-    str | int | CURIE | list[str] | list[tuple[str, str, str, str]] | FunctionalDomain,
+    str | int | list[str] | list[tuple[str, str, str, str]] | FunctionalDomain | None,
 ]
 Warnings = list[str]
 
@@ -33,28 +44,28 @@ Warnings = list[str]
 class ClientStructuralElement(BaseModel):
     """Abstract class to provide identification properties used by client."""
 
-    element_id: StrictStr
+    elementId: StrictStr
     nomenclature: StrictStr
 
 
 class ClientTranscriptSegmentElement(TranscriptSegmentElement, ClientStructuralElement):
     """TranscriptSegment element class used client-side."""
 
-    input_type: (
+    inputType: (
         Literal["genomic_coords_gene"]
         | Literal["genomic_coords_tx"]
         | Literal["exon_coords_tx"]
     )
-    input_tx: str | None
-    input_strand: Strand | None
-    input_gene: str | None
-    input_chr: str | None
-    input_genomic_start: str | None
-    input_genomic_end: str | None
-    input_exon_start: str | None
-    input_exon_start_offset: str | None
-    input_exon_end: str | None
-    input_exon_end_offset: str | None
+    inputTx: str | None = None
+    inputStrand: Strand | None = None
+    inputGene: str | None = None
+    inputChr: str | None = None
+    inputGenomicStart: str | None = None
+    inputGenomicEnd: str | None = None
+    inputExonStart: str | None = None
+    inputExonStartOffset: str | None = None
+    inputExonEnd: str | None = None
+    inputExonEndOffset: str | None = None
 
 
 class ClientLinkerElement(LinkerElement, ClientStructuralElement):
@@ -64,9 +75,9 @@ class ClientLinkerElement(LinkerElement, ClientStructuralElement):
 class ClientTemplatedSequenceElement(TemplatedSequenceElement, ClientStructuralElement):
     """Templated sequence element used client-side."""
 
-    input_chromosome: str | None
-    input_start: str | None
-    input_end: str | None
+    inputChromosome: str | None
+    inputStart: str | None
+    inputEnd: str | None
 
 
 class ClientGeneElement(GeneElement, ClientStructuralElement):
@@ -86,22 +97,22 @@ class ClientMultiplePossibleGenesElement(
 class ClientFunctionalDomain(FunctionalDomain):
     """Define functional domain object used client-side."""
 
-    domain_id: str
+    domainId: str
 
     model_config = ConfigDict(extra="forbid")
 
 
-class ClientRegulatoryElement(RegulatoryElement):
+class ClientRegulatoryElement(RegulatoryElement, ClientStructuralElement):
     """Define regulatory element object used client-side."""
 
-    display_class: str
+    displayClass: str
     nomenclature: str
 
 
 class Response(BaseModel):
     """Abstract Response class for defining API response structures."""
 
-    warnings: ResponseWarnings
+    warnings: ResponseWarnings | None = None
 
     model_config = ConfigDict(extra="forbid")
 
@@ -128,7 +139,7 @@ class NormalizeGeneResponse(Response):
     """Response model for gene normalization endpoint."""
 
     term: StrictStr
-    concept_id: CURIE | None
+    concept_id: StrictStr | None
     symbol: StrictStr | None
     cased: StrictStr | None
 
@@ -148,11 +159,11 @@ class SuggestGeneResponse(Response):
 class DomainParams(BaseModel):
     """Fields for individual domain suggestion entries"""
 
-    interpro_id: CURIE
-    domain_name: StrictStr
+    interproId: StrictStr
+    domainName: StrictStr
     start: int
     end: int
-    refseq_ac: StrictStr
+    refseqAc: StrictStr
 
 
 class GetDomainResponse(Response):
@@ -165,33 +176,33 @@ class AssociatedDomainResponse(Response):
     """Response model for domain ID autocomplete suggestion endpoint."""
 
     gene_id: StrictStr
-    suggestions: list[DomainParams] | None
+    suggestions: list[DomainParams] | None = None
 
 
 class ValidateFusionResponse(Response):
     """Response model for Fusion validation endpoint."""
 
-    fusion: Fusion | None
+    fusion: Fusion | None = None
 
 
 class ExonCoordsRequest(BaseModel):
     """Request model for genomic coordinates retrieval"""
 
-    tx_ac: StrictStr
+    txAc: StrictStr
     gene: StrictStr | None = ""
-    exon_start: StrictInt | None = 0
-    exon_start_offset: StrictInt | None = 0
-    exon_end: StrictInt | None = 0
-    exon_end_offset: StrictInt | None = 0
+    exonStart: StrictInt | None = 0
+    exonStartOffset: StrictInt | None = 0
+    exonEnd: StrictInt | None = 0
+    exonEndOffset: StrictInt | None = 0
 
-    @validator("gene")
+    @field_validator("gene")
     def validate_gene(cls, v) -> str:
         """Replace None with empty string."""
         if v is None:
             return ""
         return v
 
-    @validator("exon_start", "exon_start_offset", "exon_end", "exon_end_offset")
+    @field_validator("exonStart", "exonStartOffset", "exonEnd", "exonEndOffset")
     def validate_number(cls, v) -> int:
         """Replace None with 0 for numeric fields."""
         if v is None:
@@ -209,9 +220,9 @@ class SequenceIDResponse(Response):
     """Response model for sequence ID retrieval endpoint."""
 
     sequence: StrictStr
-    refseq_id: StrictStr | None
-    ga4gh_id: StrictStr | None
-    aliases: list[StrictStr] | None
+    refseq_id: StrictStr | None = None
+    ga4gh_id: StrictStr | None = None
+    aliases: list[StrictStr] | None = None
 
 
 class ManeGeneTranscript(BaseModel):
@@ -228,8 +239,8 @@ class ManeGeneTranscript(BaseModel):
     Ensembl_prot: str
     MANE_status: str
     GRCh38_chr: str
-    chr_start: str
-    chr_end: str
+    chr_start: int
+    chr_end: int
     chr_strand: str
 
 
@@ -257,15 +268,15 @@ class ClientCategoricalFusion(CategoricalFusion):
     global FusionContext.
     """
 
-    regulatory_element: ClientRegulatoryElement | None = None
-    structural_elements: list[
+    regulatoryElement: ClientRegulatoryElement | None = None
+    structure: list[
         ClientTranscriptSegmentElement
         | ClientGeneElement
         | ClientTemplatedSequenceElement
         | ClientLinkerElement
         | ClientMultiplePossibleGenesElement
     ]
-    critical_functional_domains: list[ClientFunctionalDomain] | None
+    criticalFunctionalDomains: list[ClientFunctionalDomain] | None
 
 
 class ClientAssayedFusion(AssayedFusion):
@@ -273,14 +284,41 @@ class ClientAssayedFusion(AssayedFusion):
     global FusionContext.
     """
 
-    regulatory_element: ClientRegulatoryElement | None = None
-    structural_elements: list[
+    regulatoryElement: ClientRegulatoryElement | None = None
+    structure: list[
         ClientTranscriptSegmentElement
         | ClientGeneElement
         | ClientTemplatedSequenceElement
         | ClientLinkerElement
         | ClientUnknownGeneElement
     ]
+
+
+class FormattedAssayedFusion(BaseModel):
+    """Assayed fusion with parameters defined as expected in fusor assayed_fusion function
+    validate attempts to validate a fusion by constructing it by sending kwargs. In the models and frontend, these are camelCase,
+    but the assayed_fusion and categorical_fusion constructors expect snake_case
+    """
+
+    fusion_type: FusionType.ASSAYED_FUSION = FusionType.ASSAYED_FUSION
+    structure: AssayedFusionElements
+    causative_event: CausativeEvent | None = None
+    assay: Assay | None = None
+    regulatory_element: RegulatoryElement | None = None
+    reading_frame_preserved: bool | None = None
+
+
+class FormattedCategoricalFusion(BaseModel):
+    """Categorical fusion with parameters defined as expected in fusor categorical_fusion function
+    validate attempts to validate a fusion by constructing it by sending kwargs. In the models and frontend, these are camelCase,
+    but the assayed_fusion and categorical_fusion constructors expect snake_case
+    """
+
+    fusion_type: FusionType.CATEGORICAL_FUSION = FusionType.CATEGORICAL_FUSION
+    structure: CategoricalFusionElements
+    regulatory_element: RegulatoryElement | None = None
+    critical_functional_domains: list[FunctionalDomain] | None = None
+    reading_frame_preserved: bool | None = None
 
 
 class NomenclatureResponse(Response):
@@ -292,7 +330,7 @@ class NomenclatureResponse(Response):
 class RegulatoryElementResponse(Response):
     """Response model for regulatory element constructor."""
 
-    regulatory_element: RegulatoryElement
+    regulatoryElement: RegulatoryElement
 
 
 class DemoResponse(Response):

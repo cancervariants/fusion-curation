@@ -9,12 +9,8 @@ from httpx import AsyncClient
 def regulatory_element():
     """Provide regulatory element fixture."""
     return {
-        "regulatory_class": "promoter",
-        "associated_gene": {
-            "id": "gene:G1",
-            "gene": {"gene_id": "hgnc:9339"},
-            "label": "G1",
-        },
+        "regulatoryClass": "promoter",
+        "associatedGene": {"id": "hgnc:9339", "label": "G1", "type": "Gene"},
     }
 
 
@@ -24,26 +20,21 @@ def epcam_5_prime():
     return {
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_002354.2",
-        "exon_end": 5,
-        "exon_end_offset": 0,
-        "gene_descriptor": {
-            "id": "normalize.gene:EPCAM",
-            "type": "GeneDescriptor",
+        "exonEnd": 5,
+        "exonEndOffset": 0,
+        "gene": {
+            "type": "Gene",
             "label": "EPCAM",
-            "gene_id": "hgnc:11529",
+            "id": "hgnc:11529",
         },
-        "element_genomic_end": {
+        "elementGenomicEnd": {
             "id": "fusor.location_descriptor:NC_000002.12",
-            "type": "LocationDescriptor",
+            "type": "SequenceLocation",
             "label": "NC_000002.12",
             "location": {
                 "type": "SequenceLocation",
-                "sequence_id": "refseq:NC_000002.12",
-                "interval": {
-                    "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 47377013},
-                    "end": {"type": "Number", "value": 47377014},
-                },
+                "start": 47377013,
+                "end": 47377014,
             },
         },
     }
@@ -55,27 +46,18 @@ def epcam_3_prime():
     return {
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_002354.2",
-        "exon_start": 5,
-        "exon_start_offset": 0,
-        "gene_descriptor": {
-            "id": "normalize.gene:EPCAM",
-            "type": "GeneDescriptor",
+        "exonStart": 5,
+        "exonStartOffset": 0,
+        "gene": {
+            "type": "Gene",
             "label": "EPCAM",
-            "gene_id": "hgnc:11529",
+            "id": "hgnc:11529",
         },
-        "element_genomic_start": {
+        "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000002.12",
-            "type": "LocationDescriptor",
-            "label": "NC_000002.12",
-            "location": {
-                "type": "SequenceLocation",
-                "sequence_id": "refseq:NC_000002.12",
-                "interval": {
-                    "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 47377013},
-                    "end": {"type": "Number", "value": 47377014},
-                },
-            },
+            "type": "SequenceLocation",
+            "start": 47377013,
+            "end": 47377014,
         },
     }
 
@@ -85,27 +67,18 @@ def epcam_invalid():
     """Provide invalidly-constructed EPCAM transcript segment element."""
     return {
         "type": "TranscriptSegmentElement",
-        "exon_end": 5,
-        "exon_end_offset": 0,
-        "gene_descriptor": {
-            "id": "normalize.gene:EPCAM",
-            "type": "GeneDescriptor",
+        "exonEnd": 5,
+        "exonEndOffset": 0,
+        "gene": {
+            "type": "Gene",
             "label": "EPCAM",
-            "gene_id": "hgnc:11529",
+            "id": "hgnc:11529",
         },
-        "element_genomic_end": {
+        "elementGenomicEnd": {
             "id": "fusor.location_descriptor:NC_000002.12",
-            "type": "LocationDescriptor",
-            "label": "NC_000002.12",
-            "location": {
-                "type": "SequenceLocation",
-                "sequence_id": "refseq:NC_000002.12",
-                "interval": {
-                    "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 47377013},
-                    "end": {"type": "Number", "value": 47377014},
-                },
-            },
+            "type": "SequenceLocation",
+            "start": 47377013,
+            "end": 47377014,
         },
     }
 
@@ -117,17 +90,15 @@ def templated_sequence_element():
         "type": "TemplatedSequenceElement",
         "strand": "-",
         "region": {
-            "id": "NC_000001.11:15455-15566",
-            "type": "LocationDescriptor",
-            "location": {
-                "sequence_id": "refseq:NC_000001.11",
-                "interval": {
-                    "start": {"type": "Number", "value": 15455},
-                    "end": {"type": "Number", "value": 15566},
-                },
-                "type": "SequenceLocation",
+            "id": "ga4gh:SL.sKl255JONKva_LKJeyfkmlmqXTaqHcWq",
+            "type": "SequenceLocation",
+            "sequenceReference": {
+                "id": "refseq:NC_000001.11",
+                "refgetAccession": "SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+                "type": "SequenceReference",
             },
-            "label": "NC_000001.11:15455-15566",
+            "start": 15455,
+            "end": 15566,
         },
     }
 
@@ -176,9 +147,12 @@ async def test_tx_segment_nomenclature(
         "/api/nomenclature/transcript_segment?first=true&last=false", json=epcam_invalid
     )
     assert response.status_code == 200
-    assert response.json().get("warnings", []) == [
-        "1 validation error for TranscriptSegmentElement\ntranscript\n  field required (type=value_error.missing)"
+    expected_warnings = [
+        "validation error for TranscriptSegmentElement",
+        "Field required",
     ]
+    for expected in expected_warnings:
+        assert expected in response.json().get("warnings", [])[0]
 
 
 @pytest.mark.asyncio()
@@ -192,12 +166,12 @@ async def test_gene_element_nomenclature(
 
     response = await async_client.post(
         "/api/nomenclature/gene",
-        json={"type": "GeneElement", "associated_gene": {"id": "hgnc:427"}},
+        json={"type": "GeneElement", "associatedGene": {"id": "hgnc:427"}},
     )
     assert response.status_code == 200
-    assert response.json().get("warnings", []) == [
-        "2 validation errors for GeneElement\ngene_descriptor\n  field required (type=value_error.missing)\nassociated_gene\n  extra fields not permitted (type=value_error.extra)"
-    ]
+    expected_warnings = ["validation error for GeneElement", "Field required"]
+    for expected in expected_warnings:
+        assert expected in response.json().get("warnings", [])[0]
 
 
 @pytest.mark.asyncio()
@@ -220,28 +194,37 @@ async def test_templated_sequence_nomenclature(
             "type": "TemplatedSequenceElement",
             "region": {
                 "id": "NC_000001.11:15455-15566",
-                "type": "LocationDescriptor",
-                "location": {
-                    "interval": {
-                        "start": {"type": "Number", "value": 15455},
-                        "end": {"type": "Number", "value": 15566},
-                    },
-                    "sequence_id": "refseq:NC_000001.11",
-                    "type": "SequenceLocation",
-                },
+                "type": "SequenceLocation",
+                "start": 15455,
+                "end": 15566,
             },
         },
     )
     assert response.status_code == 200
-    assert response.json().get("warnings", []) == [
-        "1 validation error for TemplatedSequenceElement\nstrand\n  field required (type=value_error.missing)"
+    expected_warnings = [
+        "validation error for TemplatedSequenceElement",
+        "Input should be a valid integer",
     ]
+    for expected in expected_warnings:
+        assert expected in response.json().get("warnings", [])[0]
 
 
 @pytest.mark.asyncio()
 async def test_fusion_nomenclature(async_client: AsyncClient):
     """Test correctness of fusion nomneclature endpoint."""
-    response = await async_client.post("/api/nomenclature/fusion", json=bcr_abl1.dict())
+    bcr_abl1_formatted = bcr_abl1.model_dump()
+    bcr_abl1_json = {
+        "structure": bcr_abl1_formatted.get("structure"),
+        "fusion_type": "CategoricalFusion",
+        "reading_frame_preserved": True,
+        "regulatory_element": None,
+        "critical_functional_domains": bcr_abl1_formatted.get(
+            "criticalFunctionalDomains"
+        ),
+    }
+    response = await async_client.post(
+        "/api/nomenclature/fusion?skip_vaidation=true", json=bcr_abl1_json
+    )
     assert response.status_code == 200
     assert (
         response.json().get("nomenclature", "")

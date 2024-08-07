@@ -50,19 +50,19 @@ export const ReadingFrame: React.FC<Props> = ({ index }) => {
   };
 
   const [rFramePreserved, setRFramePreserved] = useState(
-    assignRadioValue(fusion.r_frame_preserved)
+    assignRadioValue(fusion.readingFramePreserved)
   );
 
   useEffect(() => {
     if (
-      fusion.r_frame_preserved &&
-      fusion.r_frame_preserved !== rFramePreserved
+      fusion.readingFramePreserved &&
+      fusion.readingFramePreserved !== rFramePreserved
     ) {
-      setRFramePreserved(assignRadioValue(fusion.r_frame_preserved));
+      setRFramePreserved(assignRadioValue(fusion.readingFramePreserved));
     }
 
-    if (fusion.r_frame_preserved === undefined) {
-      setFusion({ ...fusion, r_frame_preserved: null });
+    if (fusion.readingFramePreserved === undefined) {
+      setFusion({ ...fusion, readingFramePreserved: null });
     }
   }, [fusion]);
 
@@ -71,13 +71,13 @@ export const ReadingFrame: React.FC<Props> = ({ index }) => {
     if (value !== rFramePreserved) {
       if (value === "yes") {
         setRFramePreserved("yes");
-        setFusion({ ...fusion, r_frame_preserved: true });
+        setFusion({ ...fusion, readingFramePreserved: true });
       } else if (value === "no") {
         setRFramePreserved("no");
-        setFusion({ ...fusion, r_frame_preserved: false });
+        setFusion({ ...fusion, readingFramePreserved: false });
       } else {
         setRFramePreserved("unspecified");
-        setFusion({ ...fusion, r_frame_preserved: null });
+        setFusion({ ...fusion, readingFramePreserved: null });
       }
     }
   };

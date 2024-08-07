@@ -2,6 +2,8 @@
 
 import logging
 
+from cool_seq_tool.schemas import Strand
+
 logger = logging.getLogger("curfu")
 logger.setLevel(logging.DEBUG)
 
@@ -18,7 +20,7 @@ def get_strand(strand_input: str) -> int:
     :raise InvalidInputException: if strand arg is invalid
     """
     if strand_input == "+":
-        return 1
+        return Strand.POSITIVE
     if strand_input == "-":
-        return -1
+        return Strand.NEGATIVE
     raise InvalidInputError

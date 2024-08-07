@@ -1,6 +1,6 @@
 """Provide service meta information"""
 
-from cool_seq_tool.version import __version__ as cool_seq_tool_version
+from cool_seq_tool import __version__ as cool_seq_tool_version
 from fastapi import APIRouter
 from fusor import __version__ as fusor_version
 

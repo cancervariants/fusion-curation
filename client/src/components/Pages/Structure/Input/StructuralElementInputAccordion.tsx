@@ -72,7 +72,7 @@ const StructuralElementInputAccordion: React.FC<
   inputElements,
   validated,
   icon,
-  pendingResponse
+  pendingResponse,
 }) => {
   const classes = useStyles();
 
@@ -81,20 +81,24 @@ const StructuralElementInputAccordion: React.FC<
       <CardHeader
         avatar={icon}
         action={
-          pendingResponse ?
-          <CircularProgress style={{width: "1.25em", height: "1.25em", padding: "8px"}} /> :
-          <Tooltip title="Delete element">
-            <IconButton
-              style={{ cursor: "pointer" }}
-              onClick={(event) => {
-                event.stopPropagation();
-                handleDelete(element.element_id);
-              }}
-              onFocus={(event) => event.stopPropagation()}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+          pendingResponse ? (
+            <CircularProgress
+              style={{ width: "1.25em", height: "1.25em", padding: "8px" }}
+            />
+          ) : (
+            <Tooltip title="Delete element">
+              <IconButton
+                style={{ cursor: "pointer" }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleDelete(element.elementId);
+                }}
+                onFocus={(event) => event.stopPropagation()}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          )
         }
         title={element.nomenclature ? element.nomenclature : null}
         classes={{

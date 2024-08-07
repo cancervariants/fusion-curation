@@ -61,52 +61,52 @@ export const Assay: React.FC<Props> = () => {
 
   // initialize field values
   const [fusionDetection, setFusionDetection] = useState(
-    fusion?.assay?.fusion_detection !== undefined
-      ? fusion?.assay?.fusion_detection
+    fusion?.assay?.fusionDetection !== undefined
+      ? fusion?.assay?.fusionDetection
       : null
   );
 
   const [assayName, setAssayName] = useState(
-    fusion?.assay?.assay_name !== undefined ? fusion?.assay?.assay_name : ""
+    fusion?.assay?.assayName !== undefined ? fusion?.assay?.assayName : ""
   );
 
   const [assayId, setAssayId] = useState(
-    fusion?.assay?.assay_id !== undefined ? fusion?.assay?.assay_id : ""
+    fusion?.assay?.assayId !== undefined ? fusion?.assay?.assayId : ""
   );
 
   const [methodUri, setMethodUri] = useState(
-    fusion?.assay?.method_uri !== undefined ? fusion?.assay?.method_uri : ""
+    fusion?.assay?.methodUri !== undefined ? fusion?.assay?.methodUri : ""
   );
 
   const handleEvidenceChange = (event: FormEvent<HTMLInputElement>) => {
     const evidence_value = event.currentTarget.value;
-    if (fusion?.assay?.fusion_detection !== evidence_value) {
+    if (fusion?.assay?.fusionDetection !== evidence_value) {
       setFusionDetection(evidence_value);
       const assay = JSON.parse(JSON.stringify(fusion.assay));
-      assay["fusion_detection"] = evidence_value;
+      assay["fusionDetection"] = evidence_value;
       setFusion({ ...fusion, assay: assay });
     }
   };
 
   const propertySetterMap = {
-    assayName: [setAssayName, "assay_name"],
-    assayId: [setAssayId, "assay_id"],
-    methodUri: [setMethodUri, "method_uri"],
+    assayName: [setAssayName, "assayName"],
+    assayId: [setAssayId, "assayId"],
+    methodUri: [setMethodUri, "methodUri"],
   };
 
   // live update fields
   useEffect(() => {
-    if (fusion?.assay?.fusion_detection !== fusionDetection) {
-      setFusionDetection(fusion?.assay?.fusion_detection);
+    if (fusion?.assay?.fusionDetection !== fusionDetection) {
+      setFusionDetection(fusion?.assay?.fusionDetection);
     }
-    if (fusion?.assay?.assay_name !== assayName) {
-      setAssayName(fusion?.assay?.assay_name);
+    if (fusion?.assay?.assayName !== assayName) {
+      setAssayName(fusion?.assay?.assayName);
     }
-    if (fusion?.assay?.assay_id !== assayId) {
-      setAssayId(fusion?.assay?.assay_id);
+    if (fusion?.assay?.assayId !== assayId) {
+      setAssayId(fusion?.assay?.assayId);
     }
-    if (fusion?.assay?.method_uri !== methodUri) {
-      setMethodUri(fusion?.assay?.method_uri);
+    if (fusion?.assay?.methodUri !== methodUri) {
+      setMethodUri(fusion?.assay?.methodUri);
     }
   }, [fusion]);
 

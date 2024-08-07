@@ -3,11 +3,12 @@
 from collections.abc import Callable
 
 import pytest
+import pytest_asyncio
 from curfu.main import app, get_domain_services, get_gene_services, start_fusor
 from httpx import ASGITransport, AsyncClient
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session")
 async def async_client():
     """Provide httpx async client fixture."""
     app.state.fusor = await start_fusor()
@@ -21,7 +22,7 @@ async def async_client():
 response_callback_type = Callable[[dict, dict], None]
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session")
 async def check_response(async_client):
     """Provide base response check function. Use in individual tests."""
 
@@ -53,113 +54,103 @@ async def check_response(async_client):
     return check_response
 
 
+@pytest.fixture(scope="session")
+def check_sequence_location():
+    """Check that a sequence location is valid
+    :param dict sequence_location: sequence location structure
+    """
+
+    def check_sequence_location(sequence_location):
+        assert "ga4gh:SL." in sequence_location.get("id")
+        assert sequence_location.get("type") == "SequenceLocation"
+        sequence_reference = sequence_location.get("sequenceReference", {})
+        assert "refseq:" in sequence_reference.get("id")
+        assert sequence_reference.get("refgetAccession")
+        assert sequence_reference.get("type") == "SequenceReference"
+
+    return check_sequence_location
+
+
 @pytest.fixture(scope="module")
-def alk_descriptor():
-    """Gene descriptor for ALK gene"""
+def alk_gene():
+    """Gene object for ALK"""
     return {
-        "id": "normalize.gene:hgnc%3A427",
-        "type": "GeneDescriptor",
+        "type": "Gene",
         "label": "ALK",
-        "gene_id": "hgnc:427",
+        "id": "hgnc:427",
     }
 
 
 @pytest.fixture(scope="module")
-def tpm3_descriptor():
-    """Gene descriptor for TPM3 gene"""
+def tpm3_gene():
+    """Gene object for TPM3"""
     return {
-        "id": "normalize.gene:TPM3",
-        "type": "GeneDescriptor",
+        "type": "Gene",
         "label": "TPM3",
-        "gene_id": "hgnc:12012",
+        "id": "hgnc:12012",
     }
 
 
 @pytest.fixture(scope="module")
-def ntrk1_descriptor():
-    """Gene descriptor for NTRK1 gene"""
+def ntrk1_gene():
+    """Gene object for NTRK1"""
     return {
-        "id": "normalize.gene:NTRK1",
-        "type": "GeneDescriptor",
+        "type": "Gene",
         "label": "NTRK1",
-        "gene_id": "hgnc:8031",
+        "id": "hgnc:8031",
     }
 
 
 @pytest.fixture(scope="module")
-def alk_gene_element(alk_descriptor):
+def alk_gene_element(alk_gene):
     """Provide GeneElement containing ALK gene"""
-    return {"type": "GeneElement", "gene_descriptor": alk_descriptor}
+    return {"type": "GeneElement", "gene": alk_gene}
 
 
 @pytest.fixture(scope="module")
-def ntrk1_tx_element_start(ntrk1_descriptor):
+def ntrk1_tx_element_start(ntrk1_gene):
     """Provide TranscriptSegmentElement for NTRK1 constructed with exon coordinates,
     and only providing starting position.
     """
     return {
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_002529.3",
-        "exon_start": 2,
-        "exon_start_offset": 1,
-        "gene_descriptor": ntrk1_descriptor,
-        "element_genomic_start": {
+        "exonStart": 2,
+        "exonStartOffset": 1,
+        "gene": ntrk1_gene,
+        "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",
-            "type": "LocationDescriptor",
-            "label": "NC_000001.11",
-            "location": {
-                "type": "SequenceLocation",
-                "sequence_id": "refseq:NC_000001.11",
-                "interval": {
-                    "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 156864429},
-                    "end": {"type": "Number", "value": 156864430},
-                },
-            },
+            "type": "SequenceLocation",
+            "start": 156864429,
+            "end": 156864430,
         },
     }
 
 
 @pytest.fixture(scope="module")
-def tpm3_tx_t_element(tpm3_descriptor):
+def tpm3_tx_t_element(tpm3_gene):
     """Provide TranscriptSegmentElement for TPM3 gene constructed using genomic coordinates
     and transcript.
     """
     return {
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_152263.4",
-        "exon_start": 6,
-        "exon_start_offset": 72,
-        "exon_end": 6,
-        "exon_end_offset": -5,
-        "gene_descriptor": tpm3_descriptor,
-        "element_genomic_start": {
+        "exonStart": 6,
+        "exonStartOffset": 71,
+        "exonEnd": 6,
+        "exonEndOffset": -4,
+        "gene": tpm3_gene,
+        "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",
-            "type": "LocationDescriptor",
-            "label": "NC_000001.11",
-            "location": {
-                "type": "SequenceLocation",
-                "sequence_id": "refseq:NC_000001.11",
-                "interval": {
-                    "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 154171416},
-                    "end": {"type": "Number", "value": 154171417},
-                },
-            },
+            "type": "SequenceLocation",
+            "start": 154171416,
+            "end": 154171417,
         },
-        "element_genomic_end": {
+        "elementGenomicEnd": {
             "id": "fusor.location_descriptor:NC_000001.11",
-            "type": "LocationDescriptor",
-            "label": "NC_000001.11",
-            "location": {
-                "type": "SequenceLocation",
-                "sequence_id": "refseq:NC_000001.11",
-                "interval": {
-                    "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 154171417},
-                    "end": {"type": "Number", "value": 154171418},
-                },
-            },
+            "type": "SequenceLocation",
+            "start": 154171417,
+            "end": 154171418,
         },
     }
 
@@ -172,37 +163,21 @@ def tpm3_tx_g_element(tpm3_descriptor):
     return {
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_152263.4",
-        "exon_start": 6,
-        "exon_start_offset": 5,
-        "exon_end": 6,
-        "exon_end_offset": -70,
-        "gene_descriptor": tpm3_descriptor,
-        "element_genomic_start": {
+        "exonStart": 6,
+        "exonStartOffset": 5,
+        "exonEnd": 6,
+        "exonEndOffset": -71,
+        "gene": tpm3_descriptor,
+        "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",
-            "type": "LocationDescriptor",
-            "label": "NC_000001.11",
-            "location": {
-                "type": "SequenceLocation",
-                "sequence_id": "refseq:NC_000001.11",
-                "interval": {
-                    "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 154171483},
-                    "end": {"type": "Number", "value": 154171484},
-                },
-            },
+            "type": "SequenceLocation",
+            "start": 154171483,
+            "end": 154171484,
         },
-        "element_genomic_end": {
+        "elementGenomicEnd": {
             "id": "fusor.location_descriptor:NC_000001.11",
-            "type": "LocationDescriptor",
-            "label": "NC_000001.11",
-            "location": {
-                "type": "SequenceLocation",
-                "sequence_id": "refseq:NC_000001.11",
-                "interval": {
-                    "type": "SequenceInterval",
-                    "start": {"type": "Number", "value": 154171482},
-                    "end": {"type": "Number", "value": 154171483},
-                },
-            },
+            "type": "SequenceLocation",
+            "start": 154171482,
+            "end": 154171483,
         },
     }

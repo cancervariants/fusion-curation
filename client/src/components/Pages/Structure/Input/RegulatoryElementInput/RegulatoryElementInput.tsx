@@ -52,13 +52,13 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
   const { fusion, setFusion } = useContext(FusionContext);
   const [regElement, setRegElement] = useState<
     ClientRegulatoryElement | undefined
-  >(fusion.regulatory_element);
+  >(fusion.regulatoryElement);
 
   const [elementClass, setElementClass] = useState<RegulatoryClass | "default">(
-    regElement?.regulatory_class || "default"
+    regElement?.regulatoryClass || "default"
   );
   const [gene, setGene] = useState<string>(
-    regElement?.associated_gene?.label || ""
+    regElement?.associatedGene?.label || ""
   );
   const [geneText, setGeneText] = useState<string>("");
 
@@ -75,7 +75,7 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
       if (reResponse.warnings && reResponse.warnings.length > 0) {
         throw new Error(reResponse.warnings[0]);
       }
-      getRegElementNomenclature(reResponse.regulatory_element).then(
+      getRegElementNomenclature(reResponse.regulatoryElement).then(
         (nomenclatureResponse) => {
           if (
             nomenclatureResponse.warnings &&
@@ -84,19 +84,20 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
             throw new Error(nomenclatureResponse.warnings[0]);
           }
           const newRegElement: ClientRegulatoryElement = {
-            ...reResponse.regulatory_element,
-            display_class: regulatoryClassItems[elementClass][1],
-            nomenclature: nomenclatureResponse.nomenclature,
+            ...reResponse.regulatoryElement,
+            elementId: element.elementId,
+            displayClass: regulatoryClassItems[elementClass][1],
+            nomenclature: nomenclatureResponse.nomenclature || "",
           };
           setRegElement(newRegElement);
-          setFusion({ ...fusion, ...{ regulatory_element: newRegElement } });
+          setFusion({ ...fusion, ...{ regulatoryElement: newRegElement } });
         }
       );
     });
   };
 
   const handleDeleteElement = () => {
-    delete fusion.regulatory_element;
+    delete fusion.regulatoryElement;
     const cloneFusion = { ...fusion };
     setRegElement(undefined);
     setFusion(cloneFusion);

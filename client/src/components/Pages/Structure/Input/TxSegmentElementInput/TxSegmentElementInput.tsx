@@ -47,41 +47,43 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   const { fusion } = useContext(FusionContext);
 
   const [txInputType, setTxInputType] = useState<InputType>(
-    (element.input_type as InputType) || InputType.default
+    (element.inputType as InputType) || InputType.default
   );
 
   // "Text" variables refer to helper or warning text to set under input fields
   // TODO: this needs refactored so badly
-  const [txAc, setTxAc] = useState(element.input_tx || "");
+  const [txAc, setTxAc] = useState(element.inputTx || "");
   const [txAcText, setTxAcText] = useState("");
 
-  const [txGene, setTxGene] = useState(element.input_gene || "");
+  const [txGene, setTxGene] = useState(element.inputGene || "");
   const [txGeneText, setTxGeneText] = useState("");
 
-  const [txStrand, setTxStrand] = useState<string>(element.input_strand || "+");
+  const [txStrand, setTxStrand] = useState<string>(
+    element.inputStrand === 1 ? "+" : "-"
+  );
 
-  const [txChrom, setTxChrom] = useState(element.input_chr || "");
+  const [txChrom, setTxChrom] = useState(element.inputChr || "");
   const [txChromText, setTxChromText] = useState("");
 
   const [txStartingGenomic, setTxStartingGenomic] = useState(
-    element.input_genomic_start || ""
+    element.inputGenomicStart || ""
   );
   const [txStartingGenomicText, setTxStartingGenomicText] = useState("");
   const [txEndingGenomic, setTxEndingGenomic] = useState(
-    element.input_genomic_end || ""
+    element.inputGenomicEnd || ""
   );
   const [txEndingGenomicText, setTxEndingGenomicText] = useState("");
 
-  const [startingExon, setStartingExon] = useState(element.exon_start || "");
+  const [startingExon, setStartingExon] = useState(element.exonStart || "");
   const [startingExonText, setStartingExonText] = useState("");
-  const [endingExon, setEndingExon] = useState(element.exon_end || "");
+  const [endingExon, setEndingExon] = useState(element.exonEnd || "");
   const [endingExonText, setEndingExonText] = useState("");
   const [startingExonOffset, setStartingExonOffset] = useState(
-    element.exon_start_offset || ""
+    element.exonStartOffset || ""
   );
   const [startingExonOffsetText, setStartingExonOffsetText] = useState("");
   const [endingExonOffset, setEndingExonOffset] = useState(
-    element.exon_end_offset || ""
+    element.exonEndOffset || ""
   );
   const [endingExonOffsetText, setEndingExonOffsetText] = useState("");
 
@@ -248,12 +250,12 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             CheckGenomicCoordWarning(txSegmentResponse.warnings);
           } else {
             const inputParams = {
-              input_type: txInputType,
-              input_strand: txStrand,
-              input_gene: txGene,
-              input_chr: txChrom,
-              input_genomic_start: txStartingGenomic,
-              input_genomic_end: txEndingGenomic,
+              inputType: txInputType,
+              inputStrand: txStrand,
+              inputGene: txGene,
+              inputChr: txChrom,
+              inputGenomicStart: txStartingGenomic,
+              inputGenomicEnd: txEndingGenomic,
             };
             handleTxElementResponse(txSegmentResponse, inputParams);
           }
@@ -277,12 +279,12 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             CheckGenomicCoordWarning(txSegmentResponse.warnings);
           } else {
             const inputParams = {
-              input_type: txInputType,
-              input_tx: txAc,
-              input_strand: txStrand,
-              input_chr: txChrom,
-              input_genomic_start: txStartingGenomic,
-              input_genomic_end: txEndingGenomic,
+              inputType: txInputType,
+              inputTx: txAc,
+              inputStrand: txStrand,
+              inputChr: txChrom,
+              inputGenomicStart: txStartingGenomic,
+              inputGenomicEnd: txEndingGenomic,
             };
             handleTxElementResponse(txSegmentResponse, inputParams);
           }
@@ -323,8 +325,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             setStartingExonText("");
             setEndingExonText("");
             const inputParams = {
-              input_type: txInputType,
-              input_tx: txAc,
+              inputType: txInputType,
+              inputTx: txAc,
             };
             handleTxElementResponse(txSegmentResponse, inputParams);
           }
@@ -437,10 +439,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   const genomicCoordinateInfo = (
     <>
       <Box className="mid-inputs">
-        <ChromosomeField
-          fieldValue={txChrom}
-          errorText={txChromText}
-        />
+        <ChromosomeField fieldValue={txChrom} errorText={txChromText} />
         <Box mt="18px" width="125px">
           <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
         </Box>

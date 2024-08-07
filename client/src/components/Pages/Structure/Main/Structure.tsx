@@ -41,8 +41,8 @@ export const Structure: React.FC<Props> = () => {
           Drag and rearrange elements.
           {
             // TODO -- how to interact w/ reg element count?
-            fusion.structural_elements?.length +
-              (fusion.regulatory_element !== undefined) >=
+            fusion.structure?.length +
+              (fusion.regulatoryElement !== undefined) >=
             2 ? null : (
               <span className={classes.errorText}>
                 {" "}

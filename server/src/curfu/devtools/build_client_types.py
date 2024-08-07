@@ -7,7 +7,7 @@ from pydantic2ts.cli.script import generate_typescript_defs
 
 def build_client_types() -> None:
     """Construct type definitions for front-end client."""
-    client_dir = Path(__file__).resolve().parents[3] / "client"
+    client_dir = Path(__file__).resolve().parents[4] / "client"
     generate_typescript_defs(
         "curfu.schemas",
         str((client_dir / "src" / "services" / "ResponseModels.ts").absolute()),
