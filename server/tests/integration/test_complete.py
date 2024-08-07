@@ -33,14 +33,6 @@ async def test_complete_gene(async_client: AsyncClient):
     assert (
         response_json["matches_count"] >= 2000
     ), "should be a whole lot of matches (2081 as of last prod data dump)"
-    # TODO these aren't matching anymore, and the results here look kind of weird.
-    # we should double check in a separate issue
-    # assert response_json["prev_symbols"] == [
-    #     ["A", "LOC100420587", "ncbigene:100420587", "NCBI:NC_000019.10", "-"]
-    # ]
-    # assert response_json["aliases"] == [
-    #     ["A", "LOC110467529", "ncbigene:110467529", "NCBI:NC_000021.9", "+"]
-    # ]
 
     # test concept ID match
     response = await async_client.get("/api/complete/gene?term=hgnc:1097")
@@ -65,7 +57,6 @@ async def test_complete_gene(async_client: AsyncClient):
 async def test_complete_domain(async_client: AsyncClient):
     """Test /complete/domain endpoint"""
     response = await async_client.get("/api/complete/domain?gene_id=hgnc%3A1097")
-    # TODO we should have better canonical examples of domains that we want to see
     assert response.json() == {
         "gene_id": "hgnc:1097",
         "suggestions": [
