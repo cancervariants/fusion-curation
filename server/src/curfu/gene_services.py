@@ -49,7 +49,7 @@ class GeneService:
     @staticmethod
     def get_normalized_gene(
         term: str, normalizer: QueryHandler
-    ) -> tuple[str, str, str | str | None]:
+    ) -> tuple[str, str, str | None]:
         """Get normalized ID given gene symbol/label/alias.
 
         :param term: user-entered gene term

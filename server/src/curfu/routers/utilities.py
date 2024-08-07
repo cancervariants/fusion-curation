@@ -39,7 +39,7 @@ def get_mane_transcripts(request: Request, term: str) -> dict:
     normalized = request.app.state.fusor.gene_normalizer.normalize(term)
     if normalized.match_type == gene_schemas.MatchType.NO_MATCH:
         return {"warnings": [f"Normalization error: {term}"], "transcripts": None}
-    if not normalized.gene.id.replace("normalize.gene.", "").lower().startswith("hgnc"):
+    if not normalized.normalized_id.startswith("hgnc"):
         return {"warnings": [f"No HGNC symbol: {term}"], "transcripts": None}
     symbol = normalized.gene.label
     transcripts = request.app.state.fusor.cool_seq_tool.mane_transcript_mappings.get_gene_mane_data(
