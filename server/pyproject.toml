@@ -49,6 +49,7 @@ dev = [
     "pre-commit>=3.7.1",
     "gene-normalizer ~= 0.1.39",
     "pydantic-to-typescript",
+    "cool-seq-tool >= 0.4.1"
 ]
 
 [project.scripts]
