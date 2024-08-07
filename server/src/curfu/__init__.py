@@ -50,9 +50,6 @@ if "UTA_DB_URL" in environ:
 else:
     UTA_DB_URL = "postgresql://uta_admin@localhost:5433/uta/uta_20210129"
 
-# get local seqrepo location
-SEQREPO_DATA_PATH = environ.get("SEQREPO_DATA_PATH", f"{APP_ROOT}/data/seqrepo/latest")
-
 
 class LookupServiceError(Exception):
     """Custom Exception to use when lookups fail in curation services."""
