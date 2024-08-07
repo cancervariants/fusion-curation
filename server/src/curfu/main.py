@@ -85,7 +85,15 @@ BUILD_DIR = APP_ROOT / "build"
 
 
 def serve_react_app(app: FastAPI) -> FastAPI:
-    """Wrap application initialization in Starlette route param converter.
+    """Wrap application initialization in Starlette route param converter. This ensures
+    that the static web client files can be served from the backend.
+
+    Client source must be available at the location specified by `BUILD_DIR` in a
+    production environment. However, this may not be necessary during local development,
+    so the `RuntimeError` is simply caught and logged.
+
+    For the live service, `.ebextensions/01_build.config` includes code to build a
+    production version of the client and move it to the proper location.
 
     :param app: FastAPI application instance
     :return: application with React frontend mounted
@@ -111,6 +119,7 @@ def serve_react_app(app: FastAPI) -> FastAPI:
             and handle all client requests, and will 404 on any non-server-defined paths.
             This function reroutes those otherwise failed requests against the React-Router
             client, allowing it to redirect the client to the appropriate location.
+
             :param request: client request object
             :param full_path: request path
             :return: Starlette template response object
