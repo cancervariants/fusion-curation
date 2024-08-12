@@ -630,19 +630,66 @@ export interface ClientStructuralElement {
  */
 export interface CoordsUtilsResponse {
   warnings?: string[] | null;
-  coordinates_data: GenomicTxData | null;
+  coordinates_data: GenomicTxSegService | null;
 }
 /**
- * Represent aligned genomic/transcript exon data
+ * Service model for genomic and transcript data.
  */
-export interface GenomicTxData {
-  gene: string;
-  strand: Strand;
-  tx_pos_range: [unknown, unknown];
-  alt_pos_range: [unknown, unknown];
-  alt_aln_method: string;
-  tx_exon_id: number;
-  alt_exon_id: number;
+export interface GenomicTxSegService {
+  /**
+   * HGNC gene symbol.
+   */
+  gene?: string | null;
+  /**
+   * RefSeq genomic accession.
+   */
+  genomic_ac?: string | null;
+  /**
+   * RefSeq transcript accession.
+   */
+  tx_ac?: string | null;
+  /**
+   * Start transcript segment.
+   */
+  seg_start?: TxSegment | null;
+  /**
+   * End transcript segment.
+   */
+  seg_end?: TxSegment | null;
+  /**
+   * Error messages.
+   */
+  errors?: string[];
+  /**
+   * Service metadata.
+   */
+  service_meta: ServiceMeta;
+}
+/**
+ * Model for representing transcript segment data.
+ */
+export interface TxSegment {
+  /**
+   * Exon number. 0-based.
+   */
+  exon_ord: number;
+  /**
+   * The value added to or subtracted from the `genomic_location` to find the start or end of an exon.
+   */
+  offset?: number;
+  /**
+   * The genomic position of a transcript segment.
+   */
+  genomic_location: SequenceLocation;
+}
+/**
+ * Metadata for cool_seq_tool service
+ */
+export interface ServiceMeta {
+  name?: "cool_seq_tool";
+  version: string;
+  response_datetime: string;
+  url?: "https://github.com/GenomicMedLab/cool-seq-tool";
 }
 /**
  * Response model for demo fusion object retrieval endpoints.
