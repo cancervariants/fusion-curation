@@ -15,7 +15,7 @@ from curfu.schemas import (
     TemplatedSequenceElementResponse,
     TxSegmentElementResponse,
 )
-from curfu.sequence_services import InvalidInputError, get_strand
+from curfu.sequence_services import get_strand
 
 router = APIRouter()
 
@@ -93,7 +93,6 @@ async def build_tx_segment_gct(
     chromosome: str,
     start: int | None = Query(None),
     end: int | None = Query(None),
-    strand: str | None = Query(None),
 ) -> TxSegmentElementResponse:
     """Construct Transcript Segment element by providing transcript and genomic
     coordinates (chromosome, start, end positions).
@@ -107,23 +106,12 @@ async def build_tx_segment_gct(
     :return: Pydantic class with TranscriptSegment element if successful, and
         warnings otherwise.
     """
-    if strand is not None:
-        try:
-            strand_validated = get_strand(strand)
-        except InvalidInputError:
-            warning = f"Received invalid strand value: {strand}"
-            logger.warning(warning)
-            return TxSegmentElementResponse(warnings=[warning], element=None)
-    else:
-        strand_validated = strand
     tx_segment, warnings = await request.app.state.fusor.transcript_segment_element(
         tx_to_genomic_coords=False,
         transcript=parse_identifier(transcript),
         chromosome=parse_identifier(chromosome),
-        start=start,
-        end=end,
-        strand=strand_validated,
-        residue_mode="inter-residue",
+        genomic_start=start,
+        genomic_end=end,
     )
     return TxSegmentElementResponse(element=tx_segment, warnings=warnings)
 
@@ -141,7 +129,6 @@ async def build_tx_segment_gcg(
     chromosome: str,
     start: int | None = Query(None),
     end: int | None = Query(None),
-    strand: str | None = Query(None),
 ) -> TxSegmentElementResponse:
     """Construct Transcript Segment element by providing gene and genomic
     coordinates (chromosome, start, end positions).
@@ -155,23 +142,12 @@ async def build_tx_segment_gcg(
     :return: Pydantic class with TranscriptSegment element if successful, and
         warnings otherwise.
     """
-    if strand is not None:
-        try:
-            strand_validated = get_strand(strand)
-        except InvalidInputError:
-            warning = f"Received invalid strand value: {strand}"
-            logger.warning(warning)
-            return TxSegmentElementResponse(warnings=[warning], element=None)
-    else:
-        strand_validated = strand
     tx_segment, warnings = await request.app.state.fusor.transcript_segment_element(
         tx_to_genomic_coords=False,
         gene=gene,
         chromosome=parse_identifier(chromosome),
-        strand=strand_validated,
-        start=start,
-        end=end,
-        residue_mode="inter-residue",
+        genomic_start=start,
+        genomic_end=end,
     )
     return TxSegmentElementResponse(element=tx_segment, warnings=warnings)
 

@@ -16,7 +16,6 @@ from curfu.schemas import (
     RouteTag,
     SequenceIDResponse,
 )
-from curfu.sequence_services import InvalidInputError, get_strand
 
 router = APIRouter()
 
@@ -107,7 +106,7 @@ async def get_genome_coords(
     if exon_end is not None and exon_end_offset is None:
         exon_end_offset = 0
 
-    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.transcript_to_genomic_coordinates(
+    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.tx_segment_to_genomic(
         transcript=transcript,
         gene=gene,
         exon_start=exon_start,
@@ -134,7 +133,6 @@ async def get_exon_coords(
     chromosome: str,
     start: int | None = None,
     end: int | None = None,
-    strand: str | None = None,
     gene: str | None = None,
     transcript: str | None = None,
 ) -> CoordsUtilsResponse:
@@ -145,7 +143,6 @@ async def get_exon_coords(
     :param chromosome: chromosome, either as a number/X/Y or as an accession
     :param start: genomic start position
     :param end: genomic end position
-    :param strand: strand of genomic position
     :param gene: gene symbol or ID
     :param transcript: transcript accession ID
     :return: response with exon coordinates if successful, or warnings if failed
@@ -155,23 +152,15 @@ async def get_exon_coords(
         warnings.append("Must provide start and/or end coordinates")
     if transcript is None and gene is None:
         warnings.append("Must provide gene and/or transcript")
-    if strand is not None:
-        try:
-            strand_validated = get_strand(strand)
-        except InvalidInputError:
-            warnings.append(f"Received invalid strand value: {strand}")
-    else:
-        strand_validated = strand
     if warnings:
         for warning in warnings:
             logger.warning(warning)
         return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.genomic_to_transcript_exon_coordinates(
-        alt_ac=chromosome,
-        start=start,
-        end=end,
-        strand=strand_validated,
+    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.genomic_to_tx_segment(
+        genomic_ac=chromosome,
+        genomic_start=start,
+        genomic_end=end,
         transcript=transcript,
         gene=gene,
     )

@@ -136,7 +136,7 @@ async def test_get_exon_coords(check_response):
         assert response["coordinates_data"] == expected_response["coordinates_data"]
 
     await check_response(
-        "/api/utilities/get_exon?chromosome=1&transcript=NM_152263.3&start=154192135&strand=-",
+        "/api/utilities/get_exon?chromosome=1&transcript=NM_152263.3&start=154192135",
         {
             "coordinates_data": {
                 "gene": "TPM3",
@@ -145,7 +145,6 @@ async def test_get_exon_coords(check_response):
                 "exon_start": 1,
                 "exon_start_offset": 1,
                 "transcript": "NM_152263.3",
-                "strand": -1,
             }
         },
         check_coords_response,

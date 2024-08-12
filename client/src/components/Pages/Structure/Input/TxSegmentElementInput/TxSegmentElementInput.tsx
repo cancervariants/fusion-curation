@@ -267,8 +267,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           txAc,
           txChrom,
           txStartingGenomic,
-          txEndingGenomic,
-          txStrand
+          txEndingGenomic
         ).then((txSegmentResponse) => {
           if (
             txSegmentResponse.warnings &&

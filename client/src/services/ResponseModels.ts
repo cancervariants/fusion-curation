@@ -630,22 +630,19 @@ export interface ClientStructuralElement {
  */
 export interface CoordsUtilsResponse {
   warnings?: string[] | null;
-  coordinates_data: GenomicData | null;
+  coordinates_data: GenomicTxData | null;
 }
 /**
- * Model containing genomic and transcript exon data.
+ * Represent aligned genomic/transcript exon data
  */
-export interface GenomicData {
+export interface GenomicTxData {
   gene: string;
-  chr: string;
-  start?: number | null;
-  end?: number | null;
-  exon_start?: number | null;
-  exon_start_offset?: number | null;
-  exon_end?: number | null;
-  exon_end_offset?: number | null;
-  transcript: string;
   strand: Strand;
+  tx_pos_range: [unknown, unknown];
+  alt_pos_range: [unknown, unknown];
+  alt_aln_method: string;
+  tx_exon_id: number;
+  alt_exon_id: number;
 }
 /**
  * Response model for demo fusion object retrieval endpoints.
@@ -672,12 +669,13 @@ export interface ExonCoordsRequest {
  */
 export interface FormattedAssayedFusion {
   fusion_type?: AssayedFusion & string;
-  structure:
+  structure: (
     | TranscriptSegmentElement
     | GeneElement
     | TemplatedSequenceElement
     | LinkerElement
-    | UnknownGeneElement;
+    | UnknownGeneElement
+  )[];
   causative_event?: CausativeEvent | null;
   assay?: Assay | null;
   regulatory_element?: RegulatoryElement | null;
@@ -690,12 +688,13 @@ export interface FormattedAssayedFusion {
  */
 export interface FormattedCategoricalFusion {
   fusion_type?: CategoricalFusion & string;
-  structure:
+  structure: (
     | TranscriptSegmentElement
     | GeneElement
     | TemplatedSequenceElement
     | LinkerElement
-    | MultiplePossibleGenesElement;
+    | MultiplePossibleGenesElement
+  )[];
   regulatory_element?: RegulatoryElement | null;
   critical_functional_domains?: FunctionalDomain[] | null;
   reading_frame_preserved?: boolean | null;
@@ -776,9 +775,9 @@ export interface Response {
 export interface SequenceIDResponse {
   warnings?: string[] | null;
   sequence: string;
-  refseq_id: string | null;
-  ga4gh_id: string | null;
-  aliases: string[] | null;
+  refseq_id?: string | null;
+  ga4gh_id?: string | null;
+  aliases?: string[] | null;
 }
 /**
  * Response model for service_info endpoint.

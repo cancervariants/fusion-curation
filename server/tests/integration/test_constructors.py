@@ -159,12 +159,12 @@ async def test_build_segment_gct(
     genomic coordinates and transcript.
     """
     await check_response(
-        "/api/construct/structural_element/tx_segment_gct?transcript=NM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",
+        "/api/construct/structural_element/tx_segment_gct?transcript=NM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417",
         {"element": tpm3_tx_t_element},
         check_tx_element_response,
     )
     await check_response(
-        "/api/construct/structural_element/tx_segment_gct?transcript=refseq%3ANM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",
+        "/api/construct/structural_element/tx_segment_gct?transcript=refseq%3ANM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417",
         {"element": tpm3_tx_t_element},
         check_tx_element_response,
     )
@@ -178,7 +178,7 @@ async def test_build_segment_gcg(
     genomic coordinates and gene name.
     """
     await check_response(
-        "/api/construct/structural_element/tx_segment_gcg?gene=TPM3&chromosome=NC_000001.11&start=154171416&end=154171417&strand=-",
+        "/api/construct/structural_element/tx_segment_gcg?gene=TPM3&chromosome=NC_000001.11&start=154171416&end=154171417",
         {"element": tpm3_tx_g_element},
         check_tx_element_response,
     )

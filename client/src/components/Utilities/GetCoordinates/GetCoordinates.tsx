@@ -193,12 +193,12 @@ const GetCoordinates: React.FC = () => {
         exonEndOffset
       ).then((coordsResponse) => handleResponse(coordsResponse));
     } else if (inputType == "genomic_coords_gene") {
-      getExonCoords(chromosome, start, end, strand, gene).then(
-        (coordsResponse) => handleResponse(coordsResponse)
+      getExonCoords(chromosome, start, end, gene).then((coordsResponse) =>
+        handleResponse(coordsResponse)
       );
     } else if (inputType == "genomic_coords_tx") {
-      getExonCoords(chromosome, start, end, strand, "", txAc).then(
-        (coordsResponse) => handleResponse(coordsResponse)
+      getExonCoords(chromosome, start, end, "", txAc).then((coordsResponse) =>
+        handleResponse(coordsResponse)
       );
     }
   };
@@ -250,10 +250,7 @@ const GetCoordinates: React.FC = () => {
   const genomicCoordinateInfo = (
     <>
       <Box display="flex" justifyContent="space-between" width="100%">
-        <ChromosomeField
-          fieldValue={chromosome}
-          errorText={chromosomeText}
-        />
+        <ChromosomeField fieldValue={chromosome} errorText={chromosomeText} />
         <Box mt="18px">
           <Box className={classes.strand} width="125px">
             <StrandSwitch
