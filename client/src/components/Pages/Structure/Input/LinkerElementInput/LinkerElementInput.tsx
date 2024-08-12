@@ -18,7 +18,7 @@ const LinkerElementInput: React.FC<LinkerElementInputProps> = ({
 }) => {
   // bases
   const [sequence, setSequence] = useState<string>(
-    element.linker_sequence?.sequence || ""
+    element.linkerSequence?.sequence || ""
   );
   const linkerError =
     Boolean(sequence) && sequence.match(/^([aAgGtTcC]+)?$/) === null;
@@ -32,11 +32,10 @@ const LinkerElementInput: React.FC<LinkerElementInputProps> = ({
   const buildLinkerElement = () => {
     const linkerElement: ClientLinkerElement = {
       ...element,
-      linker_sequence: {
+      linkerSequence: {
         id: `fusor.sequence:${sequence}`,
-        type: "SequenceDescriptor",
+        type: "LiteralSequenceExpression",
         sequence: sequence,
-        residue_type: "SO:0000348",
       },
       nomenclature: sequence,
     };

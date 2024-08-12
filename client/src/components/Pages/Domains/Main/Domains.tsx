@@ -22,7 +22,7 @@ export const Domain: React.FC<Props> = () => {
   const { fusion, setFusion } = useContext(FusionContext);
 
   const { globalGenes } = useContext(GeneContext);
-  const domains = fusion.critical_functional_domains || [];
+  const domains = fusion.criticalFunctionalDomains || [];
 
   const { colorTheme } = useColorTheme();
   const useStyles = makeStyles(() => ({
@@ -73,14 +73,14 @@ export const Domain: React.FC<Props> = () => {
 
   const handleRemove = (domain: ClientFunctionalDomain) => {
     let cloneArray: ClientFunctionalDomain[] = Array.from(
-      fusion.critical_functional_domains
+      fusion.criticalFunctionalDomains
     );
     cloneArray = cloneArray.filter((obj) => {
       return obj["domain_id"] !== domain["domain_id"];
     });
     setFusion({
       ...fusion,
-      ...{ critical_functional_domains: cloneArray || [] },
+      ...{ criticalFunctionalDomains: cloneArray || [] },
     });
   };
 
@@ -108,7 +108,7 @@ export const Domain: React.FC<Props> = () => {
         avatar={<Avatar>{domain.status === "preserved" ? "P" : "L"}</Avatar>}
         label={
           <React.Fragment>
-            {domainLabelString} <b>{`(${domain.associated_gene.label})`}</b>
+            {domainLabelString} <b>{`(${domain.associatedGene.label})`}</b>
           </React.Fragment>
         }
         onDelete={() => handleRemove(domain)}

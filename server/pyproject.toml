@@ -23,14 +23,15 @@ requires-python = ">=3.10"
 description = "Curation tool for gene fusions"
 dependencies = [
     "fastapi >= 0.72.0",
-    "aiofiles",
-    "asyncpg",
-    "fusor ~= 0.0.30-dev1",
-    "sqlparse >= 0.4.2",
-    "urllib3 >= 1.26.5",
+    "starlette",
+    "jinja2",  # required for file service
     "click",
-    "jinja2",
     "boto3",
+    "botocore",
+    "fusor ~= 0.2.0",
+    "cool-seq-tool ~= 0.5.1",
+    "pydantic == 2.4.2",
+    "gene-normalizer ~= 0.4.0",
 ]
 dynamic = ["version"]
 
@@ -47,9 +48,7 @@ dev = [
     "ruff == 0.5.0",
     "black",
     "pre-commit>=3.7.1",
-    "gene-normalizer ~= 0.1.39",
-    "pydantic-to-typescript",
-    "cool-seq-tool >= 0.4.1"
+    "pydantic-to-typescript2",
 ]
 
 [project.scripts]
@@ -163,9 +162,12 @@ ignore = [
 # INP001 - implicit-namespace-package
 # ARG001 - unused-function-argument
 # B008 - function-call-in-default-argument
+# N803 - invalid-argument-name
+# N805 - invalid-first-argument-name-for-method
+# N815 - mixed-case-variable-in-class-scope
 "**/tests/*" = ["ANN001", "ANN2", "ANN102", "S101", "B011", "INP001", "ARG001"]
 "*__init__.py" = ["F401"]
-"**/src/curfu/schemas.py" = ["ANN201", "N805", "ANN001"]
+"**/src/curfu/schemas.py" = ["ANN201", "N805", "ANN001", "N803", "N805", "N815"]
 "**/src/curfu/routers/*" = ["D301", "B008"]
 "**/src/curfu/cli.py" = ["D301"]
 

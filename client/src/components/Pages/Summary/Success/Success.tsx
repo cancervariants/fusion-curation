@@ -3,7 +3,10 @@ import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeConte
 import { Readable } from "../Readable/Readable";
 import { Tabs, Tab } from "@material-ui/core/";
 import { SummaryJSON } from "../JSON/SummaryJSON";
-import { FusionType } from "../Main/Summary";
+import {
+  FormattedAssayedFusion,
+  FormattedCategoricalFusion,
+} from "../../../../services/ResponseModels";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -22,7 +25,7 @@ const TabPanel = (props) => {
 };
 
 interface Props {
-  fusion: FusionType;
+  fusion: FormattedAssayedFusion | FormattedCategoricalFusion;
 }
 
 export const Success: React.FC<Props> = ({ fusion }) => {
@@ -52,12 +55,12 @@ export const Success: React.FC<Props> = ({ fusion }) => {
         </div>
         <TabPanel value={currentTab} index={0}>
           <div className="summary-sub-tab">
-            {fusion && <Readable validatedFusion={fusion} />}
+            {fusion && <Readable formattedFusion={fusion} />}
           </div>
         </TabPanel>
         <TabPanel value={currentTab} index={1}>
           <div className="summary-sub-tab">
-            {fusion && <SummaryJSON fusion={fusion} />}
+            {fusion && <SummaryJSON formattedFusion={fusion} />}
           </div>
         </TabPanel>
       </div>

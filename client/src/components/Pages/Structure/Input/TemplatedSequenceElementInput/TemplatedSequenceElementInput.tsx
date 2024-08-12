@@ -18,16 +18,21 @@ interface TemplatedSequenceElementInputProps
 const TemplatedSequenceElementInput: React.FC<
   TemplatedSequenceElementInputProps
 > = ({ element, index, handleSave, handleDelete, icon }) => {
-
   const [chromosome, setChromosome] = useState<string>(
-    element.input_chromosome || ""
+    element.inputChromosome || ""
   );
-  const [strand, setStrand] = useState<string>(element.strand || "+");
+  const [strand, setStrand] = useState<string>(
+    element.strand === 1 ? "+" : "-"
+  );
   const [startPosition, setStartPosition] = useState<string>(
-    element.input_start || ""
+    element.inputStart !== null && element.inputStart !== undefined
+      ? `${element.inputStart}`
+      : ""
   );
   const [endPosition, setEndPosition] = useState<string>(
-    element.input_end || ""
+    element.inputEnd !== null && element.inputEnd !== undefined
+      ? `${element.inputEnd}`
+      : ""
   );
   const [inputError, setInputError] = useState<string>("");
 
@@ -67,7 +72,7 @@ const TemplatedSequenceElementInput: React.FC<
       ) {
         // TODO visible error handling
         setInputError("element validation unsuccessful");
-        setPendingResponse(false)
+        setPendingResponse(false);
         return;
       } else if (templatedSequenceResponse.element) {
         setInputError("");
@@ -77,17 +82,21 @@ const TemplatedSequenceElementInput: React.FC<
           if (nomenclatureResponse.nomenclature) {
             const templatedSequenceElement: ClientTemplatedSequenceElement = {
               ...templatedSequenceResponse.element,
-              element_id: element.element_id,
+              elementId: element.elementId,
               nomenclature: nomenclatureResponse.nomenclature,
-              input_chromosome: chromosome,
-              input_start: startPosition,
-              input_end: endPosition,
+              region:
+                templatedSequenceResponse?.element?.region || element.region,
+              strand:
+                templatedSequenceResponse?.element?.strand || element.strand,
+              inputChromosome: chromosome,
+              inputStart: startPosition,
+              inputEnd: endPosition,
             };
             handleSave(index, templatedSequenceElement);
           }
         });
       }
-      setPendingResponse(false)
+      setPendingResponse(false);
     });
   };
 
@@ -167,7 +176,7 @@ const TemplatedSequenceElementInput: React.FC<
     inputElements,
     validated,
     icon,
-    pendingResponse
+    pendingResponse,
   });
 };
 

@@ -85,8 +85,8 @@ def get_uniprot_refs() -> UniprotRefs:
                 if uniprot_id in uniprot_ids:
                     continue
                 norm_response = q.normalize(uniprot_id)
-                norm_id = norm_response.gene_descriptor.gene_id
-                norm_label = norm_response.gene_descriptor.label
+                norm_id = norm_response.gene.gene_id
+                norm_label = norm_response.gene.label
                 uniprot_ids[uniprot_id] = (norm_id, norm_label)
         if not last_evaluated_key:
             break

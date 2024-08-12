@@ -14,12 +14,11 @@ async def test_build_gene_element(check_response, alk_gene_element):
         if ("element" not in response) and ("element" not in expected_response):
             return
         assert response["element"]["type"] == expected_response["element"]["type"]
-        response_gd = response["element"]["gene_descriptor"]
-        expected_gd = expected_response["element"]["gene_descriptor"]
+        response_gd = response["element"]["gene"]
+        expected_gd = expected_response["element"]["gene"]
         assert response_gd["id"] == expected_id
         assert response_gd["type"] == expected_gd["type"]
         assert response_gd["label"] == expected_gd["label"]
-        assert response_gd["gene_id"] == expected_gd["gene_id"]
 
     alk_gene_response = {"warnings": [], "element": alk_gene_element}
 
@@ -27,13 +26,13 @@ async def test_build_gene_element(check_response, alk_gene_element):
         "/api/construct/structural_element/gene?term=hgnc:427",
         alk_gene_response,
         check_gene_element_response,
-        expected_id="normalize.gene:hgnc%3A427",
+        expected_id="hgnc:427",
     )
     await check_response(
         "/api/construct/structural_element/gene?term=ALK",
         alk_gene_response,
         check_gene_element_response,
-        expected_id="normalize.gene:ALK",
+        expected_id="hgnc:427",
     )
     fake_id = "hgnc:99999999"
     await check_response(
@@ -44,7 +43,7 @@ async def test_build_gene_element(check_response, alk_gene_element):
 
 
 @pytest.fixture(scope="session")
-def check_tx_element_response():
+def check_tx_element_response(check_sequence_location):
     """Provide callback function to check correctness of transcript element constructor."""
 
     def check_tx_element_response(response: dict, expected_response: dict):
@@ -56,58 +55,54 @@ def check_tx_element_response():
         response_element = response["element"]
         expected_element = expected_response["element"]
         assert response_element["transcript"] == expected_element["transcript"]
-        assert (
-            response_element["gene_descriptor"] == expected_element["gene_descriptor"]
+        assert response_element["gene"] == expected_element["gene"]
+        assert response_element.get("exonStart") == expected_element.get("exonStart")
+        assert response_element.get("exonStartOffset") == expected_element.get(
+            "exonStartOffset"
         )
-        assert response_element.get("exon_start") == expected_element.get("exon_start")
-        assert response_element.get("exon_start_offset") == expected_element.get(
-            "exon_start_offset"
+        assert response_element.get("exonEnd") == expected_element.get("exonEnd")
+        assert response_element.get("exonEndOffset") == expected_element.get(
+            "exonEndOffset"
         )
-        assert response_element.get("exon_end") == expected_element.get("exon_end")
-        assert response_element.get("exon_end_offset") == expected_element.get(
-            "exon_end_offset"
-        )
-        assert response_element.get("element_genomic_start") == expected_element.get(
-            "element_genomic_start"
-        )
-        assert response_element.get("element_genomic_end") == expected_element.get(
-            "element_genomic_end"
-        )
+        genomic_start = response_element.get("elementGenomicStart", {})
+        genomic_end = response_element.get("elementGenomicEnd", {})
+        if genomic_start:
+            check_sequence_location(genomic_start)
+        if genomic_end:
+            check_sequence_location(genomic_end)
 
     return check_tx_element_response
 
 
 @pytest.fixture(scope="session")
-def check_reg_element_response():
+def check_reg_element_response(check_sequence_location):
     """Provide callback function check correctness of regulatory element constructor."""
 
     def check_re_response(response: dict, expected_response: dict):
-        assert ("regulatory_element" in response) == (
-            "regulatory_element" in expected_response
+        assert ("regulatoryElement" in response) == (
+            "regulatoryElement" in expected_response
         )
-        if ("regulatory_element" not in response) and (
-            "regulatory_element" not in expected_response
+        if ("regulatoryElement" not in response) and (
+            "regulatoryElement" not in expected_response
         ):
             assert "warnings" in response
             assert set(response["warnings"]) == set(expected_response["warnings"])
             return
-        response_re = response["regulatory_element"]
-        expected_re = expected_response["regulatory_element"]
+        response_re = response["regulatoryElement"]
+        expected_re = expected_response["regulatoryElement"]
         assert response_re["type"] == expected_re["type"]
-        assert response_re.get("regulatory_class") == expected_re.get(
-            "regulatory_class"
-        )
-        assert response_re.get("feature_id") == expected_re.get("feature_id")
-        assert response_re.get("associated_gene") == expected_re.get("associated_gene")
-        assert response_re.get("location_descriptor") == expected_re.get(
-            "location_descriptor"
-        )
+        assert response_re.get("regulatoryClass") == expected_re.get("regulatoryClass")
+        assert response_re.get("featureId") == expected_re.get("featureId")
+        assert response_re.get("associatedGene") == expected_re.get("associatedGene")
+        sequence_location = response_re.get("sequenceLocation")
+        if sequence_location:
+            check_sequence_location(sequence_location)
 
     return check_re_response
 
 
 @pytest.fixture(scope="session")
-def check_templated_sequence_response():
+def check_templated_sequence_response(check_sequence_location):
     """Provide callback function to check templated sequence constructor response"""
 
     def check_temp_seq_response(response: dict, expected_response: dict):
@@ -121,39 +116,9 @@ def check_templated_sequence_response():
         assert response_elem["type"] == expected_elem["type"]
         assert response_elem["strand"] == expected_elem["strand"]
         assert response_elem["region"]["id"] == expected_elem["region"]["id"]
-        assert response_elem["region"]["type"] == expected_elem["region"]["type"]
-        assert (
-            response_elem["region"]["location_id"]
-            == expected_elem["region"]["location_id"]
-        )
-        assert (
-            response_elem["region"]["location"]["type"]
-            == expected_elem["region"]["location"]["type"]
-        )
-        assert (
-            response_elem["region"]["location"]["sequence_id"]
-            == expected_elem["region"]["location"]["sequence_id"]
-        )
-        assert (
-            response_elem["region"]["location"]["interval"]["type"]
-            == expected_elem["region"]["location"]["interval"]["type"]
-        )
-        assert (
-            response_elem["region"]["location"]["interval"]["start"]["type"]
-            == expected_elem["region"]["location"]["interval"]["start"]["type"]
-        )
-        assert (
-            response_elem["region"]["location"]["interval"]["start"]["value"]
-            == expected_elem["region"]["location"]["interval"]["start"]["value"]
-        )
-        assert (
-            response_elem["region"]["location"]["interval"]["end"]["type"]
-            == expected_elem["region"]["location"]["interval"]["end"]["type"]
-        )
-        assert (
-            response_elem["region"]["location"]["interval"]["end"]["value"]
-            == expected_elem["region"]["location"]["interval"]["end"]["value"]
-        )
+        check_sequence_location(response_elem["region"] or {})
+        assert response_elem["region"]["start"] == expected_elem["region"]["start"]
+        assert response_elem["region"]["end"] == expected_elem["region"]["end"]
 
     return check_temp_seq_response
 
@@ -171,7 +136,7 @@ async def test_build_tx_segment_ect(
         check_tx_element_response,
     )
 
-    # test require exon_start or exon_end
+    # test require exonStart or exonEnd
     await check_response(
         "/api/construct/structural_element/tx_segment_ect?transcript=NM_002529.3",
         {"warnings": ["Must provide either `exon_start` or `exon_end`"]},
@@ -225,14 +190,13 @@ async def test_build_reg_element(check_response, check_reg_element_response):
     await check_response(
         "/api/construct/regulatory_element?element_class=promoter&gene_name=braf",
         {
-            "regulatory_element": {
-                "associated_gene": {
-                    "gene_id": "hgnc:1097",
-                    "id": "normalize.gene:braf",
+            "regulatoryElement": {
+                "associatedGene": {
+                    "id": "hgnc:1097",
                     "label": "BRAF",
-                    "type": "GeneDescriptor",
+                    "type": "Gene",
                 },
-                "regulatory_class": "promoter",
+                "regulatoryClass": "promoter",
                 "type": "RegulatoryElement",
             }
         },
@@ -245,52 +209,31 @@ async def test_build_templated_sequence(
     check_response, check_templated_sequence_response
 ):
     """Test correct functioning of templated sequence constructor"""
+    expected = {
+        "element": {
+            "type": "TemplatedSequenceElement",
+            "region": {
+                "id": "ga4gh:SL.thjDCmA1u2mB0vLGjgQbCOEg81eP5hdO",
+                "type": "SequenceLocation",
+                "sequenceReference": {
+                    "id": "refseq:NC_000001.11",
+                    "refgetAccession": "",
+                    "type": "SequenceReference",
+                },
+                "start": 154171414,
+                "end": 154171417,
+            },
+            "strand": -1,
+        },
+    }
     await check_response(
         "/api/construct/structural_element/templated_sequence?start=154171415&end=154171417&sequence_id=NC_000001.11&strand=-",
-        {
-            "element": {
-                "type": "TemplatedSequenceElement",
-                "region": {
-                    "id": "fusor.location_descriptor:NC_000001.11",
-                    "type": "LocationDescriptor",
-                    "location_id": "ga4gh:VSL.K_suWpotWJZL0EFYUqoZckNq4bqEjH-z",
-                    "location": {
-                        "type": "SequenceLocation",
-                        "sequence_id": "refseq:NC_000001.11",
-                        "interval": {
-                            "type": "SequenceInterval",
-                            "start": {"type": "Number", "value": 154171414},
-                            "end": {"type": "Number", "value": 154171417},
-                        },
-                    },
-                },
-                "strand": "-",
-            },
-        },
+        expected,
         check_templated_sequence_response,
     )
 
     await check_response(
         "/api/construct/structural_element/templated_sequence?start=154171415&end=154171417&sequence_id=refseq%3ANC_000001.11&strand=-",
-        {
-            "element": {
-                "type": "TemplatedSequenceElement",
-                "region": {
-                    "id": "fusor.location_descriptor:NC_000001.11",
-                    "type": "LocationDescriptor",
-                    "location_id": "ga4gh:VSL.K_suWpotWJZL0EFYUqoZckNq4bqEjH-z",
-                    "location": {
-                        "type": "SequenceLocation",
-                        "sequence_id": "refseq:NC_000001.11",
-                        "interval": {
-                            "type": "SequenceInterval",
-                            "start": {"type": "Number", "value": 154171414},
-                            "end": {"type": "Number", "value": 154171417},
-                        },
-                    },
-                },
-                "strand": "-",
-            },
-        },
+        expected,
         check_templated_sequence_response,
     )

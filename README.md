@@ -30,7 +30,7 @@ source venv/bin/activate
 python3 -m pip install -e ".[dev,tests]"  # make sure to include the extra dependencies!
 ```
 
-Acquire two sets of static assets and place all of them within the `server/curation/data` directory:
+Acquire two sets of static assets and place all of them within the `server/src/curfu/data` directory:
 
 1. Gene autocomplete files, providing legal gene search terms to the client autocomplete component. One file each is used for entity types `aliases`, `assoc_with`, `xrefs`, `prev_symbols`, `labels`, and `symbols`. Each should be named according to the pattern `gene_<type>_<YYYYMMDD>.tsv`. These can be regenerated with the shell command `curfu_devtools genes`.
 
@@ -39,7 +39,7 @@ Acquire two sets of static assets and place all of them within the `server/curat
 Your data/directory should look something like this:
 
 ```
-server/curfu/data
+server/src/curfu/data
 ├── domain_lookup_2022-01-20.tsv
 ├── gene_aliases_suggest_20211025.tsv
 ├── gene_assoc_with_suggest_20211025.tsv
@@ -74,13 +74,6 @@ You can run:
 
 ```commandline
 yarn install --ignore-engines
-```
-
-Next, run the following commands:
-
-```
-yarn build
-mv build/ ../server/curfu/build
 ```
 
 Then start the development server:
