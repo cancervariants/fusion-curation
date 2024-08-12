@@ -7,10 +7,11 @@ from timeit import default_timer as timer
 
 import click
 from biocommons.seqrepo.seqrepo import SeqRepo
+from cool_seq_tool.handlers.seqrepo_access import SEQREPO_ROOT_DIR
 from gene.database import create_db
 from gene.schemas import RecordType
 
-from curfu import APP_ROOT, SEQREPO_DATA_PATH, logger
+from curfu import APP_ROOT, logger
 
 
 class GeneSuggestionBuilder:
@@ -22,7 +23,7 @@ class GeneSuggestionBuilder:
     def __init__(self) -> None:
         """Initialize class."""
         self.gene_db = create_db()
-        self.sr = SeqRepo(SEQREPO_DATA_PATH)
+        self.sr = SeqRepo(SEQREPO_ROOT_DIR)
         self.genes = []
 
     def _get_chromosome(self, record: dict) -> str | None:
