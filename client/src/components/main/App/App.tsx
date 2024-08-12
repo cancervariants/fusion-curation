@@ -37,7 +37,7 @@ import {
   ClientAssayedFusion,
   ClientCategoricalFusion,
   DomainParams,
-  GeneDescriptor,
+  Gene,
 } from "../../../services/ResponseModels";
 import LandingPage from "../Landing/LandingPage";
 import AppMenu from "./AppMenu";
@@ -51,13 +51,13 @@ import {
 
 type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 
-type GenesLookup = Record<string, GeneDescriptor>;
+type GenesLookup = Record<string, Gene>;
 type DomainOptionsLookup = Record<string, DomainParams[]>;
 
 const path = window.location.pathname;
 
 const defaultFusion: ClientFusion = {
-  structural_elements: [],
+  structure: [],
   type: path.includes("/assayed-fusion")
     ? "AssayedFusion"
     : "CategoricalFusion",
@@ -96,33 +96,26 @@ const App = (): JSX.Element => {
   useEffect(() => {
     const newGenes = {};
     const remainingGeneIds: Array<string> = [];
-    fusion.structural_elements.forEach((comp: ClientElementUnion) => {
+    fusion.structure.forEach((comp: ClientElementUnion) => {
       if (
         comp &&
         comp.type &&
         (comp.type === "GeneElement" ||
           comp.type === "TranscriptSegmentElement") &&
-        comp.gene_descriptor?.gene_id
+        comp.gene?.id
       ) {
-        remainingGeneIds.push(comp.gene_descriptor.gene_id);
-        if (
-          comp.gene_descriptor.gene_id &&
-          !(comp.gene_descriptor.gene_id in globalGenes)
-        ) {
-          newGenes[comp.gene_descriptor.gene_id] = comp.gene_descriptor;
+        remainingGeneIds.push(comp.gene.id);
+        if (comp.gene.id && !(comp.gene.id in globalGenes)) {
+          newGenes[comp.gene.id] = comp.gene;
         }
       }
     });
-    if (fusion.regulatory_element) {
-      if (fusion.regulatory_element.associated_gene?.gene_id) {
-        remainingGeneIds.push(
-          fusion.regulatory_element.associated_gene.gene_id
-        );
-        if (
-          !(fusion.regulatory_element.associated_gene.gene_id in globalGenes)
-        ) {
-          newGenes[fusion.regulatory_element.associated_gene.gene_id] =
-            fusion.regulatory_element.associated_gene;
+    if (fusion.regulatoryElement) {
+      if (fusion.regulatoryElement.associatedGene?.id) {
+        remainingGeneIds.push(fusion.regulatoryElement.associatedGene.id);
+        if (!(fusion.regulatoryElement.associatedGene.id in globalGenes)) {
+          newGenes[fusion.regulatoryElement.associatedGene.id] =
+            fusion.regulatoryElement.associatedGene;
         }
       }
     }
@@ -176,38 +169,38 @@ const App = (): JSX.Element => {
    */
   const fusionIsEmpty = () => {
     if (
-      fusion?.structural_elements.length === 0 &&
-      fusion?.regulatory_element === undefined
+      fusion?.structure.length === 0 &&
+      fusion?.regulatoryElement === undefined
     ) {
       return true;
-    } else if (fusion.structural_elements.length > 0) {
+    } else if (fusion.structure.length > 0) {
       return false;
-    } else if (fusion.regulatory_element) {
+    } else if (fusion.regulatoryElement) {
       return false;
     } else if (fusion.type == "AssayedFusion") {
       if (
         fusion.assay &&
-        (fusion.assay.assay_name ||
-          fusion.assay.assay_id ||
-          fusion.assay.method_uri ||
-          fusion.assay.fusion_detection)
+        (fusion.assay.assayName ||
+          fusion.assay.assayId ||
+          fusion.assay.methodUri ||
+          fusion.assay.fusionDetection)
       ) {
         return false;
       }
       if (
-        fusion.causative_event &&
-        (fusion.causative_event.event_type ||
-          fusion.causative_event.event_description)
+        fusion.causativeEvent &&
+        (fusion.causativeEvent.eventType ||
+          fusion.causativeEvent.eventDescription)
       ) {
         return false;
       }
     } else if (fusion.type == "CategoricalFusion") {
-      if (fusion.r_frame_preserved !== undefined) {
+      if (fusion.readingFramePreserved !== undefined) {
         return false;
       }
       if (
-        fusion.critical_functional_domains &&
-        fusion.critical_functional_domains.length > 0
+        fusion.criticalFunctionalDomains &&
+        fusion.criticalFunctionalDomains.length > 0
       ) {
         return false;
       }

@@ -28,18 +28,18 @@ export const CausativeEvent: React.FC<Props> = () => {
   const { fusion, setFusion } = useContext(FusionContext);
 
   const [eventType, setEventType] = useState<string>(
-    fusion.causative_event?.event_type || ""
+    fusion.causativeEvent?.eventType || ""
   );
   const [eventDescription, setEventDescription] = useState<string>(
-    fusion.causative_event?.event_type || ""
+    fusion.causativeEvent?.eventType || ""
   );
 
   /**
    * Ensure that causative event object exists for getter/setter purposes
    */
   const ensureEventInitialized = () => {
-    if (!fusion.causative_event) {
-      setFusion({ ...fusion, causative_event: {} });
+    if (!fusion.causativeEvent) {
+      setFusion({ ...fusion, causativeEvent: {} });
     }
   };
 
@@ -56,8 +56,8 @@ export const CausativeEvent: React.FC<Props> = () => {
     if (eventType !== value) {
       setEventType(value);
     }
-    const newCausativeEvent = { event_type: value, ...fusion.causative_event };
-    setFusion({ causative_event: newCausativeEvent, ...fusion });
+    const newCausativeEvent = { eventType: value, ...fusion.causativeEvent };
+    setFusion({ causativeEvent: newCausativeEvent, ...fusion });
   };
 
   /**
@@ -72,10 +72,10 @@ export const CausativeEvent: React.FC<Props> = () => {
       setEventDescription(value);
     }
     const newCausativeEvent = {
-      event_description: value,
-      ...fusion.causative_event,
+      eventDescription: value,
+      ...fusion.causativeEvent,
     };
-    setFusion({ causative_event: newCausativeEvent, ...fusion });
+    setFusion({ causativeEvent: newCausativeEvent, ...fusion });
   };
 
   return (

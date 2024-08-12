@@ -42,8 +42,8 @@ async def test_get_mane_transcript(check_response):
                     "Ensembl_prot": "ENSP00000496776.1",
                     "MANE_status": "MANE Plus Clinical",
                     "GRCh38_chr": "NC_000007.14",
-                    "chr_start": "140719337",
-                    "chr_end": "140924929",
+                    "chr_start": 140719337,
+                    "chr_end": 140924929,
                     "chr_strand": "-",
                 },
                 {
@@ -58,8 +58,8 @@ async def test_get_mane_transcript(check_response):
                     "Ensembl_prot": "ENSP00000493543.1",
                     "MANE_status": "MANE Select",
                     "GRCh38_chr": "NC_000007.14",
-                    "chr_start": "140730665",
-                    "chr_end": "140924929",
+                    "chr_start": 140730665,
+                    "chr_end": 140924929,
                     "chr_strand": "-",
                 },
             ]

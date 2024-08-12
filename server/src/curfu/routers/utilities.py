@@ -38,10 +38,10 @@ def get_mane_transcripts(request: Request, term: str) -> dict:
     """
     normalized = request.app.state.fusor.gene_normalizer.normalize(term)
     if normalized.match_type == gene_schemas.MatchType.NO_MATCH:
-        return {"warnings": [f"Normalization error: {term}"]}
-    if not normalized.gene_descriptor.gene_id.lower().startswith("hgnc"):
-        return {"warnings": [f"No HGNC symbol: {term}"]}
-    symbol = normalized.gene_descriptor.label
+        return {"warnings": [f"Normalization error: {term}"], "transcripts": None}
+    if not normalized.normalized_id.startswith("hgnc"):
+        return {"warnings": [f"No HGNC symbol: {term}"], "transcripts": None}
+    symbol = normalized.gene.label
     transcripts = request.app.state.fusor.cool_seq_tool.mane_transcript_mappings.get_gene_mane_data(
         symbol
     )
@@ -107,16 +107,13 @@ async def get_genome_coords(
     if exon_end is not None and exon_end_offset is None:
         exon_end_offset = 0
 
-    response = (
-        await request.app.state.fusor.cool_seq_tool.transcript_to_genomic_coordinates(
-            gene=gene,
-            transcript=transcript,
-            exon_start=exon_start,
-            exon_end=exon_end,
-            exon_start_offset=exon_start_offset,
-            exon_end_offset=exon_end_offset,
-            residue_mode="inter-residue",
-        )
+    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.transcript_to_genomic_coordinates(
+        transcript=transcript,
+        gene=gene,
+        exon_start=exon_start,
+        exon_end=exon_end,
+        exon_start_offset=exon_start_offset,
+        exon_end_offset=exon_end_offset,
     )
     warnings = response.warnings
     if warnings:
@@ -170,8 +167,8 @@ async def get_exon_coords(
             logger.warning(warning)
         return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    response = await request.app.state.fusor.cool_seq_tool.genomic_to_transcript_exon_coordinates(
-        chromosome,
+    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.genomic_to_transcript_exon_coordinates(
+        alt_ac=chromosome,
         start=start,
         end=end,
         strand=strand_validated,
@@ -200,7 +197,7 @@ async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse
     :param sequence_id: user-provided sequence identifier to translate
     :return: Response object with ga4gh ID and aliases
     """
-    params: dict[str, Any] = {"sequence": sequence, "ga4gh_id": None, "aliases": []}
+    params: dict[str, Any] = {"sequence": sequence}
     sr = request.app.state.fusor.cool_seq_tool.seqrepo_access
 
     sr_ids, errors = sr.translate_identifier(sequence)
@@ -237,8 +234,7 @@ async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse
 @router.get(
     "/api/utilities/download_sequence",
     summary="Get sequence for ID",
-    description="Given a known accession identifier, retrieve sequence data and return"
-    "as a FASTA file",
+    description="Given a known accession identifier, retrieve sequence data and return as a FASTA file",
     response_class=FileResponse,
     tags=[RouteTag.UTILITIES],
 )
@@ -250,6 +246,7 @@ async def get_sequence(
     ),
 ) -> FileResponse:
     """Get sequence for requested sequence ID.
+
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
         and UTA-associated tools.
@@ -260,7 +257,9 @@ async def get_sequence(
     """
     _, path = tempfile.mkstemp(suffix=".fasta")
     try:
-        request.app.state.fusor.cool_seq_tool.get_fasta_file(sequence_id, Path(path))
+        request.app.state.fusor.cool_seq_tool.seqrepo_access.get_fasta_file(
+            sequence_id, Path(path)
+        )
     except KeyError as ke:
         resp = (
             request.app.state.fusor.cool_seq_tool.seqrepo_access.translate_identifier(
