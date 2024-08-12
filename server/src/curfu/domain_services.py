@@ -38,11 +38,11 @@ class DomainService:
             for row in reader:
                 gene_id = row[0].lower()
                 domain_data = {
-                    "interpro_id": f"interpro:{row[2]}",
-                    "domain_name": row[3],
+                    "interproId": f"interpro:{row[2]}",
+                    "domainName": row[3],
                     "start": int(row[4]),
                     "end": int(row[5]),
-                    "refseq_ac": f"{row[6]}",
+                    "refseqAc": f"{row[6]}",
                 }
                 if gene_id in self.domains:
                     self.domains[gene_id].append(domain_data)

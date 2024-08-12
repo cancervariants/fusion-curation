@@ -52,7 +52,8 @@ export const Invalid: React.FC<Props> = ({
   const duplicateGeneError = (duplicateGenes: string[]) => {
     return (
       <ListItemText>
-        Duplicate gene element(s) detected: <b>{duplicateGenes.join(", ")}</b>. Per the{" "}
+        Duplicate gene element(s) detected: <b>{duplicateGenes.join(", ")}</b>.
+        Per the{" "}
         <Link
           href="https://fusions.cancervariants.org/en/latest/information_model.html#structural-elements"
           target="_blank"
@@ -60,13 +61,13 @@ export const Invalid: React.FC<Props> = ({
         >
           Gene Fusion Specification
         </Link>
-        , Internal Tandem Duplications are not considered gene fusions, as they do not involve an interaction
-        between <b>two or more genes</b>.{" "}
+        , Internal Tandem Duplications are not considered gene fusions, as they
+        do not involve an interaction between <b>two or more genes</b>.{" "}
         <Link href="#" onClick={() => setVisibleTab(0)}>
           Edit elements to resolve.
         </Link>
       </ListItemText>
-    )
+    );
   };
 
   const elementNumberError = (
@@ -107,32 +108,33 @@ export const Invalid: React.FC<Props> = ({
     </>
   );
 
-  const geneElements = fusion.structural_elements.filter(el => el.type === "GeneElement").map(el => { return el.nomenclature })
-  const findDuplicates = arr => arr.filter((item, index) => arr.indexOf(item) !== index)
-  const duplicateGenes = findDuplicates(geneElements)
+  const geneElements = fusion.structure
+    .filter((el) => el.type === "GeneElement")
+    .map((el) => {
+      return el.nomenclature;
+    });
+  const findDuplicates = (arr) =>
+    arr.filter((item, index) => arr.indexOf(item) !== index);
+  const duplicateGenes = findDuplicates(geneElements);
 
   const checkErrors = () => {
     const errorElements: React.ReactFragment[] = [];
-    if (
-      Boolean(fusion.regulatory_element) + fusion.structural_elements.length <
-      2
-    ) {
+    if (Boolean(fusion.regulatoryElement) + fusion.structure.length < 2) {
       errorElements.push(elementNumberError);
     } else {
-      const containsGene = fusion.structural_elements.some(
-        (e: ClientElementUnion) =>
-          [
-            "GeneElement",
-            "TranscriptSegmentElement",
-            "TemplatedSequenceElement",
-          ].includes(e.type)
+      const containsGene = fusion.structure.some((e: ClientElementUnion) =>
+        [
+          "GeneElement",
+          "TranscriptSegmentElement",
+          "TemplatedSequenceElement",
+        ].includes(e.type)
       );
-      if (!containsGene && !fusion.regulatory_element) {
+      if (!containsGene && !fusion.regulatoryElement) {
         errorElements.push(noGeneElementsError);
       }
     }
     if (duplicateGenes.length > 0) {
-      errorElements.push(duplicateGeneError(duplicateGenes))
+      errorElements.push(duplicateGeneError(duplicateGenes));
     }
     if (errorElements.length == 0) {
       errorElements.push(

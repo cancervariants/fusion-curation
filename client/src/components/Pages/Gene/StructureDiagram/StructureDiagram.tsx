@@ -42,8 +42,8 @@ export const StructureDiagram: React.FC = () => {
         });
 
         const regEls = [];
-        suggestion.regulatory_elements.forEach((el) => {
-          regEls.push(el.gene_descriptor.label);
+        suggestion.regulatoryElements.forEach((el) => {
+          regEls.push(el.gene.label);
         });
 
         return (

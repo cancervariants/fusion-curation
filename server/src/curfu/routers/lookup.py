@@ -15,7 +15,7 @@ router = APIRouter()
     response_model_exclude_none=True,
     tags=[RouteTag.LOOKUP],
 )
-def normalize_gene(request: Request, term: str = Query("")) -> ResponseDict:
+def normalize_gene(request: Request, term: str = Query("")) -> NormalizeGeneResponse:
     """Normalize gene term provided by user.
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
@@ -33,4 +33,7 @@ def normalize_gene(request: Request, term: str = Query("")) -> ResponseDict:
         response["cased"] = cased
     except LookupServiceError as e:
         response["warnings"] = [str(e)]
-    return response
+        response["concept_id"] = None
+        response["symbol"] = None
+        response["cased"] = None
+    return NormalizeGeneResponse(**response)

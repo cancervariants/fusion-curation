@@ -65,14 +65,14 @@ def clientify_structural_element(
     fusor_instance: FUSOR,
 ) -> ClientElementUnion:
     """Add fields required by client to structural element object.
-    \f
+
     :param element: a structural element object
     :param fusor_instance: instantiated FUSOR object, passed down from FastAPI request
         context
     :return: client-ready structural element
     """
     element_args = element.dict()
-    element_args["element_id"] = str(uuid4())
+    element_args["elementId"] = str(uuid4())
 
     if element.type == StructuralElementType.UNKNOWN_GENE_ELEMENT:
         element_args["nomenclature"] = "?"
@@ -81,17 +81,17 @@ def clientify_structural_element(
         element_args["nomenclature"] = "v"
         return ClientMultiplePossibleGenesElement(**element_args)
     if element.type == StructuralElementType.LINKER_SEQUENCE_ELEMENT:
-        nm = element.linker_sequence.sequence
+        nm = element.linkerSequence.sequence.root
         element_args["nomenclature"] = nm
         return ClientLinkerElement(**element_args)
     if element.type == StructuralElementType.TEMPLATED_SEQUENCE_ELEMENT:
         nm = templated_seq_nomenclature(element, fusor_instance.seqrepo)
         element_args["nomenclature"] = nm
-        element_args["input_chromosome"] = element.region.location.sequence_id.split(
+        element_args["inputChromosome"] = element.region.sequenceReference.id.split(
             ":"
         )[1]
-        element_args["input_start"] = element.region.location.interval.start.value
-        element_args["input_end"] = element.region.location.interval.end.value
+        element_args["inputStart"] = element.region.start
+        element_args["inputEnd"] = element.region.end
         return ClientTemplatedSequenceElement(**element_args)
     if element.type == StructuralElementType.GENE_ELEMENT:
         nm = gene_nomenclature(element)
@@ -100,12 +100,13 @@ def clientify_structural_element(
     if element.type == StructuralElementType.TRANSCRIPT_SEGMENT_ELEMENT:
         nm = tx_segment_nomenclature(element)
         element_args["nomenclature"] = nm
-        element_args["input_type"] = "exon_coords_tx"
-        element_args["input_tx"] = element.transcript.split(":")[1]
-        element_args["input_exon_start"] = element.exon_start
-        element_args["input_exon_start_offset"] = element.exon_start_offset
-        element_args["input_exon_end"] = element.exon_end
-        element_args["input_exon_end_offset"] = element.exon_end_offset
+        element_args["inputType"] = "exon_coords_tx"
+        element_args["inputTx"] = element.transcript.split(":")[1]
+        element_args["inputExonStart"] = str(element.exonStart)
+        element_args["inputExonStartOffset"] = str(element.exonStartOffset)
+        element_args["inputExonEnd"] = str(element.exonEnd)
+        element_args["inputExonEndOffset"] = str(element.exonEndOffset)
+        element_args["inputGene"] = element.gene.label
         return ClientTranscriptSegmentElement(**element_args)
     msg = "Unknown element type provided"
     raise ValueError(msg)
@@ -121,32 +122,33 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
     fusion_args = fusion.dict()
     client_elements = [
         clientify_structural_element(element, fusor_instance)
-        for element in fusion.structural_elements
+        for element in fusion.structure
     ]
-    fusion_args["structural_elements"] = client_elements
+    fusion_args["structure"] = client_elements
 
-    if fusion_args.get("regulatory_element"):
-        reg_element_args = fusion_args["regulatory_element"]
+    if fusion_args.get("regulatoryElement"):
+        reg_element_args = fusion_args["regulatoryElement"]
         nomenclature = reg_element_nomenclature(
             RegulatoryElement(**reg_element_args), fusor_instance.seqrepo
         )
         reg_element_args["nomenclature"] = nomenclature
-        regulatory_class = fusion_args["regulatory_element"]["regulatory_class"]
+        regulatory_class = fusion_args["regulatoryElement"]["regulatoryClass"]
         if regulatory_class == "enhancer":
-            reg_element_args["display_class"] = "Enhancer"
+            reg_element_args["displayClass"] = "Enhancer"
         else:
             msg = "Undefined reg element class used in demo"
             raise Exception(msg)
-        fusion_args["regulatory_element"] = reg_element_args
+        reg_element_args["elementId"] = str(uuid4())
+        fusion_args["regulatoryElement"] = reg_element_args
 
     if fusion.type == FUSORTypes.CATEGORICAL_FUSION:
-        if fusion.critical_functional_domains:
+        if fusion.criticalFunctionalDomains:
             client_domains = []
-            for domain in fusion.critical_functional_domains:
+            for domain in fusion.criticalFunctionalDomains:
                 client_domain = domain.dict()
-                client_domain["domain_id"] = str(uuid4())
+                client_domain["domainId"] = str(uuid4())
                 client_domains.append(client_domain)
-            fusion_args["critical_functional_domains"] = client_domains
+            fusion_args["criticalFunctionalDomains"] = client_domains
         return ClientCategoricalFusion(**fusion_args)
     if fusion.type == FUSORTypes.ASSAYED_FUSION:
         return ClientAssayedFusion(**fusion_args)
@@ -163,6 +165,7 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
 )
 def get_alk(request: Request) -> DemoResponse:
     """Retrieve ALK assayed fusion.
+
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
@@ -181,6 +184,7 @@ def get_alk(request: Request) -> DemoResponse:
 )
 def get_ewsr1(request: Request) -> DemoResponse:
     """Retrieve EWSR1 assayed fusion.
+
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
         and UTA-associated tools.
@@ -217,6 +221,7 @@ def get_bcr_abl1(request: Request) -> DemoResponse:
 )
 def get_tpm3_ntrk1(request: Request) -> DemoResponse:
     """Retrieve TPM3-NTRK1 assayed fusion.
+
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
         and UTA-associated tools.
@@ -236,6 +241,7 @@ def get_tpm3_ntrk1(request: Request) -> DemoResponse:
 )
 def get_tpm3_pdgfrb(request: Request) -> DemoResponse:
     """Retrieve TPM3-PDGFRB assayed fusion.
+
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
         and UTA-associated tools.
@@ -255,6 +261,8 @@ def get_tpm3_pdgfrb(request: Request) -> DemoResponse:
 )
 def get_igh_myc(request: Request) -> DemoResponse:
     """Retrieve IGH-MYC assayed fusion.
+
+    \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
         and UTA-associated tools.
     """
