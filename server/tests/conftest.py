@@ -156,7 +156,7 @@ def tpm3_tx_t_element(tpm3_gene):
 
 
 @pytest.fixture(scope="module")
-def tpm3_tx_g_element(tpm3_descriptor):
+def tpm3_tx_g_element(tpm3_gene):
     """Provide TranscriptSegmentElement for TPM3 gene constructed using genomic coordinates and
     gene name.
     """
@@ -167,7 +167,7 @@ def tpm3_tx_g_element(tpm3_descriptor):
         "exonStartOffset": 5,
         "exonEnd": 6,
         "exonEndOffset": -71,
-        "gene": tpm3_descriptor,
+        "gene": tpm3_gene,
         "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",
             "type": "SequenceLocation",

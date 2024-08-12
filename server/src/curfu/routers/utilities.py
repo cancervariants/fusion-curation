@@ -114,11 +114,11 @@ async def get_genome_coords(
         exon_start_offset=exon_start_offset,
         exon_end_offset=exon_end_offset,
     )
-    warnings = response.warnings
+    warnings = response.errors
     if warnings:
         return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    return CoordsUtilsResponse(coordinates_data=response.genomic_data, warnings=None)
+    return CoordsUtilsResponse(coordinates_data=response, warnings=None)
 
 
 @router.get(
@@ -164,11 +164,11 @@ async def get_exon_coords(
         transcript=transcript,
         gene=gene,
     )
-    warnings = response.warnings
+    warnings = response.errors
     if warnings:
         return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    return CoordsUtilsResponse(coordinates_data=response.genomic_data, warnings=None)
+    return CoordsUtilsResponse(coordinates_data=response, warnings=None)
 
 
 @router.get(

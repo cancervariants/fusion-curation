@@ -215,25 +215,38 @@ const GetCoordinates: React.FC = () => {
   const renderResults = (): React.ReactFragment => {
     if (inputValid) {
       if (results) {
+        const txSegStart = results.seg_start;
+        const txSegEnd = results.seg_end;
+
+        const genomicStart =
+          txSegStart?.genomic_location.start ||
+          txSegStart?.genomic_location.end;
+        const genomicEnd =
+          txSegEnd?.genomic_location.start || txSegEnd?.genomic_location.end;
+
         return (
           <Table>
             {renderRow("Gene", results.gene)}
-            {renderRow("Chromosome", results.chr)}
-            {results.start ? renderRow("Genomic start", results.start) : null}
-            {results.end ? renderRow("Genomic end", results.end) : null}
+            {renderRow("Chromosome", results.genomic_ac)}
+            {genomicStart != null
+              ? renderRow("Genomic start", genomicStart)
+              : null}
+            {genomicEnd != null ? renderRow("Genomic end", genomicEnd) : null}
             {results.strand
               ? renderRow("Strand", results.strand === 1 ? "+" : "-")
               : null}
-            {renderRow("Transcript", results.transcript)}
-            {results.exon_start
-              ? renderRow("Exon start", results.exon_start)
+            {renderRow("Transcript", results.tx_ac)}
+            {txSegStart?.exon_ord != null
+              ? renderRow("Exon start", txSegStart.exon_ord)
               : null}
-            {results.exon_start_offset
-              ? renderRow("Exon start offset", results.exon_start_offset)
+            {txSegStart?.offset != null
+              ? renderRow("Exon start offset", txSegStart.offset)
               : null}
-            {results.exon_end ? renderRow("Exon end", results.exon_end) : null}
-            {results.exon_end_offset
-              ? renderRow("Exon end offset", results.exon_end_offset)
+            {txSegEnd?.exon_ord != null
+              ? renderRow("Exon end", txSegEnd.exon_ord)
+              : null}
+            {txSegEnd?.offset != null
+              ? renderRow("Exon end offset", txSegEnd.offset)
               : null}
           </Table>
         );

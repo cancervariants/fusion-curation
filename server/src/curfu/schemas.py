@@ -3,7 +3,7 @@
 from enum import Enum
 from typing import Literal
 
-from cool_seq_tool.schemas import GenomicTxData
+from cool_seq_tool.mappers.exon_genomic_coords import GenomicTxSegService
 from fusor.models import (
     Assay,
     AssayedFusion,
@@ -213,7 +213,7 @@ class ExonCoordsRequest(BaseModel):
 class CoordsUtilsResponse(Response):
     """Response model for genomic coordinates retrieval"""
 
-    coordinates_data: GenomicTxData | None
+    coordinates_data: GenomicTxSegService | None
 
 
 class SequenceIDResponse(Response):
