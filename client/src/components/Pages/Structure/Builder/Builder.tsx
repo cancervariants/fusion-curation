@@ -53,25 +53,23 @@ const ELEMENT_TEMPLATE = [
   {
     type: ElementType.geneElement,
     nomenclature: "",
-    element_id: uuid(),
-    gene_descriptor: {
+    elementId: uuid(),
+    gene: {
       id: "",
       type: "",
-      gene_id: "",
       label: "",
     },
   },
   {
     type: ElementType.transcriptSegmentElement,
     nomenclature: "",
-    element_id: uuid(),
-    exon_start: null,
-    exon_start_offset: null,
-    exon_end: null,
-    exon_end_offset: null,
-    gene_descriptor: {
+    elementId: uuid(),
+    exonStart: null,
+    exonStartOffset: null,
+    exonEnd: null,
+    exonEndOffset: null,
+    gene: {
       id: "",
-      gene_id: "",
       type: "",
       label: "",
     },
@@ -79,12 +77,12 @@ const ELEMENT_TEMPLATE = [
   {
     nomenclature: "",
     type: ElementType.linkerSequenceElement,
-    element_id: uuid(),
+    elementId: uuid(),
   },
   {
     nomenclature: "",
     type: ElementType.templatedSequenceElement,
-    element_id: uuid(),
+    elementId: uuid(),
     id: "",
     location: {
       sequence_id: "",
@@ -104,18 +102,18 @@ const ELEMENT_TEMPLATE = [
   },
   {
     type: ElementType.unknownGeneElement,
-    element_id: uuid(),
+    elementId: uuid(),
     nomenclature: "?",
   },
   {
     type: ElementType.multiplePossibleGenesElement,
-    element_id: uuid(),
+    elementId: uuid(),
     nomenclature: "v",
   },
   {
     type: ElementType.regulatoryElement,
     nomenclature: "",
-    element_id: uuid(),
+    elementId: uuid(),
   },
 ];
 
@@ -136,10 +134,10 @@ const Builder: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!("structural_elements" in fusion)) {
+    if (!("structure" in fusion)) {
       setFusion({
         ...fusion,
-        ...{ structural_elements: [] },
+        ...{ structure: [] },
       });
     }
   }, [fusion]);
@@ -150,14 +148,14 @@ const Builder: React.FC = () => {
     const sourceClone = Array.from(ELEMENT_TEMPLATE);
     const item = sourceClone[source.index];
     const newItem = Object.assign({}, item);
-    newItem.element_id = uuid();
+    newItem.elementId = uuid();
 
     if (draggableId.includes("RegulatoryElement")) {
-      setFusion({ ...fusion, ...{ regulatory_element: newItem } });
+      setFusion({ ...fusion, ...{ regulatoryElement: newItem } });
     } else {
-      const destClone = Array.from(fusion.structural_elements);
+      const destClone = Array.from(fusion.structure);
       destClone.splice(destination.index, 0, newItem);
-      setFusion({ ...fusion, ...{ structural_elements: destClone } });
+      setFusion({ ...fusion, ...{ structure: destClone } });
     }
 
     // auto-save elements that don't need any additional input
@@ -172,30 +170,28 @@ const Builder: React.FC = () => {
 
   const reorder = (result: DropResult) => {
     const { source, destination } = result;
-    const sourceClone = Array.from(fusion.structural_elements);
+    const sourceClone = Array.from(fusion.structure);
     const [movedElement] = sourceClone.splice(source.index, 1);
     sourceClone.splice(destination.index, 0, movedElement);
-    setFusion({ ...fusion, ...{ structural_elements: sourceClone } });
+    setFusion({ ...fusion, ...{ structure: sourceClone } });
   };
 
   // Update global fusion object
   const handleSave = (index: number, newElement: ClientElementUnion) => {
-    const items = Array.from(fusion.structural_elements);
+    const items = Array.from(fusion.structure);
     const spliceLength = EDITABLE_ELEMENT_TYPES.includes(
       newElement.type as ElementType
     )
       ? 1
       : 0;
     items.splice(index, spliceLength, newElement);
-    setFusion({ ...fusion, ...{ structural_elements: items } });
+    setFusion({ ...fusion, ...{ structure: items } });
   };
 
   const handleDelete = (uuid: string) => {
-    let items: Array<ClientElementUnion> = Array.from(
-      fusion.structural_elements
-    );
-    items = items.filter((item) => item?.element_id !== uuid);
-    setFusion({ ...fusion, ...{ structural_elements: items } });
+    let items: Array<ClientElementUnion> = Array.from(fusion.structure);
+    items = items.filter((item) => item?.elementId !== uuid);
+    setFusion({ ...fusion, ...{ structure: items } });
   };
 
   const elementNameMap = {
@@ -331,14 +327,14 @@ const Builder: React.FC = () => {
     }
   };
 
-  const nomenclatureParts = fusion.structural_elements
+  const nomenclatureParts = fusion.structure
     .filter(
       (element: ClientElementUnion) => Boolean(element) && element.nomenclature
     )
     .map((element: ClientElementUnion) => element.nomenclature);
 
-  if (fusion.regulatory_element && fusion.regulatory_element.nomenclature) {
-    nomenclatureParts.unshift(fusion.regulatory_element.nomenclature);
+  if (fusion.regulatoryElement && fusion.regulatoryElement.nomenclature) {
+    nomenclatureParts.unshift(fusion.regulatoryElement.nomenclature);
   }
   const nomenclature = nomenclatureParts.map(
     (nom: string, index: number) => `${index ? "::" : ""}${nom}`
@@ -418,7 +414,7 @@ const Builder: React.FC = () => {
                 style={{ display: "flex" }}
               >
                 <Box className="options-container">
-                  {ELEMENT_TEMPLATE.map(({ element_id, type }, index) => {
+                  {ELEMENT_TEMPLATE.map(({ elementId, type }, index) => {
                     if (
                       (fusion.type === "AssayedFusion" &&
                         type !== ElementType.multiplePossibleGenesElement) ||
@@ -427,12 +423,12 @@ const Builder: React.FC = () => {
                     ) {
                       return (
                         <Draggable
-                          key={element_id}
-                          draggableId={type + element_id}
+                          key={elementId}
+                          draggableId={type + elementId}
                           index={index}
                           isDragDisabled={
                             type === ElementType.regulatoryElement &&
-                            fusion.regulatory_element !== undefined
+                            fusion.regulatoryElement !== undefined
                           }
                         >
                           {(provided, snapshot) => {
@@ -447,7 +443,7 @@ const Builder: React.FC = () => {
                                     className={
                                       "option-item" +
                                       (type === ElementType.regulatoryElement &&
-                                      fusion.regulatory_element !== undefined
+                                      fusion.regulatoryElement !== undefined
                                         ? " disabled_reg_element"
                                         : "")
                                     }
@@ -470,7 +466,7 @@ const Builder: React.FC = () => {
                                 {snapshot.isDragging && (
                                   <Box
                                     style={{ transform: "none !important" }}
-                                    key={element_id}
+                                    key={elementId}
                                     className={`option-item clone ${type}`}
                                   >
                                     {elementNameMap[type].icon}{" "}
@@ -504,20 +500,20 @@ const Builder: React.FC = () => {
                 >
                   <h2
                     className={`${
-                      fusion.structural_elements?.length === 0 &&
-                      !fusion.regulatory_element
+                      fusion.structure?.length === 0 &&
+                      !fusion.regulatoryElement
                         ? "instruction"
                         : "hidden"
                     }`}
                   >
                     Drag elements here
                   </h2>
-                  {fusion.regulatory_element && (
+                  {fusion.regulatoryElement && (
                     <>
                       <Box
-                        className={`block ${fusion?.regulatory_element?.type}`}
+                        className={`block ${fusion?.regulatoryElement?.type}`}
                       >
-                        {renderElement(fusion?.regulatory_element, 0)}
+                        {renderElement(fusion?.regulatoryElement, 0)}
                       </Box>
                       <Divider
                         orientation="vertical"
@@ -525,13 +521,13 @@ const Builder: React.FC = () => {
                       />
                     </>
                   )}
-                  {fusion.structural_elements?.map(
+                  {fusion.structure?.map(
                     (element: ClientElementUnion, index: number) => {
                       return (
                         element && (
                           <Draggable
-                            key={element.element_id}
-                            draggableId={element.element_id}
+                            key={element.elementId}
+                            draggableId={element.elementId}
                             index={index}
                           >
                             {(provided) => (

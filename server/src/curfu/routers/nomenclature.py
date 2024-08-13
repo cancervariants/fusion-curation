@@ -1,5 +1,4 @@
 """Provide routes for nomenclature generation."""
-from typing import Dict
 
 from fastapi import APIRouter, Body, Request
 from fusor.exceptions import FUSORParametersException
@@ -19,6 +18,7 @@ from pydantic import ValidationError
 
 from curfu import logger
 from curfu.schemas import NomenclatureResponse, ResponseDict, RouteTag
+from curfu.sequence_services import get_strand
 
 router = APIRouter()
 
@@ -31,7 +31,7 @@ router = APIRouter()
     tags=[RouteTag.NOMENCLATURE],
 )
 def generate_regulatory_element_nomenclature(
-    request: Request, regulatory_element: Dict = Body()
+    request: Request, regulatory_element: dict = Body()
 ) -> ResponseDict:
     """Build regulatory element nomenclature.
 
@@ -46,9 +46,9 @@ def generate_regulatory_element_nomenclature(
     except ValidationError as e:
         error_msg = str(e)
         logger.warning(
-            f"Encountered ValidationError: {error_msg} for regulatory element: {regulatory_element}"  # noqa: E501
+            f"Encountered ValidationError: {error_msg} for regulatory element: {regulatory_element}"
         )
-        return {"warnings": [error_msg]}
+        return {"nomenclature": "", "warnings": [error_msg]}
     try:
         nomenclature = reg_element_nomenclature(
             structured_reg_element, request.app.state.fusor.seqrepo
@@ -58,9 +58,10 @@ def generate_regulatory_element_nomenclature(
             f"Encountered parameter errors for regulatory element: {regulatory_element}"
         )
         return {
+            "nomenclature": "",
             "warnings": [
-                f"Unable to validate regulatory element with provided parameters: {regulatory_element}"  # noqa: E501
-            ]
+                f"Unable to validate regulatory element with provided parameters: {regulatory_element}"
+            ],
         }
     return {"nomenclature": nomenclature}
 
@@ -72,7 +73,7 @@ def generate_regulatory_element_nomenclature(
     response_model_exclude_none=True,
     tags=[RouteTag.NOMENCLATURE],
 )
-def generate_tx_segment_nomenclature(tx_segment: Dict = Body()) -> ResponseDict:
+def generate_tx_segment_nomenclature(tx_segment: dict = Body()) -> ResponseDict:
     """Build transcript segment element nomenclature.
 
     \f
@@ -88,7 +89,7 @@ def generate_tx_segment_nomenclature(tx_segment: Dict = Body()) -> ResponseDict:
         logger.warning(
             f"Encountered ValidationError: {error_msg} for tx segment: {tx_segment}"
         )
-        return {"warnings": [error_msg]}
+        return {"nomenclature": "", "warnings": [error_msg]}
     nomenclature = tx_segment_nomenclature(structured_tx_segment)
     return {"nomenclature": nomenclature}
 
@@ -101,7 +102,7 @@ def generate_tx_segment_nomenclature(tx_segment: Dict = Body()) -> ResponseDict:
     tags=[RouteTag.NOMENCLATURE],
 )
 def generate_templated_seq_nomenclature(
-    request: Request, templated_sequence: Dict = Body()
+    request: Request, templated_sequence: dict = Body()
 ) -> ResponseDict:
     """Build templated sequence element nomenclature.
     \f
@@ -111,13 +112,20 @@ def generate_templated_seq_nomenclature(
     :return: response with nomenclature if successful and warnings otherwise
     """
     try:
+        # convert client input of +/- for strand
+        strand = (
+            get_strand(templated_sequence.get("strand"))
+            if templated_sequence.get("strand") is not None
+            else None
+        )
+        templated_sequence["strand"] = strand
         structured_templated_seq = TemplatedSequenceElement(**templated_sequence)
     except ValidationError as e:
         error_msg = str(e)
         logger.warning(
-            f"Encountered ValidationError: {error_msg} for templated sequence element: {templated_sequence}"  # noqa: E501
+            f"Encountered ValidationError: {error_msg} for templated sequence element: {templated_sequence}"
         )
-        return {"warnings": [error_msg]}
+        return {"nomenclature": "", "warnings": [error_msg]}
     try:
         nomenclature = templated_seq_nomenclature(
             structured_templated_seq, request.app.state.fusor.seqrepo
@@ -127,9 +135,10 @@ def generate_templated_seq_nomenclature(
             f"Encountered parameter errors for templated sequence: {templated_sequence}"
         )
         return {
+            "nomenclature": "",
             "warnings": [
-                f"Unable to validate templated sequence with provided parameters: {templated_sequence}"  # noqa: E501
-            ]
+                f"Unable to validate templated sequence with provided parameters: {templated_sequence}"
+            ],
         }
     return {"nomenclature": nomenclature}
 
@@ -141,7 +150,7 @@ def generate_templated_seq_nomenclature(
     response_model_exclude_none=True,
     tags=[RouteTag.NOMENCLATURE],
 )
-def generate_gene_nomenclature(gene_element: Dict = Body()) -> ResponseDict:
+def generate_gene_nomenclature(gene_element: dict = Body()) -> ResponseDict:
     """Build gene element nomenclature.
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access
@@ -156,15 +165,16 @@ def generate_gene_nomenclature(gene_element: Dict = Body()) -> ResponseDict:
         logger.warning(
             f"Encountered ValidationError: {error_msg} for gene element: {gene_element}"
         )
-        return {"warnings": [error_msg]}
+        return {"nomenclature": "", "warnings": [error_msg]}
     try:
         nomenclature = gene_nomenclature(valid_gene_element)
     except ValueError:
         logger.warning(f"Encountered parameter errors for gene element: {gene_element}")
         return {
+            "nomenclature": "",
             "warnings": [
                 f"Unable to validate gene element with provided parameters: {gene_element}"
-            ]
+            ],
         }
     return {"nomenclature": nomenclature}
 
@@ -177,7 +187,7 @@ def generate_gene_nomenclature(gene_element: Dict = Body()) -> ResponseDict:
     tags=[RouteTag.NOMENCLATURE],
 )
 def generate_fusion_nomenclature(
-    request: Request, fusion: Dict = Body()
+    request: Request, fusion: dict = Body()
 ) -> ResponseDict:
     """Generate nomenclature for complete fusion.
     \f
@@ -189,6 +199,6 @@ def generate_fusion_nomenclature(
     try:
         valid_fusion = request.app.state.fusor.fusion(**fusion)
     except FUSORParametersException as e:
-        return {"warnings": [str(e)]}
+        return {"nomenclature": "", "warnings": [str(e)]}
     nomenclature = request.app.state.fusor.generate_nomenclature(valid_fusion)
     return {"nomenclature": nomenclature}

@@ -1,7 +1,7 @@
 """Miscellaneous helper functions."""
-import os
+
 from pathlib import Path
-from typing import List, TypeVar
+from typing import TypeVar
 
 import boto3
 from boto3.exceptions import ResourceLoadException
@@ -24,18 +24,16 @@ def get_latest_s3_file(file_prefix: str) -> ObjectSummary:
     logger.info(f"Attempting S3 lookup for data file pattern {file_prefix}...")
     s3 = boto3.resource("s3", config=Config(region_name="us-east-2"))
     if not s3:
-        raise ResourceLoadException("Unable to initialize boto S3 resource")
+        msg = "Unable to initialize boto S3 resource"
+        raise ResourceLoadException(msg)
     bucket = sorted(
-        list(
-            s3.Bucket("vicc-services")
-            .objects.filter(Prefix=f"curfu/{file_prefix}")
-            .all()
-        ),
+        s3.Bucket("vicc-services").objects.filter(Prefix=f"curfu/{file_prefix}").all(),
         key=lambda f: f.key,
         reverse=True,
     )
     if len(bucket) == 0:
-        raise FileNotFoundError(f"No files matching pattern {file_prefix} in bucket.")
+        msg = f"No files matching pattern {file_prefix} in bucket."
+        raise FileNotFoundError(msg)
     return bucket[0]
 
 
@@ -45,9 +43,9 @@ def download_s3_file(bucket_object: ObjectSummary) -> Path:
     :param bucket_object: boto object representation of S3 file
     :return: Path to downloaded file
     """
-    fname = os.path.basename(bucket_object.key)
+    fname = Path(bucket_object.key).name
     save_to = APP_ROOT / "data" / fname
-    with open(save_to, "wb") as f:
+    with save_to.open("wb") as f:
         try:
             bucket_object.Object().download_fileobj(f)
         except ClientError as e:
@@ -57,7 +55,7 @@ def download_s3_file(bucket_object: ObjectSummary) -> Path:
     return save_to
 
 
-def get_latest_data_file(file_prefix: str, local_files: List[Path]) -> Path:
+def get_latest_data_file(file_prefix: str, local_files: list[Path]) -> Path:
     """Get path to latest version of given data file. Download from S3 if not
     available locally.
 
@@ -67,10 +65,9 @@ def get_latest_data_file(file_prefix: str, local_files: List[Path]) -> Path:
     """
     latest_local_file = sorted(local_files, reverse=True)[0]
     s3_object = get_latest_s3_file(file_prefix)
-    if os.path.basename(s3_object.key) > latest_local_file.name:
+    if Path(s3_object.key).name > latest_local_file.name:
         return download_s3_file(s3_object)
-    else:
-        return latest_local_file
+    return latest_local_file
 
 
 def get_data_file(filename_prefix: str) -> Path:
@@ -87,5 +84,4 @@ def get_data_file(filename_prefix: str) -> Path:
     files = list(data_dir.glob(file_glob))
     if not files:
         return download_s3_file(get_latest_s3_file(filename_prefix))
-    else:
-        return get_latest_data_file(filename_prefix, files)
+    return get_latest_data_file(filename_prefix, files)

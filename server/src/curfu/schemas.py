@@ -1,13 +1,19 @@
 """Provide schemas for FastAPI responses."""
-from enum import Enum
-from typing import Dict, List, Literal, Optional, Tuple, Union
 
-from cool_seq_tool.schemas import GenomicData
+from enum import Enum
+from typing import Literal
+
+from cool_seq_tool.mappers.exon_genomic_coords import GenomicTxSegService
 from fusor.models import (
+    Assay,
     AssayedFusion,
+    AssayedFusionElement,
     CategoricalFusion,
+    CategoricalFusionElement,
+    CausativeEvent,
     FunctionalDomain,
     Fusion,
+    FusionType,
     GeneElement,
     LinkerElement,
     MultiplePossibleGenesElement,
@@ -17,71 +23,69 @@ from fusor.models import (
     TranscriptSegmentElement,
     UnknownGeneElement,
 )
-from ga4gh.vrsatile.pydantic.vrsatile_models import CURIE
-from pydantic import BaseModel, Extra, Field, StrictInt, StrictStr, validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    StrictInt,
+    StrictStr,
+    field_validator,
+)
 
-ResponseWarnings = Optional[List[StrictStr]]
+ResponseWarnings = list[StrictStr] | None
 
-ResponseDict = Dict[
+ResponseDict = dict[
     str,
-    Union[
-        str, int, CURIE, List[str], List[Tuple[str, str, str, str]], FunctionalDomain
-    ],
+    str | int | list[str] | list[tuple[str, str, str, str]] | FunctionalDomain | None,
 ]
-Warnings = List[str]
+Warnings = list[str]
 
 
 class ClientStructuralElement(BaseModel):
     """Abstract class to provide identification properties used by client."""
 
-    element_id: StrictStr
+    elementId: StrictStr
     nomenclature: StrictStr
 
 
 class ClientTranscriptSegmentElement(TranscriptSegmentElement, ClientStructuralElement):
     """TranscriptSegment element class used client-side."""
 
-    input_type: Union[
-        Literal["genomic_coords_gene"],
-        Literal["genomic_coords_tx"],
-        Literal["exon_coords_tx"],
-    ]
-    input_tx: Optional[str] = ""
-    input_strand: Optional[Strand] = None
-    input_gene: Optional[str] = ""
-    input_chr: Optional[str] = ""
-    input_genomic_start: Optional[str] = ""
-    input_genomic_end: Optional[str] = ""
-    input_exon_start: Optional[str] = ""
-    input_exon_start_offset: Optional[str] = ""
-    input_exon_end: Optional[str] = ""
-    input_exon_end_offset: Optional[str] = ""
+    inputType: (
+        Literal["genomic_coords_gene"]
+        | Literal["genomic_coords_tx"]
+        | Literal["exon_coords_tx"]
+    )
+    inputTx: str | None = None
+    inputStrand: Strand | None = None
+    inputGene: str | None = None
+    inputChr: str | None = None
+    inputGenomicStart: str | None = None
+    inputGenomicEnd: str | None = None
+    inputExonStart: str | None = None
+    inputExonStartOffset: str | None = None
+    inputExonEnd: str | None = None
+    inputExonEndOffset: str | None = None
 
 
 class ClientLinkerElement(LinkerElement, ClientStructuralElement):
     """Linker element class used client-side."""
 
-    pass
-
 
 class ClientTemplatedSequenceElement(TemplatedSequenceElement, ClientStructuralElement):
     """Templated sequence element used client-side."""
 
-    input_chromosome: Optional[str] = ""
-    input_start: Optional[str] = ""
-    input_end: Optional[str] = ""
+    inputChromosome: str | None
+    inputStart: str | None
+    inputEnd: str | None
 
 
 class ClientGeneElement(GeneElement, ClientStructuralElement):
     """Gene element used client-side."""
 
-    pass
-
 
 class ClientUnknownGeneElement(UnknownGeneElement, ClientStructuralElement):
     """Unknown gene element used client-side."""
-
-    pass
 
 
 class ClientMultiplePossibleGenesElement(
@@ -89,63 +93,55 @@ class ClientMultiplePossibleGenesElement(
 ):
     """Multiple possible gene element used client-side."""
 
-    pass
-
 
 class ClientFunctionalDomain(FunctionalDomain):
     """Define functional domain object used client-side."""
 
-    domain_id: str
+    domainId: str
 
-    class Config:
-        """Configure class."""
-
-        extra = Extra.forbid
+    model_config = ConfigDict(extra="forbid")
 
 
-class ClientRegulatoryElement(RegulatoryElement):
+class ClientRegulatoryElement(RegulatoryElement, ClientStructuralElement):
     """Define regulatory element object used client-side."""
 
-    display_class: str
+    displayClass: str
     nomenclature: str
 
 
 class Response(BaseModel):
     """Abstract Response class for defining API response structures."""
 
-    warnings: ResponseWarnings = None
+    warnings: ResponseWarnings | None = None
 
-    class Config:
-        """Configure class"""
-
-        extra = Extra.forbid
+    model_config = ConfigDict(extra="forbid")
 
 
 class GeneElementResponse(Response):
     """Response model for gene element construction endoint."""
 
-    element: Optional[GeneElement] = None
+    element: GeneElement | None
 
 
 class TxSegmentElementResponse(Response):
     """Response model for transcript segment element construction endpoint."""
 
-    element: Optional[TranscriptSegmentElement] = None
+    element: TranscriptSegmentElement | None
 
 
 class TemplatedSequenceElementResponse(Response):
     """Response model for transcript segment element construction endpoint."""
 
-    element: Optional[TemplatedSequenceElement] = None
+    element: TemplatedSequenceElement | None
 
 
 class NormalizeGeneResponse(Response):
     """Response model for gene normalization endpoint."""
 
     term: StrictStr
-    concept_id: Optional[CURIE] = None
-    symbol: Optional[StrictStr] = ""
-    cased: Optional[StrictStr] = ""
+    concept_id: StrictStr | None
+    symbol: StrictStr | None
+    cased: StrictStr | None
 
 
 class SuggestGeneResponse(Response):
@@ -154,59 +150,59 @@ class SuggestGeneResponse(Response):
     term: StrictStr
     matches_count: int
     # complete term, normalized symbol, normalized concept ID, chromosome ID, strand
-    concept_id: Optional[List[Tuple[str, str, str, str, str]]] = []
-    symbol: Optional[List[Tuple[str, str, str, str, str]]] = []
-    prev_symbols: Optional[List[Tuple[str, str, str, str, str]]] = []
-    aliases: Optional[List[Tuple[str, str, str, str, str]]] = []
+    concept_id: list[tuple[str, str, str, str, str]] | None
+    symbol: list[tuple[str, str, str, str, str]] | None
+    prev_symbols: list[tuple[str, str, str, str, str]] | None
+    aliases: list[tuple[str, str, str, str, str]] | None
 
 
 class DomainParams(BaseModel):
     """Fields for individual domain suggestion entries"""
 
-    interpro_id: CURIE
-    domain_name: StrictStr
+    interproId: StrictStr
+    domainName: StrictStr
     start: int
     end: int
-    refseq_ac: StrictStr
+    refseqAc: StrictStr
 
 
 class GetDomainResponse(Response):
     """Response model for functional domain constructor endpoint."""
 
-    domain: Optional[FunctionalDomain] = None
+    domain: FunctionalDomain | None
 
 
 class AssociatedDomainResponse(Response):
     """Response model for domain ID autocomplete suggestion endpoint."""
 
     gene_id: StrictStr
-    suggestions: Optional[List[DomainParams]] = []
+    suggestions: list[DomainParams] | None = None
 
 
 class ValidateFusionResponse(Response):
     """Response model for Fusion validation endpoint."""
 
-    fusion: Optional[Fusion] = None
+    fusion: Fusion | None = None
 
 
 class ExonCoordsRequest(BaseModel):
     """Request model for genomic coordinates retrieval"""
 
-    tx_ac: StrictStr
-    gene: Optional[StrictStr] = ""
-    exon_start: Optional[StrictInt] = 0
-    exon_start_offset: Optional[StrictInt] = 0
-    exon_end: Optional[StrictInt] = 0
-    exon_end_offset: Optional[StrictInt] = 0
+    txAc: StrictStr
+    gene: StrictStr | None = ""
+    exonStart: StrictInt | None = 0
+    exonStartOffset: StrictInt | None = 0
+    exonEnd: StrictInt | None = 0
+    exonEndOffset: StrictInt | None = 0
 
-    @validator("gene")
+    @field_validator("gene")
     def validate_gene(cls, v) -> str:
         """Replace None with empty string."""
         if v is None:
             return ""
         return v
 
-    @validator("exon_start", "exon_start_offset", "exon_end", "exon_end_offset")
+    @field_validator("exonStart", "exonStartOffset", "exonEnd", "exonEndOffset")
     def validate_number(cls, v) -> int:
         """Replace None with 0 for numeric fields."""
         if v is None:
@@ -217,16 +213,16 @@ class ExonCoordsRequest(BaseModel):
 class CoordsUtilsResponse(Response):
     """Response model for genomic coordinates retrieval"""
 
-    coordinates_data: Optional[GenomicData]
+    coordinates_data: GenomicTxSegService | None
 
 
 class SequenceIDResponse(Response):
     """Response model for sequence ID retrieval endpoint."""
 
     sequence: StrictStr
-    refseq_id: Optional[StrictStr] = ""
-    ga4gh_id: Optional[StrictStr] = ""
-    aliases: Optional[List[StrictStr]] = []
+    refseq_id: StrictStr | None = None
+    ga4gh_id: StrictStr | None = None
+    aliases: list[StrictStr] | None = None
 
 
 class ManeGeneTranscript(BaseModel):
@@ -243,21 +239,15 @@ class ManeGeneTranscript(BaseModel):
     Ensembl_prot: str
     MANE_status: str
     GRCh38_chr: str
-    chr_start: StrictInt
-    chr_end: StrictInt
+    chr_start: int
+    chr_end: int
     chr_strand: str
 
 
 class GetTranscriptsResponse(Response):
     """Response model for MANE transcript retrieval endpoint."""
 
-    transcripts: Optional[List[ManeGeneTranscript]] = None
-
-
-class GetGeneTranscriptsResponse(Response):
-    """Response model for MANE transcript retrieval endpoint."""
-
-    transcripts: Optional[List[str]] = None
+    transcripts: list[ManeGeneTranscript] | None
 
 
 class ServiceInfoResponse(Response):
@@ -278,17 +268,15 @@ class ClientCategoricalFusion(CategoricalFusion):
     global FusionContext.
     """
 
-    regulatory_element: Optional[ClientRegulatoryElement] = None
-    structural_elements: List[
-        Union[
-            ClientTranscriptSegmentElement,
-            ClientGeneElement,
-            ClientTemplatedSequenceElement,
-            ClientLinkerElement,
-            ClientMultiplePossibleGenesElement,
-        ]
+    regulatoryElement: ClientRegulatoryElement | None = None
+    structure: list[
+        ClientTranscriptSegmentElement
+        | ClientGeneElement
+        | ClientTemplatedSequenceElement
+        | ClientLinkerElement
+        | ClientMultiplePossibleGenesElement
     ]
-    critical_functional_domains: Optional[List[ClientFunctionalDomain]]
+    criticalFunctionalDomains: list[ClientFunctionalDomain] | None
 
 
 class ClientAssayedFusion(AssayedFusion):
@@ -296,34 +284,59 @@ class ClientAssayedFusion(AssayedFusion):
     global FusionContext.
     """
 
-    regulatory_element: Optional[ClientRegulatoryElement] = None
-    structural_elements: List[
-        Union[
-            ClientTranscriptSegmentElement,
-            ClientGeneElement,
-            ClientTemplatedSequenceElement,
-            ClientLinkerElement,
-            ClientUnknownGeneElement,
-        ]
+    regulatoryElement: ClientRegulatoryElement | None = None
+    structure: list[
+        ClientTranscriptSegmentElement
+        | ClientGeneElement
+        | ClientTemplatedSequenceElement
+        | ClientLinkerElement
+        | ClientUnknownGeneElement
     ]
+
+
+class FormattedAssayedFusion(BaseModel):
+    """Assayed fusion with parameters defined as expected in fusor assayed_fusion function
+    validate attempts to validate a fusion by constructing it by sending kwargs. In the models and frontend, these are camelCase,
+    but the assayed_fusion and categorical_fusion constructors expect snake_case
+    """
+
+    fusion_type: FusionType.ASSAYED_FUSION = FusionType.ASSAYED_FUSION
+    structure: list[AssayedFusionElement]
+    causative_event: CausativeEvent | None = None
+    assay: Assay | None = None
+    regulatory_element: RegulatoryElement | None = None
+    reading_frame_preserved: bool | None = None
+
+
+class FormattedCategoricalFusion(BaseModel):
+    """Categorical fusion with parameters defined as expected in fusor categorical_fusion function
+    validate attempts to validate a fusion by constructing it by sending kwargs. In the models and frontend, these are camelCase,
+    but the assayed_fusion and categorical_fusion constructors expect snake_case
+    """
+
+    fusion_type: FusionType.CATEGORICAL_FUSION = FusionType.CATEGORICAL_FUSION
+    structure: list[CategoricalFusionElement]
+    regulatory_element: RegulatoryElement | None = None
+    critical_functional_domains: list[FunctionalDomain] | None = None
+    reading_frame_preserved: bool | None = None
 
 
 class NomenclatureResponse(Response):
     """Response model for regulatory element nomenclature endpoint."""
 
-    nomenclature: Optional[str] = ""
+    nomenclature: str | None
 
 
 class RegulatoryElementResponse(Response):
     """Response model for regulatory element constructor."""
 
-    regulatory_element: RegulatoryElement
+    regulatoryElement: RegulatoryElement
 
 
 class DemoResponse(Response):
     """Response model for demo fusion object retrieval endpoints."""
 
-    fusion: Union[ClientAssayedFusion, ClientCategoricalFusion]
+    fusion: ClientAssayedFusion | ClientCategoricalFusion
 
 
 class RouteTag(str, Enum):

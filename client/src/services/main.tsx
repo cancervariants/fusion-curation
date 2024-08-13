@@ -30,13 +30,13 @@ import {
   ClientCategoricalFusion,
   ClientAssayedFusion,
   ValidateFusionResponse,
-  AssayedFusion,
-  CategoricalFusion,
   NomenclatureResponse,
   RegulatoryElement,
   RegulatoryClass,
   RegulatoryElementResponse,
   ClientRegulatoryElement,
+  FormattedAssayedFusion,
+  FormattedCategoricalFusion,
 } from "./ResponseModels";
 
 export enum ElementType {
@@ -67,6 +67,20 @@ export type ElementUnion =
   | TemplatedSequenceElement
   | TranscriptSegmentElement;
 
+export type AssayedFusionElements =
+  | GeneElement
+  | LinkerElement
+  | UnknownGeneElement
+  | TemplatedSequenceElement
+  | TranscriptSegmentElement;
+
+export type CategoricalFusionElements =
+  | MultiplePossibleGenesElement
+  | GeneElement
+  | LinkerElement
+  | TemplatedSequenceElement
+  | TranscriptSegmentElement;
+
 export type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 
 /**
@@ -78,7 +92,7 @@ export type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
  * to add additional annotations if we want to later.
  */
 export const validateFusion = async (
-  fusion: AssayedFusion | CategoricalFusion
+  fusion: FormattedAssayedFusion | FormattedCategoricalFusion
 ): Promise<ValidateFusionResponse> => {
   const response = await fetch("/api/validate", {
     method: "POST",
@@ -198,9 +212,9 @@ export const getFunctionalDomain = async (
   geneId: string
 ): Promise<GetDomainResponse> => {
   const url =
-    `/api/construct/domain?status=${domainStatus}&name=${domain.domain_name}` +
-    `&domain_id=${domain.interpro_id}&gene_id=${geneId}` +
-    `&sequence_id=${domain.refseq_ac}&start=${domain.start}&end=${domain.end}`;
+    `/api/construct/domain?status=${domainStatus}&name=${domain.domainName}` +
+    `&domain_id=${domain.interproId}&gene_id=${geneId}` +
+    `&sequence_id=${domain.refseqAc}&start=${domain.start}&end=${domain.end}`;
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
@@ -217,7 +231,9 @@ export const getTranscripts = async (
 export const getTranscriptsForGene = async (
   gene: string
 ): Promise<GetTranscriptsResponse> => {
-  const response = await fetch(`/api/utilities/get_transcripts_for_gene?gene=${gene}`);
+  const response = await fetch(
+    `/api/utilities/get_transcripts_for_gene?gene=${gene}`
+  );
   const transcriptResponse = await response.json();
   return transcriptResponse;
 };
@@ -226,17 +242,15 @@ export const getExonCoords = async (
   chromosome: string,
   start: string,
   end: string,
-  strand: string,
   gene?: string,
   txAc?: string
 ): Promise<CoordsUtilsResponse> => {
   const argsArray = [
     `chromosome=${chromosome}`,
-    `strand=${strand === "+" ? "%2B" : "-"}`,
-    gene !== "" ? `gene=${gene}` : "",
-    txAc !== "" ? `transcript=${txAc}` : "",
-    start !== "" ? `start=${start}` : "",
-    end !== "" ? `end=${end}` : "",
+    gene && gene !== "" ? `gene=${gene}` : "",
+    txAc && txAc !== "" ? `transcript=${txAc}` : "",
+    start && start !== "" ? `start=${start}` : "",
+    end && end !== "" ? `end=${end}` : "",
   ];
   const args = argsArray.filter((a) => a !== "").join("&");
   const response = await fetch(`/api/utilities/get_exon?${args}`);
@@ -375,7 +389,7 @@ export const getGeneNomenclature = async (
  * @returns nomenclature if successful
  */
 export const getFusionNomenclature = async (
-  fusion: AssayedFusion | CategoricalFusion
+  fusion: FormattedAssayedFusion | FormattedCategoricalFusion
 ): Promise<NomenclatureResponse> => {
   const response = await fetch("/api/nomenclature/fusion", {
     method: "POST",

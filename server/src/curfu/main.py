@@ -1,4 +1,9 @@
 """Provide FastAPI application and route declarations."""
+
+import logging
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -7,6 +12,7 @@ from fusor import FUSOR
 from starlette.templating import _TemplateResponse as TemplateResponse
 
 from curfu import APP_ROOT
+from curfu import __version__ as curfu_version
 from curfu.domain_services import DomainService
 from curfu.gene_services import GeneService
 from curfu.routers import (
@@ -19,7 +25,23 @@ from curfu.routers import (
     utilities,
     validate,
 )
-from curfu.version import __version__ as curfu_version
+
+_logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator:
+    """Configure FastAPI instance lifespan.
+
+    :param app: FastAPI app instance
+    :return: async context handler
+    """
+    app.state.fusor = await start_fusor()
+    app.state.genes = get_gene_services()
+    app.state.domains = get_domain_services()
+    yield
+    await app.state.fusor.cool_seq_tool.uta_db._connection_pool.close()  # noqa: SLF001
+
 
 fastapi_app = FastAPI(
     title="Fusion Curation API",
@@ -37,6 +59,7 @@ fastapi_app = FastAPI(
     swagger_ui_parameters={"tryItOutEnabled": True},
     docs_url="/docs",
     openapi_url="/openapi.json",
+    lifespan=lifespan,
 )
 
 fastapi_app.include_router(utilities.router)
@@ -62,32 +85,46 @@ BUILD_DIR = APP_ROOT / "build"
 
 
 def serve_react_app(app: FastAPI) -> FastAPI:
-    """Wrap application initialization in Starlette route param converter.
+    """Wrap application initialization in Starlette route param converter. This ensures
+    that the static web client files can be served from the backend.
+
+    Client source must be available at the location specified by `BUILD_DIR` in a
+    production environment. However, this may not be necessary during local development,
+    so the `RuntimeError` is simply caught and logged.
+
+    For the live service, `.ebextensions/01_build.config` includes code to build a
+    production version of the client and move it to the proper location.
 
     :param app: FastAPI application instance
     :return: application with React frontend mounted
     """
-    app.mount(
-        "/static/",
-        StaticFiles(directory=BUILD_DIR / "static"),
-        name="React application static files",
-    )
-    templates = Jinja2Templates(directory=BUILD_DIR.as_posix())
+    try:
+        static_files = StaticFiles(directory=BUILD_DIR / "static")
+    except RuntimeError:
+        _logger.error("Unable to access static build files -- does the folder exist?")
+    else:
+        app.mount(
+            "/static/",
+            static_files,
+            name="React application static files",
+        )
+        templates = Jinja2Templates(directory=BUILD_DIR.as_posix())
 
-    @app.get("/{full_path:path}", include_in_schema=False)
-    async def serve_react_app(request: Request, full_path: str) -> TemplateResponse:
-        """Add arbitrary path support to FastAPI service.
+        @app.get("/{full_path:path}", include_in_schema=False)
+        async def serve_react_app(request: Request, full_path: str) -> TemplateResponse:  # noqa: ARG001
+            """Add arbitrary path support to FastAPI service.
 
-        React-router provides something akin to client-side routing based out
-        of the Javascript embedded in index.html. However, FastAPI will intercede
-        and handle all client requests, and will 404 on any non-server-defined paths.
-        This function reroutes those otherwise failed requests against the React-Router
-        client, allowing it to redirect the client to the appropriate location.
-        :param request: client request object
-        :param full_path: request path
-        :return: Starlette template response object
-        """
-        return templates.TemplateResponse("index.html", {"request": request})
+            React-router provides something akin to client-side routing based out
+            of the Javascript embedded in index.html. However, FastAPI will intercede
+            and handle all client requests, and will 404 on any non-server-defined paths.
+            This function reroutes those otherwise failed requests against the React-Router
+            client, allowing it to redirect the client to the appropriate location.
+
+            :param request: client request object
+            :param full_path: request path
+            :return: Starlette template response object
+            """
+            return templates.TemplateResponse("index.html", {"request": request})
 
     return app
 
@@ -110,8 +147,7 @@ def get_gene_services() -> GeneService:
 
     :return: GeneService instance
     """
-    gene_services = GeneService()
-    return gene_services
+    return GeneService()
 
 
 def get_domain_services() -> DomainService:
@@ -122,17 +158,3 @@ def get_domain_services() -> DomainService:
     domain_service = DomainService()
     domain_service.load_mapping()
     return domain_service
-
-
-@app.on_event("startup")
-async def startup() -> None:
-    """Get FUSOR reference"""
-    app.state.fusor = await start_fusor()
-    app.state.genes = get_gene_services()
-    app.state.domains = get_domain_services()
-
-
-@app.on_event("shutdown")
-async def shutdown() -> None:
-    """Clean up thread pool."""
-    await app.state.fusor.cool_seq_tool.uta_db._connection_pool.close()

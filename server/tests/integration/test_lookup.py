@@ -1,9 +1,10 @@
 """Test lookup endpoints"""
+
 import pytest
 from httpx import AsyncClient
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_normalize_gene(async_client: AsyncClient):
     """Test /api/lookup/gene endpoint"""
     response = await async_client.get("/api/lookup/gene?term=NTRK1")
@@ -22,7 +23,7 @@ async def test_normalize_gene(async_client: AsyncClient):
         "concept_id": "hgnc:8031",
         "symbol": "NTRK1",
         "cased": "NTRK1",
-    }
+    }, "Results should be properly cased regardless of input"
 
     response = await async_client.get("/api/lookup/gene?term=acee")
     assert response.status_code == 200
@@ -31,7 +32,7 @@ async def test_normalize_gene(async_client: AsyncClient):
         "concept_id": "hgnc:108",
         "symbol": "ACHE",
         "cased": "ACEE",
-    }
+    }, "Lookup by alias should work"
 
     response = await async_client.get("/api/lookup/gene?term=c9ORF72")
     assert response.status_code == 200
@@ -40,7 +41,7 @@ async def test_normalize_gene(async_client: AsyncClient):
         "concept_id": "hgnc:28337",
         "symbol": "C9orf72",
         "cased": "C9orf72",
-    }
+    }, "Correct capitalization for orf genes should be observed"
 
     response = await async_client.get("/api/lookup/gene?term=sdfliuwer")
     assert response.status_code == 200
@@ -49,4 +50,4 @@ async def test_normalize_gene(async_client: AsyncClient):
         "symbol": "",
         "term": "sdfliuwer",
         "warnings": ["Lookup of gene term sdfliuwer failed."],
-    }
+    }, "Failed lookup should still respond successfully"

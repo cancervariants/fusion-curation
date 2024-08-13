@@ -18,7 +18,7 @@ cd fusion-curation
 Ensure that the following data sources are available:
 
 - the [VICC Gene Normalization](https://github.com/cancervariants/gene-normalization) database, accessible from a DynamoDB-compliant service. Set the endpoint address with environment variable `GENE_NORM_DB_URL`; default value is `http://localhost:8000`.
-- the [Biocommons SeqRepo](https://github.com/biocommons/biocommons.seqrepo) database. Provide local path with environment variable `SEQREPO_DATA_PATH`; default value is `/usr/local/share/seqrepo/latest`.
+- the [Biocommons SeqRepo](https://github.com/biocommons/biocommons.seqrepo) database, used by `Cool-Seq-Tool`. The precise file location is configurable via the `SEQREPO_ROOT_DIR` variable, per the [documentation](https://coolseqtool.readthedocs.io/0.6.0/usage.html#environment-configuration).
 - the [Biocommons Universal Transcript Archive](https://github.com/biocommons/uta), by way of Genomic Med Lab's [Cool Seq Tool](https://github.com/GenomicMedLab/cool-seq-tool) package. Connection parameters to the Postgres database are set most easily as a [Libpq-compliant URL](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) under the environment variable `UTA_DB_URL`.
 
 Create a virtual environment for the server and install. Note: there's also a Pipfile so you can skip the virtualenv steps if you'd rather use a Pipenv instance instead of virtualenv/venv. I have been sticking with the latter because [Pipenv doesn't play well with entry points in development](https://stackoverflow.com/a/69225249), but if you aren't editing them in `setup.cfg`, then the former should be fine.
@@ -30,7 +30,7 @@ source venv/bin/activate
 python3 -m pip install -e ".[dev,tests]"  # make sure to include the extra dependencies!
 ```
 
-Acquire two sets of static assets and place all of them within the `server/curation/data` directory:
+Acquire two sets of static assets and place all of them within the `server/src/curfu/data` directory:
 
 1. Gene autocomplete files, providing legal gene search terms to the client autocomplete component. One file each is used for entity types `aliases`, `assoc_with`, `xrefs`, `prev_symbols`, `labels`, and `symbols`. Each should be named according to the pattern `gene_<type>_<YYYYMMDD>.tsv`. These can be regenerated with the shell command `curfu_devtools genes`.
 
@@ -39,7 +39,7 @@ Acquire two sets of static assets and place all of them within the `server/curat
 Your data/directory should look something like this:
 
 ```
-server/curfu/data
+server/src/curfu/data
 ├── domain_lookup_2022-01-20.tsv
 ├── gene_aliases_suggest_20211025.tsv
 ├── gene_assoc_with_suggest_20211025.tsv
@@ -74,13 +74,6 @@ You can run:
 
 ```commandline
 yarn install --ignore-engines
-```
-
-Next, run the following commands:
-
-```
-yarn build
-mv build/ ../server/curfu/build
 ```
 
 Then start the development server:

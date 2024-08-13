@@ -1,8 +1,8 @@
 """Provide routes for app utility endpoints"""
-import os
+
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import FileResponse
@@ -17,7 +17,6 @@ from curfu.schemas import (
     RouteTag,
     SequenceIDResponse,
 )
-from curfu.sequence_services import InvalidInputError, get_strand
 
 router = APIRouter()
 
@@ -29,27 +28,26 @@ router = APIRouter()
     response_model_exclude_none=True,
     tags=[RouteTag.UTILITIES],
 )
-def get_mane_transcripts(request: Request, term: str) -> Dict:
+def get_mane_transcripts(request: Request, term: str) -> dict:
     """Get MANE transcripts for gene term.
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+    :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
-    :param str term: gene term provided by user
+    :param term: gene term provided by user
     :return: Dict containing transcripts if lookup succeeds, or warnings upon failure
     """
     normalized = request.app.state.fusor.gene_normalizer.normalize(term)
     if normalized.match_type == gene_schemas.MatchType.NO_MATCH:
-        return {"warnings": [f"Normalization error: {term}"]}
-    elif not normalized.gene_descriptor.gene_id.lower().startswith("hgnc"):
-        return {"warnings": [f"No HGNC symbol: {term}"]}
-    symbol = normalized.gene_descriptor.label
-    transcripts = request.app.state.fusor.cool_seq_tool.mane_transcript_mappings.get_gene_mane_data(  # noqa: E501
+        return {"warnings": [f"Normalization error: {term}"], "transcripts": None}
+    if not normalized.normalized_id.startswith("hgnc"):
+        return {"warnings": [f"No HGNC symbol: {term}"], "transcripts": None}
+    symbol = normalized.gene.label
+    transcripts = request.app.state.fusor.cool_seq_tool.mane_transcript_mappings.get_gene_mane_data(
         symbol
     )
     if not transcripts:
         return {"warnings": [f"No matching transcripts: {term}"]}
-    else:
-        return {"transcripts": transcripts}
+    return {"transcripts": transcripts}
 
 
 @router.get(
@@ -58,7 +56,7 @@ def get_mane_transcripts(request: Request, term: str) -> Dict:
     response_model=GetGeneTranscriptsResponse,
     response_model_exclude_none=True,
 )
-async def get_transcripts_for_gene(request: Request, gene: str) -> Dict:
+async def get_transcripts_for_gene(request: Request, gene: str) -> dict:
     """Get all transcripts for gene term.
     \f
     :param Request request: the HTTP request context, supplied by FastAPI. Use to access
@@ -74,8 +72,7 @@ async def get_transcripts_for_gene(request: Request, gene: str) -> Dict:
     tx_for_gene = list(transcripts.rows_by_key("tx_ac"))
     if transcripts.is_empty():
         return {"warnings": [f"No matching transcripts: {gene}"], "transcripts": []}
-    else:
-        return {"transcripts": tx_for_gene}
+    return {"transcripts": tx_for_gene}
 
 
 @router.get(
@@ -87,23 +84,23 @@ async def get_transcripts_for_gene(request: Request, gene: str) -> Dict:
 )
 async def get_genome_coords(
     request: Request,
-    gene: Optional[str] = None,
-    transcript: Optional[str] = None,
-    exon_start: Optional[int] = None,
-    exon_end: Optional[int] = None,
-    exon_start_offset: Optional[int] = None,
-    exon_end_offset: Optional[int] = None,
+    gene: str | None = None,
+    transcript: str | None = None,
+    exon_start: int | None = None,
+    exon_end: int | None = None,
+    exon_start_offset: int | None = None,
+    exon_end_offset: int | None = None,
 ) -> CoordsUtilsResponse:
     """Convert provided exon positions to genomic coordinates
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
+    :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
-    :param Optional[str] gene: gene symbol/ID on which exons lie
-    :param Optional[str] transcript: transcript accession ID
-    :param Optional[int] exon_start: starting exon number
-    :param Optional[int] exon_end: ending exon number
-    :param int exon_start_offset: base offset count from starting exon
-    :param int exon_end_offset: base offset count from end exon
+    :param gene: gene symbol/ID on which exons lie
+    :param transcript: transcript accession ID
+    :param exon_start: starting exon number
+    :param exon_end: ending exon number
+    :param exon_start_offset: base offset count from starting exon
+    :param exon_end_offset: base offset count from end exon
     :return: CoordsUtilsResponse containing relevant data or warnings if unsuccesful
     """
     warnings = []
@@ -119,10 +116,10 @@ async def get_genome_coords(
         )
         warnings.append(warning)
     if (exon_start is None) and (exon_start_offset is not None):
-        warning = "No start param: exon_start_offset parameter requires explicit exon_start parameter"  # noqa: E501
+        warning = "No start param: exon_start_offset parameter requires explicit exon_start parameter"
         warnings.append(warning)
     if (exon_end is None) and (exon_end_offset is not None):
-        warning = "No end param: exon_end_offset parameter requires explicit exon_end parameter"  # noqa: E501
+        warning = "No end param: exon_end_offset parameter requires explicit exon_end parameter"
         warnings.append(warning)
     if warnings:
         for warning in warnings:
@@ -135,20 +132,19 @@ async def get_genome_coords(
     if exon_end is not None and exon_end_offset is None:
         exon_end_offset = 0
 
-    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.transcript_to_genomic_coordinates(  # noqa: E501
-        gene=gene,
+    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.tx_segment_to_genomic(
         transcript=transcript,
+        gene=gene,
         exon_start=exon_start,
         exon_end=exon_end,
         exon_start_offset=exon_start_offset,
         exon_end_offset=exon_end_offset,
-        residue_mode="inter-residue",
     )
-    warnings = response.warnings
+    warnings = response.errors
     if warnings:
         return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    return CoordsUtilsResponse(coordinates_data=response.genomic_data, warnings=None)
+    return CoordsUtilsResponse(coordinates_data=response, warnings=None)
 
 
 @router.get(
@@ -161,54 +157,44 @@ async def get_genome_coords(
 async def get_exon_coords(
     request: Request,
     chromosome: str,
-    start: Optional[int] = None,
-    end: Optional[int] = None,
-    strand: Optional[str] = None,
-    gene: Optional[str] = None,
-    transcript: Optional[str] = None,
+    start: int | None = None,
+    end: int | None = None,
+    gene: str | None = None,
+    transcript: str | None = None,
 ) -> CoordsUtilsResponse:
     """Convert provided genomic coordinates to exon coordinates
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param str chromosome: chromosome, either as a number/X/Y or as an accession
-    :param Optional[int] start: genomic start position
-    :param Optional[int] end: genomic end position
-    :param Optional[str] strand: strand of genomic position
-    :param Optional[str] gene: gene symbol or ID
-    :param Optional[str] transcript: transcript accession ID
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
+    :param chromosome: chromosome, either as a number/X/Y or as an accession
+    :param start: genomic start position
+    :param end: genomic end position
+    :param gene: gene symbol or ID
+    :param transcript: transcript accession ID
     :return: response with exon coordinates if successful, or warnings if failed
     """
-    warnings: List[str] = []
+    warnings: list[str] = []
     if start is None and end is None:
         warnings.append("Must provide start and/or end coordinates")
     if transcript is None and gene is None:
         warnings.append("Must provide gene and/or transcript")
-    if strand is not None:
-        try:
-            strand_validated = get_strand(strand)
-        except InvalidInputError:
-            warnings.append(f"Received invalid strand value: {strand}")
-    else:
-        strand_validated = strand
     if warnings:
         for warning in warnings:
             logger.warning(warning)
         return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.genomic_to_transcript_exon_coordinates(  # noqa: E501
-        chromosome,
-        start=start,
-        end=end,
-        strand=strand_validated,  # type: ignore
+    response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.genomic_to_tx_segment(
+        genomic_ac=chromosome,
+        genomic_start=start,
+        genomic_end=end,
         transcript=transcript,
         gene=gene,
     )
-    warnings = response.warnings
+    warnings = response.errors
     if warnings:
         return CoordsUtilsResponse(warnings=warnings, coordinates_data=None)
 
-    return CoordsUtilsResponse(coordinates_data=response.genomic_data, warnings=None)
+    return CoordsUtilsResponse(coordinates_data=response, warnings=None)
 
 
 @router.get(
@@ -221,12 +207,12 @@ async def get_exon_coords(
 async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse:
     """Get GA4GH sequence ID and aliases given sequence sequence ID
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use
-        to access FUSOR and UTA-associated tools.
-    :param str sequence_id: user-provided sequence identifier to translate
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
+    :param sequence_id: user-provided sequence identifier to translate
     :return: Response object with ga4gh ID and aliases
     """
-    params: Dict[str, Any] = {"sequence": sequence, "ga4gh_id": None, "aliases": []}
+    params: dict[str, Any] = {"sequence": sequence}
     sr = request.app.state.fusor.cool_seq_tool.seqrepo_access
 
     sr_ids, errors = sr.translate_identifier(sequence)
@@ -263,8 +249,7 @@ async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse
 @router.get(
     "/api/utilities/download_sequence",
     summary="Get sequence for ID",
-    description="Given a known accession identifier, retrieve sequence data and return"
-    "as a FASTA file",
+    description="Given a known accession identifier, retrieve sequence data and return as a FASTA file",
     response_class=FileResponse,
     tags=[RouteTag.UTILITIES],
 )
@@ -276,9 +261,10 @@ async def get_sequence(
     ),
 ) -> FileResponse:
     """Get sequence for requested sequence ID.
+
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use
-        to access FUSOR and UTA-associated tools.
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
     :param background_tasks: Starlette background tasks object. Use to clean up
         tempfile after get method returns.
     :param sequence_id: accession ID, sans namespace, eg `NM_152263.3`
@@ -289,24 +275,23 @@ async def get_sequence(
         request.app.state.fusor.cool_seq_tool.seqrepo_access.get_fasta_file(
             sequence_id, Path(path)
         )
-    except KeyError:
-        resp = request.app.state.fusor.cool_seq_tool.seqrepo_access.translate_identifier(  # noqa: E501
-            sequence_id, "refseq"
+    except KeyError as ke:
+        resp = (
+            request.app.state.fusor.cool_seq_tool.seqrepo_access.translate_identifier(
+                sequence_id, "refseq"
+            )
         )
         if len(resp[0]) < 1:
             raise HTTPException(
                 status_code=404, detail="No sequence available for requested identifier"
-            )
-        else:
-            try:
-                new_seq_id = resp[0][0].split(":")[1]
-                request.app.state.fusor.cool_seq_tool.seqrepo_access.get_fasta_file(
-                    new_seq_id, Path(path)
-                )
-            except KeyError:
-                raise HTTPException(
-                    status_code=404,
-                    detail="No sequence available for requested identifier",
-                )
-    background_tasks.add_task(lambda p: os.unlink(p), path)
+            ) from ke
+        try:
+            new_seq_id = resp[0][0].split(":")[1]
+            request.app.state.fusor.cool_seq_tool.get_fasta_file(new_seq_id, Path(path))
+        except KeyError as e:
+            raise HTTPException(
+                status_code=404,
+                detail="No sequence available for requested identifier",
+            ) from e
+    background_tasks.add_task(lambda p: Path(p).unlink(), path)
     return FileResponse(path, filename=f"{sequence_id}.FASTA")

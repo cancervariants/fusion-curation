@@ -1,5 +1,6 @@
 """Provide routes for autocomplete/term suggestion methods"""
-from typing import Any, Dict
+
+from typing import Any
 
 from fastapi import APIRouter, Query, Request
 
@@ -24,11 +25,11 @@ router = APIRouter()
 def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
     """Provide completion suggestions for term provided by user.
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param str term: entered gene term
-    :return: JSON response with suggestions listed, or warnings if unable to
-        provide suggestions.
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
+    :param term: entered gene term
+    :return: JSON response with suggestions listed, or warnings if unable to provide
+        suggestions.
     """
     response: ResponseDict = {"term": term}
     possible_matches = request.app.state.genes.suggest_genes(term)
@@ -41,7 +42,7 @@ def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
 
     response["matches_count"] = n
     if n > MAX_SUGGESTIONS:
-        warn = f"Exceeds max matches: Got {n} possible matches for {term} (limit: {MAX_SUGGESTIONS})"  # noqa: E501
+        warn = f"Exceeds max matches: Got {n} possible matches for {term} (limit: {MAX_SUGGESTIONS})"
         response["warnings"] = [warn]
         term_upper = term.upper()
         for match_type in ("concept_id", "symbol", "prev_symbols", "aliases"):
@@ -63,13 +64,13 @@ def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
 def suggest_domain(request: Request, gene_id: str = Query("")) -> ResponseDict:
     """Provide possible domains associated with a given gene to be selected by a user.
     \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param str gene_id: normalized gene concept ID
+    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
+        and UTA-associated tools.
+    :param gene_id: normalized gene concept ID
     :return: JSON response with a list of possible domain name and ID options, or
         warning(s) if relevant
     """
-    response: Dict[str, Any] = {"gene_id": gene_id}
+    response: dict[str, Any] = {"gene_id": gene_id}
     try:
         possible_matches = request.app.state.domains.get_possible_domains(gene_id)
         response["suggestions"] = possible_matches

@@ -1,8 +1,7 @@
 """Provide routes for element construction endpoints"""
-from typing import Optional
 
 from fastapi import APIRouter, Query, Request
-from fusor.models import DomainStatus, RegulatoryClass, Strand
+from fusor.models import DomainStatus, RegulatoryClass
 from pydantic import ValidationError
 
 from curfu import logger
@@ -16,7 +15,7 @@ from curfu.schemas import (
     TemplatedSequenceElementResponse,
     TxSegmentElementResponse,
 )
-from curfu.sequence_services import InvalidInputError, get_strand
+from curfu.sequence_services import get_strand
 
 router = APIRouter()
 
@@ -38,11 +37,9 @@ def build_gene_element(request: Request, term: str = Query("")) -> GeneElementRe
     :return: Pydantic class with gene element if successful and warnings otherwise
     """
     gene_element, warnings = request.app.state.fusor.gene_element(term)
-    if not warnings:
-        warnings_l = []
-    else:
-        warnings_l = [warnings]
-    return GeneElementResponse(element=gene_element, warnings=warnings_l)
+    return GeneElementResponse(
+        element=gene_element, warnings=[] if not warnings else [warnings]
+    )
 
 
 @router.get(
@@ -55,9 +52,9 @@ def build_gene_element(request: Request, term: str = Query("")) -> GeneElementRe
 async def build_tx_segment_ect(
     request: Request,
     transcript: str,
-    exon_start: Optional[int] = Query(None),
+    exon_start: int | None = Query(None),
     exon_start_offset: int = Query(0),
-    exon_end: Optional[int] = Query(None),
+    exon_end: int | None = Query(None),
     exon_end_offset: int = Query(0),
 ) -> TxSegmentElementResponse:
     """Construct Transcript Segment element by providing transcript and exon
@@ -82,6 +79,7 @@ async def build_tx_segment_ect(
     )
     return TxSegmentElementResponse(element=tx_segment, warnings=warnings)
 
+
 @router.get(
     "/api/construct/structural_element/tx_segment_gcg",
     operation_id="buildTranscriptSegmentElementGCG",
@@ -94,9 +92,8 @@ async def build_tx_segment_gcg(
     gene: str,
     chromosome: str,
     transcript: str,
-    start: Optional[int] = Query(None),
-    end: Optional[int] = Query(None),
-    strand: Optional[str] = Query(None),
+    start: int | None = Query(None),
+    end: int | None = Query(None),
 ) -> TxSegmentElementResponse:
     """Construct Transcript Segment element by providing gene and genomic
     coordinates (chromosome, start, end positions).
@@ -111,24 +108,13 @@ async def build_tx_segment_gcg(
     :return: Pydantic class with TranscriptSegment element if successful, and
         warnings otherwise.
     """
-    if strand is not None:
-        try:
-            strand_validated = get_strand(strand)
-        except InvalidInputError:
-            warning = f"Received invalid strand value: {strand}"
-            logger.warning(warning)
-            return TxSegmentElementResponse(warnings=[warning], element=None)
-    else:
-        strand_validated = strand
     tx_segment, warnings = await request.app.state.fusor.transcript_segment_element(
         tx_to_genomic_coords=False,
         gene=gene,
         transcript=parse_identifier(transcript),
         chromosome=parse_identifier(chromosome),
-        strand=strand_validated,
-        start=start,
-        end=end,
-        residue_mode="inter-residue",
+        genomic_start=start,
+        genomic_end=end,
     )
     return TxSegmentElementResponse(element=tx_segment, warnings=warnings)
 
@@ -155,7 +141,7 @@ def build_templated_sequence_element(
         otherwise
     """
     try:
-        strand_n = Strand(strand)
+        strand_n = get_strand(strand)
     except ValueError:
         warning = f"Received invalid strand value: {strand}"
         logger.warning(warning)
@@ -165,7 +151,6 @@ def build_templated_sequence_element(
         end=end,
         sequence_id=parse_identifier(sequence_id),
         strand=strand_n,
-        add_location_id=True,
     )
     return TemplatedSequenceElementResponse(element=element, warnings=[])
 
@@ -241,4 +226,4 @@ def build_regulatory_element(
     element, warnings = request.app.state.fusor.regulatory_element(
         normalized_class, gene_name
     )
-    return {"regulatory_element": element, "warnings": warnings}
+    return {"regulatoryElement": element, "warnings": warnings}

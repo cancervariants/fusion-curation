@@ -35,8 +35,8 @@ const useStyles = makeStyles((theme) => ({
 const DomainForm: React.FC = () => {
   // // TODO: shouldn't be necessary
   useEffect(() => {
-    if (fusion.critical_functional_domains === undefined) {
-      setFusion({ ...fusion, ...{ critical_functional_domains: [] } });
+    if (fusion.criticalFunctionalDomains === undefined) {
+      setFusion({ ...fusion, ...{ criticalFunctionalDomains: [] } });
     }
   }, []);
 
@@ -65,7 +65,7 @@ const DomainForm: React.FC = () => {
 
   const handleAdd = () => {
     const domainParams = domainOptions[gene].find(
-      (domainOption: DomainParams) => domainOption.interpro_id == domain
+      (domainOption: DomainParams) => domainOption.interproId == domain
     );
     getFunctionalDomain(domainParams, status as DomainStatus, gene).then(
       (response) => {
@@ -74,11 +74,11 @@ const DomainForm: React.FC = () => {
             domain_id: uuid(),
             ...response.domain,
           };
-          const cloneArray = Array.from(fusion["critical_functional_domains"]);
+          const cloneArray = Array.from(fusion["criticalFunctionalDomains"]);
           cloneArray.push(newDomain);
           setFusion({
             ...fusion,
-            ...{ critical_functional_domains: cloneArray },
+            ...{ criticalFunctionalDomains: cloneArray },
           });
 
           setStatus("default");
@@ -107,11 +107,11 @@ const DomainForm: React.FC = () => {
     if (domainOptions[gene]) {
       const uniqueInterproIds: Set<string> = new Set();
       domainOptions[gene].forEach((domain: DomainParams, index: number) => {
-        if (!uniqueInterproIds.has(domain.interpro_id)) {
-          uniqueInterproIds.add(domain.interpro_id);
+        if (!uniqueInterproIds.has(domain.interproId)) {
+          uniqueInterproIds.add(domain.interproId);
           domainOptionMenuItems.push(
-            <MenuItem key={index} value={domain.interpro_id}>
-              {domain.domain_name}
+            <MenuItem key={index} value={domain.interproId}>
+              {domain.domainName}
             </MenuItem>
           );
         }
