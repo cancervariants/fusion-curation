@@ -767,14 +767,6 @@ export interface GetTranscriptsResponse {
   warnings?: string[] | null;
   transcripts: ManeGeneTranscript[] | null;
 }
-
-/**
- * Response model for MANE transcript retrieval endpoint.
- */
-export interface GetGeneTranscriptsResponse {
-  warnings?: string[];
-  transcripts?: any;
-}
 /**
  * Base object containing MANE-provided gene transcript metadata
  */
