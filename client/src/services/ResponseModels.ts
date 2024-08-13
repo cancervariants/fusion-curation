@@ -763,6 +763,13 @@ export interface GetDomainResponse {
 /**
  * Response model for MANE transcript retrieval endpoint.
  */
+export interface GetGeneTranscriptsResponse {
+  warnings?: string[] | null;
+  transcripts?: string[];
+}
+/**
+ * Response model for MANE transcript retrieval endpoint.
+ */
 export interface GetTranscriptsResponse {
   warnings?: string[] | null;
   transcripts: ManeGeneTranscript[] | null;

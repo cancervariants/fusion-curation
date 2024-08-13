@@ -250,6 +250,12 @@ class GetTranscriptsResponse(Response):
     transcripts: list[ManeGeneTranscript] | None
 
 
+class GetGeneTranscriptsResponse(Response):
+    """Response model for MANE transcript retrieval endpoint."""
+
+    transcripts: list[str] = None
+
+
 class ServiceInfoResponse(Response):
     """Response model for service_info endpoint."""
 

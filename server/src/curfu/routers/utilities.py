@@ -65,7 +65,7 @@ async def get_transcripts_for_gene(request: Request, gene: str) -> dict:
     :return: Dict containing transcripts if lookup succeeds, or warnings upon failure
     """
     normalized = request.app.state.fusor.gene_normalizer.normalize(gene)
-    symbol = normalized.gene_descriptor.label
+    symbol = normalized.gene.label
     transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(
         gene=symbol
     )
