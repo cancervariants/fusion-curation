@@ -11,7 +11,6 @@ import {
   Link,
   InputLabel,
   FormControl,
-  CircularProgress,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
@@ -333,7 +332,6 @@ const GetCoordinates: React.FC = () => {
             {genomicCoordinateInfo}
             <Box className={classes.fieldsPair}>
               <TextField
-                type="number"
                 margin="dense"
                 label="Genomic Start"
                 value={start}
@@ -341,7 +339,6 @@ const GetCoordinates: React.FC = () => {
                 helperText={start ? startText : ""}
               />
               <TextField
-                type="number"
                 margin="dense"
                 label="Genomic End"
                 value={end}
@@ -362,7 +359,6 @@ const GetCoordinates: React.FC = () => {
             </Box>
             <Box className={classes.fieldsPair}>
               <TextField
-                type="number"
                 margin="dense"
                 style={{ minWidth: 125 }}
                 label="Starting Exon"
@@ -372,7 +368,6 @@ const GetCoordinates: React.FC = () => {
                 helperText={exonStart ? exonStartText : ""}
               />
               <TextField
-                type="number"
                 margin="dense"
                 style={{ minWidth: 125 }}
                 label="Starting Offset"
@@ -382,7 +377,6 @@ const GetCoordinates: React.FC = () => {
             </Box>
             <Box className={classes.fieldsPair}>
               <TextField
-                type="number"
                 margin="dense"
                 style={{ minWidth: 125 }}
                 label="Ending Exon"
@@ -392,7 +386,6 @@ const GetCoordinates: React.FC = () => {
                 helperText={exonEnd ? exonEndText : ""}
               />
               <TextField
-                type="number"
                 margin="dense"
                 style={{ minWidth: 125 }}
                 label="Ending Offset"
