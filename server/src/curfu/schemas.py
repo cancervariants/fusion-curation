@@ -251,7 +251,7 @@ class GetTranscriptsResponse(Response):
 
 
 class GetGeneTranscriptsResponse(Response):
-    """Response model for MANE transcript retrieval endpoint."""
+    """Response model for retrieving list of transcripts for a given gene"""
 
     transcripts: list[str] = None
 
