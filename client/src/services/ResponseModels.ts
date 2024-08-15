@@ -10,9 +10,10 @@
  */
 export type Evidence = "observed" | "inferred";
 /**
- * Define possible classes of Regulatory Elements. Options are the possible values
- * for /regulatory_class value property in the INSDC controlled vocabulary:
- * https://www.insdc.org/controlled-vocabulary-regulatoryclass
+ * Define possible classes of Regulatory Elements.
+ *
+ * Options are the possible values for ``/regulatory_class`` value property in the
+ * `INSDC controlled vocabulary <https://www.insdc.org/controlled-vocabulary-regulatoryclass>`_.
  */
 export type RegulatoryClass =
   | "attenuator"
@@ -113,8 +114,8 @@ export interface AssayedFusion {
 /**
  * Define RegulatoryElement class.
  *
- * `featureId` would ideally be constrained as a CURIE, but Encode, our preferred
- * feature ID source, doesn't currently have a registered CURIE structure for EH_
+ * ``featureId`` would ideally be constrained as a CURIE, but Encode, our preferred
+ * feature ID source, doesn't currently have a registered CURIE structure for ``EH_``
  * identifiers. Consequently, we permit any kind of free text.
  */
 export interface RegulatoryElement {
@@ -348,6 +349,7 @@ export interface GeneElement {
 }
 /**
  * Define Templated Sequence Element class.
+ *
  * A templated sequence is a contiguous genomic sequence found in the gene
  * product.
  */
@@ -402,7 +404,9 @@ export interface LiteralSequenceExpression {
   [k: string]: unknown;
 }
 /**
- * Define UnknownGene class. This is primarily intended to represent a
+ * Define UnknownGene class.
+ *
+ * This is primarily intended to represent a
  * partner in the result of a fusion partner-agnostic assay, which identifies
  * the absence of an expected gene. For example, a FISH break-apart probe may
  * indicate rearrangement of an MLL gene, but by design, the test cannot
@@ -414,6 +418,8 @@ export interface UnknownGeneElement {
   type?: "UnknownGeneElement";
 }
 /**
+ * Define causative event information for a fusion.
+ *
  * The evaluation of a fusion may be influenced by the underlying mechanism that
  * generated the fusion. Often this will be a DNA rearrangement, but it could also be
  * a read-through or trans-splicing event.
@@ -461,7 +467,9 @@ export interface CategoricalFusion {
   criticalFunctionalDomains?: FunctionalDomain[] | null;
 }
 /**
- * Define MultiplePossibleGenesElement class. This is primarily intended to
+ * Define MultiplePossibleGenesElement class.
+ *
+ * This is primarily intended to
  * represent a partner in a categorical fusion, typifying generalizable
  * characteristics of a class of fusions such as retained or lost regulatory elements
  * and/or functional domains, often curated from biomedical literature for use in
