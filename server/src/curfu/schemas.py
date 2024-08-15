@@ -7,9 +7,9 @@ from cool_seq_tool.schemas import GenomicData
 from fusor.models import (
     Assay,
     AssayedFusion,
-    AssayedFusionElements,
+    AssayedFusionElement,
     CategoricalFusion,
-    CategoricalFusionElements,
+    CategoricalFusionElement,
     CausativeEvent,
     FunctionalDomain,
     Fusion,
@@ -301,7 +301,7 @@ class FormattedAssayedFusion(BaseModel):
     """
 
     fusion_type: FusionType.ASSAYED_FUSION = FusionType.ASSAYED_FUSION
-    structure: AssayedFusionElements
+    structure: list[AssayedFusionElement]
     causative_event: CausativeEvent | None = None
     assay: Assay | None = None
     regulatory_element: RegulatoryElement | None = None
@@ -315,7 +315,7 @@ class FormattedCategoricalFusion(BaseModel):
     """
 
     fusion_type: FusionType.CATEGORICAL_FUSION = FusionType.CATEGORICAL_FUSION
-    structure: CategoricalFusionElements
+    structure: list[CategoricalFusionElement]
     regulatory_element: RegulatoryElement | None = None
     critical_functional_domains: list[FunctionalDomain] | None = None
     reading_frame_preserved: bool | None = None
