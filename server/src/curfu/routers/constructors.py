@@ -43,13 +43,13 @@ def build_gene_element(request: Request, term: str = Query("")) -> GeneElementRe
 
 
 @router.get(
-    "/api/construct/structural_element/tx_segment_ect",
+    "/api/construct/structural_element/tx_segment_ec",
     operation_id="buildTranscriptSegmentElementECT",
     response_model=TxSegmentElementResponse,
     response_model_exclude_none=True,
     tags=[RouteTag.CONSTRUCTORS],
 )
-async def build_tx_segment_ect(
+async def build_tx_segment_ec(
     request: Request,
     transcript: str,
     exon_start: int | None = Query(None),
@@ -81,13 +81,13 @@ async def build_tx_segment_ect(
 
 
 @router.get(
-    "/api/construct/structural_element/tx_segment_gcg",
-    operation_id="buildTranscriptSegmentElementGCG",
+    "/api/construct/structural_element/tx_segment_gc",
+    operation_id="buildTranscriptSegmentElementGC",
     response_model=TxSegmentElementResponse,
     response_model_exclude_none=True,
     tags=[RouteTag.CONSTRUCTORS],
 )
-async def build_tx_segment_gcg(
+async def build_tx_segment_gc(
     request: Request,
     gene: str,
     chromosome: str,
@@ -95,7 +95,7 @@ async def build_tx_segment_gcg(
     start: int | None = Query(None),
     end: int | None = Query(None),
 ) -> TxSegmentElementResponse:
-    """Construct Transcript Segment element by providing gene and genomic
+    """Construct Transcript Segment element by providing gene and/or transcript and genomic
     coordinates (chromosome, start, end positions).
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access

@@ -100,7 +100,7 @@ def clientify_structural_element(
     if element.type == StructuralElementType.TRANSCRIPT_SEGMENT_ELEMENT:
         nm = tx_segment_nomenclature(element)
         element_args["nomenclature"] = nm
-        element_args["inputType"] = "exon_coords_tx"
+        element_args["inputType"] = "exon_coords"
         element_args["inputTx"] = element.transcript.split(":")[1]
         element_args["inputExonStart"] = str(element.exonStart)
         element_args["inputExonStartOffset"] = str(element.exonStartOffset)

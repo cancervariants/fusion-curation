@@ -530,7 +530,7 @@ export interface ClientTranscriptSegmentElement {
   gene: Gene;
   elementGenomicStart?: SequenceLocation | null;
   elementGenomicEnd?: SequenceLocation | null;
-  inputType: "genomic_coords_gene" | "genomic_coords_tx" | "exon_coords_tx";
+  inputType: "genomic_coords_gene" | "genomic_coords_tx" | "exon_coords";
   inputTx?: string | null;
   inputStrand?: Strand | null;
   inputGene?: string | null;

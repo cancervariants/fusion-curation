@@ -130,7 +130,7 @@ export const getTemplatedSequenceElement = async (
   return responseJson;
 };
 
-export const getTxSegmentElementECT = async (
+export const getTxSegmentElementEC = async (
   transcript: string,
   exonStart: string,
   exonEnd: string,
@@ -153,13 +153,13 @@ export const getTxSegmentElementECT = async (
     params.push(`exon_end_offset=${exonEndOffset}`);
   }
   const url =
-    "api/construct/structural_element/tx_segment_ect?" + params.join("&");
+    "api/construct/structural_element/tx_segment_ec?" + params.join("&");
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
 };
 
-export const getTxSegmentElementGCG = async (
+export const getTxSegmentElementGC = async (
   gene: string,
   chromosome: string,
   transcript: string,
@@ -176,7 +176,7 @@ export const getTxSegmentElementGCG = async (
   if (start !== "") params.push(`start=${start}`);
   if (end !== "") params.push(`end=${end}`);
   const url =
-    "api/construct/structural_element/tx_segment_gcg?" + params.join("&");
+    "api/construct/structural_element/tx_segment_gc?" + params.join("&");
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;

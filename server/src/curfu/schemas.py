@@ -54,7 +54,7 @@ class ClientTranscriptSegmentElement(TranscriptSegmentElement, ClientStructuralE
     inputType: (
         Literal["genomic_coords_gene"]
         | Literal["genomic_coords_tx"]
-        | Literal["exon_coords_tx"]
+        | Literal["exon_coords"]
     )
     inputTx: str | None = None
     inputStrand: Strand | None = None

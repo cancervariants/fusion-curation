@@ -12,7 +12,6 @@ from starlette.background import BackgroundTasks
 from curfu import logger
 from curfu.schemas import (
     CoordsUtilsResponse,
-    GetGeneTranscriptsResponse,
     GetTranscriptsResponse,
     RouteTag,
     SequenceIDResponse,
@@ -48,31 +47,6 @@ def get_mane_transcripts(request: Request, term: str) -> dict:
     if not transcripts:
         return {"warnings": [f"No matching transcripts: {term}"]}
     return {"transcripts": transcripts}
-
-
-@router.get(
-    "/api/utilities/get_transcripts_for_gene",
-    operation_id="getTranscriptsFromGene",
-    response_model=GetGeneTranscriptsResponse,
-    response_model_exclude_none=True,
-)
-async def get_transcripts_for_gene(request: Request, gene: str) -> dict:
-    """Get all transcripts for gene term.
-    \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param str gene: gene term provided by user
-    :return: Dict containing transcripts if lookup succeeds, or warnings upon failure
-    """
-    normalized = request.app.state.fusor.gene_normalizer.normalize(gene)
-    symbol = normalized.gene.label
-    transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(
-        gene=symbol
-    )
-    tx_for_gene = list(transcripts.rows_by_key("tx_ac"))
-    if transcripts.is_empty():
-        return {"warnings": [f"No matching transcripts: {gene}"], "transcripts": []}
-    return {"transcripts": tx_for_gene}
 
 
 @router.get(

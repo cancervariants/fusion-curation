@@ -109,7 +109,7 @@ const GetCoordinates: React.FC = () => {
       gene !== "" &&
       chromosome !== "" &&
       (start !== "" || end !== "")) ||
-    (inputType === "exon_coords_tx" &&
+    (inputType === "exon_coords" &&
       txAc !== "" &&
       (exonStart !== "" || exonEnd !== ""));
 
@@ -191,7 +191,7 @@ const GetCoordinates: React.FC = () => {
 
   const fetchResults = () => {
     setIsLoading(true);
-    if (inputType == "exon_coords_tx") {
+    if (inputType == "exon_coords") {
       getGenomicCoords(
         gene,
         txAc,
@@ -347,7 +347,7 @@ const GetCoordinates: React.FC = () => {
             </Box>
           </>
         );
-      case "exon_coords_tx":
+      case "exon_coords":
         return (
           <>
             <Box>
@@ -410,7 +410,7 @@ const GetCoordinates: React.FC = () => {
               Select input data
             </MenuItem>
             <MenuItem value="genomic_coords">Genomic coordinates</MenuItem>
-            <MenuItem value="exon_coords_tx">Exon coordinates</MenuItem>
+            <MenuItem value="exon_coords">Exon coordinates</MenuItem>
           </Select>
         </Box>
       </Box>
