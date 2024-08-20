@@ -110,8 +110,8 @@ async def build_tx_segment_gct(
         tx_to_genomic_coords=False,
         transcript=parse_identifier(transcript),
         chromosome=parse_identifier(chromosome),
-        genomic_start=start,
-        genomic_end=end,
+        seg_start_genomic=start,
+        seg_end_genomic=end,
     )
     return TxSegmentElementResponse(element=tx_segment, warnings=warnings)
 
@@ -146,8 +146,8 @@ async def build_tx_segment_gcg(
         tx_to_genomic_coords=False,
         gene=gene,
         chromosome=parse_identifier(chromosome),
-        genomic_start=start,
-        genomic_end=end,
+        seg_start_genomic=start,
+        seg_end_genomic=end,
     )
     return TxSegmentElementResponse(element=tx_segment, warnings=warnings)
 
