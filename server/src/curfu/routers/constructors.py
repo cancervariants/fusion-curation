@@ -109,7 +109,7 @@ async def build_tx_segment_gct(
     tx_segment, warnings = await request.app.state.fusor.transcript_segment_element(
         tx_to_genomic_coords=False,
         transcript=parse_identifier(transcript),
-        chromosome=parse_identifier(chromosome),
+        genomic_ac=parse_identifier(chromosome),
         seg_start_genomic=start,
         seg_end_genomic=end,
     )
@@ -145,7 +145,7 @@ async def build_tx_segment_gcg(
     tx_segment, warnings = await request.app.state.fusor.transcript_segment_element(
         tx_to_genomic_coords=False,
         gene=gene,
-        chromosome=parse_identifier(chromosome),
+        genomic_ac=parse_identifier(chromosome),
         seg_start_genomic=start,
         seg_end_genomic=end,
     )
