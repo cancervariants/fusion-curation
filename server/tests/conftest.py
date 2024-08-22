@@ -1,11 +1,20 @@
 """Provide core fixtures for testing Flask functions."""
 
+import asyncio
 from collections.abc import Callable
 
 import pytest
 import pytest_asyncio
 from curfu.main import app, get_domain_services, get_gene_services, start_fusor
 from httpx import ASGITransport, AsyncClient
+
+
+@pytest_asyncio.fixture(scope="session")
+def event_loop():
+    """Create an instance of the event loop with session scope."""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
 
 
 @pytest_asyncio.fixture(scope="session")
@@ -136,9 +145,9 @@ def tpm3_tx_t_element(tpm3_gene):
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_152263.4",
         "exonStart": 6,
-        "exonStartOffset": 71,
+        "exonStartOffset": 72,
         "exonEnd": 6,
-        "exonEndOffset": -4,
+        "exonEndOffset": -5,
         "gene": tpm3_gene,
         "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",
@@ -164,9 +173,9 @@ def tpm3_tx_g_element(tpm3_gene):
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_152263.4",
         "exonStart": 6,
-        "exonStartOffset": 5,
+        "exonStartOffset": 72,
         "exonEnd": 6,
-        "exonEndOffset": -71,
+        "exonEndOffset": -5,
         "gene": tpm3_gene,
         "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",

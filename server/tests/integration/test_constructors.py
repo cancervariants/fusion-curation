@@ -146,7 +146,7 @@ async def test_build_tx_segment_ect(
     # test handle invalid transcript
     await check_response(
         "/api/construct/structural_element/tx_segment_ect?transcript=NM_0012529.3&exon_start=3",
-        {"warnings": ["Unable to get exons for NM_0012529.3"]},
+        {"warnings": ["No exons found given NM_0012529.3"]},
         check_tx_element_response,
     )
 
@@ -213,7 +213,7 @@ async def test_build_templated_sequence(
         "element": {
             "type": "TemplatedSequenceElement",
             "region": {
-                "id": "ga4gh:SL.thjDCmA1u2mB0vLGjgQbCOEg81eP5hdO",
+                "id": "ga4gh:SL._4tPimZ9AFATsAr2TKp-6VDZMNcQnIf8",
                 "type": "SequenceLocation",
                 "sequenceReference": {
                     "id": "refseq:NC_000001.11",

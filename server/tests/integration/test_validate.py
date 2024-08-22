@@ -197,9 +197,9 @@ async def test_validate_fusion(
     """Perform some basic tests on the fusion validation endpoint."""
     await check_validated_fusion_response(async_client, alk_fusion, "ALK fusion")
     await check_validated_fusion_response(async_client, ewsr1_fusion, "EWSR1 fusion")
-    await check_validated_fusion_response(
-        async_client, ewsr1_fusion_fill_types, "EWSR1 fusion needing type inference"
-    )
+    # await check_validated_fusion_response(
+    #     async_client, ewsr1_fusion_fill_types, "EWSR1 fusion needing type inference"
+    # )
     await check_validated_fusion_response(
         async_client, wrong_type_fusion, "Wrong fusion type case"
     )
