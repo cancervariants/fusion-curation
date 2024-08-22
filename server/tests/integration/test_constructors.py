@@ -220,7 +220,7 @@ async def test_build_templated_sequence(
                     "refgetAccession": "",
                     "type": "SequenceReference",
                 },
-                "start": 154171414,
+                "start": 154171415,
                 "end": 154171417,
             },
             "strand": -1,

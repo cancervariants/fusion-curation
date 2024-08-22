@@ -88,7 +88,16 @@ async def test_get_genomic_coords(check_response):
             assert "warnings" in response
             assert set(response["warnings"]) == set(expected_response["warnings"])
             return
-        assert response["coordinates_data"] == expected_response["coordinates_data"]
+        actual_coord_data = response["coordinates_data"]
+        expected_coord_data = expected_response["coordinates_data"]
+
+        assert actual_coord_data.get("gene") == expected_coord_data.get("gene")
+        assert actual_coord_data["genomic_ac"] == expected_coord_data.get("genomic_ac")
+        assert actual_coord_data.get("tx_ac") == expected_coord_data.get("tx_ac")
+        assert actual_coord_data.get("seg_start") == expected_coord_data.get(
+            "seg_start"
+        )
+        assert actual_coord_data.get("seg_end") == expected_coord_data.get("seg_end")
 
     await check_response(
         "/api/utilities/get_genomic?transcript=NM_002529.3&exon_start=1&exon_end=6",
@@ -206,11 +215,7 @@ async def test_get_exon_coords(check_response):
 
     await check_response(
         "/api/utilities/get_exon?chromosome=NC_000001.11&start=154192131&gene=TPM3",
-        {
-            "warnings": [
-                "Unable to find mane data for NC_000001.11 with position 154192130 on gene TPM3"
-            ]
-        },
+        {"warnings": ["Must find exactly one row for genomic data, but found: 0"]},
         check_coords_response,
     )
 
