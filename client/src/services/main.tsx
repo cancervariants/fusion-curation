@@ -49,6 +49,13 @@ export enum ElementType {
   regulatoryElement = "RegulatoryElement",
 }
 
+export enum TxElementInputType {
+  default = "default",
+  gcg = "genomic_coords_gene",
+  gct = "genomic_coords_tx",
+  ect = "exon_coords_tx",
+}
+
 export type ClientElementUnion =
   | ClientMultiplePossibleGenesElement
   | ClientRegulatoryElement

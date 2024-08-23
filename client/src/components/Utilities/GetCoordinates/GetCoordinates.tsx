@@ -10,9 +10,13 @@ import {
   Box,
   Link,
 } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
-import { getGenomicCoords, getExonCoords } from "../../../services/main";
+import {
+  getGenomicCoords,
+  getExonCoords,
+  TxElementInputType,
+} from "../../../services/main";
 import {
   CoordsUtilsResponse,
   GenomicData,
@@ -68,7 +72,9 @@ const GetCoordinates: React.FC = () => {
     },
   }));
   const classes = useStyles();
-  const [inputType, setInputType] = useState<string>("default");
+  const [inputType, setInputType] = useState<TxElementInputType>(
+    TxElementInputType.default
+  );
 
   const [txAc, setTxAc] = useState<string>("");
   const [txAcText, setTxAcText] = useState("");
@@ -260,10 +266,19 @@ const GetCoordinates: React.FC = () => {
     }
   };
 
+  const handleChromosomeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setChromosome(e.target.value);
+  };
+
   const genomicCoordinateInfo = (
     <>
       <Box display="flex" justifyContent="space-between" width="100%">
-        <ChromosomeField fieldValue={chromosome} errorText={chromosomeText} />
+        <ChromosomeField
+          fieldValue={chromosome}
+          errorText={chromosomeText}
+          onChange={handleChromosomeChange}
+          editable={inputType == "genomic_coords_tx"}
+        />
         <Box mt="18px">
           <Box className={classes.strand} width="125px">
             <StrandSwitch

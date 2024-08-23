@@ -6,12 +6,16 @@ interface Props {
   fieldValue: string;
   errorText: string;
   width?: number | undefined;
+  editable?: boolean;
+  onChange?: (event: any) => void;
 }
 
 const ChromosomeField: React.FC<Props> = ({
   fieldValue,
   errorText,
   width,
+  editable,
+  onChange,
 }) => {
   const useStyles = makeStyles(() => ({
     textField: {
@@ -41,7 +45,8 @@ const ChromosomeField: React.FC<Props> = ({
         error={errorText != ""}
         label="Chromosome"
         helperText={errorText != "" ? errorText : null}
-        contentEditable={false}
+        contentEditable={editable}
+        onChange={onChange}
         className={classes.textField}
       />
     </HelpTooltip>
