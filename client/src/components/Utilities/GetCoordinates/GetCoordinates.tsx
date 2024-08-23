@@ -19,7 +19,7 @@ import {
 } from "../../../services/main";
 import {
   CoordsUtilsResponse,
-  GenomicData,
+  GenomicTxSegService,
 } from "../../../services/ResponseModels";
 import StrandSwitch from "../../main/shared/StrandSwitch/StrandSwitch";
 import TabHeader from "../../main/shared/TabHeader/TabHeader";
@@ -99,7 +99,7 @@ const GetCoordinates: React.FC = () => {
   const [exonStartOffset, setExonStartOffset] = useState<string>("");
   const [exonEndOffset, setExonEndOffset] = useState<string>("");
 
-  const [results, setResults] = useState<GenomicData | null>(null);
+  const [results, setResults] = useState<GenomicTxSegService | null>(null);
   const [error, setError] = useState<string>("");
 
   // programming horror
@@ -184,7 +184,7 @@ const GetCoordinates: React.FC = () => {
       });
     } else {
       clearWarnings();
-      setResults(coordsResponse.coordinates_data as GenomicData);
+      setResults(coordsResponse.coordinates_data as GenomicTxSegService);
     }
   };
 
@@ -277,7 +277,6 @@ const GetCoordinates: React.FC = () => {
           fieldValue={chromosome}
           errorText={chromosomeText}
           onChange={handleChromosomeChange}
-          editable={inputType == "genomic_coords_tx"}
         />
         <Box mt="18px">
           <Box className={classes.strand} width="125px">
@@ -416,16 +415,16 @@ const GetCoordinates: React.FC = () => {
             value={inputType}
             onChange={(event) => setInputType(event.target.value as string)}
           >
-            <MenuItem value="default" disabled>
+            <MenuItem value={TxElementInputType.default} disabled>
               Select input data
             </MenuItem>
-            <MenuItem value="genomic_coords_gene">
+            <MenuItem value={TxElementInputType.gcg}>
               Genomic coordinates, gene
             </MenuItem>
-            <MenuItem value="genomic_coords_tx">
+            <MenuItem value={TxElementInputType.gct}>
               Genomic coordinates, transcript
             </MenuItem>
-            <MenuItem value="exon_coords_tx">
+            <MenuItem value={TxElementInputType.ect}>
               Exon coordinates, transcript
             </MenuItem>
           </Select>

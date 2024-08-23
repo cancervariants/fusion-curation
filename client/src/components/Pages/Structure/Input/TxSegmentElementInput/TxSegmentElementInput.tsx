@@ -445,7 +445,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
         <ChromosomeField
           fieldValue={txChrom}
           errorText={txChromText}
-          editable={txInputType === TxElementInputType.gct}
           onChange={handleChromosomeChange}
         />
         <Box mt="18px" width="125px">
