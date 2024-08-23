@@ -89,18 +89,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
 
   const [pendingResponse, setPendingResponse] = useState(false);
 
-  /*
-  Depending on this element's location in the structure array, the user
-  needs to provide some kind of coordinate input for either one or both ends
-  of the element. This can change as the user drags the element around the structure
-  array, or adds other elements to the array.
-  */
   const hasRequiredEnds =
-    index !== 0 && index < fusion.length
-      ? (txStartingGenomic && txEndingGenomic) || (startingExon && endingExon)
-      : index === 0
-      ? txEndingGenomic || endingExon
-      : txStartingGenomic || startingExon;
+    txEndingGenomic || endingExon || txStartingGenomic || startingExon;
 
   // programming horror
   const inputComplete =
