@@ -438,7 +438,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           onChange={handleChromosomeChange}
         />
         <Box mt="18px" width="125px">
-          <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
+          <StrandSwitch selectedStrand={txStrand} />
         </Box>
       </Box>
       <Box className="bottom-inputs">{renderTxGenomicCoords()}</Box>

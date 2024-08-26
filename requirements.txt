@@ -20,7 +20,7 @@ cool_seq_tool==0.7.0
 decorator==5.1.1
 executing==2.0.1
 fastapi==0.112.1
-fusor==0.4.1
+fusor==0.4.2
 ga4gh.vrs==2.0.0a10
 gene-normalizer==0.4.0
 h11==0.14.0
