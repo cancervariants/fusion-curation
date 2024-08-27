@@ -21,7 +21,6 @@ import {
   CoordsUtilsResponse,
   GenomicTxSegService,
 } from "../../../services/ResponseModels";
-import StrandSwitch from "../../main/shared/StrandSwitch/StrandSwitch";
 import TabHeader from "../../main/shared/TabHeader/TabHeader";
 import TabPaper from "../../main/shared/TabPaper/TabPaper";
 import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
@@ -63,9 +62,6 @@ const GetCoordinates: React.FC = () => {
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
-    },
-    strandSwitchLabel: {
-      marginLeft: "0 !important",
     },
     coordsCard: {
       margin: "10px",
@@ -278,17 +274,6 @@ const GetCoordinates: React.FC = () => {
           errorText={chromosomeText}
           onChange={handleChromosomeChange}
         />
-        <Box mt="18px">
-          <Box className={classes.strand} width="125px">
-            <StrandSwitch
-              setStrand={setStrand}
-              selectedStrand={strand}
-              switchClasses={{
-                labelPlacementStart: classes.strandSwitchLabel,
-              }}
-            />
-          </Box>
-        </Box>
       </Box>
     </>
   );

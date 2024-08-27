@@ -28,7 +28,6 @@ import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneA
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
 import { FusionContext } from "../../../../../global/contexts/FusionContext";
-import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
 import ChromosomeField from "../../../../main/shared/ChromosomeField/ChromosomeField";
 import TranscriptField from "../../../../main/shared/TranscriptField/TranscriptField";
@@ -437,9 +436,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           errorText={txChromText}
           onChange={handleChromosomeChange}
         />
-        <Box mt="18px" width="125px">
-          <StrandSwitch selectedStrand={txStrand} />
-        </Box>
       </Box>
       <Box className="bottom-inputs">{renderTxGenomicCoords()}</Box>
     </>
