@@ -23,12 +23,16 @@ export default function StrandSwitch(
   props: StrandSwitchProps
 ): React.ReactElement {
   const classes = useStyles();
-  const { selectedStrand, switchClasses } = props;
+  const { setStrand, selectedStrand, switchClasses } = props;
+  const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStrand(e.target.checked ? "-" : "+");
+  };
 
   return (
     <FormControlLabel
       control={
         <Switch
+          onChange={handleSwitchChange}
           classes={{ track: classes.track }}
           checked={selectedStrand === "-"}
           icon={<AddCircleIcon color="primary" />}
