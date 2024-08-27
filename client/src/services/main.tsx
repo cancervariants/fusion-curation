@@ -49,6 +49,13 @@ export enum ElementType {
   regulatoryElement = "RegulatoryElement",
 }
 
+export enum TxElementInputType {
+  default = "default",
+  gcg = "genomic_coords_gene",
+  gct = "genomic_coords_tx",
+  ect = "exon_coords_tx",
+}
+
 export type ClientElementUnion =
   | ClientMultiplePossibleGenesElement
   | ClientRegulatoryElement
@@ -163,13 +170,11 @@ export const getTxSegmentElementGCT = async (
   transcript: string,
   chromosome: string,
   start: string,
-  end: string,
-  strand: string
+  end: string
 ): Promise<TxSegmentElementResponse> => {
   const params: Array<string> = [
     `transcript=${transcript}`,
     `chromosome=${chromosome}`,
-    `strand=${strand === "+" ? "%2B" : "-"}`,
   ];
   if (start !== "") params.push(`start=${start}`);
   if (end !== "") params.push(`end=${end}`);
@@ -251,13 +256,11 @@ export const getExonCoords = async (
   chromosome: string,
   start: string,
   end: string,
-  strand: string,
   gene?: string,
   txAc?: string
 ): Promise<CoordsUtilsResponse> => {
   const argsArray = [
     `chromosome=${chromosome}`,
-    `strand=${strand === "+" ? "%2B" : "-"}`,
     gene && gene !== "" ? `gene=${gene}` : "",
     txAc && txAc !== "" ? `transcript=${txAc}` : "",
     start && start !== "" ? `start=${start}` : "",

@@ -10,14 +10,17 @@ import {
   Box,
   Link,
 } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
-import { getGenomicCoords, getExonCoords } from "../../../services/main";
+import {
+  getGenomicCoords,
+  getExonCoords,
+  TxElementInputType,
+} from "../../../services/main";
 import {
   CoordsUtilsResponse,
-  GenomicData,
+  GenomicTxSegService,
 } from "../../../services/ResponseModels";
-import StrandSwitch from "../../main/shared/StrandSwitch/StrandSwitch";
 import TabHeader from "../../main/shared/TabHeader/TabHeader";
 import TabPaper from "../../main/shared/TabPaper/TabPaper";
 import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
@@ -60,15 +63,14 @@ const GetCoordinates: React.FC = () => {
       flexDirection: "row",
       alignItems: "center",
     },
-    strandSwitchLabel: {
-      marginLeft: "0 !important",
-    },
     coordsCard: {
       margin: "10px",
     },
   }));
   const classes = useStyles();
-  const [inputType, setInputType] = useState<string>("default");
+  const [inputType, setInputType] = useState<TxElementInputType>(
+    TxElementInputType.default
+  );
 
   const [txAc, setTxAc] = useState<string>("");
   const [txAcText, setTxAcText] = useState("");
@@ -93,7 +95,7 @@ const GetCoordinates: React.FC = () => {
   const [exonStartOffset, setExonStartOffset] = useState<string>("");
   const [exonEndOffset, setExonEndOffset] = useState<string>("");
 
-  const [results, setResults] = useState<GenomicData | null>(null);
+  const [results, setResults] = useState<GenomicTxSegService | null>(null);
   const [error, setError] = useState<string>("");
 
   // programming horror
@@ -178,7 +180,7 @@ const GetCoordinates: React.FC = () => {
       });
     } else {
       clearWarnings();
-      setResults(coordsResponse.coordinates_data as GenomicData);
+      setResults(coordsResponse.coordinates_data as GenomicTxSegService);
     }
   };
 
@@ -193,12 +195,12 @@ const GetCoordinates: React.FC = () => {
         exonEndOffset
       ).then((coordsResponse) => handleResponse(coordsResponse));
     } else if (inputType == "genomic_coords_gene") {
-      getExonCoords(chromosome, start, end, strand, gene).then(
-        (coordsResponse) => handleResponse(coordsResponse)
+      getExonCoords(chromosome, start, end, gene).then((coordsResponse) =>
+        handleResponse(coordsResponse)
       );
     } else if (inputType == "genomic_coords_tx") {
-      getExonCoords(chromosome, start, end, strand, "", txAc).then(
-        (coordsResponse) => handleResponse(coordsResponse)
+      getExonCoords(chromosome, start, end, "", txAc).then((coordsResponse) =>
+        handleResponse(coordsResponse)
       );
     }
   };
@@ -215,25 +217,38 @@ const GetCoordinates: React.FC = () => {
   const renderResults = (): React.ReactFragment => {
     if (inputValid) {
       if (results) {
+        const txSegStart = results.seg_start;
+        const txSegEnd = results.seg_end;
+
+        const genomicStart =
+          txSegStart?.genomic_location.start ||
+          txSegStart?.genomic_location.end;
+        const genomicEnd =
+          txSegEnd?.genomic_location.start || txSegEnd?.genomic_location.end;
+
         return (
           <Table>
             {renderRow("Gene", results.gene)}
-            {renderRow("Chromosome", results.chr)}
-            {results.start ? renderRow("Genomic start", results.start) : null}
-            {results.end ? renderRow("Genomic end", results.end) : null}
+            {renderRow("Chromosome", results.genomic_ac)}
+            {genomicStart != null
+              ? renderRow("Genomic start", genomicStart)
+              : null}
+            {genomicEnd != null ? renderRow("Genomic end", genomicEnd) : null}
             {results.strand
               ? renderRow("Strand", results.strand === 1 ? "+" : "-")
               : null}
-            {renderRow("Transcript", results.transcript)}
-            {results.exon_start
-              ? renderRow("Exon start", results.exon_start)
+            {renderRow("Transcript", results.tx_ac)}
+            {txSegStart?.exon_ord != null
+              ? renderRow("Exon start", txSegStart.exon_ord)
               : null}
-            {results.exon_start_offset
-              ? renderRow("Exon start offset", results.exon_start_offset)
+            {txSegStart?.offset != null
+              ? renderRow("Exon start offset", txSegStart.offset)
               : null}
-            {results.exon_end ? renderRow("Exon end", results.exon_end) : null}
-            {results.exon_end_offset
-              ? renderRow("Exon end offset", results.exon_end_offset)
+            {txSegEnd?.exon_ord != null
+              ? renderRow("Exon end", txSegEnd.exon_ord)
+              : null}
+            {txSegEnd?.offset != null
+              ? renderRow("Exon end offset", txSegEnd.offset)
               : null}
           </Table>
         );
@@ -247,24 +262,18 @@ const GetCoordinates: React.FC = () => {
     }
   };
 
+  const handleChromosomeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setChromosome(e.target.value);
+  };
+
   const genomicCoordinateInfo = (
     <>
       <Box display="flex" justifyContent="space-between" width="100%">
         <ChromosomeField
           fieldValue={chromosome}
           errorText={chromosomeText}
+          onChange={handleChromosomeChange}
         />
-        <Box mt="18px">
-          <Box className={classes.strand} width="125px">
-            <StrandSwitch
-              setStrand={setStrand}
-              selectedStrand={strand}
-              switchClasses={{
-                labelPlacementStart: classes.strandSwitchLabel,
-              }}
-            />
-          </Box>
-        </Box>
       </Box>
     </>
   );
@@ -391,16 +400,16 @@ const GetCoordinates: React.FC = () => {
             value={inputType}
             onChange={(event) => setInputType(event.target.value as string)}
           >
-            <MenuItem value="default" disabled>
+            <MenuItem value={TxElementInputType.default} disabled>
               Select input data
             </MenuItem>
-            <MenuItem value="genomic_coords_gene">
+            <MenuItem value={TxElementInputType.gcg}>
               Genomic coordinates, gene
             </MenuItem>
-            <MenuItem value="genomic_coords_tx">
+            <MenuItem value={TxElementInputType.gct}>
               Genomic coordinates, transcript
             </MenuItem>
-            <MenuItem value="exon_coords_tx">
+            <MenuItem value={TxElementInputType.ect}>
               Exon coordinates, transcript
             </MenuItem>
           </Select>
