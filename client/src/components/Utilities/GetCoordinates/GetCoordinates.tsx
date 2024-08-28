@@ -12,14 +12,17 @@ import {
   InputLabel,
   FormControl,
 } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { GeneAutocomplete } from "../../main/shared/GeneAutocomplete/GeneAutocomplete";
-import { getGenomicCoords, getExonCoords } from "../../../services/main";
+import {
+  getGenomicCoords,
+  getExonCoords,
+  TxElementInputType,
+} from "../../../services/main";
 import {
   CoordsUtilsResponse,
   GenomicTxSegService,
 } from "../../../services/ResponseModels";
-import StrandSwitch from "../../main/shared/StrandSwitch/StrandSwitch";
 import TabHeader from "../../main/shared/TabHeader/TabHeader";
 import TabPaper from "../../main/shared/TabPaper/TabPaper";
 import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
@@ -63,15 +66,14 @@ const GetCoordinates: React.FC = () => {
       flexDirection: "row",
       alignItems: "center",
     },
-    strandSwitchLabel: {
-      marginLeft: "0 !important",
-    },
     coordsCard: {
       margin: "10px",
     },
   }));
   const classes = useStyles();
-  const [inputType, setInputType] = useState<string>("default");
+  const [inputType, setInputType] = useState<TxElementInputType>(
+    TxElementInputType.default
+  );
 
   const [txAc, setTxAc] = useState<string>("");
   const [txAcText, setTxAcText] = useState("");
@@ -275,21 +277,17 @@ const GetCoordinates: React.FC = () => {
     }
   };
 
+  const handleChromosomeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setChromosome(e.target.value);
+  };
+
   const genomicCoordinateInfo = (
     <>
       <Box display="flex" justifyContent="space-between" width="100%">
-        <ChromosomeField fieldValue={chromosome} />
-        <Box mt="18px">
-          <Box className={classes.strand}>
-            <StrandSwitch
-              setStrand={setStrand}
-              selectedStrand={strand}
-              switchClasses={{
-                labelPlacementStart: classes.strandSwitchLabel,
-              }}
-            />
-          </Box>
-        </Box>
+        <ChromosomeField
+          fieldValue={chromosome}
+          onChange={handleChromosomeChange}
+        />
       </Box>
     </>
   );
@@ -404,9 +402,11 @@ const GetCoordinates: React.FC = () => {
         <Box>
           <Select
             value={inputType}
-            onChange={(event) => setInputType(event.target.value as string)}
+            onChange={(event) =>
+              setInputType(event.target.value as TxElementInputType)
+            }
           >
-            <MenuItem value="default" disabled>
+            <MenuItem value={TxElementInputType.default} disabled>
               Select input data
             </MenuItem>
             <MenuItem value="genomic_coords">Genomic coordinates</MenuItem>

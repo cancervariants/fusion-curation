@@ -159,8 +159,8 @@ async def get_exon_coords(
 
     response = await request.app.state.fusor.cool_seq_tool.ex_g_coords_mapper.genomic_to_tx_segment(
         genomic_ac=chromosome,
-        genomic_start=start,
-        genomic_end=end,
+        seg_start_genomic=start,
+        seg_end_genomic=end,
         transcript=transcript,
         gene=gene,
     )

@@ -71,7 +71,7 @@ def clientify_structural_element(
         context
     :return: client-ready structural element
     """
-    element_args = element.dict()
+    element_args = element.model_dump()
     element_args["elementId"] = str(uuid4())
 
     if element.type == StructuralElementType.UNKNOWN_GENE_ELEMENT:
@@ -119,7 +119,7 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
     :param fusor_instance: FUSOR object instance provided by FastAPI request context
     :return: completed client-ready fusion
     """
-    fusion_args = fusion.dict()
+    fusion_args = fusion.model_dump()
     client_elements = [
         clientify_structural_element(element, fusor_instance)
         for element in fusion.structure
@@ -145,7 +145,7 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
         if fusion.criticalFunctionalDomains:
             client_domains = []
             for domain in fusion.criticalFunctionalDomains:
-                client_domain = domain.dict()
+                client_domain = domain.model_dump()
                 client_domain["domainId"] = str(uuid4())
                 client_domains.append(client_domain)
             fusion_args["criticalFunctionalDomains"] = client_domains

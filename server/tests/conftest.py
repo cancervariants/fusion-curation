@@ -1,11 +1,20 @@
 """Provide core fixtures for testing Flask functions."""
 
+import asyncio
 from collections.abc import Callable
 
 import pytest
 import pytest_asyncio
 from curfu.main import app, get_domain_services, get_gene_services, start_fusor
 from httpx import ASGITransport, AsyncClient
+
+
+@pytest_asyncio.fixture(scope="session")
+def event_loop():
+    """Create an instance of the event loop with session scope."""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
 
 
 @pytest_asyncio.fixture(scope="session")
@@ -60,13 +69,16 @@ def check_sequence_location():
     :param dict sequence_location: sequence location structure
     """
 
-    def check_sequence_location(sequence_location):
+    def check_sequence_location(sequence_location, expected_sequence_location):
         assert "ga4gh:SL." in sequence_location.get("id")
         assert sequence_location.get("type") == "SequenceLocation"
         sequence_reference = sequence_location.get("sequenceReference", {})
         assert "refseq:" in sequence_reference.get("id")
         assert sequence_reference.get("refgetAccession")
         assert sequence_reference.get("type") == "SequenceReference"
+
+        assert sequence_location.get("start") == expected_sequence_location.get("start")
+        assert sequence_location.get("end") == expected_sequence_location.get("end")
 
     return check_sequence_location
 
@@ -121,8 +133,7 @@ def ntrk1_tx_element_start(ntrk1_gene):
         "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",
             "type": "SequenceLocation",
-            "start": 156864429,
-            "end": 156864430,
+            "start": 156864354,
         },
     }
 
@@ -136,21 +147,19 @@ def tpm3_tx_t_element(tpm3_gene):
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_152263.4",
         "exonStart": 6,
-        "exonStartOffset": 71,
+        "exonStartOffset": 72,
         "exonEnd": 6,
-        "exonEndOffset": -4,
+        "exonEndOffset": -5,
         "gene": tpm3_gene,
         "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",
             "type": "SequenceLocation",
-            "start": 154171416,
-            "end": 154171417,
+            "end": 154171416,
         },
         "elementGenomicEnd": {
             "id": "fusor.location_descriptor:NC_000001.11",
             "type": "SequenceLocation",
             "start": 154171417,
-            "end": 154171418,
         },
     }
 
@@ -164,20 +173,18 @@ def tpm3_tx_g_element(tpm3_gene):
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_152263.4",
         "exonStart": 6,
-        "exonStartOffset": 5,
+        "exonStartOffset": 72,
         "exonEnd": 6,
-        "exonEndOffset": -71,
+        "exonEndOffset": -5,
         "gene": tpm3_gene,
         "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000001.11",
             "type": "SequenceLocation",
-            "start": 154171483,
-            "end": 154171484,
+            "end": 154171416,
         },
         "elementGenomicEnd": {
             "id": "fusor.location_descriptor:NC_000001.11",
             "type": "SequenceLocation",
-            "start": 154171482,
-            "end": 154171483,
+            "start": 154171417,
         },
     }

@@ -4,17 +4,23 @@ import {
   TranscriptSegmentElement,
   TxSegmentElementResponse,
 } from "../../../../../services/ResponseModels";
-import React, { useEffect, useState, KeyboardEvent, useContext } from "react";
+import React, {
+  useEffect,
+  useState,
+  KeyboardEvent,
+  useContext,
+  ChangeEvent,
+} from "react";
 import {
   getTxSegmentElementEC,
   getTxSegmentElementGC,
   getTxSegmentNomenclature,
+  TxElementInputType,
 } from "../../../../../services/main";
 import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
 import { FusionContext } from "../../../../../global/contexts/FusionContext";
-import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
 import ChromosomeField from "../../../../main/shared/ChromosomeField/ChromosomeField";
 import TranscriptField from "../../../../main/shared/TranscriptField/TranscriptField";
@@ -22,12 +28,6 @@ import { Box, FormControl, InputLabel, Select } from "@mui/material";
 
 interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
-}
-
-export enum InputType {
-  default = "default",
-  gc = "genomic_coords",
-  ec = "exon_coords",
 }
 
 const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
@@ -39,8 +39,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
 }) => {
   const { fusion } = useContext(FusionContext);
 
-  const [txInputType, setTxInputType] = useState<InputType>(
-    (element.inputType as InputType) || InputType.default
+  const [txInputType, setTxInputType] = useState<TxElementInputType>(
+    (element.inputType as TxElementInputType) || TxElementInputType.default
   );
 
   // "Text" variables refer to helper or warning text to set under input fields
@@ -84,27 +84,17 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
 
   const [pendingResponse, setPendingResponse] = useState(false);
 
-  /*
-  Depending on this element's location in the structure array, the user
-  needs to provide some kind of coordinate input for either one or both ends
-  of the element. This can change as the user drags the element around the structure
-  array, or adds other elements to the array.
-  */
   const hasRequiredEnds =
-    index !== 0 && index < fusion.length
-      ? (txStartingGenomic && txEndingGenomic) || (startingExon && endingExon)
-      : index === 0
-      ? txEndingGenomic || endingExon
-      : txStartingGenomic || startingExon;
+    txEndingGenomic || endingExon || txStartingGenomic || startingExon;
 
   // programming horror
   const inputComplete =
-    (txInputType === InputType.gc &&
+    (txInputType === TxElementInputType.gc &&
       txGene !== "" &&
       txChrom !== "" &&
       selectedTranscript !== "" &&
       (txStartingGenomic !== "" || txEndingGenomic !== "")) ||
-    (txInputType === InputType.ec &&
+    (txInputType === TxElementInputType.ec &&
       txAc !== "" &&
       (startingExon !== "" || endingExon !== ""));
 
@@ -220,15 +210,14 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     setPendingResponse(true);
     // fire constructor request
     switch (txInputType) {
-      case InputType.gc:
+      case TxElementInputType.gc:
         clearGenomicCoordWarnings();
         getTxSegmentElementGC(
           txGene,
           txChrom,
           selectedTranscript,
           txStartingGenomic,
-          txEndingGenomic,
-          txStrand
+          txEndingGenomic
         ).then((txSegmentResponse) => {
           if (
             txSegmentResponse.warnings &&
@@ -248,7 +237,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           }
         });
         break;
-      case InputType.ec:
+      case TxElementInputType.ec:
         getTxSegmentElementEC(
           txAc,
           startingExon as string,
@@ -394,13 +383,17 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     </Box>
   );
 
+  const handleChromosomeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setTxChrom(e.target.value);
+  };
+
   const genomicCoordinateInfo = (
     <>
       <Box className="mid-inputs">
-        <ChromosomeField fieldValue={txChrom} />
-        <Box mt="18px" width="125px">
-          <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
-        </Box>
+        <ChromosomeField
+          fieldValue={txChrom}
+          onChange={handleChromosomeChange}
+        />
       </Box>
       <Box className="bottom-inputs">{renderTxGenomicCoords()}</Box>
     </>
@@ -408,7 +401,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
 
   const renderTxOptions = () => {
     switch (txInputType) {
-      case InputType.gc:
+      case TxElementInputType.gc:
         return (
           <Box>
             <Box className="mid-inputs" minWidth="325px">
@@ -445,7 +438,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             {genomicCoordinateInfo}
           </Box>
         );
-      case InputType.ec:
+      case TxElementInputType.ec:
         return (
           <Box>
             {txInputField}
@@ -582,7 +575,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
    * Wrapper around input type selection to ensure unused inputs/warnings get cleared
    * @param selection selection from input type dropdown menu
    */
-  const selectInputType = (selection: InputType) => {
+  const selectInputType = (selection: TxElementInputType) => {
     if (txInputType !== "default") {
       if (selection === "exon_coords") {
         clearGenomicCoordWarnings();
@@ -618,7 +611,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
               labelId="select-input-data"
               value={txInputType}
               onChange={(event) =>
-                selectInputType(event.target.value as InputType)
+                selectInputType(event.target.value as TxElementInputType)
               }
             >
               <MenuItem value="default" disabled>

@@ -111,10 +111,10 @@ async def build_tx_segment_gc(
     tx_segment, warnings = await request.app.state.fusor.transcript_segment_element(
         tx_to_genomic_coords=False,
         gene=gene,
-        transcript=parse_identifier(transcript),
-        chromosome=parse_identifier(chromosome),
-        genomic_start=start,
-        genomic_end=end,
+        genomic_ac=parse_identifier(chromosome),
+        seg_start_genomic=start,
+        seg_end_genomic=end,
+        transcript=transcript,
     )
     return TxSegmentElementResponse(element=tx_segment, warnings=warnings)
 

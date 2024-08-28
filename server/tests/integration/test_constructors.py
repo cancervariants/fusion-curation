@@ -66,10 +66,12 @@ def check_tx_element_response(check_sequence_location):
         )
         genomic_start = response_element.get("elementGenomicStart", {})
         genomic_end = response_element.get("elementGenomicEnd", {})
+        expected_genomic_start = expected_element.get("elementGenomicStart", {})
+        expected_genomic_end = expected_element.get("elementGenomicEnd", {})
         if genomic_start:
-            check_sequence_location(genomic_start)
+            check_sequence_location(genomic_start, expected_genomic_start)
         if genomic_end:
-            check_sequence_location(genomic_end)
+            check_sequence_location(genomic_end, expected_genomic_end)
 
     return check_tx_element_response
 
@@ -95,8 +97,9 @@ def check_reg_element_response(check_sequence_location):
         assert response_re.get("featureId") == expected_re.get("featureId")
         assert response_re.get("associatedGene") == expected_re.get("associatedGene")
         sequence_location = response_re.get("sequenceLocation")
+        expected_sequence_location = expected_re.get("sequenceLocation")
         if sequence_location:
-            check_sequence_location(sequence_location)
+            check_sequence_location(sequence_location, expected_sequence_location)
 
     return check_re_response
 
@@ -116,7 +119,7 @@ def check_templated_sequence_response(check_sequence_location):
         assert response_elem["type"] == expected_elem["type"]
         assert response_elem["strand"] == expected_elem["strand"]
         assert response_elem["region"]["id"] == expected_elem["region"]["id"]
-        check_sequence_location(response_elem["region"] or {})
+        check_sequence_location(response_elem["region"] or {}, expected_elem["region"])
         assert response_elem["region"]["start"] == expected_elem["region"]["start"]
         assert response_elem["region"]["end"] == expected_elem["region"]["end"]
 
@@ -145,8 +148,8 @@ async def test_build_tx_segment_ec(
 
     # test handle invalid transcript
     await check_response(
-        "/api/construct/structural_element/tx_segment_ec?transcript=NM_0012529.3&exon_start=3",
-        {"warnings": ["Unable to get exons for NM_0012529.3"]},
+        "/api/construct/structural_element/tx_segment_ect?transcript=NM_0012529.3&exon_start=3",
+        {"warnings": ["No exons found given NM_0012529.3"]},
         check_tx_element_response,
     )
 
@@ -213,14 +216,14 @@ async def test_build_templated_sequence(
         "element": {
             "type": "TemplatedSequenceElement",
             "region": {
-                "id": "ga4gh:SL.thjDCmA1u2mB0vLGjgQbCOEg81eP5hdO",
+                "id": "ga4gh:SL._4tPimZ9AFATsAr2TKp-6VDZMNcQnIf8",
                 "type": "SequenceLocation",
                 "sequenceReference": {
                     "id": "refseq:NC_000001.11",
                     "refgetAccession": "",
                     "type": "SequenceReference",
                 },
-                "start": 154171414,
+                "start": 154171415,
                 "end": 154171417,
             },
             "strand": -1,

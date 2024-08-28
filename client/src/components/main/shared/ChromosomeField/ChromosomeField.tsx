@@ -1,16 +1,15 @@
 import { makeStyles, TextField, Typography } from "@material-ui/core";
-import React from "react";
+import React, { ChangeEvent } from "react";
 import HelpTooltip from "../HelpTooltip/HelpTooltip";
 
 interface Props {
   fieldValue: string;
   width?: number | undefined;
+  editable?: boolean;
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const ChromosomeField: React.FC<Props> = ({
-  fieldValue,
-  width,
-}) => {
+const ChromosomeField: React.FC<Props> = ({ fieldValue, width, onChange }) => {
   const useStyles = makeStyles(() => ({
     textField: {
       height: 38,
@@ -37,7 +36,7 @@ const ChromosomeField: React.FC<Props> = ({
         margin="dense"
         value={fieldValue}
         label="Chromosome"
-        contentEditable={false}
+        onChange={onChange}
         className={classes.textField}
       />
     </HelpTooltip>

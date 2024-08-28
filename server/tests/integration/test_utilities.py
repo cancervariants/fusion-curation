@@ -88,22 +88,55 @@ async def test_get_genomic_coords(check_response):
             assert "warnings" in response
             assert set(response["warnings"]) == set(expected_response["warnings"])
             return
-        assert response["coordinates_data"] == expected_response["coordinates_data"]
+        actual_coord_data = response["coordinates_data"]
+        expected_coord_data = expected_response["coordinates_data"]
+
+        assert actual_coord_data.get("gene") == expected_coord_data.get("gene")
+        assert actual_coord_data["genomic_ac"] == expected_coord_data.get("genomic_ac")
+        assert actual_coord_data.get("tx_ac") == expected_coord_data.get("tx_ac")
+        assert actual_coord_data.get("seg_start") == expected_coord_data.get(
+            "seg_start"
+        )
+        assert actual_coord_data.get("seg_end") == expected_coord_data.get("seg_end")
 
     await check_response(
         "/api/utilities/get_genomic?transcript=NM_002529.3&exon_start=1&exon_end=6",
         {
             "coordinates_data": {
                 "gene": "NTRK1",
-                "chr": "NC_000001.11",
-                "start": 156861146,
-                "end": 156868504,
-                "exon_start": 1,
-                "exon_start_offset": 0,
-                "exon_end": 6,
-                "exon_end_offset": 0,
-                "transcript": "NM_002529.3",
-                "strand": 1,
+                "genomic_ac": "NC_000001.11",
+                "tx_ac": "NM_002529.3",
+                "seg_start": {
+                    "exon_ord": 0,
+                    "offset": 0,
+                    "genomic_location": {
+                        "type": "SequenceLocation",
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+                        },
+                        "start": 156860878,
+                    },
+                },
+                "seg_end": {
+                    "exon_ord": 5,
+                    "offset": 0,
+                    "genomic_location": {
+                        "type": "SequenceLocation",
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+                        },
+                        "end": 156868647,
+                    },
+                },
+                "errors": [],
+                "service_meta": {
+                    "name": "cool_seq_tool",
+                    "version": "0.6.1.dev37+g1f798ae",
+                    "response_datetime": "2024-08-22T17:42:06.009588Z",
+                    "url": "https://github.com/GenomicMedLab/cool-seq-tool",
+                },
             }
         },
         check_genomic_coords_response,
@@ -133,25 +166,44 @@ async def test_get_exon_coords(check_response):
             "coordinates_data" not in expected_response
         ):
             return
-        assert response["coordinates_data"] == expected_response["coordinates_data"]
+        actual_coord_data = response["coordinates_data"]
+        expected_coord_data = expected_response["coordinates_data"]
+
+        assert actual_coord_data.get("gene") == expected_coord_data.get("gene")
+        assert actual_coord_data["genomic_ac"] == expected_coord_data.get("genomic_ac")
+        assert actual_coord_data.get("tx_ac") == expected_coord_data.get("tx_ac")
+        assert actual_coord_data.get("seg_start") == expected_coord_data.get(
+            "seg_start"
+        )
+        assert actual_coord_data.get("seg_end") == expected_coord_data.get("seg_end")
 
     await check_response(
-        "/api/utilities/get_exon?chromosome=1&transcript=NM_152263.3&start=154192135",
+        "/api/utilities/get_exon?chromosome=NC_000001.11&transcript=NM_152263.3&start=154192135",
         {
             "coordinates_data": {
                 "gene": "TPM3",
-                "chr": "NC_000001.11",
-                "start": 154192134,
-                "exon_start": 1,
-                "exon_start_offset": 1,
-                "transcript": "NM_152263.3",
+                "genomic_ac": "NC_000001.11",
+                "tx_ac": "NM_152263.3",
+                "seg_start": {
+                    "exon_ord": 0,
+                    "offset": 0,
+                    "genomic_location": {
+                        "type": "SequenceLocation",
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+                        },
+                        "end": 154192135,
+                    },
+                },
+                "errors": [],
             }
         },
         check_coords_response,
     )
 
     await check_response(
-        "/api/utilities/get_exon?chromosome=1",
+        "/api/utilities/get_exon?chromosome=NC_000001.11",
         {
             "warnings": [
                 "Must provide start and/or end coordinates",
@@ -163,11 +215,7 @@ async def test_get_exon_coords(check_response):
 
     await check_response(
         "/api/utilities/get_exon?chromosome=NC_000001.11&start=154192131&gene=TPM3",
-        {
-            "warnings": [
-                "Unable to find mane data for NC_000001.11 with position 154192130 on gene TPM3"
-            ]
-        },
+        {"warnings": ["Must find exactly one row for genomic data, but found: 0"]},
         check_coords_response,
     )
 
