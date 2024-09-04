@@ -123,7 +123,7 @@ export const GetTranscripts: React.FC = () => {
 
   const renderTranscripts = () => {
     if (isLoading) {
-      return (<LoadingMessage message="Fetching transcripts..."/>)
+      return <LoadingMessage message="Fetching transcripts..." />;
     }
     if (transcriptWarnings.length > 0) {
       // TODO more error handling here

@@ -189,7 +189,9 @@ const GetSequenceIds: React.FC = () => {
     </Box>
   );
 
-  const renderedIdInfo = isLoading ? (<LoadingMessage />) : (
+  const renderedIdInfo = isLoading ? (
+    <LoadingMessage />
+  ) : (
     <Box className={classes.sequenceIdResult}>
       <Box className={classes.idsContainer}>
         <Box>

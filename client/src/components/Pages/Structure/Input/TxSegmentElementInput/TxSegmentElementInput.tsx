@@ -1,16 +1,18 @@
-import { TextField, MenuItem, Typography } from "@material-ui/core";
+import {
+  TextField,
+  MenuItem,
+  Typography,
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+} from "@material-ui/core";
 import {
   ClientTranscriptSegmentElement,
   TranscriptSegmentElement,
   TxSegmentElementResponse,
 } from "../../../../../services/ResponseModels";
-import React, {
-  useEffect,
-  useState,
-  KeyboardEvent,
-  useContext,
-  ChangeEvent,
-} from "react";
+import React, { useEffect, useState, KeyboardEvent, ChangeEvent } from "react";
 import {
   getTxSegmentElementEC,
   getTxSegmentElementGC,
@@ -20,14 +22,17 @@ import {
 import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
-import { FusionContext } from "../../../../../global/contexts/FusionContext";
 import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
 import ChromosomeField from "../../../../main/shared/ChromosomeField/ChromosomeField";
 import TranscriptField from "../../../../main/shared/TranscriptField/TranscriptField";
-import { Box, FormControl, InputLabel, Select } from "@mui/material";
 
 interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
+}
+
+enum GenomicInputType {
+  GENE = "gene",
+  TRANSCRIPT = "transcript",
 }
 
 const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
@@ -37,11 +42,18 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   handleDelete,
   icon,
 }) => {
-  const { fusion } = useContext(FusionContext);
-
   const [txInputType, setTxInputType] = useState<TxElementInputType>(
     (element.inputType as TxElementInputType) || TxElementInputType.default
   );
+
+  const [genomicInputType, setGenomicInputType] =
+    useState<GenomicInputType | null>(
+      element.inputGene
+        ? GenomicInputType.GENE
+        : element.inputTx
+        ? GenomicInputType.TRANSCRIPT
+        : null
+    );
 
   // "Text" variables refer to helper or warning text to set under input fields
   // TODO: this needs refactored so badly
@@ -80,19 +92,25 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   const [endingExonOffsetText, setEndingExonOffsetText] = useState("");
 
   const [geneTranscripts, setGeneTranscripts] = useState([]);
-  const [selectedTranscript, setSelectedTranscript] = useState("");
+  const [selectedTranscript, setSelectedTranscript] = useState(
+    element.inputTx || ""
+  );
 
   const [pendingResponse, setPendingResponse] = useState(false);
 
   const hasRequiredEnds =
     txEndingGenomic || endingExon || txStartingGenomic || startingExon;
 
+  const genomicInputComplete =
+    genomicInputType === GenomicInputType.GENE
+      ? txGene !== "" && selectedTranscript !== ""
+      : txAc !== "";
+
   // programming horror
   const inputComplete =
     (txInputType === TxElementInputType.gc &&
-      txGene !== "" &&
+      genomicInputComplete &&
       txChrom !== "" &&
-      selectedTranscript !== "" &&
       (txStartingGenomic !== "" || txEndingGenomic !== "")) ||
     (txInputType === TxElementInputType.ec &&
       txAc !== "" &&
@@ -200,8 +218,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     setEndingExonText("");
     setEndingExonOffsetText("");
   };
-
-  console.log(pendingResponse);
 
   /**
    * Request construction of tx segment element from server and handle response
@@ -400,40 +416,53 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   );
 
   const renderTxOptions = () => {
+    if (!genomicInputType) {
+      return <></>;
+    }
     switch (txInputType) {
       case TxElementInputType.gc:
         return (
           <Box>
             <Box className="mid-inputs" minWidth="325px">
-              <GeneAutocomplete
-                gene={txGene}
-                setGene={setTxGene}
-                tooltipDirection="bottom"
-                geneText={txGeneText}
-                setGeneText={setTxGeneText}
-                setChromosome={setTxChrom}
-                setStrand={setTxStrand}
-                setTranscripts={setGeneTranscripts}
-                setDefaultTranscript={setSelectedTranscript}
-              />
-              <FormControl variant="standard">
-                <InputLabel id="transcript-select-label">Transcript</InputLabel>
-                <Select
-                  labelId="transcript-select-label"
-                  id="transcript-select"
-                  value={selectedTranscript}
-                  label="Transcript"
-                  onChange={handleTranscriptSelect}
-                  placeholder="Transcript"
-                  style={{ minWidth: "150px" }}
-                >
-                  {geneTranscripts.map((tx, index) => (
-                    <MenuItem key={index} value={tx}>
-                      {tx}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              {genomicInputType === GenomicInputType.GENE ? (
+                <>
+                  <GeneAutocomplete
+                    gene={txGene}
+                    setGene={setTxGene}
+                    tooltipDirection="bottom"
+                    geneText={txGeneText}
+                    setGeneText={setTxGeneText}
+                    setChromosome={setTxChrom}
+                    setStrand={setTxStrand}
+                    setTranscripts={setGeneTranscripts}
+                    setDefaultTranscript={setSelectedTranscript}
+                  />
+                  <FormControl variant="standard">
+                    <InputLabel id="transcript-select-label">
+                      Transcript
+                    </InputLabel>
+                    <Select
+                      labelId="transcript-select-label"
+                      id="transcript-select"
+                      value={selectedTranscript}
+                      label="Transcript"
+                      onChange={handleTranscriptSelect}
+                      placeholder="Transcript"
+                      style={{ minWidth: "150px" }}
+                    >
+                      {geneTranscripts.map((tx, index) => (
+                        <MenuItem key={index} value={tx}>
+                          {tx}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </>
+              ) : (
+                <>
+                  <Box>{txInputField}</Box>
+                </>
+              )}
             </Box>
             {genomicCoordinateInfo}
           </Box>
@@ -606,9 +635,10 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           }
         >
           <FormControl variant="standard">
-            <InputLabel id="select-input-data"></InputLabel>
+            <InputLabel id="select-input-data">Select input data</InputLabel>
             <Select
               labelId="select-input-data"
+              label="Select input data"
               value={txInputType}
               onChange={(event) =>
                 selectInputType(event.target.value as TxElementInputType)
@@ -618,10 +648,27 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 Select input data
               </MenuItem>
               <MenuItem value="genomic_coords">Genomic coordinates</MenuItem>
-              <MenuItem value="exon_coords">
-                Exon coordinates, transcript
-              </MenuItem>
+              <MenuItem value="exon_coords">Exon coordinates</MenuItem>
             </Select>
+            {txInputType === TxElementInputType.gc ? (
+              <FormControl fullWidth style={{ marginTop: "10px" }}>
+                <InputLabel id="genomic-input-type">
+                  Gene or Transcript?
+                </InputLabel>
+                <Select
+                  labelId="genomic-input-type"
+                  value={genomicInputType}
+                  onChange={(event) =>
+                    setGenomicInputType(event.target.value as GenomicInputType)
+                  }
+                >
+                  <MenuItem value="gene">Gene</MenuItem>
+                  <MenuItem value="transcript">Transcript</MenuItem>
+                </Select>
+              </FormControl>
+            ) : (
+              <></>
+            )}
           </FormControl>
         </HelpTooltip>
       </Box>

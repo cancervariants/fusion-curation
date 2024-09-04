@@ -51,11 +51,7 @@ class ClientStructuralElement(BaseModel):
 class ClientTranscriptSegmentElement(TranscriptSegmentElement, ClientStructuralElement):
     """TranscriptSegment element class used client-side."""
 
-    inputType: (
-        Literal["genomic_coords_gene"]
-        | Literal["genomic_coords_tx"]
-        | Literal["exon_coords"]
-    )
+    inputType: Literal["genomic_coords"] | Literal["exon_coords"]
     inputTx: str | None = None
     inputStrand: Strand | None = None
     inputGene: str | None = None

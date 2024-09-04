@@ -538,7 +538,7 @@ export interface ClientTranscriptSegmentElement {
   gene: Gene;
   elementGenomicStart?: SequenceLocation | null;
   elementGenomicEnd?: SequenceLocation | null;
-  inputType: "genomic_coords_gene" | "genomic_coords_tx" | "exon_coords";
+  inputType: "genomic_coords" | "exon_coords";
   inputTx?: string | null;
   inputStrand?: Strand | null;
   inputGene?: string | null;
@@ -769,7 +769,7 @@ export interface GetDomainResponse {
   domain: FunctionalDomain | null;
 }
 /**
- * Response model for MANE transcript retrieval endpoint.
+ * Response model for retrieving list of transcripts for a given gene
  */
 export interface GetGeneTranscriptsResponse {
   warnings?: string[] | null;
