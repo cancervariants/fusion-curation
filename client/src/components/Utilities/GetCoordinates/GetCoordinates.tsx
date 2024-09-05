@@ -168,7 +168,7 @@ const GetCoordinates: React.FC = () => {
           warning == "Must find exactly one row for genomic data, but found: 0"
         ) {
           setResponseWarnings([
-            "Unable to resolve coordinates lookup given provided parameters. Double check that the coordinates entered are valid for the selected Transcript.",
+            "Unable to resolve coordinates lookup given provided parameters. Double check that the coordinates entered are valid for the selected transcript.",
           ]);
         } else if (warning.startsWith("Exon ")) {
           const exonPattern = /Exon (\d*) does not exist on (.*)/;
