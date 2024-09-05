@@ -268,7 +268,7 @@ const GetCoordinates: React.FC = () => {
         return (
           <Typography>
             An unknown error has occurred. Please{" "}
-            <Link href="https://github.com/cancervariants/fusion-curation/issues">
+            <Link href="https://github.com/cancervariants/fusion-curation/issues/new?assignees=&labels=bug&projects=&template=bug-report.yaml">
               submit an issue on our GitHub
             </Link>{" "}
             and include replication steps, along with the values entered.
