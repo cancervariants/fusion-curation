@@ -14,6 +14,7 @@ import {
 } from "../../../../../services/ResponseModels";
 import React, { useEffect, useState, KeyboardEvent, ChangeEvent } from "react";
 import {
+  GenomicInputType,
   getTxSegmentElementEC,
   getTxSegmentElementGC,
   getTxSegmentNomenclature,
@@ -28,11 +29,6 @@ import TranscriptField from "../../../../main/shared/TranscriptField/TranscriptF
 
 interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
-}
-
-enum GenomicInputType {
-  GENE = "gene",
-  TRANSCRIPT = "transcript",
 }
 
 const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
@@ -416,11 +412,11 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   );
 
   const renderTxOptions = () => {
-    if (!genomicInputType) {
-      return <></>;
-    }
     switch (txInputType) {
       case TxElementInputType.gc:
+        if (!genomicInputType) {
+          return <></>;
+        }
         return (
           <Box>
             <Box className="mid-inputs" minWidth="325px">

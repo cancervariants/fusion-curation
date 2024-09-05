@@ -55,6 +55,11 @@ export enum TxElementInputType {
   ec = "exon_coords",
 }
 
+export enum GenomicInputType {
+  GENE = "gene",
+  TRANSCRIPT = "transcript",
+}
+
 export type ClientElementUnion =
   | ClientMultiplePossibleGenesElement
   | ClientRegulatoryElement

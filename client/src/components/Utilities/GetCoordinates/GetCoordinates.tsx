@@ -18,6 +18,7 @@ import {
   getGenomicCoords,
   getExonCoords,
   TxElementInputType,
+  GenomicInputType,
 } from "../../../services/main";
 import {
   CoordsUtilsResponse,
@@ -74,6 +75,8 @@ const GetCoordinates: React.FC = () => {
   const [inputType, setInputType] = useState<TxElementInputType>(
     TxElementInputType.default
   );
+  const [genomicInputType, setGenomicInputType] =
+    useState<GenomicInputType | null>(null);
 
   const [txAc, setTxAc] = useState<string>("");
   const [txAcText, setTxAcText] = useState("");
@@ -277,6 +280,14 @@ const GetCoordinates: React.FC = () => {
     }
   };
 
+  const txInputField = (
+    <TranscriptField
+      fieldValue={txAc}
+      valueSetter={setTxAc}
+      errorText={txAcText}
+    />
+  );
+
   const handleChromosomeChange = (e: ChangeEvent<HTMLInputElement>) => {
     setChromosome(e.target.value);
   };
@@ -294,38 +305,49 @@ const GetCoordinates: React.FC = () => {
 
   const renderInputOptions = () => {
     switch (inputType) {
-      case "genomic_coords":
+      case TxElementInputType.gc:
+        if (!genomicInputType) {
+          return <></>;
+        }
         return (
           <>
             <Box className={classes.fieldsPair}>
-              <GeneAutocomplete
-                gene={gene}
-                setGene={setGene}
-                geneText={geneText}
-                setGeneText={setGeneText}
-                setChromosome={setChromosome}
-                setStrand={setStrand}
-                setTranscripts={setGeneTranscripts}
-                setDefaultTranscript={setSelectedTranscript}
-              />
-              <FormControl>
-                <InputLabel>Transcript</InputLabel>
-                <Select
-                  labelId="transcript-select-label"
-                  id="transcript-select"
-                  value={selectedTranscript}
-                  label="Transcript"
-                  onChange={handleTranscriptSelect}
-                  placeholder="Transcript"
-                  style={{ minWidth: "150px" }}
-                >
-                  {geneTranscripts.map((tx, index) => (
-                    <MenuItem key={index} value={tx}>
-                      {tx}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              {genomicInputType === GenomicInputType.GENE ? (
+                <>
+                  <GeneAutocomplete
+                    gene={gene}
+                    setGene={setGene}
+                    geneText={geneText}
+                    setGeneText={setGeneText}
+                    setChromosome={setChromosome}
+                    setStrand={setStrand}
+                    setTranscripts={setGeneTranscripts}
+                    setDefaultTranscript={setSelectedTranscript}
+                  />
+                  <FormControl>
+                    <InputLabel>Transcript</InputLabel>
+                    <Select
+                      labelId="transcript-select-label"
+                      id="transcript-select"
+                      value={selectedTranscript}
+                      label="Transcript"
+                      onChange={handleTranscriptSelect}
+                      placeholder="Transcript"
+                      style={{ minWidth: "150px" }}
+                    >
+                      {geneTranscripts.map((tx, index) => (
+                        <MenuItem key={index} value={tx}>
+                          {tx}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </>
+              ) : (
+                <>
+                  <Box>{txInputField}</Box>
+                </>
+              )}
             </Box>
             {genomicCoordinateInfo}
             <Box className={classes.fieldsPair}>
@@ -345,16 +367,10 @@ const GetCoordinates: React.FC = () => {
             </Box>
           </>
         );
-      case "exon_coords":
+      case TxElementInputType.ec:
         return (
           <>
-            <Box>
-              <TranscriptField
-                fieldValue={txAc}
-                valueSetter={setTxAc}
-                errorText={txAcText}
-              />
-            </Box>
+            <Box>{txInputField}</Box>
             <Box className={classes.fieldsPair}>
               <TextField
                 margin="dense"
@@ -412,6 +428,25 @@ const GetCoordinates: React.FC = () => {
             <MenuItem value="genomic_coords">Genomic coordinates</MenuItem>
             <MenuItem value="exon_coords">Exon coordinates</MenuItem>
           </Select>
+          {inputType === TxElementInputType.gc ? (
+            <FormControl fullWidth style={{ marginTop: "10px" }}>
+              <InputLabel id="genomic-input-type">
+                Gene or Transcript?
+              </InputLabel>
+              <Select
+                labelId="genomic-input-type"
+                value={genomicInputType}
+                onChange={(event) =>
+                  setGenomicInputType(event.target.value as GenomicInputType)
+                }
+              >
+                <MenuItem value="gene">Gene</MenuItem>
+                <MenuItem value="transcript">Transcript</MenuItem>
+              </Select>
+            </FormControl>
+          ) : (
+            <></>
+          )}
         </Box>
       </Box>
       <Box className={classes.inputParams}>{renderInputOptions()}</Box>
