@@ -51,9 +51,13 @@ export enum ElementType {
 
 export enum TxElementInputType {
   default = "default",
-  gcg = "genomic_coords_gene",
-  gct = "genomic_coords_tx",
-  ect = "exon_coords_tx",
+  gc = "genomic_coords",
+  ec = "exon_coords",
+}
+
+export enum GenomicInputType {
+  GENE = "gene",
+  TRANSCRIPT = "transcript",
 }
 
 export type ClientElementUnion =
@@ -137,7 +141,7 @@ export const getTemplatedSequenceElement = async (
   return responseJson;
 };
 
-export const getTxSegmentElementECT = async (
+export const getTxSegmentElementEC = async (
   transcript: string,
   exonStart: string,
   exonEnd: string,
@@ -160,47 +164,28 @@ export const getTxSegmentElementECT = async (
     params.push(`exon_end_offset=${exonEndOffset}`);
   }
   const url =
-    "api/construct/structural_element/tx_segment_ect?" + params.join("&");
+    "api/construct/structural_element/tx_segment_ec?" + params.join("&");
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
 };
 
-export const getTxSegmentElementGCT = async (
-  transcript: string,
+export const getTxSegmentElementGC = async (
+  gene: string,
   chromosome: string,
+  transcript: string,
   start: string,
   end: string
 ): Promise<TxSegmentElementResponse> => {
   const params: Array<string> = [
+    `gene=${gene}`,
     `transcript=${transcript}`,
     `chromosome=${chromosome}`,
   ];
   if (start !== "") params.push(`start=${start}`);
   if (end !== "") params.push(`end=${end}`);
   const url =
-    "api/construct/structural_element/tx_segment_gct?" + params.join("&");
-  const response = await fetch(url);
-  const responseJson = await response.json();
-  return responseJson;
-};
-
-export const getTxSegmentElementGCG = async (
-  gene: string,
-  chromosome: string,
-  start: string,
-  end: string,
-  strand: string
-): Promise<TxSegmentElementResponse> => {
-  const params: Array<string> = [
-    `gene=${gene}`,
-    `chromosome=${chromosome}`,
-    `strand=${strand === "+" ? "%2B" : "-"}`,
-  ];
-  if (start !== "") params.push(`start=${start}`);
-  if (end !== "") params.push(`end=${end}`);
-  const url =
-    "api/construct/structural_element/tx_segment_gcg?" + params.join("&");
+    "api/construct/structural_element/tx_segment_gc?" + params.join("&");
   const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
@@ -248,6 +233,16 @@ export const getTranscripts = async (
   term: string
 ): Promise<GetTranscriptsResponse> => {
   const response = await fetch(`/api/utilities/get_transcripts?term=${term}`);
+  const transcriptResponse = await response.json();
+  return transcriptResponse;
+};
+
+export const getTranscriptsForGene = async (
+  gene: string
+): Promise<GetTranscriptsResponse> => {
+  const response = await fetch(
+    `/api/utilities/get_transcripts_for_gene?gene=${gene}`
+  );
   const transcriptResponse = await response.json();
   return transcriptResponse;
 };

@@ -127,21 +127,21 @@ def check_templated_sequence_response(check_sequence_location):
 
 
 @pytest.mark.asyncio()
-async def test_build_tx_segment_ect(
+async def test_build_tx_segment_ec(
     check_response, check_tx_element_response, ntrk1_tx_element_start
 ):
     """Test correct functioning of transcript segment element construction using exon
     coordinates and transcript.
     """
     await check_response(
-        "/api/construct/structural_element/tx_segment_ect?transcript=NM_002529.3&exon_start=2&exon_start_offset=1",
+        "/api/construct/structural_element/tx_segment_ec?transcript=NM_002529.3&exon_start=2&exon_start_offset=1",
         {"element": ntrk1_tx_element_start},
         check_tx_element_response,
     )
 
     # test require exonStart or exonEnd
     await check_response(
-        "/api/construct/structural_element/tx_segment_ect?transcript=NM_002529.3",
+        "/api/construct/structural_element/tx_segment_ec?transcript=NM_002529.3",
         {"warnings": ["Must provide either `exon_start` or `exon_end`"]},
         check_tx_element_response,
     )
@@ -174,14 +174,14 @@ async def test_build_segment_gct(
 
 
 @pytest.mark.asyncio()
-async def test_build_segment_gcg(
+async def test_build_segment_gc(
     check_response, check_tx_element_response, tpm3_tx_g_element
 ):
     """Test correct functioning of transcript segment element construction using
     genomic coordinates and gene name.
     """
     await check_response(
-        "/api/construct/structural_element/tx_segment_gcg?gene=TPM3&chromosome=NC_000001.11&start=154171416&end=154171417",
+        "/api/construct/structural_element/tx_segment_gc?gene=TPM3&chromosome=NC_000001.11&start=154171416&end=154171417",
         {"element": tpm3_tx_g_element},
         check_tx_element_response,
     )

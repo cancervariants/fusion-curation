@@ -43,13 +43,13 @@ def build_gene_element(request: Request, term: str = Query("")) -> GeneElementRe
 
 
 @router.get(
-    "/api/construct/structural_element/tx_segment_ect",
+    "/api/construct/structural_element/tx_segment_ec",
     operation_id="buildTranscriptSegmentElementECT",
     response_model=TxSegmentElementResponse,
     response_model_exclude_none=True,
     tags=[RouteTag.CONSTRUCTORS],
 )
-async def build_tx_segment_ect(
+async def build_tx_segment_ec(
     request: Request,
     transcript: str,
     exon_start: int | None = Query(None),
@@ -81,62 +81,28 @@ async def build_tx_segment_ect(
 
 
 @router.get(
-    "/api/construct/structural_element/tx_segment_gct",
-    operation_id="buildTranscriptSegmentElementGCT",
+    "/api/construct/structural_element/tx_segment_gc",
+    operation_id="buildTranscriptSegmentElementGC",
     response_model=TxSegmentElementResponse,
     response_model_exclude_none=True,
     tags=[RouteTag.CONSTRUCTORS],
 )
-async def build_tx_segment_gct(
-    request: Request,
-    transcript: str,
-    chromosome: str,
-    start: int | None = Query(None),
-    end: int | None = Query(None),
-) -> TxSegmentElementResponse:
-    """Construct Transcript Segment element by providing transcript and genomic
-    coordinates (chromosome, start, end positions).
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param transcript: transcript accession identifier
-    :param chromosome: chromosome (TODO how to identify?)
-    :param start: starting position (TODO assume residue-based?)
-    :param end: ending position
-    :return: Pydantic class with TranscriptSegment element if successful, and
-        warnings otherwise.
-    """
-    tx_segment, warnings = await request.app.state.fusor.transcript_segment_element(
-        tx_to_genomic_coords=False,
-        transcript=parse_identifier(transcript),
-        genomic_ac=parse_identifier(chromosome),
-        seg_start_genomic=start,
-        seg_end_genomic=end,
-    )
-    return TxSegmentElementResponse(element=tx_segment, warnings=warnings)
-
-
-@router.get(
-    "/api/construct/structural_element/tx_segment_gcg",
-    operation_id="buildTranscriptSegmentElementGCG",
-    response_model=TxSegmentElementResponse,
-    response_model_exclude_none=True,
-    tags=[RouteTag.CONSTRUCTORS],
-)
-async def build_tx_segment_gcg(
+async def build_tx_segment_gc(
     request: Request,
     gene: str,
     chromosome: str,
+    transcript: str,
     start: int | None = Query(None),
     end: int | None = Query(None),
 ) -> TxSegmentElementResponse:
-    """Construct Transcript Segment element by providing gene and genomic
+    """Construct Transcript Segment element by providing gene and/or transcript and genomic
     coordinates (chromosome, start, end positions).
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
     :param gene: gene (TODO how to identify?)
     :param chromosome: chromosome (TODO how to identify?)
+    :param transcript: transcript accession identifier
     :param start: starting position (TODO assume residue-based?)
     :param end: ending position
     :return: Pydantic class with TranscriptSegment element if successful, and
@@ -148,6 +114,7 @@ async def build_tx_segment_gcg(
         genomic_ac=parse_identifier(chromosome),
         seg_start_genomic=start,
         seg_end_genomic=end,
+        transcript=transcript,
     )
     return TxSegmentElementResponse(element=tx_segment, warnings=warnings)
 

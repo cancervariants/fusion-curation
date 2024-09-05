@@ -46,6 +46,8 @@ async def test_normalize_gene(async_client: AsyncClient):
     response = await async_client.get("/api/lookup/gene?term=sdfliuwer")
     assert response.status_code == 200
     assert response.json() == {
+        "cased": "",
+        "symbol": "",
         "term": "sdfliuwer",
         "warnings": ["Lookup of gene term sdfliuwer failed."],
     }, "Failed lookup should still respond successfully"

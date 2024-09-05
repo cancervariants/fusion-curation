@@ -35,7 +35,7 @@ const TabPaper: React.FC<Props> = ({
     rightColumn: {
       width: leftColumnWidth ? `${100 - leftColumnWidth}%` : "50%",
     },
-    rightPadder: { padding: "25px" },
+    rightPadder: { padding: "25px", height: "100%" },
   }));
   const classes = useStyles();
   return (

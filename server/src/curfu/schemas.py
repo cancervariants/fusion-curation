@@ -51,11 +51,7 @@ class ClientStructuralElement(BaseModel):
 class ClientTranscriptSegmentElement(TranscriptSegmentElement, ClientStructuralElement):
     """TranscriptSegment element class used client-side."""
 
-    inputType: (
-        Literal["genomic_coords_gene"]
-        | Literal["genomic_coords_tx"]
-        | Literal["exon_coords_tx"]
-    )
+    inputType: Literal["genomic_coords"] | Literal["exon_coords"]
     inputTx: str | None = None
     inputStrand: Strand | None = None
     inputGene: str | None = None
@@ -248,6 +244,12 @@ class GetTranscriptsResponse(Response):
     """Response model for MANE transcript retrieval endpoint."""
 
     transcripts: list[ManeGeneTranscript] | None
+
+
+class GetGeneTranscriptsResponse(Response):
+    """Response model for retrieving list of transcripts for a given gene"""
+
+    transcripts: list[str] = None
 
 
 class ServiceInfoResponse(Response):

@@ -12,7 +12,7 @@ const StaticElement: React.FC<BaseStructuralElementProps> = ({
     handleDelete,
     validated: true,
     icon,
-    pendingResponse: false
+    pendingResponse: false,
   });
 
 export default StaticElement;
