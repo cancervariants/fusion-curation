@@ -1,6 +1,7 @@
 /**
  * API request methods for interacting with server.
  */
+import { apiService } from "./apiService";
 import {
   NormalizeGeneResponse,
   AssociatedDomainResponse,
@@ -105,7 +106,7 @@ export type ClientFusion = ClientCategoricalFusion | ClientAssayedFusion;
 export const validateFusion = async (
   fusion: FormattedAssayedFusion | FormattedCategoricalFusion
 ): Promise<ValidateFusionResponse> => {
-  const response = await fetch("/api/validate", {
+  return apiService.makeRequest("validateFusion", "/api/validate", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -113,18 +114,15 @@ export const validateFusion = async (
     },
     body: JSON.stringify(fusion),
   });
-  const fusionResponse = await response.json();
-  return fusionResponse;
 };
 
 export const getGeneElement = async (
   term: string
 ): Promise<GeneElementResponse> => {
-  const response = await fetch(
+  return apiService.makeRequest(
+    `geneElement-${term}`,
     `/api/construct/structural_element/gene?term=${term}`
   );
-  const responseJson = await response.json();
-  return responseJson;
 };
 
 export const getTemplatedSequenceElement = async (
@@ -133,12 +131,11 @@ export const getTemplatedSequenceElement = async (
   start: string,
   end: string
 ): Promise<TemplatedSequenceElementResponse> => {
-  const response = await fetch(
+  return apiService.makeRequest(
+    `templatedSequenceElement-${chr}-${start}-${end}`,
     `api/construct/structural_element/templated_sequence?sequence_id=${chr}&start=${start}&end=${end}` +
       `&strand=${strand === "+" ? "%2B" : "-"}`
   );
-  const responseJson = await response.json();
-  return responseJson;
 };
 
 export const getTxSegmentElementEC = async (
@@ -165,9 +162,10 @@ export const getTxSegmentElementEC = async (
   }
   const url =
     "api/construct/structural_element/tx_segment_ec?" + params.join("&");
-  const response = await fetch(url);
-  const responseJson = await response.json();
-  return responseJson;
+  return apiService.makeRequest(
+    `txSegmentElementEC-${transcript}-${exonStart}-${exonEnd}`,
+    url
+  );
 };
 
 export const getTxSegmentElementGC = async (
@@ -186,33 +184,37 @@ export const getTxSegmentElementGC = async (
   if (end !== "") params.push(`end=${end}`);
   const url =
     "api/construct/structural_element/tx_segment_gc?" + params.join("&");
-  const response = await fetch(url);
-  const responseJson = await response.json();
-  return responseJson;
+  return apiService.makeRequest(
+    `txSegmentElementGC-${transcript}-${gene}-${chromosome}`,
+    url
+  );
 };
 
 export const getGeneId = async (
   symbol: string
 ): Promise<NormalizeGeneResponse> => {
-  const response = await fetch(`api/lookup/gene?term=${symbol}`);
-  const geneResponse = await response.json();
-  return geneResponse;
+  return apiService.makeRequest(
+    `getGeneId-${symbol}`,
+    `api/lookup/gene?term=${symbol}`
+  );
 };
 
 export const getGeneSuggestions = async (
   term: string
 ): Promise<SuggestGeneResponse> => {
-  const response = await fetch(`api/complete/gene?term=${term}`);
-  const responseJson = await response.json();
-  return responseJson;
+  return apiService.makeRequest(
+    `getGeneSuggestions-${term}`,
+    `api/complete/gene?term=${term}`
+  );
 };
 
 export const getAssociatedDomains = async (
   gene_id: string
 ): Promise<AssociatedDomainResponse> => {
-  const response = await fetch(`/api/complete/domain?gene_id=${gene_id}`);
-  const responseJson = await response.json();
-  return responseJson;
+  return apiService.makeRequest(
+    `getDomains-${gene_id}`,
+    `/api/complete/domain?gene_id=${gene_id}`
+  );
 };
 
 export const getFunctionalDomain = async (
@@ -224,27 +226,25 @@ export const getFunctionalDomain = async (
     `/api/construct/domain?status=${domainStatus}&name=${domain.domainName}` +
     `&domain_id=${domain.interproId}&gene_id=${geneId}` +
     `&sequence_id=${domain.refseqAc}&start=${domain.start}&end=${domain.end}`;
-  const response = await fetch(url);
-  const responseJson = await response.json();
-  return responseJson;
+  return apiService.makeRequest(`getFunctionalDomain-${geneId}`, url);
 };
 
 export const getTranscripts = async (
   term: string
 ): Promise<GetTranscriptsResponse> => {
-  const response = await fetch(`/api/utilities/get_transcripts?term=${term}`);
-  const transcriptResponse = await response.json();
-  return transcriptResponse;
+  return apiService.makeRequest(
+    `getTranscripts-${term}`,
+    `/api/utilities/get_transcripts?term=${term}`
+  );
 };
 
 export const getTranscriptsForGene = async (
   gene: string
 ): Promise<GetTranscriptsResponse> => {
-  const response = await fetch(
+  return apiService.makeRequest<GetTranscriptsResponse>(
+    `getTranscriptsForGene-${gene}`,
     `/api/utilities/get_transcripts_for_gene?gene=${gene}`
   );
-  const transcriptResponse = await response.json();
-  return transcriptResponse;
 };
 
 export const getExonCoords = async (
@@ -262,9 +262,10 @@ export const getExonCoords = async (
     end && end !== "" ? `end=${end}` : "",
   ];
   const args = argsArray.filter((a) => a !== "").join("&");
-  const response = await fetch(`/api/utilities/get_exon?${args}`);
-  const responseJson = await response.json();
-  return responseJson;
+  return apiService.makeRequest(
+    `getExonCoords-${args}`,
+    `/api/utilities/get_exon?${args}`
+  );
 };
 
 export const getGenomicCoords = async (
@@ -284,19 +285,19 @@ export const getGenomicCoords = async (
     exonEndOffset !== "" ? `exon_end_offset=${exonEndOffset}` : "",
   ];
   const args = argsArray.filter((a) => a !== "").join("&");
-  const response = await fetch(`/api/utilities/get_genomic?${args}`);
-  const responseJson = await response.json();
-  return responseJson;
+  return apiService.makeRequest(
+    `getGenomicCoords-${gene}-${txAc}`,
+    `/api/utilities/get_genomic?${args}`
+  );
 };
 
 export const getSequenceIds = async (
   sequence: string
 ): Promise<SequenceIDResponse> => {
-  const response = await fetch(
+  return apiService.makeRequest(
+    `getSequenceIds-${sequence}`,
     `/api/utilities/get_sequence_id?sequence=${sequence}`
   );
-  const responseJson = await response.json();
-  return responseJson;
 };
 
 /**
@@ -307,9 +308,7 @@ export const getSequenceIds = async (
  * the server itself.
  */
 export const getInfo = async (): Promise<ServiceInfoResponse> => {
-  const response = await fetch("/api/service_info");
-  const responseJson = await response.json();
-  return responseJson;
+  return apiService.makeRequest("getServiceInfo", "/api/service_info");
 };
 
 /**
@@ -320,16 +319,18 @@ export const getInfo = async (): Promise<ServiceInfoResponse> => {
 export const getRegElementNomenclature = async (
   regulatoryElement: RegulatoryElement
 ): Promise<NomenclatureResponse> => {
-  const response = await fetch("/api/nomenclature/regulatory_element", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(regulatoryElement),
-  });
-  const responseJson = await response.json();
-  return responseJson;
+  return apiService.makeRequest(
+    "getRegElement",
+    "/api/nomenclature/regulatory_element",
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(regulatoryElement),
+    }
+  );
 };
 
 /**
@@ -340,16 +341,18 @@ export const getRegElementNomenclature = async (
 export const getTxSegmentNomenclature = async (
   txSegment: TranscriptSegmentElement
 ): Promise<NomenclatureResponse> => {
-  const response = await fetch(`/api/nomenclature/transcript_segment`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(txSegment),
-  });
-  const responseJson = await response.json();
-  return responseJson;
+  return apiService.makeRequest(
+    `getTxNomenclature-${txSegment.transcript}-${txSegment.gene}`,
+    `/api/nomenclature/transcript_segment`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(txSegment),
+    }
+  );
 };
 
 /**
@@ -360,16 +363,18 @@ export const getTxSegmentNomenclature = async (
 export const getTemplatedSequenceNomenclature = async (
   templatedSequenceElement: TemplatedSequenceElement
 ): Promise<NomenclatureResponse> => {
-  const response = await fetch("/api/nomenclature/templated_sequence", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(templatedSequenceElement),
-  });
-  const responseJson = await response.json();
-  return responseJson;
+  return apiService.makeRequest(
+    `getTemplatedSeqNomenclature-${templatedSequenceElement.region.id}`,
+    "/api/nomenclature/templated_sequence",
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(templatedSequenceElement),
+    }
+  );
 };
 
 /**
@@ -380,16 +385,18 @@ export const getTemplatedSequenceNomenclature = async (
 export const getGeneNomenclature = async (
   gene: GeneElement
 ): Promise<NomenclatureResponse> => {
-  const response = await fetch("/api/nomenclature/gene", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(gene),
-  });
-  const responseJson = await response.json();
-  return responseJson;
+  return apiService.makeRequest(
+    `getGeneNomenclature-${gene.gene}`,
+    "/api/nomenclature/gene",
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(gene),
+    }
+  );
 };
 
 /**
@@ -400,16 +407,18 @@ export const getGeneNomenclature = async (
 export const getFusionNomenclature = async (
   fusion: FormattedAssayedFusion | FormattedCategoricalFusion
 ): Promise<NomenclatureResponse> => {
-  const response = await fetch("/api/nomenclature/fusion", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(fusion),
-  });
-  const nomenclatureResponse = await response.json();
-  return nomenclatureResponse;
+  return apiService.makeRequest(
+    "getFusionNomenclature",
+    "/api/nomenclature/fusion",
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(fusion),
+    }
+  );
 };
 
 /**
@@ -422,11 +431,10 @@ export const getRegulatoryElement = async (
   regulatoryClass: RegulatoryClass,
   geneName: string
 ): Promise<RegulatoryElementResponse> => {
-  const response = await fetch(
+  return apiService.makeRequest(
+    `getRegulatoryElement-${geneName}`,
     `/api/construct/regulatory_element?element_class=${regulatoryClass}&gene_name=${geneName}`
   );
-  const responseJson = await response.json();
-  return responseJson;
 };
 
 type DemoFusionName =
@@ -456,9 +464,10 @@ export const categoricalDemoList = [
 export const getDemoObject = async (
   fusionName: DemoFusionName
 ): Promise<ClientFusion> => {
-  const response = await fetch(`/api/demo/${fusionName}`);
-  const responseJson = await response.json();
-  return responseJson.fusion;
+  return apiService.makeRequest(
+    `getDemo-${fusionName}`,
+    `/api/demo/${fusionName}`
+  );
 };
 
 type DemoData = {
