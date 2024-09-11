@@ -141,7 +141,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     endingExon,
     startingExonOffset,
     endingExonOffset,
-    index,
   ]);
 
   const handleTxElementResponse = (
