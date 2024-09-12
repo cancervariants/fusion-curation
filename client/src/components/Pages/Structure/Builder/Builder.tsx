@@ -171,15 +171,10 @@ const Builder: React.FC = () => {
     const { source, destination } = result;
 
     setFusion((prevFusion) => {
-      const sourceClone = Array.from(prevFusion.structure); // Use the latest state
-
-      // Remove the element from the source index and store it
+      const sourceClone = Array.from(prevFusion.structure);
       const [movedElement] = sourceClone.splice(source.index, 1);
-
-      // Insert the moved element at the destination index
       sourceClone.splice(destination.index, 0, movedElement);
 
-      // Return the updated fusion structure
       return { ...prevFusion, structure: sourceClone };
     });
   };
