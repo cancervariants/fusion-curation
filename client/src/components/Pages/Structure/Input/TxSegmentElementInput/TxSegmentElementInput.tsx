@@ -163,7 +163,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           nomenclatureResponse.nomenclature
         ) {
           finishedElement.nomenclature = nomenclatureResponse.nomenclature;
-          handleSave(index, finishedElement);
+          handleSave(finishedElement);
         }
       });
     }

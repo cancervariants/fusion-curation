@@ -10,6 +10,6 @@ export interface BaseStructuralElementProps {
 export interface StructuralElementInputProps
   extends BaseStructuralElementProps {
   index: number;
-  handleSave: (index: number, element: ClientElementUnion) => void;
+  handleSave: (element: ClientElementUnion) => void;
   icon: JSX.Element;
 }
