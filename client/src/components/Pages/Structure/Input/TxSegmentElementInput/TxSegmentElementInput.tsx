@@ -331,7 +331,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
         placement="bottom"
         title={
           <Typography>
-            The starting genomic position of the segment. 1-indexed.
+            The starting genomic position of the segment. Inter-residue.
           </Typography>
         }
       >
@@ -359,7 +359,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
         placement="bottom"
         title={
           <Typography>
-            The ending genomic position of the segment. 1-indexed.
+            The ending genomic position of the segment. Inter-residue.
           </Typography>
         }
       >
