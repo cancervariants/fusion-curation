@@ -18,7 +18,6 @@ interface GeneElementInputProps extends StructuralElementInputProps {
 
 const GeneElementInput: React.FC<GeneElementInputProps> = ({
   element,
-  index,
   handleSave,
   handleDelete,
   icon,
@@ -56,7 +55,7 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
                 elementId: element.elementId,
                 nomenclature: nomenclatureResponse.nomenclature,
               };
-              handleSave(index, clientGeneElement);
+              handleSave(clientGeneElement);
               setPendingResponse(false);
             }
           }

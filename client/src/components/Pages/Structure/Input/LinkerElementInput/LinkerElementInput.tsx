@@ -39,7 +39,7 @@ const LinkerElementInput: React.FC<LinkerElementInputProps> = ({
       },
       nomenclature: sequence,
     };
-    handleSave(index, linkerElement);
+    handleSave(linkerElement);
   };
 
   const inputElements = (
