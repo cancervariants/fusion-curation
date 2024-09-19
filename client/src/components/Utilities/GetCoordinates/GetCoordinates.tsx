@@ -108,13 +108,18 @@ const GetCoordinates: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [responseWarnings, setResponseWarnings] = useState<string[]>([]);
 
+  const genomicInputComplete =
+    genomicInputType === GenomicInputType.GENE
+      ? gene !== "" && selectedTranscript !== ""
+      : txAc !== "";
+
   // programming horror
   const inputComplete =
-    (inputType === "genomic_coords" &&
-      gene !== "" &&
+    (inputType === TxElementInputType.gc &&
+      genomicInputComplete &&
       chromosome !== "" &&
       (start !== "" || end !== "")) ||
-    (inputType === "exon_coords" &&
+    (inputType === TxElementInputType.ec &&
       txAc !== "" &&
       (exonStart !== "" || exonEnd !== ""));
 
