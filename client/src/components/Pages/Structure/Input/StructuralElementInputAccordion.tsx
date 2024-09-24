@@ -7,19 +7,12 @@ import CardActions from "@mui/material/CardActions";
 import Collapse from "@mui/material/Collapse";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ErrorIcon from "@mui/icons-material/Error";
 import EditIcon from "@material-ui/icons/Edit";
 import { red, green } from "@material-ui/core/colors";
 import "./StructuralElementInputAccordion.scss";
 import { BaseStructuralElementProps } from "./StructuralElementInputProps";
 import React from "react";
-import {
-  Alert,
-  CircularProgress,
-  List,
-  ListItem,
-  Tooltip,
-} from "@mui/material";
+import { Alert, CircularProgress, Tooltip } from "@mui/material";
 import { makeStyles, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
@@ -85,8 +78,6 @@ const StructuralElementInputAccordion: React.FC<
   pendingResponse,
 }) => {
   const classes = useStyles();
-  console.log(errors);
-  console.log(validated);
 
   return (
     <Card>

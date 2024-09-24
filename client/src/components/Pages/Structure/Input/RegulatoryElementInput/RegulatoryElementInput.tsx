@@ -65,6 +65,8 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
   const validated = gene !== "" && geneText == "" && elementClass !== "default";
   const [expanded, setExpanded] = useState<boolean>(!validated);
 
+  const [errors, setErrors] = useState<string[]>([]);
+
   useEffect(() => {
     if (validated) handleAdd();
   }, [gene, geneText, elementClass]);
@@ -73,7 +75,8 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
     if (elementClass === "default") return;
     getRegulatoryElement(elementClass, gene).then((reResponse) => {
       if (reResponse.warnings && reResponse.warnings.length > 0) {
-        throw new Error(reResponse.warnings[0]);
+        setErrors(reResponse.warnings);
+        return;
       }
       getRegElementNomenclature(reResponse.regulatoryElement).then(
         (nomenclatureResponse) => {
@@ -81,8 +84,10 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
             nomenclatureResponse.warnings &&
             nomenclatureResponse.warnings.length > 0
           ) {
-            throw new Error(nomenclatureResponse.warnings[0]);
+            setErrors(nomenclatureResponse.warnings);
+            return;
           }
+          setErrors([]);
           const newRegElement: ClientRegulatoryElement = {
             ...reResponse.regulatoryElement,
             elementId: element.elementId,
@@ -104,6 +109,7 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
     setElementClass("default");
     setGene("");
     setGeneText("");
+    setErrors([]);
   };
 
   const inputElements = (
@@ -127,6 +133,7 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
     handleDelete: handleDeleteElement,
     inputElements,
     validated,
+    errors,
     icon,
   });
 };
