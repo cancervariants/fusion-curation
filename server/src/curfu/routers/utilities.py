@@ -163,6 +163,7 @@ async def get_exon_coords(
         seg_end_genomic=end,
         transcript=transcript,
         gene=gene,
+        get_nearest_transcript_junction=True,
     )
     warnings = response.errors
     if warnings:

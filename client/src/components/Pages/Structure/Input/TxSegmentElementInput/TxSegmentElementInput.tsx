@@ -33,7 +33,6 @@ interface TxSegmentElementInputProps extends StructuralElementInputProps {
 
 const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   element,
-  index,
   handleSave,
   handleDelete,
   icon,
@@ -44,7 +43,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
 
   const [genomicInputType, setGenomicInputType] =
     useState<GenomicInputType | null>(
-      element.inputGene
+      element.inputGene || element.gene
         ? GenomicInputType.GENE
         : element.inputTx
         ? GenomicInputType.TRANSCRIPT
@@ -54,7 +53,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   // "Text" variables refer to helper or warning text to set under input fields
   // TODO: this needs refactored so badly
   const [txAc, setTxAc] = useState(element.inputTx || "");
-  const [txAcText, setTxAcText] = useState("");
+  const [txAcHelperText, setTxAcHelperText] = useState("");
 
   const [txGene, setTxGene] = useState(element.inputGene || "");
   const [txGeneText, setTxGeneText] = useState("");
@@ -88,9 +87,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   const [endingExonOffsetText, setEndingExonOffsetText] = useState("");
 
   const [geneTranscripts, setGeneTranscripts] = useState([]);
-  const [selectedTranscript, setSelectedTranscript] = useState(
-    element.inputTx || ""
-  );
 
   const [pendingResponse, setPendingResponse] = useState(false);
 
@@ -99,7 +95,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
 
   const genomicInputComplete =
     genomicInputType === GenomicInputType.GENE
-      ? txGene !== "" && selectedTranscript !== ""
+      ? txGene !== "" && txAc !== ""
       : txAc !== "";
 
   // programming horror
@@ -116,7 +112,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     inputComplete &&
     hasRequiredEnds &&
     txGeneText === "" &&
-    txAcText === "" &&
+    txAcHelperText === "" &&
     txStartingGenomicText === "" &&
     txEndingGenomicText === "" &&
     startingExonText === "" &&
@@ -171,7 +167,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
   };
 
   const handleTranscriptSelect = (event: any) => {
-    setSelectedTranscript(event.target.value as string);
     setTxAc(event.target.value as string);
   };
 
@@ -226,7 +221,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
         getTxSegmentElementGC(
           txGene,
           txChrom,
-          selectedTranscript,
+          txAc,
           txStartingGenomic,
           txEndingGenomic
         ).then((txSegmentResponse) => {
@@ -240,6 +235,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
               inputType: txInputType,
               inputStrand: txStrand,
               inputGene: txGene,
+              inputTx: txAc,
               inputChr: txChrom,
               inputGenomicStart: txStartingGenomic,
               inputGenomicEnd: txEndingGenomic,
@@ -263,7 +259,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             // transcript invalid
             const txWarning = `Unable to get exons for ${txAc}`;
             if (txSegmentResponse.warnings.includes(txWarning)) {
-              setTxAcText("Unrecognized value");
+              setTxAcHelperText("Unrecognized value");
             }
             // exon(s) invalid
             if (startingExon !== undefined) {
@@ -279,7 +275,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
               }
             }
           } else {
-            setTxAcText("");
+            setTxAcHelperText("");
             setStartingExonText("");
             setEndingExonText("");
             const inputParams = {
@@ -388,7 +384,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       <TranscriptField
         fieldValue={txAc}
         valueSetter={setTxAc}
-        errorText={txAcText}
+        errorText={txAcHelperText}
         keyHandler={handleEnterKey}
       />
     </Box>
@@ -430,7 +426,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                     setChromosome={setTxChrom}
                     setStrand={setTxStrand}
                     setTranscripts={setGeneTranscripts}
-                    setDefaultTranscript={setSelectedTranscript}
+                    setDefaultTranscript={setTxAc}
                   />
                   <FormControl variant="standard">
                     <InputLabel id="transcript-select-label">
@@ -439,7 +435,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                     <Select
                       labelId="transcript-select-label"
                       id="transcript-select"
-                      value={selectedTranscript}
+                      value={txAc}
                       label="Transcript"
                       onChange={handleTranscriptSelect}
                       placeholder="Transcript"
