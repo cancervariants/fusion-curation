@@ -50,6 +50,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
         : null
     );
 
+  const [errors, setErrors] = useState<string[]>([]);
+
   // "Text" variables refer to helper or warning text to set under input fields
   // TODO: this needs refactored so badly
   const [txAc, setTxAc] = useState(element.inputTx || "");
@@ -229,6 +231,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
             txSegmentResponse.warnings &&
             txSegmentResponse.warnings?.length > 0
           ) {
+            setErrors(txSegmentResponse.warnings);
             CheckGenomicCoordWarning(txSegmentResponse.warnings);
           } else {
             const inputParams = {
@@ -240,6 +243,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
               inputGenomicStart: txStartingGenomic,
               inputGenomicEnd: txEndingGenomic,
             };
+            setErrors([]);
             handleTxElementResponse(txSegmentResponse, inputParams);
           }
         });
@@ -274,10 +278,13 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 setEndingExonText("Invalid");
               }
             }
+            setPendingResponse(false);
+            setErrors(txSegmentResponse.warnings);
           } else {
             setTxAcHelperText("");
             setStartingExonText("");
             setEndingExonText("");
+            setErrors([]);
             const inputParams = {
               inputType: txInputType,
               inputTx: txAc,
@@ -674,6 +681,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     handleDelete,
     inputElements,
     validated,
+    errors,
     icon,
     pendingResponse,
   });

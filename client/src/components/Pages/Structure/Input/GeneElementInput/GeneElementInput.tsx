@@ -22,11 +22,13 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
   handleDelete,
   icon,
 }) => {
+  const [errors, setErrors] = useState<string[]>([]);
   const [gene, setGene] = useState<string>(element.gene?.label || "");
   const [geneText, setGeneText] = useState<string>("");
   const validated = gene !== "" && geneText == "";
   const [expanded, setExpanded] = useState<boolean>(!validated);
   const [pendingResponse, setPendingResponse] = useState(false);
+  const geneNotFound = "Gene not found";
 
   useEffect(() => {
     if (validated) buildGeneElement();
@@ -39,11 +41,14 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
         geneElementResponse.warnings &&
         geneElementResponse.warnings.length > 0
       ) {
-        setGeneText("Gene not found");
+        setGeneText(geneNotFound);
+        setErrors([geneNotFound]);
+        setPendingResponse(false);
       } else if (
         geneElementResponse.element &&
         geneElementResponse.element.gene
       ) {
+        setErrors([]);
         getGeneNomenclature(geneElementResponse.element).then(
           (nomenclatureResponse: NomenclatureResponse) => {
             if (
@@ -81,6 +86,7 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
     handleDelete,
     inputElements,
     validated,
+    errors,
     icon,
     pendingResponse,
   });

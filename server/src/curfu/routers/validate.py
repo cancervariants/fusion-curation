@@ -32,7 +32,7 @@ def validate_fusion(request: Request, fusion: dict = Body()) -> ResponseDict:
     try:
         verified_fusion = fusor.fusion(**fusion)
     except FUSORParametersException as e:
-        response["warnings"] = [str(e)]
+        response["warnings"] = str(e).split("\n")
     else:
         response["fusion"] = verified_fusion
     return response
