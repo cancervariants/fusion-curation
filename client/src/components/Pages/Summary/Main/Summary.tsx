@@ -104,13 +104,7 @@ export const Summary: React.FC<Props> = ({ setVisibleTab }) => {
     // make request
     validateFusion(formattedFusion).then((response) => {
       if (response.warnings && response.warnings?.length > 0) {
-        if (
-          validationErrors !== null &&
-          JSON.stringify(response.warnings.sort()) !==
-            JSON.stringify(validationErrors.sort())
-        ) {
-          setValidationErrors(response.warnings);
-        }
+        setValidationErrors(response.warnings);
       } else {
         setValidationErrors([]);
         setValidatedFusion(

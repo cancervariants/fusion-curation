@@ -1,4 +1,3 @@
-import { Tooltip, makeStyles, CircularProgress } from "@material-ui/core";
 import { styled } from "@mui/material/styles";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import Card from "@mui/material/Card";
@@ -8,11 +7,13 @@ import CardActions from "@mui/material/CardActions";
 import Collapse from "@mui/material/Collapse";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ErrorIcon from "@mui/icons-material/Error";
 import EditIcon from "@material-ui/icons/Edit";
 import { red, green } from "@material-ui/core/colors";
 import "./StructuralElementInputAccordion.scss";
 import { BaseStructuralElementProps } from "./StructuralElementInputProps";
+import React from "react";
+import { Alert, CircularProgress, Tooltip } from "@mui/material";
+import { makeStyles, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
   cardHeaderAction: {
@@ -42,6 +43,7 @@ interface StructuralElementInputAccordionProps
   setExpanded?: React.Dispatch<React.SetStateAction<boolean>>;
   inputElements?: JSX.Element;
   validated: boolean;
+  errors?: string[];
   icon: JSX.Element;
   pendingResponse?: boolean;
 }
@@ -71,6 +73,7 @@ const StructuralElementInputAccordion: React.FC<
   handleDelete,
   inputElements,
   validated,
+  errors,
   icon,
   pendingResponse,
 }) => {
@@ -121,7 +124,7 @@ const StructuralElementInputAccordion: React.FC<
           root: classes.cardActionsRoot,
         }}
       >
-        {validated ? (
+        {errors?.length === 0 && validated ? (
           <Tooltip title="Validation successful">
             <CheckCircleIcon
               className="input-correct"
@@ -129,12 +132,17 @@ const StructuralElementInputAccordion: React.FC<
             />
           </Tooltip>
         ) : (
-          <Tooltip title="Invalid component">
-            <ErrorIcon
-              className="input-incorrect"
-              style={{ color: red[500] }}
-            />
-          </Tooltip>
+          <>
+            {errors && errors.length ? (
+              <Alert severity="error">
+                {errors?.map((e) => {
+                  return <Typography variant="body2">{e}</Typography>;
+                })}
+              </Alert>
+            ) : (
+              <></>
+            )}
+          </>
         )}
         {inputElements ? (
           <ExpandMore

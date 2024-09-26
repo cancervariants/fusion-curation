@@ -70,6 +70,7 @@ const LinkerElementInput: React.FC<LinkerElementInputProps> = ({
     handleDelete,
     inputElements,
     validated,
+    errors: linkerError ? ["Invalid linker sequence"] : [],
     icon,
   });
 };

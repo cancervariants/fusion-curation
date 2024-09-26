@@ -101,10 +101,9 @@ export const Invalid: React.FC<Props> = ({
 
   const unknownError = (
     <>
-      <ListItemText>
-        We were unable to parse the validation failure for this fusion:
-      </ListItemText>
-      <blockquote>{validationErrors}</blockquote>
+      {validationErrors.map((error) => (
+        <blockquote>{error}</blockquote>
+      ))}
     </>
   );
 
