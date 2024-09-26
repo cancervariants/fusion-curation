@@ -213,11 +213,12 @@ async def test_get_exon_coords(check_response):
         check_coords_response,
     )
 
-    await check_response(
-        "/api/utilities/get_exon?chromosome=NC_000001.11&start=154192131&gene=TPM3",
-        {"warnings": ["Must find exactly one row for genomic data, but found: 0"]},
-        check_coords_response,
-    )
+    # TODO: add back / adjust this test when https://github.com/GenomicMedLab/cool-seq-tool/issues/372 is addressed
+    # await check_response(
+    #     "/api/utilities/get_exon?chromosome=NC_000001.11&start=154192131&gene=TPM3",
+    #     {"warnings": ["Must find exactly one row for genomic data, but found: 0"]},
+    #     check_coords_response,
+    # )
 
     # check correct response for genomic coordinate that occurs between exons (should get nearest junction)
     await check_response(
