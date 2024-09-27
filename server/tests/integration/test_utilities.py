@@ -213,9 +213,29 @@ async def test_get_exon_coords(check_response):
         check_coords_response,
     )
 
+    # check correct response for genomic coordinate that occurs between exons (should get nearest junction)
     await check_response(
-        "/api/utilities/get_exon?chromosome=NC_000001.11&start=154192131&gene=TPM3",
-        {"warnings": ["Must find exactly one row for genomic data, but found: 0"]},
+        "/api/utilities/get_exon?chromosome=NC_000001.11&end=154191900&transcript=NM_152263.3",
+        {
+            "coordinates_data": {
+                "gene": "TPM3",
+                "genomic_ac": "NC_000001.11",
+                "tx_ac": "NM_152263.3",
+                "seg_end": {
+                    "exon_ord": 0,
+                    "offset": 1,
+                    "genomic_location": {
+                        "type": "SequenceLocation",
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+                        },
+                        "start": 154191900,
+                    },
+                },
+                "errors": [],
+            }
+        },
         check_coords_response,
     )
 
