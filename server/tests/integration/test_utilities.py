@@ -213,7 +213,6 @@ async def test_get_exon_coords(check_response):
         check_coords_response,
     )
 
-
     # check correct response for genomic coordinate that occurs between exons (should get nearest junction)
     await check_response(
         "/api/utilities/get_exon?chromosome=NC_000001.11&end=154191900&transcript=NM_152263.3",
