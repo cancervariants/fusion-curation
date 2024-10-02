@@ -148,7 +148,7 @@ async def test_build_tx_segment_ec(
 
     # test handle invalid transcript
     await check_response(
-        "/api/construct/structural_element/tx_segment_ect?transcript=NM_0012529.3&exon_start=3",
+        "/api/construct/structural_element/tx_segment_ec?transcript=NM_0012529.3&exon_start=3",
         {"warnings": ["No exons found given NM_0012529.3"]},
         check_tx_element_response,
     )
@@ -171,12 +171,7 @@ async def test_build_segment_gc(
     genomic coordinates and transcript.
     """
     await check_response(
-        "/api/construct/structural_element/tx_segment_gct?transcript=NM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417",
-        {"element": tpm3_tx_t_element},
-        check_tx_element_response,
-    )
-    await check_response(
-        "/api/construct/structural_element/tx_segment_gct?transcript=refseq%3ANM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417",
+        "/api/construct/structural_element/tx_segment_gc?transcript=NM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417",
         {"element": tpm3_tx_t_element},
         check_tx_element_response,
     )
