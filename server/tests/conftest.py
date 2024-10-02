@@ -9,7 +9,7 @@ from curfu.main import app, get_domain_services, get_gene_services, start_fusor
 from httpx import ASGITransport, AsyncClient
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(scope="session")
 def event_loop():
     """Create an instance of the event loop with session scope."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
@@ -31,7 +31,7 @@ async def async_client():
 response_callback_type = Callable[[dict, dict], None]
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(scope="session")
 async def check_response(async_client):
     """Provide base response check function. Use in individual tests."""
 
