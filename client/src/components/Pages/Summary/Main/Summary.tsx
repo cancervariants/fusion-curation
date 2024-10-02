@@ -156,8 +156,6 @@ export const Summary: React.FC<Props> = ({ setVisibleTab }) => {
     setFormattedFusion(formattedFusion);
   }, [fusion]);
 
-  console.log(formattedFusion);
-
   return (
     <>
       {(!validationErrors || validationErrors.length === 0) &&
