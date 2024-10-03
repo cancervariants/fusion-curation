@@ -254,13 +254,13 @@ const GetCoordinates: React.FC = () => {
             {genomicEnd != null ? renderRow("Genomic end", genomicEnd) : null}
             {renderRow("Transcript", results.tx_ac)}
             {txSegStart?.exon_ord != null
-              ? renderRow("Exon start", txSegStart.exon_ord)
+              ? renderRow("Exon start", txSegStart.exon_ord + 1)
               : null}
             {txSegStart?.offset != null
               ? renderRow("Exon start offset", txSegStart.offset)
               : null}
             {txSegEnd?.exon_ord != null
-              ? renderRow("Exon end", txSegEnd.exon_ord)
+              ? renderRow("Exon end", txSegEnd.exon_ord + 1)
               : null}
             {txSegEnd?.offset != null
               ? renderRow("Exon end offset", txSegEnd.offset)
