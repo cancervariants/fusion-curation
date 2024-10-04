@@ -71,8 +71,8 @@ async def get_genome_coords(
         FUSOR and UTA-associated tools.
     :param gene: gene symbol/ID on which exons lie
     :param transcript: transcript accession ID
-    :param exon_start: starting exon number
-    :param exon_end: ending exon number
+    :param exon_start: starting exon number. 1-indexed
+    :param exon_end: ending exon number. 1-indexed
     :param exon_start_offset: base offset count from starting exon
     :param exon_end_offset: base offset count from end exon
     :return: CoordsUtilsResponse containing relevant data or warnings if unsuccesful

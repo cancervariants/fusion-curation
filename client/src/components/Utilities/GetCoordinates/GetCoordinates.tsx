@@ -30,6 +30,7 @@ import { HelpPopover } from "../../main/shared/HelpPopover/HelpPopover";
 import ChromosomeField from "../../main/shared/ChromosomeField/ChromosomeField";
 import TranscriptField from "../../main/shared/TranscriptField/TranscriptField";
 import LoadingMessage from "../../main/shared/LoadingMessage/LoadingMessage";
+import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
 
 const GetCoordinates: React.FC = () => {
   const useStyles = makeStyles(() => ({
@@ -356,19 +357,39 @@ const GetCoordinates: React.FC = () => {
             </Box>
             {genomicCoordinateInfo}
             <Box className={classes.fieldsPair}>
-              <TextField
-                margin="dense"
-                label="Genomic Start"
-                value={start}
-                onChange={(event) => setStart(event.target.value)}
-                helperText={start ? startText : ""}
-              />
-              <TextField
-                margin="dense"
-                label="Genomic End"
-                value={end}
-                onChange={(event) => setEnd(event.target.value)}
-              />
+              <HelpTooltip
+                placement="bottom"
+                title={
+                  <Typography>
+                    The starting genomic position of the transcript segment.
+                    Inter-residue.
+                  </Typography>
+                }
+              >
+                <TextField
+                  margin="dense"
+                  label="Genomic Start"
+                  value={start}
+                  onChange={(event) => setStart(event.target.value)}
+                  helperText={start ? startText : ""}
+                />
+              </HelpTooltip>
+              <HelpTooltip
+                placement="bottom"
+                title={
+                  <Typography>
+                    The ending genomic position of the transcript segment.
+                    Inter-residue
+                  </Typography>
+                }
+              >
+                <TextField
+                  margin="dense"
+                  label="Genomic End"
+                  value={end}
+                  onChange={(event) => setEnd(event.target.value)}
+                />
+              </HelpTooltip>
             </Box>
           </>
         );
@@ -379,8 +400,8 @@ const GetCoordinates: React.FC = () => {
             <Box className={classes.fieldsPair}>
               <TextField
                 margin="dense"
-                style={{ minWidth: 125 }}
-                label="Starting Exon"
+                style={{ minWidth: 200 }}
+                label="Starting Exon (1-indexed)"
                 value={exonStart}
                 onChange={(event) => setExonStart(event.target.value)}
                 error={exonStart === "" && exonStartText !== ""}
@@ -397,8 +418,8 @@ const GetCoordinates: React.FC = () => {
             <Box className={classes.fieldsPair}>
               <TextField
                 margin="dense"
-                style={{ minWidth: 125 }}
-                label="Ending Exon"
+                style={{ minWidth: 200 }}
+                label="Ending Exon (1-indexed)"
                 value={exonEnd}
                 onChange={(event) => setExonEnd(event.target.value)}
                 error={exonEnd !== "" && exonEndText !== ""}
