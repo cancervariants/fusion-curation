@@ -137,8 +137,7 @@ const TemplatedSequenceElementInput: React.FC<
           placement="bottom"
           title={
             <Typography>
-              The starting genomic position (inter-residue) of the transcript
-              segment.
+              The starting genomic position (inter-residue) of the segment.
             </Typography>
           }
         >
@@ -155,8 +154,7 @@ const TemplatedSequenceElementInput: React.FC<
           placement="bottom"
           title={
             <Typography>
-              The ending genomic position (inter-residue) of the transcript
-              segment.
+              The ending genomic position (inter-residue) of the segment.
             </Typography>
           }
         >
