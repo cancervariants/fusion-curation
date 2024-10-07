@@ -379,7 +379,7 @@ const GetCoordinates: React.FC = () => {
                 title={
                   <Typography>
                     The ending genomic position of the transcript segment.
-                    Inter-residue
+                    Inter-residue.
                   </Typography>
                 }
               >
