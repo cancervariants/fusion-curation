@@ -4,7 +4,7 @@ import csv
 import datetime
 import gzip
 import shutil
-import xml.etree.ElementTree as ET  # noqa: N817
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from timeit import default_timer as timer
 
@@ -27,6 +27,7 @@ DATE_FMT = "%Y%m%d"
 
 def download_protein2ipr(output_dir: Path) -> None:
     """Download, unpack, and store Uniprot-InterPro translation table
+
     :param output_dir: location to save file within
     """
     logger.info("Retrieving Uniprot mapping data from InterPro")
@@ -48,7 +49,7 @@ def download_protein2ipr(output_dir: Path) -> None:
         shutil.copyfileobj(f_in, f_out)
     gz_file_path.unlink()
     if not outfile_path.exists():
-        raise Exception
+        raise FileNotFoundError
 
     logger.info("Successfully retrieved UniProt mapping data for Interpro")
 
@@ -109,6 +110,7 @@ def get_uniprot_refs() -> UniprotRefs:
 
 def download_uniprot_sprot(output_dir: Path) -> Path:
     """Retrieve UniProtKB data.
+
     :param output_dir: directory to save UniProtKB data in.
     """
     logger.info("Retrieving UniProtKB data.")
@@ -129,7 +131,7 @@ def download_uniprot_sprot(output_dir: Path) -> Path:
         shutil.copyfileobj(f_in, f_out)
     gz_file_path.unlink()
     if not outfile_path.exists():
-        raise Exception
+        raise FileNotFoundError
 
     logger.info("Successfully retrieved UniProtKB data.")
     return outfile_path

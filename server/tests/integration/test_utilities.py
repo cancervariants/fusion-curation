@@ -7,7 +7,7 @@ import pytest
 response_callback_type = Callable[[dict, dict], None]
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_mane_transcript(check_response):
     """Test MANE transcript retrieval endpoint."""
 
@@ -74,7 +74,7 @@ async def test_get_mane_transcript(check_response):
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_genomic_coords(check_response):
     """Test coordinates utility endpoint using genomic coords."""
 
@@ -153,7 +153,7 @@ async def test_get_genomic_coords(check_response):
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_exon_coords(check_response):
     """Test /utilities/get_exon endpoint"""
 
@@ -240,7 +240,7 @@ async def test_get_exon_coords(check_response):
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_sequence_id(check_response):
     """Test sequence ID lookup utility endpoint"""
 

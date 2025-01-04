@@ -4,7 +4,7 @@ import pytest
 from httpx import AsyncClient
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_complete_gene(async_client: AsyncClient):
     """Test /complete/gene endpoint"""
     # test simple completion
@@ -53,7 +53,7 @@ async def test_complete_gene(async_client: AsyncClient):
     assert response_json["aliases"] == []
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_complete_domain(async_client: AsyncClient):
     """Test /complete/domain endpoint"""
     response = await async_client.get("/api/complete/domain?gene_id=hgnc%3A1097")

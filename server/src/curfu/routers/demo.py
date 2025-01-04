@@ -137,7 +137,7 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
             reg_element_args["displayClass"] = "Enhancer"
         else:
             msg = "Undefined reg element class used in demo"
-            raise Exception(msg)
+            raise ValueError(msg)
         reg_element_args["elementId"] = str(uuid4())
         fusion_args["regulatoryElement"] = reg_element_args
 

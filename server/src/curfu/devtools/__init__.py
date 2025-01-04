@@ -19,7 +19,7 @@ def ftp_download(domain: str, path: str, fname: str, callback: Callable) -> None
             ftp.retrbinary(f"RETR {fname}", callback)
     except ftplib.all_errors as e:
         logger.error(f"FTP download failed: {e}")
-        raise Exception(e) from e
+        raise Exception(e) from e  # noqa: TRY002
 
 
 # default interpro entry types to try to gather for domains

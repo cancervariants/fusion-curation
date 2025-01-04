@@ -48,9 +48,9 @@ def download_s3_file(bucket_object: ObjectSummary) -> Path:
     with save_to.open("wb") as f:
         try:
             bucket_object.Object().download_fileobj(f)
-        except ClientError as e:
-            logger.error(f"Failed to download {bucket_object.key}")
-            raise e
+        except ClientError:
+            logger.exception(f"Failed to download {bucket_object.key}")
+            raise
     logger.info(f"Downloaded {fname} successfully.")
     return save_to
 

@@ -186,7 +186,7 @@ async def check_validated_fusion_response(client, fixture: dict, case_name: str)
     ), f"{case_name}: warnings incorrect"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_validate_fusion(
     async_client: AsyncClient,
     alk_fusion,
