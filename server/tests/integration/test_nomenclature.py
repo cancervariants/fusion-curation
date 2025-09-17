@@ -223,7 +223,7 @@ async def test_templated_sequence_nomenclature(
     assert response.status_code == 200
     expected_warnings = [
         "validation error for TemplatedSequenceElement",
-        "Input should be 1 or -1",  # TODO: Check this?
+        "Input should be 1 or -1",
     ]
     for expected in expected_warnings:
         assert expected in response.json().get("warnings", [])[0]
