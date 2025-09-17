@@ -115,7 +115,6 @@ async def build_tx_segment_gc(
         seg_start_genomic=start,
         seg_end_genomic=end,
         transcript=transcript,
-        get_nearest_transcript_junction=True,
     )
     return TxSegmentElementResponse(element=tx_segment, warnings=warnings)
 

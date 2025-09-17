@@ -106,7 +106,7 @@ def clientify_structural_element(
         element_args["inputExonStartOffset"] = str(element.exonStartOffset)
         element_args["inputExonEnd"] = str(element.exonEnd)
         element_args["inputExonEndOffset"] = str(element.exonEndOffset)
-        element_args["inputGene"] = element.gene.label
+        element_args["inputGene"] = element.gene.name
         return ClientTranscriptSegmentElement(**element_args)
     msg = "Unknown element type provided"
     raise ValueError(msg)

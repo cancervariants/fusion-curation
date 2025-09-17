@@ -40,9 +40,7 @@ def download_protein2ipr(output_dir: Path) -> None:
             lambda data: fp.write(data),
         )
 
-    today = datetime.datetime.strftime(
-        datetime.datetime.now(tz=datetime.timezone.utc), DATE_FMT
-    )
+    today = datetime.datetime.strftime(datetime.datetime.now(tz=datetime.UTC), DATE_FMT)
     outfile_path = output_dir / f"protein2ipr_{today}.dat"
     with outfile_path.open("wb") as f_out, gzip.open(gz_file_path, "rb") as f_in:
         shutil.copyfileobj(f_in, f_out)
@@ -86,7 +84,7 @@ def get_uniprot_refs() -> UniprotRefs:
                     continue
                 norm_response = q.normalize(uniprot_id)
                 norm_id = norm_response.gene.gene_id
-                norm_label = norm_response.gene.label
+                norm_label = norm_response.gene.name
                 uniprot_ids[uniprot_id] = (norm_id, norm_label)
         if not last_evaluated_key:
             break
@@ -96,9 +94,7 @@ def get_uniprot_refs() -> UniprotRefs:
     logger.info(msg)
     click.echo(msg)
 
-    today = datetime.datetime.strftime(
-        datetime.datetime.now(tz=datetime.timezone.utc), DATE_FMT
-    )
+    today = datetime.datetime.strftime(datetime.datetime.now(tz=datetime.UTC), DATE_FMT)
     save_path = APP_ROOT / "data" / f"uniprot_refs_{today}.tsv"
     with save_path.open("w") as out:
         for uniprot_ref, data in uniprot_ids.items():
@@ -121,9 +117,7 @@ def download_uniprot_sprot(output_dir: Path) -> Path:
             "uniprot_sprot.xml.gz",
             lambda data: fp.write(data),
         )
-    today = datetime.datetime.strftime(
-        datetime.datetime.now(tz=datetime.timezone.utc), DATE_FMT
-    )
+    today = datetime.datetime.strftime(datetime.datetime.now(tz=datetime.UTC), DATE_FMT)
     outfile_path = output_dir / f"uniprot_sprot_{today}.dat"
     with outfile_path.open("wb") as f_out, gzip.open(gz_file_path, "rb") as f_in:
         shutil.copyfileobj(f_in, f_out)
@@ -153,7 +147,7 @@ def get_interpro_uniprot_rels(
     if not protein_ipr_path:
         download_protein2ipr(output_dir)
         today = datetime.datetime.strftime(
-            datetime.datetime.now(tz=datetime.timezone.utc), DATE_FMT
+            datetime.datetime.now(tz=datetime.UTC), DATE_FMT
         )
         protein_ipr_path = output_dir / f"protein2ipr_{today}.dat"
     protein_ipr = protein_ipr_path.open()
@@ -287,7 +281,7 @@ def build_gene_domain_maps(
         directory.
     """
     start_time = timer()
-    today = datetime.strftime(datetime.datetime.now(tz=datetime.timezone.utc), DATE_FMT)
+    today = datetime.strftime(datetime.datetime.now(tz=datetime.UTC), DATE_FMT)
 
     # get relevant Interpro IDs
     interpro_data_bin = []

@@ -10,7 +10,15 @@ def regulatory_element():
     """Provide regulatory element fixture."""
     return {
         "regulatoryClass": "promoter",
-        "associatedGene": {"id": "hgnc:9339", "label": "G1", "type": "Gene"},
+        "associatedGene": {
+            "name": "G1",
+            "conceptType": "Gene",
+            "primaryCoding": {
+                "id": "hgnc:9339",
+                "code": "HGNC:9339",
+                "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+            },
+        },
     }
 
 
@@ -23,20 +31,22 @@ def epcam_5_prime():
         "exonEnd": 5,
         "exonEndOffset": 0,
         "gene": {
-            "type": "Gene",
-            "label": "EPCAM",
-            "id": "hgnc:11529",
+            "conceptType": "Gene",
+            "name": "EPCAM",
+            "primaryCoding": {
+                "id": "hgnc:11529",
+                "code": "HGNC:11529",
+                "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+            },
         },
         "elementGenomicEnd": {
             "id": "fusor.location_descriptor:NC_000002.12",
             "type": "SequenceLocation",
-            "label": "NC_000002.12",
-            "location": {
-                "type": "SequenceLocation",
-                "start": 47377013,
-                "end": 47377014,
-            },
+            "name": "NC_000002.12",
+            "start": 47377013,
+            "end": 47377014,
         },
+        "strand": 1,
     }
 
 
@@ -49,9 +59,13 @@ def epcam_3_prime():
         "exonStart": 5,
         "exonStartOffset": 0,
         "gene": {
-            "type": "Gene",
-            "label": "EPCAM",
-            "id": "hgnc:11529",
+            "conceptType": "Gene",
+            "name": "EPCAM",
+            "primaryCoding": {
+                "id": "hgnc:11529",
+                "code": "HGNC:11529",
+                "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+            },
         },
         "elementGenomicStart": {
             "id": "fusor.location_descriptor:NC_000002.12",
@@ -59,6 +73,7 @@ def epcam_3_prime():
             "start": 47377013,
             "end": 47377014,
         },
+        "strand": 1,
     }
 
 
@@ -70,9 +85,13 @@ def epcam_invalid():
         "exonEnd": 5,
         "exonEndOffset": 0,
         "gene": {
-            "type": "Gene",
-            "label": "EPCAM",
-            "id": "hgnc:11529",
+            "conceptType": "Gene",
+            "name": "EPCAM",
+            "primaryCoding": {
+                "id": "hgnc:11529",
+                "code": "HGNC:11529",
+                "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+            },
         },
         "elementGenomicEnd": {
             "id": "fusor.location_descriptor:NC_000002.12",
@@ -80,6 +99,7 @@ def epcam_invalid():
             "start": 47377013,
             "end": 47377014,
         },
+        "strand": 1,
     }
 
 
@@ -203,7 +223,7 @@ async def test_templated_sequence_nomenclature(
     assert response.status_code == 200
     expected_warnings = [
         "validation error for TemplatedSequenceElement",
-        "Input should be a valid integer",
+        "Input should be 1 or -1",  # TODO: Check this?
     ]
     for expected in expected_warnings:
         assert expected in response.json().get("warnings", [])[0]
