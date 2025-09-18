@@ -26,6 +26,7 @@ import StructuralElementInputAccordion from "../StructuralElementInputAccordion"
 import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
 import ChromosomeField from "../../../../main/shared/ChromosomeField/ChromosomeField";
 import TranscriptField from "../../../../main/shared/TranscriptField/TranscriptField";
+import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 
 interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
@@ -410,6 +411,9 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           fieldValue={txChrom}
           onChange={handleChromosomeChange}
         />
+        <Box mt="18px" width="125px">
+          <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
+        </Box>
       </Box>
       <Box className="bottom-inputs">{renderTxGenomicCoords()}</Box>
     </>
