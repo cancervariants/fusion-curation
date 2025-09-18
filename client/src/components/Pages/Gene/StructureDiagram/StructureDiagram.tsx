@@ -43,7 +43,7 @@ export const StructureDiagram: React.FC = () => {
 
         const regEls = [];
         suggestion.regulatoryElements.forEach((el) => {
-          regEls.push(el.gene.label);
+          regEls.push(el.gene.name);
         });
 
         return (

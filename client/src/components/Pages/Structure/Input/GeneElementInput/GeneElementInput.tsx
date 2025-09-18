@@ -23,7 +23,7 @@ const GeneElementInput: React.FC<GeneElementInputProps> = ({
   icon,
 }) => {
   const [errors, setErrors] = useState<string[]>([]);
-  const [gene, setGene] = useState<string>(element.gene?.label || "");
+  const [gene, setGene] = useState<string>(element.gene?.name || "");
   const [geneText, setGeneText] = useState<string>("");
   const validated = gene !== "" && geneText == "";
   const [expanded, setExpanded] = useState<boolean>(!validated);

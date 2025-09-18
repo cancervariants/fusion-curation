@@ -94,7 +94,7 @@ const DomainForm: React.FC = () => {
     return [<MenuItem key={-1} value="" disabled></MenuItem>].concat(
       Object.keys(domainOptions).map((geneId: string, index: number) => (
         <MenuItem key={index} value={geneId}>
-          {`${globalGenes[geneId].label}(${geneId})`}
+          {`${globalGenes[geneId].name}(${geneId})`}
         </MenuItem>
       ))
     );
