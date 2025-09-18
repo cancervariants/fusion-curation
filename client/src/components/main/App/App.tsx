@@ -102,19 +102,22 @@ const App = (): JSX.Element => {
         comp.type &&
         (comp.type === "GeneElement" ||
           comp.type === "TranscriptSegmentElement") &&
-        comp.gene?.id
+        comp.gene?.primaryCoding?.id
       ) {
-        remainingGeneIds.push(comp.gene.id);
-        if (comp.gene.id && !(comp.gene.id in globalGenes)) {
-          newGenes[comp.gene.id] = comp.gene;
+        const compGeneId = comp.gene.primaryCoding.id;
+        remainingGeneIds.push(compGeneId);
+        if (compGeneId && !(compGeneId in globalGenes)) {
+          newGenes[compGeneId] = comp.gene;
         }
       }
     });
     if (fusion.regulatoryElement) {
-      if (fusion.regulatoryElement.associatedGene?.id) {
-        remainingGeneIds.push(fusion.regulatoryElement.associatedGene.id);
-        if (!(fusion.regulatoryElement.associatedGene.id in globalGenes)) {
-          newGenes[fusion.regulatoryElement.associatedGene.id] =
+      const regulatoryElementGeneId =
+        fusion.regulatoryElement.associatedGene?.primaryCoding?.id;
+      if (regulatoryElementGeneId) {
+        remainingGeneIds.push(regulatoryElementGeneId);
+        if (!(regulatoryElementGeneId in globalGenes)) {
+          newGenes[regulatoryElementGeneId] =
             fusion.regulatoryElement.associatedGene;
         }
       }

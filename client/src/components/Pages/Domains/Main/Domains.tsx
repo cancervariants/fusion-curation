@@ -108,7 +108,7 @@ export const Domain: React.FC<Props> = () => {
         avatar={<Avatar>{domain.status === "preserved" ? "P" : "L"}</Avatar>}
         label={
           <React.Fragment>
-            {domainLabelString} <b>{`(${domain.associatedGene.label})`}</b>
+            {domainLabelString} <b>{`(${domain.associatedGene.name})`}</b>
           </React.Fragment>
         }
         onDelete={() => handleRemove(domain)}

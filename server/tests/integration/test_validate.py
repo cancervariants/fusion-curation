@@ -14,9 +14,13 @@ def alk_fusion():
                 {
                     "type": "GeneElement",
                     "gene": {
-                        "id": "hgnc:427",
-                        "type": "Gene",
-                        "label": "ALK",
+                        "conceptType": "Gene",
+                        "name": "ALK",
+                        "primaryCoding": {
+                            "id": "hgnc:427",
+                            "code": "HGNC:427",
+                            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                        },
                     },
                 },
                 {"type": "MultiplePossibleGenesElement"},
@@ -28,9 +32,13 @@ def alk_fusion():
                 {
                     "type": "GeneElement",
                     "gene": {
-                        "id": "hgnc:427",
-                        "type": "Gene",
-                        "label": "ALK",
+                        "conceptType": "Gene",
+                        "name": "ALK",
+                        "primaryCoding": {
+                            "id": "hgnc:427",
+                            "code": "HGNC:427",
+                            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                        },
                     },
                 },
                 {"type": "MultiplePossibleGenesElement"},
@@ -49,7 +57,15 @@ def ewsr1_fusion():
             "structure": [
                 {
                     "type": "GeneElement",
-                    "gene": {"type": "Gene", "label": "EWSR1", "id": "hgnc:3508"},
+                    "gene": {
+                        "conceptType": "Gene",
+                        "name": "EWSR1",
+                        "primaryCoding": {
+                            "id": "hgnc:3508",
+                            "code": "HGNC:3508",
+                            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                        },
+                    },
                 },
                 {"type": "UnknownGeneElement"},
             ],
@@ -67,7 +83,15 @@ def ewsr1_fusion():
             "structure": [
                 {
                     "type": "GeneElement",
-                    "gene": {"type": "Gene", "label": "EWSR1", "id": "hgnc:3508"},
+                    "gene": {
+                        "conceptType": "Gene",
+                        "name": "EWSR1",
+                        "primaryCoding": {
+                            "id": "hgnc:3508",
+                            "code": "HGNC:3508",
+                            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                        },
+                    },
                 },
                 {"type": "UnknownGeneElement"},
             ],
@@ -94,7 +118,15 @@ def ewsr1_fusion_fill_types():
             "type": "AssayedFusion",
             "structure": [
                 {
-                    "gene": {"type": "Gene", "label": "EWSR1", "id": "hgnc:3508"},
+                    "gene": {
+                        "conceptType": "Gene",
+                        "name": "EWSR1",
+                        "primaryCoding": {
+                            "id": "hgnc:3508",
+                            "code": "HGNC:3508",
+                            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                        },
+                    },
                 },
                 {"type": "UnknownGeneElement"},
             ],
@@ -111,7 +143,15 @@ def ewsr1_fusion_fill_types():
             "structure": [
                 {
                     "type": "GeneElement",
-                    "gene": {"type": "Gene", "label": "EWSR1", "id": "hgnc:3508"},
+                    "gene": {
+                        "conceptType": "Gene",
+                        "name": "EWSR1",
+                        "primaryCoding": {
+                            "id": "hgnc:3508",
+                            "code": "HGNC:3508",
+                            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                        },
+                    },
                 },
                 {"type": "UnknownGeneElement"},
             ],
@@ -138,10 +178,14 @@ def wrong_type_fusion():
                 {
                     "type": "GeneElement",
                     "gene": {
-                        "type": "Gene",
+                        "conceptType": "Gene",
                         "id": "normalize.gene:EWSR1",
-                        "label": "EWSR1",
-                        "gene_id": "hgnc:3508",
+                        "name": "EWSR1",
+                        "primaryCoding": {
+                            "id": "hgnc:3508",
+                            "code": "HGNC:3508",
+                            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                        },
                     },
                 },
                 {"type": "UnknownGeneElement"},

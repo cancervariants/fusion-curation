@@ -58,7 +58,7 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
     regElement?.regulatoryClass || "default"
   );
   const [gene, setGene] = useState<string>(
-    regElement?.associatedGene?.label || ""
+    regElement?.associatedGene?.name || ""
   );
   const [geneText, setGeneText] = useState<string>("");
 

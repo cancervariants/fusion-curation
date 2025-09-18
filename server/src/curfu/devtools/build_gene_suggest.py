@@ -120,7 +120,7 @@ class GeneSuggestionBuilder:
             "strand",
         ]
         today = datetime.datetime.strftime(
-            datetime.datetime.now(tz=datetime.timezone.utc), "%Y%m%d"
+            datetime.datetime.now(tz=datetime.UTC), "%Y%m%d"
         )
         with (output_dir / f"gene_suggest_{today}.csv").open("w") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)

@@ -59,13 +59,13 @@ class GeneService:
         """
         response = normalizer.normalize(term)
         if response.match_type != MatchType.NO_MATCH:
-            concept_id = response.normalized_id
             gene = response.gene
+            concept_id = gene.id.split("normalize.gene.")[-1]
             if not concept_id or not response.gene:
                 msg = f"Unexpected null property in normalized response for `{term}`"
                 logger.error(msg)
                 raise LookupServiceError(msg)
-            symbol = gene.label
+            symbol = gene.name
             if not symbol:
                 msg = f"Unable to retrieve symbol for gene {concept_id}"
                 logger.error(msg)
@@ -106,7 +106,7 @@ class GeneService:
                             break
             if not term_cased:
                 logger.warning(
-                    f"Couldn't find cased version for search term {term} matching gene ID {response.normalized_id}"
+                    f"Couldn't find cased version for search term {term} matching gene ID {concept_id}"
                 )
             return (concept_id, symbol, term_cased)
         warn = f"Lookup of gene term {term} failed."

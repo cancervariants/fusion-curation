@@ -87,9 +87,13 @@ def check_sequence_location():
 def alk_gene():
     """Gene object for ALK"""
     return {
-        "type": "Gene",
-        "label": "ALK",
-        "id": "hgnc:427",
+        "conceptType": "Gene",
+        "name": "ALK",
+        "primaryCoding": {
+            "id": "hgnc:427",
+            "code": "HGNC:427",
+            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+        },
     }
 
 
@@ -97,9 +101,13 @@ def alk_gene():
 def tpm3_gene():
     """Gene object for TPM3"""
     return {
-        "type": "Gene",
-        "label": "TPM3",
-        "id": "hgnc:12012",
+        "conceptType": "Gene",
+        "name": "TPM3",
+        "primaryCoding": {
+            "id": "hgnc:12012",
+            "code": "HGNC:12012",
+            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+        },
     }
 
 
@@ -107,9 +115,13 @@ def tpm3_gene():
 def ntrk1_gene():
     """Gene object for NTRK1"""
     return {
-        "type": "Gene",
-        "label": "NTRK1",
-        "id": "hgnc:8031",
+        "conceptType": "Gene",
+        "name": "NTRK1",
+        "primaryCoding": {
+            "id": "hgnc:8031",
+            "code": "HGNC:8031",
+            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+        },
     }
 
 
@@ -135,6 +147,7 @@ def ntrk1_tx_element_start(ntrk1_gene):
             "type": "SequenceLocation",
             "start": 156864354,
         },
+        "strand": 1,
     }
 
 
@@ -187,4 +200,5 @@ def tpm3_tx_g_element(tpm3_gene):
             "type": "SequenceLocation",
             "start": 154171417,
         },
+        "strand": -1,
     }

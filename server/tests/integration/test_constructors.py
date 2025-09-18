@@ -16,9 +16,9 @@ async def test_build_gene_element(check_response, alk_gene_element):
         assert response["element"]["type"] == expected_response["element"]["type"]
         response_gd = response["element"]["gene"]
         expected_gd = expected_response["element"]["gene"]
-        assert response_gd["id"] == expected_id
-        assert response_gd["type"] == expected_gd["type"]
-        assert response_gd["label"] == expected_gd["label"]
+        assert response_gd["primaryCoding"]["id"] == expected_id
+        assert response_gd["conceptType"] == expected_gd["conceptType"]
+        assert response_gd["name"] == expected_gd["name"]
 
     alk_gene_response = {"warnings": [], "element": alk_gene_element}
 
@@ -149,7 +149,7 @@ async def test_build_tx_segment_ec(
     # test handle invalid transcript
     await check_response(
         "/api/construct/structural_element/tx_segment_ec?transcript=NM_0012529.3&exon_start=3",
-        {"warnings": ["No exons found given NM_0012529.3"]},
+        {"warnings": ["Transcript does not exist in UTA: NM_0012529.3"]},
         check_tx_element_response,
     )
 
@@ -162,7 +162,7 @@ async def test_build_segment_gc(
     genomic coordinates and gene name.
     """
     await check_response(
-        "/api/construct/structural_element/tx_segment_gc?gene=TPM3&chromosome=NC_000001.11&start=154171416&end=154171417",
+        "/api/construct/structural_element/tx_segment_gc?gene=TPM3&chromosome=NC_000001.11&start=154171416&end=154171417&transcript=NM_152263.4",
         {"element": tpm3_tx_g_element},
         check_tx_element_response,
     )
@@ -171,7 +171,7 @@ async def test_build_segment_gc(
     genomic coordinates and transcript.
     """
     await check_response(
-        "/api/construct/structural_element/tx_segment_gc?transcript=NM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417",
+        "/api/construct/structural_element/tx_segment_gc?transcript=NM_152263.4&chromosome=NC_000001.11&start=154171416&end=154171417&gene=TPM3",
         {"element": tpm3_tx_t_element},
         check_tx_element_response,
     )
@@ -185,9 +185,13 @@ async def test_build_reg_element(check_response, check_reg_element_response):
         {
             "regulatoryElement": {
                 "associatedGene": {
-                    "id": "hgnc:1097",
-                    "label": "BRAF",
-                    "type": "Gene",
+                    "primaryCoding": {
+                        "id": "hgnc:1097",
+                        "code": "HGNC:1097",
+                        "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                    },
+                    "name": "BRAF",
+                    "conceptType": "Gene",
                 },
                 "regulatoryClass": "promoter",
                 "type": "RegulatoryElement",

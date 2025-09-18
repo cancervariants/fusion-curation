@@ -160,6 +160,7 @@ dynamodb_local_latest/*
 
 # Build files
 Pipfile.lock
+uv.lock
 
 # client-side things
 curation/client/node_modules
