@@ -23,4 +23,8 @@ def get_strand(strand_input: str) -> int:
         return Strand.POSITIVE
     if strand_input == "-":
         return Strand.NEGATIVE
-    raise InvalidInputError
+
+    try:
+        return Strand(strand_input)
+    except ValueError as e:
+        raise InvalidInputError from e
