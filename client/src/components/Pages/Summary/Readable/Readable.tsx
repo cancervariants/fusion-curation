@@ -37,8 +37,6 @@ export const Readable: React.FC<Props> = ({
   }, [formattedFusion]);
 
   const assayName = fusion.assay?.assayName ? fusion.assay.assayName : "";
-  const fusionDetection = fusion.assay?.fusionDetection;
-  const assayRowName = fusionDetection ? `Assay (${fusionDetection})` : "Assay";
   const assayId = fusion.assay?.assayId ? `(${fusion.assay.assayId})` : "";
 
   /**
@@ -59,7 +57,7 @@ export const Readable: React.FC<Props> = ({
       </TableRow>
       <TableRow>
         <TableCell>
-          <Typography className="row-name">{assayRowName}</Typography>
+          <Typography className="row-name">Assay</Typography>
         </TableCell>
         <TableCell align="right">
           <Typography>
