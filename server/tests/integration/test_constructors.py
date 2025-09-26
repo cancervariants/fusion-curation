@@ -224,13 +224,13 @@ async def test_build_templated_sequence(
         },
     }
     await check_response(
-        "/api/construct/structural_element/templated_sequence?start=154171415&end=154171417&sequence_id=NC_000001.11&strand=-",
+        "/api/construct/structural_element/templated_sequence?start=154171416&end=154171417&sequence_id=NC_000001.11&strand=-",
         expected,
         check_templated_sequence_response,
     )
 
     await check_response(
-        "/api/construct/structural_element/templated_sequence?start=154171415&end=154171417&sequence_id=refseq%3ANC_000001.11&strand=-",
+        "/api/construct/structural_element/templated_sequence?start=154171416&end=154171417&sequence_id=refseq%3ANC_000001.11&strand=-",
         expected,
         check_templated_sequence_response,
     )

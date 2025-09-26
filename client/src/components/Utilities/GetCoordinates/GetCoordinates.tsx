@@ -361,8 +361,8 @@ const GetCoordinates: React.FC = () => {
                 placement="bottom"
                 title={
                   <Typography>
-                    The starting genomic position (inter-residue) of the
-                    transcript segment.
+                    The starting genomic position (residue) of the transcript
+                    segment.
                   </Typography>
                 }
               >
@@ -378,8 +378,8 @@ const GetCoordinates: React.FC = () => {
                 placement="bottom"
                 title={
                   <Typography>
-                    The ending genomic position (inter-residue) of the
-                    transcript segment.
+                    The ending genomic position (residue) of the transcript
+                    segment.
                   </Typography>
                 }
               >

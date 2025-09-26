@@ -157,8 +157,8 @@ export const GetTranscripts: React.FC = () => {
               "Ensembl Transcript": transcript.Ensembl_nuc,
               "Ensembl Protein": transcript.Ensembl_prot,
               Chromosome: transcript.GRCh38_chr,
-              Start: transcript.chr_start,
-              End: transcript.chr_end,
+              "Genomic Start Position (residue)": transcript.chr_start,
+              "Genomic End Position (residue)": transcript.chr_end,
               Strand: transcript.chr_strand,
             };
             return (

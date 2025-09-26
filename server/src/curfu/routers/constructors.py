@@ -1,5 +1,6 @@
 """Provide routes for element construction endpoints"""
 
+from cool_seq_tool.schemas import CoordinateType
 from fastapi import APIRouter, Query, Request
 from fusor.models import DomainStatus, RegulatoryClass
 from pydantic import ValidationError
@@ -133,8 +134,8 @@ def build_templated_sequence_element(
     \f
     :param request: the HTTP request context, supplied by FastAPI. Use to access
         FUSOR and UTA-associated tools.
-    :param start: genomic starting position
-    :param end: genomic ending position
+    :param start: genomic starting position (residue)
+    :param end: genomic ending position (residue)
     :param sequence_id: chromosome accession for sequence
     :param strand: chromosome strand - must be one of {'+', '-'}
     :return: Pydantic class with Templated Sequnce element if successful, or warnings
@@ -151,6 +152,7 @@ def build_templated_sequence_element(
         end=end,
         sequence_id=parse_identifier(sequence_id),
         strand=strand_n,
+        coordinate_type=CoordinateType.RESIDUE,
     )
     return TemplatedSequenceElementResponse(element=element, warnings=[])
 
@@ -190,7 +192,14 @@ def build_domain(
     response: ResponseDict = {}
     try:
         domain, warnings = request.app.state.fusor.functional_domain(
-            status, name, domain_id, gene_id, sequence_id, start, end
+            status,
+            name,
+            domain_id,
+            gene_id,
+            sequence_id,
+            start,
+            end,
+            coordinate_type=CoordinateType.RESIDUE,
         )
         if warnings:
             response["warnings"] = [warnings]
