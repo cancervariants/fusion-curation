@@ -153,6 +153,9 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       ...responseElement,
       ...inputParams,
     };
+    if (responseElement?.strand) {
+      setTxStrand(responseElement.strand === 1 ? "+" : "-");
+    }
     if (!hasRequiredEnds) {
       finishedElement.nomenclature = "ERROR";
     } else {

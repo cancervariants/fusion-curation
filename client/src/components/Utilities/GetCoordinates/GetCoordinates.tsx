@@ -243,6 +243,12 @@ const GetCoordinates: React.FC = () => {
         const txSegStart = results.seg_start;
         const txSegEnd = results.seg_end;
 
+        const resultStrand = results.strand === 1 ? "+" : "-";
+        if (resultStrand !== strand) {
+          // if we don't do this, we get too many re-renders
+          setStrand(resultStrand);
+        }
+
         const genomicStart =
           txSegStart?.genomic_location.start ||
           txSegStart?.genomic_location.end;
@@ -305,7 +311,10 @@ const GetCoordinates: React.FC = () => {
   const genomicCoordinateInfo = (
     <>
       <Box display="flex" justifyContent="space-between" width="100%">
-        <ChromosomeField fieldValue={chromosome} errorText={chromosomeText} />
+        <ChromosomeField
+          fieldValue={chromosome}
+          onChange={handleChromosomeChange}
+        />
         <Box mt="18px">
           <Box className={classes.strand} width="125px">
             <StrandSwitch
