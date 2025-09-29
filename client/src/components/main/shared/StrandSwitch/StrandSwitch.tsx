@@ -37,7 +37,7 @@ export default function StrandSwitch(
           checked={selectedStrand === "-"}
           icon={<AddCircleIcon color="primary" />}
           checkedIcon={<RemoveCircleIcon color="primary" />}
-          disableRipple
+          disabled={true}
         />
       }
       label="Strand"

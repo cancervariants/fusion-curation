@@ -5,7 +5,7 @@ interface LoadingMessageProps {
   message?: string;
 }
 
-export default function StrandSwitch(
+export default function LoadingMessage(
   props: LoadingMessageProps
 ): React.ReactElement {
   const loadingMessage = props?.message ? props.message : "Loading...";

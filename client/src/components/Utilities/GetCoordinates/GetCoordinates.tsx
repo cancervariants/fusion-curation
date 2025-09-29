@@ -31,6 +31,7 @@ import ChromosomeField from "../../main/shared/ChromosomeField/ChromosomeField";
 import TranscriptField from "../../main/shared/TranscriptField/TranscriptField";
 import LoadingMessage from "../../main/shared/LoadingMessage/LoadingMessage";
 import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
+import StrandSwitch from "../../main/shared/StrandSwitch/StrandSwitch";
 
 const GetCoordinates: React.FC = () => {
   const useStyles = makeStyles(() => ({
@@ -67,6 +68,9 @@ const GetCoordinates: React.FC = () => {
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
+    },
+    strandSwitchLabel: {
+      marginLeft: "0 !important",
     },
     coordsCard: {
       margin: "10px",
@@ -239,6 +243,12 @@ const GetCoordinates: React.FC = () => {
         const txSegStart = results.seg_start;
         const txSegEnd = results.seg_end;
 
+        const resultStrand = results.strand === 1 ? "+" : "-";
+        if (resultStrand !== strand) {
+          // if we don't do this, we get too many re-renders
+          setStrand(resultStrand);
+        }
+
         const genomicStart =
           txSegStart?.genomic_location.start ||
           txSegStart?.genomic_location.end;
@@ -305,6 +315,17 @@ const GetCoordinates: React.FC = () => {
           fieldValue={chromosome}
           onChange={handleChromosomeChange}
         />
+        <Box mt="18px">
+          <Box className={classes.strand} width="125px">
+            <StrandSwitch
+              setStrand={setStrand}
+              selectedStrand={strand}
+              switchClasses={{
+                labelPlacementStart: classes.strandSwitchLabel,
+              }}
+            />
+          </Box>
+        </Box>
       </Box>
     </>
   );
