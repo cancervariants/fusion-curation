@@ -4,6 +4,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from cool_seq_tool.schemas import CoordinateType
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 from gene import schemas as gene_schemas
@@ -163,6 +164,7 @@ async def get_exon_coords(
         seg_end_genomic=end,
         transcript=transcript,
         gene=gene,
+        coordinate_type=CoordinateType.RESIDUE,
     )
     warnings = response.errors
     if warnings:

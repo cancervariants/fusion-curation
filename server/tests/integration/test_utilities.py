@@ -223,14 +223,14 @@ async def test_get_exon_coords(check_response):
                 "tx_ac": "NM_152263.3",
                 "seg_end": {
                     "exon_ord": 0,
-                    "offset": 1,
+                    "offset": 2,
                     "genomic_location": {
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
                             "refgetAccession": "SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
                         },
-                        "start": 154191900,
+                        "start": 154191899,
                     },
                 },
                 "errors": [],

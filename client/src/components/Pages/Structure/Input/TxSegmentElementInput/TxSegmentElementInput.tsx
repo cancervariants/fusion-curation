@@ -337,15 +337,14 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
         placement="bottom"
         title={
           <Typography>
-            The starting genomic position (inter-residue) of the transcript
-            segment.
+            The starting genomic position (residue) of the transcript segment.
           </Typography>
         }
       >
         <TextField
           margin="dense"
           style={{ width: 125 }}
-          label="Starting Position"
+          label="Genomic Starting Position (Residue)"
           value={txStartingGenomic}
           onChange={(event) =>
             setNumericField(
@@ -366,15 +365,14 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
         placement="bottom"
         title={
           <Typography>
-            The ending genomic position (inter-residue) of the transcript
-            segment.
+            The ending genomic position (residue) of the transcript segment.
           </Typography>
         }
       >
         <TextField
           margin="dense"
           style={{ width: 125 }}
-          label="Ending Position"
+          label="Genomic Ending Position (residue)"
           value={txEndingGenomic}
           onChange={(event) =>
             setNumericField(
