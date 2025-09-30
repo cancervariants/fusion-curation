@@ -27,6 +27,7 @@ import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
 import ChromosomeField from "../../../../main/shared/ChromosomeField/ChromosomeField";
 import TranscriptField from "../../../../main/shared/TranscriptField/TranscriptField";
 import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
+import GeneTranscriptSelector from "../../../../main/shared/GeneTranscriptSelector/GeneTranscriptSelector";
 
 interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
@@ -446,27 +447,11 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                     setTranscripts={setGeneTranscripts}
                     setDefaultTranscript={setTxAc}
                   />
-                  <FormControl variant="standard">
-                    <InputLabel id="transcript-select-label">
-                      Transcript
-                    </InputLabel>
-                    <Select
-                      labelId="transcript-select-label"
-                      id="transcript-select"
-                      value={txAc}
-                      label="Transcript"
-                      onChange={handleTranscriptSelect}
-                      placeholder="Transcript"
-                      style={{ minWidth: "150px" }}
-                    >
-                      {geneTranscripts.map((tx, index) => (
-                        <MenuItem key={index} value={tx.transcript}>
-                          {tx.transcript}{" "}
-                          {tx.maneStatus ? `(${tx.maneStatus})` : null}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                  <GeneTranscriptSelector
+                    transcript={txAc}
+                    onTranscriptChange={handleTranscriptSelect}
+                    transcripts={geneTranscripts}
+                  />
                 </>
               ) : (
                 <>
@@ -492,25 +477,12 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                 setTranscripts={setGeneTranscripts}
                 setDefaultTranscript={setTxAc}
               />
-              <FormControl variant="standard">
-                <InputLabel id="transcript-select-label">Transcript</InputLabel>
-                <Select
-                  labelId="transcript-select-label"
-                  id="transcript-select"
-                  value={txAc}
-                  label="Transcript"
-                  onChange={handleTranscriptSelect}
-                  placeholder="Transcript"
-                  style={{ minWidth: "150px" }}
-                >
-                  {geneTranscripts.map((tx, index) => (
-                    <MenuItem key={index} value={tx.transcript}>
-                      {tx.transcript}{" "}
-                      {tx.maneStatus ? `(${tx.maneStatus})` : null}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+
+              <GeneTranscriptSelector
+                transcript={txAc}
+                onTranscriptChange={handleTranscriptSelect}
+                transcripts={geneTranscripts}
+              />
             </Box>
             <Box className="bottom-inputs">
               <HelpTooltip
