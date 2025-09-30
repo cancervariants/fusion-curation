@@ -365,8 +365,9 @@ const GetCoordinates: React.FC = () => {
                       style={{ minWidth: "150px" }}
                     >
                       {geneTranscripts.map((tx, index) => (
-                        <MenuItem key={index} value={tx}>
-                          {tx}
+                        <MenuItem key={index} value={tx.transcript}>
+                          {tx.transcript}{" "}
+                          {tx.maneStatus ? `(${tx.maneStatus})` : null}
                         </MenuItem>
                       ))}
                     </Select>
