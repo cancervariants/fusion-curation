@@ -12,6 +12,7 @@ import {
   GetGeneTranscriptsResponse,
   GetTranscriptsResponse,
   SuggestGeneResponse,
+  ManeGeneTranscript,
 } from "../../../../services/ResponseModels";
 import HelpTooltip from "../HelpTooltip/HelpTooltip";
 import { useColorTheme } from "../../../../global/contexts/Theme/ColorThemeContext";
@@ -126,16 +127,57 @@ export const GeneAutocomplete: React.FC<Props> = ({
           const sortedTranscripts = transcripts.sort((a, b) =>
             a.localeCompare(b)
           );
-          setTranscripts(sortedTranscripts);
           if (setDefaultTranscript) {
             // get preferred default transcript from MANE endpoint
             getTranscripts(selection.value).then(
               (transcriptsResponse: GetTranscriptsResponse) => {
+                if (transcriptsResponse?.transcripts) {
+                  const maneMap = new Map(
+                    transcriptsResponse.transcripts.map(
+                      (item: ManeGeneTranscript) => [
+                        item.RefSeq_nuc,
+                        item.MANE_status,
+                      ]
+                    )
+                  );
+
+                  const annotatedTranscripts = sortedTranscripts.map(
+                    (transcript) => ({
+                      transcript,
+                      maneStatus: maneMap.get(transcript) ?? null,
+                    })
+                  );
+
+                  // Sort by MANE priority (select > plus clinical > none), then alphabetically
+                  const sortedByStatus = annotatedTranscripts.sort((a, b) => {
+                    const rank = (status: string | null) => {
+                      if (status === "MANE Select") return 0;
+                      if (status === "MANE Plus Clinical") return 1;
+                      return 2;
+                    };
+
+                    const diff = rank(a.maneStatus) - rank(b.maneStatus);
+                    return diff !== 0
+                      ? diff
+                      : a.transcript.localeCompare(b.transcript);
+                  });
+
+                  setTranscripts(sortedByStatus);
+                }
+
                 const preferredTx =
                   transcriptsResponse?.transcripts?.[0].RefSeq_nuc;
                 setDefaultTranscript(preferredTx || transcripts[0]);
               }
             );
+          } else {
+            const annotatedTranscripts = sortedTranscripts.map(
+              (transcript) => ({
+                transcript,
+                maneStatus: null,
+              })
+            );
+            setTranscripts(annotatedTranscripts);
           }
         }
       );
