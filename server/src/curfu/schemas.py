@@ -230,9 +230,9 @@ class ManeGeneTranscript(BaseModel):
     symbol: str
     name: str
     RefSeq_nuc: str
-    RefSeq_prot: str
+    RefSeq_prot: str | None
     Ensembl_nuc: str
-    Ensembl_prot: str
+    Ensembl_prot: str | None
     MANE_status: str
     GRCh38_chr: str
     chr_start: int
