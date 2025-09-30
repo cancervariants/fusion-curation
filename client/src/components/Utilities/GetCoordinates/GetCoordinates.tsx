@@ -421,7 +421,6 @@ const GetCoordinates: React.FC = () => {
         return (
           <>
             <Box className={classes.fieldsPair}>
-              {" "}
               <GeneAutocomplete
                 gene={gene}
                 setGene={setGene}
