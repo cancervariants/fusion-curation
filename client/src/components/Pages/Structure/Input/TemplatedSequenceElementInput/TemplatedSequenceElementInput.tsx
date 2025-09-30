@@ -1,5 +1,5 @@
 import React, { useState, useEffect, KeyboardEvent } from "react";
-import { TextField, Box, Typography } from "@material-ui/core";
+import { TextField, Typography } from "@material-ui/core";
 import { StructuralElementInputProps } from "../StructuralElementInputProps";
 import {
   getTemplatedSequenceElement,
@@ -7,8 +7,8 @@ import {
 } from "../../../../../services/main";
 import { ClientTemplatedSequenceElement } from "../../../../../services/ResponseModels";
 import StructuralElementInputAccordion from "../StructuralElementInputAccordion";
-import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
+import ChromosomeField from "../../../../main/shared/ChromosomeField/ChromosomeField";
 
 interface TemplatedSequenceElementInputProps
   extends StructuralElementInputProps {
@@ -106,31 +106,12 @@ const TemplatedSequenceElementInput: React.FC<
   const inputElements = (
     <>
       <div className="top-inputs">
-        <HelpTooltip
-          placement="bottom"
-          title={
-            <>
-              <Typography>The chromosome on which the segment lies.</Typography>
-              <Typography>
-                RefSeq identifiers (e.g.{" "}
-                <Typography variant="overline">NC_000001.11</Typography>) are
-                preferred.
-              </Typography>
-            </>
+        <ChromosomeField
+          fieldValue={chromosome}
+          onChange={(event, _child) =>
+            setChromosome(event.target.value as string)
           }
-        >
-          <TextField
-            margin="dense"
-            style={{ height: 38, width: 125 }}
-            label="Chromosome"
-            value={chromosome}
-            onChange={(event) => setChromosome(event.target.value)}
-            onKeyDown={handleEnterKey}
-          />
-        </HelpTooltip>
-        <Box mt="18px">
-          <StrandSwitch setStrand={setStrand} selectedStrand={strand} />
-        </Box>
+        />
       </div>
       <div className="bottom-inputs">
         <HelpTooltip

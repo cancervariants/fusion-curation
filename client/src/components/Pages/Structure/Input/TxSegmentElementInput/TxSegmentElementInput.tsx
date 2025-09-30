@@ -403,8 +403,10 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     </Box>
   );
 
-  const handleChromosomeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTxChrom(e.target.value);
+  const handleChromosomeChange = (
+    e: ChangeEvent<{ name?: string; value: unknown }>
+  ) => {
+    setTxChrom(e.target.value as string);
   };
 
   const genomicCoordinateInfo = (
