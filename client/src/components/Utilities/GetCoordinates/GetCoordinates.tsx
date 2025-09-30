@@ -32,6 +32,7 @@ import TranscriptField from "../../main/shared/TranscriptField/TranscriptField";
 import LoadingMessage from "../../main/shared/LoadingMessage/LoadingMessage";
 import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
 import StrandSwitch from "../../main/shared/StrandSwitch/StrandSwitch";
+import GeneTranscriptSelector from "../../main/shared/GeneTranscriptSelector/GeneTranscriptSelector";
 
 const GetCoordinates: React.FC = () => {
   const useStyles = makeStyles(() => ({
@@ -353,25 +354,12 @@ const GetCoordinates: React.FC = () => {
                     setTranscripts={setGeneTranscripts}
                     setDefaultTranscript={setSelectedTranscript}
                   />
-                  <FormControl>
-                    <InputLabel>Transcript</InputLabel>
-                    <Select
-                      labelId="transcript-select-label"
-                      id="transcript-select"
-                      value={selectedTranscript}
-                      label="Transcript"
-                      onChange={handleTranscriptSelect}
-                      placeholder="Transcript"
-                      style={{ minWidth: "150px" }}
-                    >
-                      {geneTranscripts.map((tx, index) => (
-                        <MenuItem key={index} value={tx.transcript}>
-                          {tx.transcript}{" "}
-                          {tx.maneStatus ? `(${tx.maneStatus})` : null}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+
+                  <GeneTranscriptSelector
+                    transcript={txAc}
+                    onTranscriptChange={handleTranscriptSelect}
+                    transcripts={geneTranscripts}
+                  />
                 </>
               ) : (
                 <>
@@ -431,25 +419,12 @@ const GetCoordinates: React.FC = () => {
                 setTranscripts={setGeneTranscripts}
                 setDefaultTranscript={setSelectedTranscript}
               />
-              <FormControl>
-                <InputLabel>Transcript</InputLabel>
-                <Select
-                  labelId="transcript-select-label"
-                  id="transcript-select"
-                  value={selectedTranscript}
-                  label="Transcript"
-                  onChange={handleTranscriptSelect}
-                  placeholder="Transcript"
-                  style={{ minWidth: "150px" }}
-                >
-                  {geneTranscripts.map((tx, index) => (
-                    <MenuItem key={index} value={tx.transcript}>
-                      {tx.transcript}{" "}
-                      {tx.maneStatus ? `(${tx.maneStatus})` : null}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+
+              <GeneTranscriptSelector
+                transcript={txAc}
+                onTranscriptChange={handleTranscriptSelect}
+                transcripts={geneTranscripts}
+              />
             </Box>
             <Box className={classes.fieldsPair}>
               <TextField
