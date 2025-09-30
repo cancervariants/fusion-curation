@@ -343,7 +343,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       >
         <TextField
           margin="dense"
-          style={{ width: 125 }}
+          InputLabelProps={{ shrink: true }}
+          style={{ width: 300 }}
           label="Genomic Starting Position (Residue)"
           value={txStartingGenomic}
           onChange={(event) =>
@@ -371,8 +372,9 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       >
         <TextField
           margin="dense"
-          style={{ width: 125 }}
-          label="Genomic Ending Position (residue)"
+          InputLabelProps={{ shrink: true }}
+          style={{ width: 300 }}
+          label="Genomic Ending Position (Residue)"
           value={txEndingGenomic}
           onChange={(event) =>
             setNumericField(
