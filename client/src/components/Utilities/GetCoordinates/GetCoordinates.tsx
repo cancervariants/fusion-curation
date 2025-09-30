@@ -420,7 +420,37 @@ const GetCoordinates: React.FC = () => {
       case TxElementInputType.ec:
         return (
           <>
-            <Box>{txInputField}</Box>
+            <Box className={classes.fieldsPair}>
+              <GeneAutocomplete
+                gene={gene}
+                setGene={setGene}
+                geneText={geneText}
+                setGeneText={setGeneText}
+                setChromosome={setChromosome}
+                setStrand={setStrand}
+                setTranscripts={setGeneTranscripts}
+                setDefaultTranscript={setSelectedTranscript}
+              />
+              <FormControl>
+                <InputLabel>Transcript</InputLabel>
+                <Select
+                  labelId="transcript-select-label"
+                  id="transcript-select"
+                  value={selectedTranscript}
+                  label="Transcript"
+                  onChange={handleTranscriptSelect}
+                  placeholder="Transcript"
+                  style={{ minWidth: "150px" }}
+                >
+                  {geneTranscripts.map((tx, index) => (
+                    <MenuItem key={index} value={tx.transcript}>
+                      {tx.transcript}{" "}
+                      {tx.maneStatus ? `(${tx.maneStatus})` : null}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
             <Box className={classes.fieldsPair}>
               <TextField
                 margin="dense"

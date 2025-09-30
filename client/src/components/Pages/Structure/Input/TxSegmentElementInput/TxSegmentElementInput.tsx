@@ -480,7 +480,38 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       case TxElementInputType.ec:
         return (
           <Box>
-            {txInputField}
+            <Box className="mid-inputs" minWidth="325px">
+              <GeneAutocomplete
+                gene={txGene}
+                setGene={setTxGene}
+                tooltipDirection="bottom"
+                geneText={txGeneText}
+                setGeneText={setTxGeneText}
+                setChromosome={setTxChrom}
+                setStrand={setTxStrand}
+                setTranscripts={setGeneTranscripts}
+                setDefaultTranscript={setTxAc}
+              />
+              <FormControl variant="standard">
+                <InputLabel id="transcript-select-label">Transcript</InputLabel>
+                <Select
+                  labelId="transcript-select-label"
+                  id="transcript-select"
+                  value={txAc}
+                  label="Transcript"
+                  onChange={handleTranscriptSelect}
+                  placeholder="Transcript"
+                  style={{ minWidth: "150px" }}
+                >
+                  {geneTranscripts.map((tx, index) => (
+                    <MenuItem key={index} value={tx.transcript}>
+                      {tx.transcript}{" "}
+                      {tx.maneStatus ? `(${tx.maneStatus})` : null}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
             <Box className="bottom-inputs">
               <HelpTooltip
                 placement="bottom"
