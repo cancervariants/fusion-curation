@@ -52,7 +52,7 @@ const ChromosomeField: React.FC<Props> = ({
 }) => {
   return (
     <HelpTooltip
-      placement="bottom"
+      placement="left"
       title={
         <>
           <Typography>The chromosome on which the segment lies.</Typography>
