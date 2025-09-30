@@ -46,7 +46,7 @@ def get_mane_transcripts(request: Request, term: str) -> dict:
         symbol
     )
     if not transcripts:
-        return {"warnings": [f"No matching transcripts: {term}"]}
+        return {"warnings": [f"No matching transcripts: {term}"], "transcripts": None}
     return {"transcripts": transcripts}
 
 
