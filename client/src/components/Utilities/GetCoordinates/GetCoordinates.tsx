@@ -304,8 +304,10 @@ const GetCoordinates: React.FC = () => {
     />
   );
 
-  const handleChromosomeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setChromosome(e.target.value);
+  const handleChromosomeChange = (
+    e: ChangeEvent<{ name?: string; value: unknown }>
+  ) => {
+    setChromosome(e.target.value as string);
   };
 
   const genomicCoordinateInfo = (
