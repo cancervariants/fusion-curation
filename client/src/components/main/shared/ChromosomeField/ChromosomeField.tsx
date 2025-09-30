@@ -25,9 +25,9 @@ const ChromosomeField: React.FC<Props> = ({ fieldValue, width, onChange }) => {
         <>
           <Typography>The chromosome on which the segment lies.</Typography>
           <Typography>
-            RefSeq identifiers (e.g.{" "}
+            Only GRCh38 RefSeq identifiers (e.g.{" "}
             <Typography variant="overline">NC_000001.11</Typography>) are
-            preferred.
+            supported.
           </Typography>
         </>
       }
