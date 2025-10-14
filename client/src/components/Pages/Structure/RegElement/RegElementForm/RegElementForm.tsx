@@ -15,6 +15,7 @@ import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
 import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import ChromosomeField from "../../../../main/shared/ChromosomeField/ChromosomeField";
 import { TxGenomicCoords } from "../../../../main/shared/TxGenomicCoords/TxGenomicCoords";
+import { setNumericField } from "../../../../Utilities/SetNumericField/SetNumericField";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -74,28 +75,6 @@ const RegElementForm: React.FC<Props> = ({
   const inputComplete = gene === "";
   const validated = inputComplete;
   const [expanded, setExpanded] = useState<boolean>(!validated);
-
-  /**
-   * Handle pre-request validation for a numeric input field
-   * @param value user-entered value
-   * @param warnSetter useState setter function for warning text
-   * @param valueSetter useState value setter function
-   * @param positive if true, must be >= 0
-   */
-  const setNumericField = (
-    value: string,
-    warnSetter: CallableFunction,
-    valueSetter: CallableFunction,
-    positive: boolean
-  ) => {
-    const re = positive ? /^[0-9]*$/ : /^\-?[0-9]*$/;
-    if (!value.match(re)) {
-      warnSetter(`${positive ? "Nonzero i" : "I"}nteger required`);
-    } else {
-      warnSetter("");
-    }
-    valueSetter(value);
-  };
 
   const handleEnterKey = (e: KeyboardEvent) => {
     if (e.key == "Enter" && validated) {
