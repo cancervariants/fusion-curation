@@ -28,6 +28,8 @@ import ChromosomeField from "../../../../main/shared/ChromosomeField/ChromosomeF
 import TranscriptField from "../../../../main/shared/TranscriptField/TranscriptField";
 import StrandSwitch from "../../../../main/shared/StrandSwitch/StrandSwitch";
 import GeneTranscriptSelector from "../../../../main/shared/GeneTranscriptSelector/GeneTranscriptSelector";
+import { TxGenomicCoords } from "../../../../main/shared/TxGenomicCoords/TxGenomicCoords";
+import { setNumericField } from "../../../../Utilities/SetNumericField/SetNumericField";
 
 interface TxSegmentElementInputProps extends StructuralElementInputProps {
   element: ClientTranscriptSegmentElement;
@@ -306,93 +308,6 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
     }
   };
 
-  /**
-   * Handle pre-request validation for a numeric input field
-   * @param value user-entered value
-   * @param warnSetter useState setter function for warning text
-   * @param valueSetter useState value setter function
-   * @param positive if true, must be >= 0
-   */
-  const setNumericField = (
-    value: string,
-    warnSetter: CallableFunction,
-    valueSetter: CallableFunction,
-    positive: boolean
-  ) => {
-    const re = positive ? /^[0-9]*$/ : /^\-?[0-9]*$/;
-    if (!value.match(re)) {
-      warnSetter(`${positive ? "Nonzero i" : "I"}nteger required`);
-    } else {
-      warnSetter("");
-    }
-    valueSetter(value);
-  };
-
-  /**
-   * Render transcript segment genomic coordinate fields
-   * @returns start and end position input TextFields
-   */
-  const renderTxGenomicCoords = () => (
-    <>
-      <HelpTooltip
-        placement="bottom"
-        title={
-          <Typography>
-            The starting genomic position (residue) of the transcript segment.
-          </Typography>
-        }
-      >
-        <TextField
-          margin="dense"
-          InputLabelProps={{ shrink: true }}
-          style={{ width: 300 }}
-          label="Genomic Starting Position (Residue)"
-          value={txStartingGenomic}
-          onChange={(event) =>
-            setNumericField(
-              event.target.value,
-              setTxStartingGenomicText,
-              setTxStartingGenomic,
-              true
-            )
-          }
-          onKeyDown={handleEnterKey}
-          error={txStartingGenomicText !== ""}
-          helperText={
-            txStartingGenomicText !== "" ? txStartingGenomicText : null
-          }
-        />
-      </HelpTooltip>
-      <HelpTooltip
-        placement="bottom"
-        title={
-          <Typography>
-            The ending genomic position (residue) of the transcript segment.
-          </Typography>
-        }
-      >
-        <TextField
-          margin="dense"
-          InputLabelProps={{ shrink: true }}
-          style={{ width: 300 }}
-          label="Genomic Ending Position (Residue)"
-          value={txEndingGenomic}
-          onChange={(event) =>
-            setNumericField(
-              event.target.value,
-              setTxEndingGenomicText,
-              setTxEndingGenomic,
-              true
-            )
-          }
-          onKeyDown={handleEnterKey}
-          error={txEndingGenomicText !== ""}
-          helperText={txEndingGenomicText !== "" ? txEndingGenomicText : null}
-        />
-      </HelpTooltip>
-    </>
-  );
-
   const txInputField = (
     <Box className="mid-inputs" minWidth="255px">
       <TranscriptField
@@ -421,7 +336,20 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
           <StrandSwitch setStrand={setTxStrand} selectedStrand={txStrand} />
         </Box>
       </Box>
-      <Box className="bottom-inputs">{renderTxGenomicCoords()}</Box>
+      <Box className="bottom-inputs">
+        <TxGenomicCoords
+          genomicStart={txStartingGenomic}
+          genomicEnd={txEndingGenomic}
+          txStartingGenomicText={txStartingGenomicText}
+          txEndingGenomicText={txEndingGenomicText}
+          setTxStartingGenomicText={setTxStartingGenomicText}
+          setTxEndingGenomicText={setTxEndingGenomicText}
+          setGenomicStart={setTxStartingGenomic}
+          setGenomicEnd={setTxEndingGenomic}
+          setNumericField={setNumericField}
+          handleEnterKey={handleEnterKey}
+        />
+      </Box>
     </>
   );
 

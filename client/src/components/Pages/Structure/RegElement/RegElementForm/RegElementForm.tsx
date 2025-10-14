@@ -14,6 +14,7 @@ import { RegulatoryClass } from "../../../../../services/ResponseModels";
 import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
 import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import ChromosomeField from "../../../../main/shared/ChromosomeField/ChromosomeField";
+import { TxGenomicCoords } from "../../../../main/shared/TxGenomicCoords/TxGenomicCoords";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -34,17 +35,17 @@ interface Props {
   regulatoryClassItems: object;
   elementClass: RegulatoryClass | "default";
   setElementClass: CallableFunction;
-  featureId?: string;
+  featureId: string;
   setFeatureId: CallableFunction;
   gene: string;
   setGene: CallableFunction;
   geneText: string;
   setGeneText: CallableFunction;
-  chromosome?: string;
+  chromosome: string;
   setChromosome: CallableFunction;
-  genomicStart?: string;
+  genomicStart: string;
   setGenomicStart: CallableFunction;
-  genomicEnd?: string;
+  genomicEnd: string;
   setGenomicEnd: CallableFunction;
 }
 
@@ -197,7 +198,20 @@ const RegElementForm: React.FC<Props> = ({
           onChange={handleChromosomeChange}
         />
       </Box>
-      <Box className="bottom-inputs">{renderTxGenomicCoords()}</Box>
+      <Box className="bottom-inputs">
+        <TxGenomicCoords
+          genomicStart={genomicStart}
+          genomicEnd={genomicEnd}
+          txStartingGenomicText={txStartingGenomicText}
+          txEndingGenomicText={txEndingGenomicText}
+          setTxStartingGenomicText={setTxStartingGenomicText}
+          setTxEndingGenomicText={setTxEndingGenomicText}
+          setGenomicStart={setGenomicStart}
+          setGenomicEnd={setGenomicEnd}
+          setNumericField={setNumericField}
+          handleEnterKey={handleEnterKey}
+        />
+      </Box>
     </>
   );
 
