@@ -203,44 +203,49 @@ const RegElementForm: React.FC<Props> = ({
 
   return (
     <div>
-      <FormControl style={{ width: "100%" }}>
-        <InputLabel id="regulatory-element-class-label">Class</InputLabel>
+      <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}>
+        <FormControl style={{ flex: 1 }}>
+          <InputLabel id="regulatory-element-class-label">Class</InputLabel>
+          <HelpTooltip
+            placement="left"
+            title={
+              <Typography>INSDC regulatory class vocabulary term.</Typography>
+            }
+          >
+            <Select
+              labelId="regulatory-element-class-label"
+              id="regulatory-element-class"
+              className={classes.classSelect}
+              value={elementClass}
+              onChange={(e) =>
+                setElementClass(e.target.value as RegulatoryClass)
+              }
+            >
+              {buildMenuItems()}
+            </Select>
+          </HelpTooltip>
+        </FormControl>
         <HelpTooltip
-          placement="left"
+          placement="bottom"
           title={
-            <Typography>INSDC regulatory class vocabulary term.</Typography>
+            <Typography>
+              An optional identifier for the regulatory feature, e.g. registered
+              cis-regulatory elements from ENCODE.
+            </Typography>
           }
         >
-          <Select
-            labelId="regulatory-element-class-label"
-            id="regulatory-element-class"
-            className={classes.classSelect}
-            value={elementClass}
-            onChange={(e) => setElementClass(e.target.value as RegulatoryClass)}
-          >
-            {buildMenuItems()}
-          </Select>
+          <TextField
+            style={{ flex: 1 }}
+            margin="dense"
+            label="Feature ID"
+            value={featureId}
+            onChange={(event) => setFeatureId(event.target.value)}
+            onKeyDown={(e) => {
+              handleEnterKey;
+            }}
+          />
         </HelpTooltip>
-      </FormControl>
-      <HelpTooltip
-        placement="bottom"
-        title={
-          <Typography>
-            An optional identifier for the regulatory feature, e.g. registered
-            cis-regulatory elements from ENCODE.
-          </Typography>
-        }
-      >
-        <TextField
-          margin="dense"
-          label="Feature ID"
-          value={featureId}
-          onChange={(event) => setFeatureId(event.target.value)}
-          onKeyDown={(e) => {
-            handleEnterKey;
-          }}
-        />
-      </HelpTooltip>
+      </div>
       <GeneAutocomplete
         gene={gene}
         setGene={setGene}
