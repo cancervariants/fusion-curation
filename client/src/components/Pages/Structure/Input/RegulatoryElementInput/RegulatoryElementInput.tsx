@@ -68,14 +68,23 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
   const [chromosome, setChromosome] = useState<string>(
     regElement?.featureLocation?.name || ""
   );
-  const [genomicStart, setGenomicStart] = useState<string>(
-    regElement?.featureLocation?.start !== undefined
-      ? String(parseInt(regElement?.featureLocation?.start) + 1)
-      : ""
-  );
-  const [genomicEnd, setGenomicEnd] = useState<string>(
-    regElement?.featureLocation?.end || ""
-  );
+  const [genomicStart, setGenomicStart] = useState<string>(() => {
+    const start = regElement?.featureLocation?.start;
+
+    if (typeof start === "number") {
+      return String(start + 1);
+    }
+
+    return "";
+  });
+  const [genomicEnd, setGenomicEnd] = useState<string>(() => {
+    const end = regElement?.featureLocation?.end;
+
+    if (typeof end == "number") {
+      return String(end);
+    }
+    return "";
+  });
 
   const validated =
     (gene !== "" && geneText == "" && elementClass !== "default") ||
@@ -110,7 +119,7 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
         setErrors(reResponse.warnings);
         return;
       }
-      getRegElementNomenclature(reResponse.regulatoryElement).then(
+      getRegElementNomenclature(reResponse.regulatoryElement!).then(
         (nomenclatureResponse) => {
           if (
             nomenclatureResponse.warnings &&

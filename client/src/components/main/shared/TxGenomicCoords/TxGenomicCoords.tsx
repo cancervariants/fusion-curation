@@ -2,7 +2,7 @@ import React from "react";
 import { TextField, Typography, Box } from "@mui/material";
 import HelpTooltip from "../HelpTooltip/HelpTooltip";
 
-type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
+export type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
 
 interface TxGenomicCoordsProps {
   genomicStart: string;

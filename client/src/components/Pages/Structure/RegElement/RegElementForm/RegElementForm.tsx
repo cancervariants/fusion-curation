@@ -14,7 +14,10 @@ import { RegulatoryClass } from "../../../../../services/ResponseModels";
 import HelpTooltip from "../../../../main/shared/HelpTooltip/HelpTooltip";
 import { GeneAutocomplete } from "../../../../main/shared/GeneAutocomplete/GeneAutocomplete";
 import ChromosomeField from "../../../../main/shared/ChromosomeField/ChromosomeField";
-import { TxGenomicCoords } from "../../../../main/shared/TxGenomicCoords/TxGenomicCoords";
+import {
+  Setter,
+  TxGenomicCoords,
+} from "../../../../main/shared/TxGenomicCoords/TxGenomicCoords";
 import { setNumericField } from "../../../../Utilities/SetNumericField/SetNumericField";
 
 const useStyles = makeStyles((theme) => ({
@@ -45,9 +48,9 @@ interface Props {
   chromosome: string;
   setChromosome: CallableFunction;
   genomicStart: string;
-  setGenomicStart: CallableFunction;
+  setGenomicStart: Setter<string>;
   genomicEnd: string;
-  setGenomicEnd: CallableFunction;
+  setGenomicEnd: Setter<string>;
 }
 
 const RegElementForm: React.FC<Props> = ({
@@ -74,9 +77,9 @@ const RegElementForm: React.FC<Props> = ({
 
   const inputComplete = gene === "";
   const validated = inputComplete;
-  const [expanded, setExpanded] = useState<boolean>(!validated);
+  const [, setExpanded] = useState<boolean>(!validated);
 
-  const handleEnterKey = (e: KeyboardEvent) => {
+  const handleEnterKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key == "Enter" && validated) {
       setExpanded(false);
     }
@@ -97,71 +100,6 @@ const RegElementForm: React.FC<Props> = ({
       </MenuItem>
     ));
   };
-
-  /**
-   * Render transcript segment genomic coordinate fields
-   * @returns start and end position input TextFields
-   */
-  const renderTxGenomicCoords = () => (
-    <>
-      <HelpTooltip
-        placement="bottom"
-        title={
-          <Typography>
-            The starting genomic position (residue) of the transcript segment.
-          </Typography>
-        }
-      >
-        <TextField
-          margin="dense"
-          InputLabelProps={{ shrink: true }}
-          style={{ width: 300 }}
-          label="Genomic Starting Position (Residue)"
-          value={genomicStart}
-          onChange={(event) =>
-            setNumericField(
-              event.target.value,
-              setTxStartingGenomicText,
-              setGenomicStart,
-              true
-            )
-          }
-          onKeyDown={handleEnterKey}
-          error={txStartingGenomicText !== ""}
-          helperText={
-            txStartingGenomicText !== "" ? txStartingGenomicText : null
-          }
-        />
-      </HelpTooltip>
-      <HelpTooltip
-        placement="bottom"
-        title={
-          <Typography>
-            The ending genomic position (residue) of the transcript segment.
-          </Typography>
-        }
-      >
-        <TextField
-          margin="dense"
-          InputLabelProps={{ shrink: true }}
-          style={{ width: 300 }}
-          label="Genomic Ending Position (Residue)"
-          value={genomicEnd}
-          onChange={(event) =>
-            setNumericField(
-              event.target.value,
-              setTxEndingGenomicText,
-              setGenomicEnd,
-              true
-            )
-          }
-          onKeyDown={handleEnterKey}
-          error={txEndingGenomicText !== ""}
-          helperText={txEndingGenomicText !== "" ? txEndingGenomicText : null}
-        />
-      </HelpTooltip>
-    </>
-  );
 
   const handleChromosomeChange = (
     e: ChangeEvent<{ name?: string; value: unknown }>
@@ -233,7 +171,7 @@ const RegElementForm: React.FC<Props> = ({
             label="Feature ID"
             value={featureId}
             onChange={(event) => setFeatureId(event.target.value)}
-            onKeyDown={(e) => {
+            onKeyDown={() => {
               handleEnterKey;
             }}
           />
