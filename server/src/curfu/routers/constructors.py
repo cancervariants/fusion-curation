@@ -218,7 +218,13 @@ def build_domain(
     tags=[RouteTag.CONSTRUCTORS],
 )
 def build_regulatory_element(
-    request: Request, element_class: RegulatoryClass, gene_name: str
+    request: Request,
+    element_class: RegulatoryClass,
+    gene_name: str,
+    feature_id: str | None = None,
+    sequence_id: str | None = None,
+    start: int | None = None,
+    end: int | None = None,
 ) -> ResponseDict:
     """Construct regulatory element from given params.
     \f
@@ -228,11 +234,28 @@ def build_regulatory_element(
     :param gene_name: referent acquired from autocomplete.
     :return: complete regulatory element object or warning message
     """
+    response: ResponseDict = {"warnings": None, "regulatoryElement": None}
     try:
         normalized_class = RegulatoryClass[element_class.upper()]
     except KeyError:
-        return {"warnings": [f"unrecognized regulatory class value: {element_class}"]}
-    element, warnings = request.app.state.fusor.regulatory_element(
-        normalized_class, gene_name
-    )
-    return {"regulatoryElement": element, "warnings": warnings}
+        response["warnings"] = [f"unrecognized regulatory class value: {element_class}"]
+        return response
+
+    try:
+        element, warnings = request.app.state.fusor.regulatory_element(
+            normalized_class,
+            gene_name,
+            feature_id=feature_id,
+            sequence_id=sequence_id,
+            start=start,
+            end=end,
+            coordinate_type=CoordinateType.RESIDUE,
+        )
+        if warnings:
+            response["warnings"] = [warnings]
+        else:
+            response["regulatoryElement"] = element
+    except ValidationError as e:
+        response["warnings"] = [f"Unable to construct Regulatory Element: {e}"]
+
+    return response

@@ -200,6 +200,38 @@ async def test_build_reg_element(check_response, check_reg_element_response):
         check_reg_element_response,
     )
 
+    await check_response(
+        "/api/construct/regulatory_element?element_class=promoter&gene_name=braf&sequence_id=NC_000001.11&start=15456&end=15456",
+        {
+            "regulatoryElement": {
+                "associatedGene": {
+                    "primaryCoding": {
+                        "id": "hgnc:1097",
+                        "code": "HGNC:1097",
+                        "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                    },
+                    "name": "BRAF",
+                    "conceptType": "Gene",
+                },
+                "featureLocation": {
+                    "id": "ga4gh:SL.-xC3omZDIKZEuotbbHWQMTC8sS3nOxTb",
+                    "name": "NC_000001.11",
+                    "type": "SequenceLocation",
+                    "sequenceReference": {
+                        "id": "refseq:NC_000001.11",
+                        "refgetAccession": "SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+                        "type": "SequenceReference",
+                    },
+                    "start": 15455,
+                    "end": 15456,
+                },
+                "regulatoryClass": "promoter",
+                "type": "RegulatoryElement",
+            }
+        },
+        check_reg_element_response,
+    )
+
 
 @pytest.mark.asyncio()
 async def test_build_templated_sequence(

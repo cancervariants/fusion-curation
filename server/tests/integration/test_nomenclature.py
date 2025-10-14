@@ -28,6 +28,7 @@ def epcam_5_prime():
     return {
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_002354.2",
+        "transcriptStatus": "longest_compatible_remaining",
         "exonEnd": 5,
         "exonEndOffset": 0,
         "gene": {
@@ -56,6 +57,7 @@ def epcam_3_prime():
     return {
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_002354.2",
+        "transcriptStatus": "longest_compatible_remaining",
         "exonStart": 5,
         "exonStartOffset": 0,
         "gene": {
@@ -168,7 +170,7 @@ async def test_tx_segment_nomenclature(
     )
     assert response.status_code == 200
     expected_warnings = [
-        "validation error for TranscriptSegmentElement",
+        "validation errors for TranscriptSegmentElement",
         "Field required",
     ]
     for expected in expected_warnings:

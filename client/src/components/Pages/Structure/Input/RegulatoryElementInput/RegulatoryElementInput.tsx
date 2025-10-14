@@ -57,23 +57,55 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
   const [elementClass, setElementClass] = useState<RegulatoryClass | "default">(
     regElement?.regulatoryClass || "default"
   );
+  const [featureId, setFeatureId] = useState<string>(
+    regElement?.featureId || ""
+  );
   const [gene, setGene] = useState<string>(
     regElement?.associatedGene?.name || ""
   );
   const [geneText, setGeneText] = useState<string>("");
 
-  const validated = gene !== "" && geneText == "" && elementClass !== "default";
+  const [chromosome, setChromosome] = useState<string>(
+    regElement?.featureLocation?.name || ""
+  );
+  const [genomicStart, setGenomicStart] = useState<string>(
+    regElement?.featureLocation?.start !== undefined
+      ? String(parseInt(regElement?.featureLocation?.start) + 1)
+      : ""
+  );
+  const [genomicEnd, setGenomicEnd] = useState<string>(
+    regElement?.featureLocation?.end || ""
+  );
+
+  const validated =
+    (gene !== "" && geneText == "" && elementClass !== "default") ||
+    (chromosome !== "" && genomicStart !== "" && genomicEnd !== "");
   const [expanded, setExpanded] = useState<boolean>(!validated);
 
   const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
     if (validated) handleAdd();
-  }, [gene, geneText, elementClass]);
+  }, [
+    gene,
+    geneText,
+    elementClass,
+    featureId,
+    chromosome,
+    genomicStart,
+    genomicEnd,
+  ]);
 
   const handleAdd = () => {
     if (elementClass === "default") return;
-    getRegulatoryElement(elementClass, gene).then((reResponse) => {
+    getRegulatoryElement(
+      elementClass,
+      gene,
+      featureId,
+      chromosome,
+      genomicStart,
+      genomicEnd
+    ).then((reResponse) => {
       if (reResponse.warnings && reResponse.warnings.length > 0) {
         setErrors(reResponse.warnings);
         return;
@@ -107,8 +139,12 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
     setRegElement(undefined);
     setFusion(cloneFusion);
     setElementClass("default");
+    setFeatureId("");
     setGene("");
     setGeneText("");
+    setChromosome("");
+    setGenomicStart("");
+    setGenomicEnd("");
     setErrors([]);
   };
 
@@ -118,10 +154,18 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
         regulatoryClassItems={regulatoryClassItems}
         elementClass={elementClass}
         setElementClass={setElementClass}
+        featureId={featureId}
+        setFeatureId={setFeatureId}
         gene={gene}
         setGene={setGene}
         geneText={geneText}
         setGeneText={setGeneText}
+        chromosome={chromosome}
+        setChromosome={setChromosome}
+        genomicStart={genomicStart}
+        setGenomicStart={setGenomicStart}
+        genomicEnd={genomicEnd}
+        setGenomicEnd={setGenomicEnd}
       />
     </>
   );

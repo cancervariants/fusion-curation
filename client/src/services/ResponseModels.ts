@@ -71,6 +71,14 @@ export type MoleculeType = "genomic" | "RNA" | "mRNA" | "protein";
  */
 export type Range = [number | null, number | null];
 /**
+ * Create Enum for Transcript Priority labels
+ */
+export type TranscriptPriority =
+  | "mane_select"
+  | "mane_plus_clinical"
+  | "longest_compatible_remaining"
+  | "grch38";
+/**
  * Create enum for positive and negative strand
  */
 export type Strand = 1 | -1;
@@ -151,7 +159,7 @@ export interface RegulatoryElement {
   regulatoryClass: RegulatoryClass;
   featureId?: string | null;
   associatedGene?: MappableConcept | null;
-  featureLocation?: SequenceLocation | null;
+  featureLocation?: GenomicLocation | null;
 }
 /**
  * A concept based on a primaryCoding and/or name that may be mapped to one or more other `Codings`.
@@ -297,9 +305,9 @@ export interface Coding1 {
   iris?: IriReference[] | null;
 }
 /**
- * A `Location` defined by an interval on a `Sequence`.
+ * Define GenomicLocation class
  */
-export interface SequenceLocation {
+export interface GenomicLocation {
   /**
    * The 'logical' identifier of the Entity in the system of record, e.g. a UUID.  This 'id' is unique within a given system, but may or may not be globally unique outside the system. It is used within a system to reference an object from another.
    */
@@ -308,10 +316,7 @@ export interface SequenceLocation {
    * MUST be "SequenceLocation"
    */
   type?: "SequenceLocation";
-  /**
-   * A primary name for the entity.
-   */
-  name?: string | null;
+  name: string;
   /**
    * A free-text description of the Entity.
    */
@@ -400,6 +405,7 @@ export interface SequenceReference {
 export interface TranscriptSegmentElement {
   type?: "TranscriptSegmentElement";
   transcript: string;
+  transcriptStatus: TranscriptPriority;
   strand: Strand;
   exonStart?: number | null;
   exonStartOffset?: number | null;
@@ -410,6 +416,55 @@ export interface TranscriptSegmentElement {
   elementGenomicEnd?: SequenceLocation | null;
   coverage?: BreakpointCoverage | null;
   anchoredReads?: AnchoredReads | null;
+}
+/**
+ * A `Location` defined by an interval on a `Sequence`.
+ */
+export interface SequenceLocation {
+  /**
+   * The 'logical' identifier of the Entity in the system of record, e.g. a UUID.  This 'id' is unique within a given system, but may or may not be globally unique outside the system. It is used within a system to reference an object from another.
+   */
+  id?: string | null;
+  /**
+   * MUST be "SequenceLocation"
+   */
+  type?: "SequenceLocation";
+  /**
+   * A primary name for the entity.
+   */
+  name?: string | null;
+  /**
+   * A free-text description of the Entity.
+   */
+  description?: string | null;
+  /**
+   * Alternative name(s) for the Entity.
+   */
+  aliases?: string[] | null;
+  /**
+   * A list of extensions to the Entity, that allow for capture of information not directly supported by elements defined in the model.
+   */
+  extensions?: Extension[] | null;
+  /**
+   * A sha512t24u digest created using the VRS Computed Identifier algorithm.
+   */
+  digest?: string | null;
+  /**
+   * A reference to a SequenceReference on which the location is defined.
+   */
+  sequenceReference?: IriReference | SequenceReference | null;
+  /**
+   * The start coordinate or range of the SequenceLocation. The minimum value of this coordinate or range is 0. For locations on linear sequences, this MUST represent a coordinate or range less than or equal to the value of `end`. For circular sequences, `start` is greater than `end` when the location spans the sequence 0 coordinate.
+   */
+  start?: Range | number | null;
+  /**
+   * The end coordinate or range of the SequenceLocation. The minimum value of this coordinate or range is 0. For locations on linear sequences, this MUST represent a coordinate or range greater than or equal to the value of `start`. For circular sequences, `end` is less than `start` when the location spans the sequence 0 coordinate.
+   */
+  end?: Range | number | null;
+  /**
+   * The literal sequence encoded by the `sequenceReference` at these coordinates.
+   */
+  sequence?: SequenceString | null;
 }
 /**
  * Define BreakpointCoverage class.
@@ -660,7 +715,7 @@ export interface ClientRegulatoryElement {
   regulatoryClass: RegulatoryClass;
   featureId?: string | null;
   associatedGene?: MappableConcept | null;
-  featureLocation?: SequenceLocation | null;
+  featureLocation?: GenomicLocation | null;
   displayClass: string;
 }
 /**
@@ -671,6 +726,7 @@ export interface ClientTranscriptSegmentElement {
   nomenclature: string;
   type?: "TranscriptSegmentElement";
   transcript: string;
+  transcriptStatus: TranscriptPriority;
   strand: Strand;
   exonStart?: number | null;
   exonStartOffset?: number | null;
@@ -803,6 +859,10 @@ export interface GenomicTxSegService {
    * RefSeq transcript accession.
    */
   tx_ac?: string | null;
+  /**
+   * Transcript priority for RefSeq transcript accession
+   */
+  tx_status?: TranscriptPriority | null;
   /**
    * The strand that the transcript exists on.
    */
@@ -1019,7 +1079,7 @@ export interface NormalizeGeneResponse {
  */
 export interface RegulatoryElementResponse {
   warnings?: string[] | null;
-  regulatoryElement: RegulatoryElement;
+  regulatoryElement: RegulatoryElement | null;
 }
 /**
  * Abstract Response class for defining API response structures.

@@ -139,6 +139,7 @@ def ntrk1_tx_element_start(ntrk1_gene):
     return {
         "type": "TranscriptSegmentElement",
         "transcript": "refseq:NM_002529.3",
+        "transcriptStatus": "longest_compatible_remaining",
         "exonStart": 2,
         "exonStartOffset": 1,
         "gene": ntrk1_gene,

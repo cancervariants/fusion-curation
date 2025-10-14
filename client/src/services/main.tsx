@@ -416,15 +416,32 @@ export const getFusionNomenclature = async (
  * Build complete RegulatoryElement
  * @param regulatoryClass value of regulatory element class (the generated Typescript type expects it to be lowercase, which is fine -- the server will upper-case it)
  * @param geneName user-provided gene referent (could theoretically be some sort of concept ID or xref, too)
+ * @param featureId A identifier for the regulatory feature
+ * @param sequenceId RefSeq accession (NC_)
+ * @param start Genomic start location (residue)
+ * @param end Genomic end location (residue)
  * @returns constructed Regulatory element or warnings
  */
 export const getRegulatoryElement = async (
   regulatoryClass: RegulatoryClass,
-  geneName: string
+  geneName: string,
+  featureId: string,
+  sequenceId: string,
+  start: string,
+  end: string
 ): Promise<RegulatoryElementResponse> => {
-  const response = await fetch(
-    `/api/construct/regulatory_element?element_class=${regulatoryClass}&gene_name=${geneName}`
-  );
+  const params: Array<string> = [
+    `element_class=${regulatoryClass}`,
+    `gene_name=${geneName}`,
+  ];
+
+  if (featureId !== "") params.push(`feature_id=${featureId}`);
+  if (sequenceId !== "") params.push(`sequence_id=${sequenceId}`);
+  if (start !== "") params.push(`start=${start}`);
+  if (end !== "") params.push(`end=${end}`);
+
+  const url = "/api/construct/regulatory_element?" + params.join("&");
+  const response = await fetch(url);
   const responseJson = await response.json();
   return responseJson;
 };
