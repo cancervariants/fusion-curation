@@ -223,8 +223,8 @@ def build_regulatory_element(
     gene_name: str,
     feature_id: str | None = None,
     sequence_id: str | None = None,
-    start: int | None = None,
-    end: int | None = None,
+    start: str | None = None,
+    end: str | None = None,
 ) -> ResponseDict:
     """Construct regulatory element from given params.
     \f
@@ -232,6 +232,10 @@ def build_regulatory_element(
         FUSOR and UTA-associated tools.
     :param element_class: type of regulatory element
     :param gene_name: referent acquired from autocomplete.
+    :param feature_id: The feature ID for the regulatory element
+    :param sequence_id: chromosome RefSeq accession for sequence
+    :param start: Genomic start position (residue)
+    :param end: Genomic end position (residue)
     :return: complete regulatory element object or warning message
     """
     response: ResponseDict = {"warnings": None, "regulatoryElement": None}

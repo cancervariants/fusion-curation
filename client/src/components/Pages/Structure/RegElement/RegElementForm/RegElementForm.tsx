@@ -117,6 +117,7 @@ const RegElementForm: React.FC<Props> = ({
       </Box>
       <Box className="bottom-inputs">
         <TxGenomicCoords
+          component={"regulatory element"}
           genomicStart={genomicStart}
           genomicEnd={genomicEnd}
           txStartingGenomicText={txStartingGenomicText}

@@ -338,6 +338,7 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
       </Box>
       <Box className="bottom-inputs">
         <TxGenomicCoords
+          component={"transcript segment"}
           genomicStart={txStartingGenomic}
           genomicEnd={txEndingGenomic}
           txStartingGenomicText={txStartingGenomicText}

@@ -5,6 +5,7 @@ import HelpTooltip from "../HelpTooltip/HelpTooltip";
 export type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
 
 interface TxGenomicCoordsProps {
+  component: string;
   genomicStart: string;
   genomicEnd: string;
   txStartingGenomicText?: string;
@@ -23,6 +24,7 @@ interface TxGenomicCoordsProps {
 }
 
 export const TxGenomicCoords: React.FC<TxGenomicCoordsProps> = ({
+  component,
   genomicStart,
   genomicEnd,
   txStartingGenomicText,
@@ -39,9 +41,7 @@ export const TxGenomicCoords: React.FC<TxGenomicCoordsProps> = ({
       <HelpTooltip
         placement="bottom"
         title={
-          <Typography>
-            The starting genomic position (residue) of the transcript segment.
-          </Typography>
+          <Typography>{`The starting genomic position (residue) of the ${component}.`}</Typography>
         }
       >
         <TextField
@@ -67,9 +67,7 @@ export const TxGenomicCoords: React.FC<TxGenomicCoordsProps> = ({
       <HelpTooltip
         placement="bottom"
         title={
-          <Typography>
-            The ending genomic position (residue) of the transcript segment.
-          </Typography>
+          <Typography>{`The ending genomic position (residue) of the ${component}.`}</Typography>
         }
       >
         <TextField
