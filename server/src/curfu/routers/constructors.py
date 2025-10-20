@@ -223,8 +223,8 @@ def build_regulatory_element(
     gene_name: str,
     feature_id: str | None = None,
     sequence_id: str | None = None,
-    start: str | None = None,
-    end: str | None = None,
+    start: int | None = None,
+    end: int | None = None,
 ) -> ResponseDict:
     """Construct regulatory element from given params.
     \f
@@ -251,8 +251,8 @@ def build_regulatory_element(
             gene_name,
             feature_id=feature_id,
             sequence_id=sequence_id,
-            start=int(start) if start is not None and start != "" else None,
-            end=int(end) if end is not None and end != "" else None,
+            start=start,
+            end=end,
             coordinate_type=CoordinateType.RESIDUE,
         )
         if warnings:

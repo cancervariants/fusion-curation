@@ -119,26 +119,28 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
         setErrors(reResponse.warnings);
         return;
       }
-      getRegElementNomenclature(reResponse.regulatoryElement!).then(
-        (nomenclatureResponse) => {
-          if (
-            nomenclatureResponse.warnings &&
-            nomenclatureResponse.warnings.length > 0
-          ) {
-            setErrors(nomenclatureResponse.warnings);
-            return;
+      if (reResponse.regulatoryElement) {
+        getRegElementNomenclature(reResponse.regulatoryElement).then(
+          (nomenclatureResponse) => {
+            if (
+              nomenclatureResponse.warnings &&
+              nomenclatureResponse.warnings.length > 0
+            ) {
+              setErrors(nomenclatureResponse.warnings);
+              return;
+            }
+            setErrors([]);
+            const newRegElement: ClientRegulatoryElement = {
+              ...reResponse.regulatoryElement,
+              elementId: element.elementId,
+              displayClass: regulatoryClassItems[elementClass][1],
+              nomenclature: nomenclatureResponse.nomenclature || "",
+            };
+            setRegElement(newRegElement);
+            setFusion({ ...fusion, ...{ regulatoryElement: newRegElement } });
           }
-          setErrors([]);
-          const newRegElement: ClientRegulatoryElement = {
-            ...reResponse.regulatoryElement,
-            elementId: element.elementId,
-            displayClass: regulatoryClassItems[elementClass][1],
-            nomenclature: nomenclatureResponse.nomenclature || "",
-          };
-          setRegElement(newRegElement);
-          setFusion({ ...fusion, ...{ regulatoryElement: newRegElement } });
-        }
-      );
+        );
+      }
     });
   };
 
