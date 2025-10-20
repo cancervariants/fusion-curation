@@ -251,8 +251,8 @@ def build_regulatory_element(
             gene_name,
             feature_id=feature_id,
             sequence_id=sequence_id,
-            start=start,
-            end=end,
+            start=int(start) if start is not None and start != "" else None,
+            end=int(end) if end is not None and end != "" else None,
             coordinate_type=CoordinateType.RESIDUE,
         )
         if warnings:
