@@ -88,15 +88,20 @@ export const Assay: React.FC<Props> = () => {
       : null
   );
 
+  const [assayName, setAssayName] = useState(
+    fusion?.assay?.assayName !== undefined ? fusion?.assay?.assayName : ""
+  );
   const [selectedAssayOption, setSelectedAssayOption] = useState(() => {
-    return ASSAY_OPTIONS.find((a) => a.name === fusion?.assay?.assayName) || {};
+    return (
+      ASSAY_OPTIONS.find((a) => a.name === assayName) || {
+        name: "",
+        identifier: "",
+      }
+    );
   });
   const isCustom = selectedAssayOption
     ? selectedAssayOption?.name === "custom"
     : false;
-  const [assayName, setAssayName] = useState(
-    fusion?.assay?.assayName !== undefined ? fusion?.assay?.assayName : ""
-  );
 
   const [assayId, setAssayId] = useState(
     fusion?.assay?.assayId !== undefined ? fusion?.assay?.assayId : ""
@@ -214,7 +219,7 @@ export const Assay: React.FC<Props> = () => {
         <Select
           label="Select assay"
           labelId="assay-option-select-label"
-          value={selectedAssayOption?.name || ""}
+          value={selectedAssayOption?.name}
           onChange={(event) =>
             handleValueChange("assaySelectedOption", event.target.value)
           }
@@ -241,7 +246,7 @@ export const Assay: React.FC<Props> = () => {
           <TextField
             label="Assay name"
             margin="dense"
-            value={fusion?.assay?.assayName || ""}
+            value={assayName || ""}
             disabled={!isCustom}
             onChange={(event) =>
               handleValueChange("assayName", event.target.value)
