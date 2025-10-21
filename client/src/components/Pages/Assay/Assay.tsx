@@ -264,7 +264,7 @@ export const Assay: React.FC<Props> = () => {
           }
         >
           <TextField
-            label="Assay IRI"
+            label="Assay ID"
             margin="dense"
             value={assayId}
             disabled={!isCustom}
