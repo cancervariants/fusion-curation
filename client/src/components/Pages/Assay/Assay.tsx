@@ -273,7 +273,6 @@ export const Assay: React.FC<Props> = () => {
             }
           />
         </HelpTooltip>
-
         <HelpTooltip
           placement="left"
           title={
