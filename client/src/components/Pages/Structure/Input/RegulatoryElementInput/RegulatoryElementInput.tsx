@@ -57,47 +57,90 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
   const [elementClass, setElementClass] = useState<RegulatoryClass | "default">(
     regElement?.regulatoryClass || "default"
   );
+  const [featureId, setFeatureId] = useState<string>(
+    regElement?.featureId || ""
+  );
   const [gene, setGene] = useState<string>(
     regElement?.associatedGene?.name || ""
   );
   const [geneText, setGeneText] = useState<string>("");
 
-  const validated = gene !== "" && geneText == "" && elementClass !== "default";
+  const [chromosome, setChromosome] = useState<string>(
+    regElement?.featureLocation?.name || ""
+  );
+  const [genomicStart, setGenomicStart] = useState<string>(() => {
+    const start = regElement?.featureLocation?.start;
+
+    if (typeof start === "number") {
+      return String(start + 1);
+    }
+
+    return "";
+  });
+  const [genomicEnd, setGenomicEnd] = useState<string>(() => {
+    const end = regElement?.featureLocation?.end;
+
+    if (typeof end == "number") {
+      return String(end);
+    }
+    return "";
+  });
+
+  const validated =
+    (gene !== "" && geneText == "" && elementClass !== "default") ||
+    (chromosome !== "" && genomicStart !== "" && genomicEnd !== "");
   const [expanded, setExpanded] = useState<boolean>(!validated);
 
   const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
     if (validated) handleAdd();
-  }, [gene, geneText, elementClass]);
+  }, [
+    gene,
+    geneText,
+    elementClass,
+    featureId,
+    chromosome,
+    genomicStart,
+    genomicEnd,
+  ]);
 
   const handleAdd = () => {
     if (elementClass === "default") return;
-    getRegulatoryElement(elementClass, gene).then((reResponse) => {
+    getRegulatoryElement(
+      elementClass,
+      gene,
+      featureId,
+      chromosome,
+      genomicStart,
+      genomicEnd
+    ).then((reResponse) => {
       if (reResponse.warnings && reResponse.warnings.length > 0) {
         setErrors(reResponse.warnings);
         return;
       }
-      getRegElementNomenclature(reResponse.regulatoryElement).then(
-        (nomenclatureResponse) => {
-          if (
-            nomenclatureResponse.warnings &&
-            nomenclatureResponse.warnings.length > 0
-          ) {
-            setErrors(nomenclatureResponse.warnings);
-            return;
+      if (reResponse.regulatoryElement) {
+        getRegElementNomenclature(reResponse.regulatoryElement).then(
+          (nomenclatureResponse) => {
+            if (
+              nomenclatureResponse.warnings &&
+              nomenclatureResponse.warnings.length > 0
+            ) {
+              setErrors(nomenclatureResponse.warnings);
+              return;
+            }
+            setErrors([]);
+            const newRegElement: ClientRegulatoryElement = {
+              ...reResponse.regulatoryElement,
+              elementId: element.elementId,
+              displayClass: regulatoryClassItems[elementClass][1],
+              nomenclature: nomenclatureResponse.nomenclature || "",
+            };
+            setRegElement(newRegElement);
+            setFusion({ ...fusion, ...{ regulatoryElement: newRegElement } });
           }
-          setErrors([]);
-          const newRegElement: ClientRegulatoryElement = {
-            ...reResponse.regulatoryElement,
-            elementId: element.elementId,
-            displayClass: regulatoryClassItems[elementClass][1],
-            nomenclature: nomenclatureResponse.nomenclature || "",
-          };
-          setRegElement(newRegElement);
-          setFusion({ ...fusion, ...{ regulatoryElement: newRegElement } });
-        }
-      );
+        );
+      }
     });
   };
 
@@ -107,8 +150,12 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
     setRegElement(undefined);
     setFusion(cloneFusion);
     setElementClass("default");
+    setFeatureId("");
     setGene("");
     setGeneText("");
+    setChromosome("");
+    setGenomicStart("");
+    setGenomicEnd("");
     setErrors([]);
   };
 
@@ -118,10 +165,18 @@ const RegulatoryElementInput: React.FC<RegulatoryElementInputProps> = ({
         regulatoryClassItems={regulatoryClassItems}
         elementClass={elementClass}
         setElementClass={setElementClass}
+        featureId={featureId}
+        setFeatureId={setFeatureId}
         gene={gene}
         setGene={setGene}
         geneText={geneText}
         setGeneText={setGeneText}
+        chromosome={chromosome}
+        setChromosome={setChromosome}
+        genomicStart={genomicStart}
+        setGenomicStart={setGenomicStart}
+        genomicEnd={genomicEnd}
+        setGenomicEnd={setGenomicEnd}
       />
     </>
   );

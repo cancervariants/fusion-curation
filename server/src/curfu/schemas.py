@@ -36,7 +36,13 @@ ResponseWarnings = list[StrictStr] | None
 
 ResponseDict = dict[
     str,
-    str | int | list[str] | list[tuple[str, str, str, str]] | FunctionalDomain | None,
+    str
+    | int
+    | list[str]
+    | list[tuple[str, str, str, str]]
+    | FunctionalDomain
+    | RegulatoryElement
+    | None,
 ]
 Warnings = list[str]
 
@@ -332,7 +338,7 @@ class NomenclatureResponse(Response):
 class RegulatoryElementResponse(Response):
     """Response model for regulatory element constructor."""
 
-    regulatoryElement: RegulatoryElement
+    regulatoryElement: RegulatoryElement | None
 
 
 class DemoResponse(Response):

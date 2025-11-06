@@ -28,9 +28,8 @@ dependencies = [
     "click",
     "boto3",
     "botocore",
-    #"fusor ~= 0.8.0",
-    "fusor @ git+https://github.com/cancervariants/fusor.git@11e995bb44874e0cf886a05e15f10872f88451fd",
-    "cool-seq-tool ~= 0.14.3",
+    "fusor ~= 0.9.2",
+    "cool-seq-tool ~= 0.15.0",
     "pydantic < 3, >= 2",
     "gene-normalizer ~= 0.10.0",
 ]
