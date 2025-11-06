@@ -9,7 +9,7 @@ from pathlib import Path
 from timeit import default_timer as timer
 
 import click
-from gene.database import create_db
+from gene.database.dynamodb import DynamoDbDatabase
 from gene.query import QueryHandler
 
 from curfu import APP_ROOT, logger
@@ -63,7 +63,7 @@ def get_uniprot_refs() -> UniprotRefs:
     start = timer()
 
     # scanning on DynamoDB_Local is extremely slow
-    q = QueryHandler(create_db())  # must be dynamodb
+    q = QueryHandler(DynamoDbDatabase())  # must be dynamodb
     genes = q.db.genes
 
     uniprot_ids: UniprotRefs = {}
@@ -281,7 +281,7 @@ def build_gene_domain_maps(
         directory.
     """
     start_time = timer()
-    today = datetime.strftime(datetime.datetime.now(tz=datetime.UTC), DATE_FMT)
+    today = datetime.datetime.strftime(datetime.datetime.now(tz=datetime.UTC), DATE_FMT)
 
     # get relevant Interpro IDs
     interpro_data_bin = []
