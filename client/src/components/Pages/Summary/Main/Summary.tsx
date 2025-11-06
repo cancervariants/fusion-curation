@@ -82,6 +82,7 @@ export const Summary: React.FC<Props> = ({ setVisibleTab }) => {
           elementGenomicStart: element.elementGenomicStart,
           elementGenomicEnd: element.elementGenomicEnd,
           strand: element.strand,
+          transcriptStatus: element.transcriptStatus,
         };
         return txSegmentElement;
       case "MultiplePossibleGenesElement":

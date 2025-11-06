@@ -6,8 +6,11 @@ import {
   Box,
   FormControl,
   FormControlLabel,
+  InputLabel,
+  MenuItem,
   Radio,
   RadioGroup,
+  Select,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -19,6 +22,25 @@ import HelpTooltip from "../../main/shared/HelpTooltip/HelpTooltip";
 interface Props {
   index: number;
 }
+
+const ASSAY_OPTIONS = [
+  {
+    name: "fluorescence in-situ hybridization assay",
+    identifier: "obi:OBI_0003094",
+  },
+  { name: "sequencing assay", identifier: "obi:OBI_0600047" },
+  { name: "DNA sequencing assay", identifier: "obi:OBI_0000626" },
+  { name: "RNA-seq assay", identifier: "obi:OBI_0001271" },
+  {
+    name: "comparative genomic hybridization by array assay",
+    identifier: "obi:OBI_0001393",
+  },
+  {
+    name: "RT-PCR",
+    identifier: "obi:OBI_0000552",
+  },
+  { name: "custom", identifier: "" },
+];
 
 export const Assay: React.FC<Props> = () => {
   const { colorTheme } = useColorTheme();
@@ -69,6 +91,17 @@ export const Assay: React.FC<Props> = () => {
   const [assayName, setAssayName] = useState(
     fusion?.assay?.assayName !== undefined ? fusion?.assay?.assayName : ""
   );
+  const [selectedAssayOption, setSelectedAssayOption] = useState(() => {
+    return (
+      ASSAY_OPTIONS.find((a) => a.name === assayName) || {
+        name: "",
+        identifier: "",
+      }
+    );
+  });
+  const isCustom = selectedAssayOption
+    ? selectedAssayOption?.name === "custom"
+    : false;
 
   const [assayId, setAssayId] = useState(
     fusion?.assay?.assayId !== undefined ? fusion?.assay?.assayId : ""
@@ -89,6 +122,7 @@ export const Assay: React.FC<Props> = () => {
   };
 
   const propertySetterMap = {
+    assaySelectedOption: [setSelectedAssayOption, "assaySelectedOption"],
     assayName: [setAssayName, "assayName"],
     assayId: [setAssayId, "assayId"],
     methodUri: [setMethodUri, "methodUri"],
@@ -116,6 +150,19 @@ export const Assay: React.FC<Props> = () => {
     const setterFunction: CallableFunction = propertySetterMap[propertyName][0];
     const jsonName: string = propertySetterMap[propertyName][1];
     const assay: FusionAssay = JSON.parse(JSON.stringify(fusion.assay));
+    if (propertyName === "assaySelectedOption") {
+      value = ASSAY_OPTIONS.find((a) => a.name === value);
+      setterFunction(value);
+      const newAssayName = value.name === "custom" ? "" : value?.name;
+      const newAssayId = value.identifier;
+
+      setAssayId(newAssayId);
+      setAssayName(newAssayName);
+      assay["assayId"] = newAssayId;
+      assay["assayName"] = newAssayName;
+      setFusion({ ...fusion, assay: assay });
+      return;
+    }
     if (value !== assay[jsonName]) {
       setterFunction(value);
       assay[jsonName] = value;
@@ -168,6 +215,24 @@ export const Assay: React.FC<Props> = () => {
         <Typography variant="h5" className={classes.prompt}>
           Provide assay metadata:
         </Typography>
+        <InputLabel id="select-assay-option">Select assay</InputLabel>
+        <Select
+          label="Select assay"
+          labelId="assay-option-select-label"
+          value={selectedAssayOption?.name}
+          onChange={(event) =>
+            handleValueChange("assaySelectedOption", event.target.value)
+          }
+          style={{ width: 550 }}
+        >
+          {ASSAY_OPTIONS.map((assayOption) => (
+            <MenuItem key={assayOption.name} value={assayOption.name}>
+              {assayOption.name}{" "}
+              {assayOption.identifier ? `(${assayOption.identifier})` : null}
+            </MenuItem>
+          ))}
+        </Select>
+
         <HelpTooltip
           placement="left"
           title={
@@ -181,7 +246,8 @@ export const Assay: React.FC<Props> = () => {
           <TextField
             label="Assay name"
             margin="dense"
-            value={assayName}
+            value={assayName || ""}
+            disabled={!isCustom}
             onChange={(event) =>
               handleValueChange("assayName", event.target.value)
             }
@@ -201,6 +267,7 @@ export const Assay: React.FC<Props> = () => {
             label="Assay ID"
             margin="dense"
             value={assayId}
+            disabled={!isCustom}
             onChange={(event) =>
               handleValueChange("assayId", event.target.value)
             }
