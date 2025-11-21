@@ -235,6 +235,15 @@ const GetCoordinates: React.FC = () => {
     </TableRow>
   );
 
+  useEffect(() => {
+    if (results) {
+      const resultStrand = results.strand === 1 ? "+" : "-";
+      if (resultStrand !== strand) {
+        setStrand(resultStrand);
+      }
+    }
+  }, [results]);
+
   const renderResults = (): React.ReactFragment => {
     if (isLoading) {
       return <LoadingMessage message="Fetching coordinates..." />;
@@ -243,12 +252,6 @@ const GetCoordinates: React.FC = () => {
       if (results) {
         const txSegStart = results.seg_start;
         const txSegEnd = results.seg_end;
-
-        const resultStrand = results.strand === 1 ? "+" : "-";
-        if (resultStrand !== strand) {
-          // if we don't do this, we get too many re-renders
-          setStrand(resultStrand);
-        }
 
         const genomicStart =
           txSegStart?.genomic_location.start ||

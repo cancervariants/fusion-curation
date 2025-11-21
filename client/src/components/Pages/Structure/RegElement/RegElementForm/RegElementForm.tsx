@@ -75,16 +75,6 @@ const RegElementForm: React.FC<Props> = ({
   const [txStartingGenomicText, setTxStartingGenomicText] = useState("");
   const [txEndingGenomicText, setTxEndingGenomicText] = useState("");
 
-  const inputComplete = gene === "";
-  const validated = inputComplete;
-  const [, setExpanded] = useState<boolean>(!validated);
-
-  const handleEnterKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key == "Enter" && validated) {
-      setExpanded(false);
-    }
-  };
-
   /**
    * Construct the regulatory class menu item array.
    * @returns list of MenuItems
@@ -127,7 +117,6 @@ const RegElementForm: React.FC<Props> = ({
           setGenomicStart={setGenomicStart}
           setGenomicEnd={setGenomicEnd}
           setNumericField={setNumericField}
-          handleEnterKey={handleEnterKey}
         />
       </Box>
     </>
@@ -172,9 +161,6 @@ const RegElementForm: React.FC<Props> = ({
             label="Feature ID"
             value={featureId}
             onChange={(event) => setFeatureId(event.target.value)}
-            onKeyDown={() => {
-              handleEnterKey;
-            }}
           />
         </HelpTooltip>
       </div>

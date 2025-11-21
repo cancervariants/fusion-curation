@@ -37,7 +37,7 @@ export default function StrandSwitch(
           checked={selectedStrand === "-"}
           icon={<AddCircleIcon color="primary" />}
           checkedIcon={<RemoveCircleIcon color="primary" />}
-          disabled={true}
+          disabled
         />
       }
       label="Strand"
