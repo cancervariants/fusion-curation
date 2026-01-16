@@ -6,8 +6,8 @@ from pathlib import Path
 from gene.query import QueryHandler
 from gene.schemas import MatchType
 
-from curfu import LookupServiceError, logger
-from curfu.utils import get_data_file
+from fusion_builder import LookupServiceError, logger
+from fusion_builder.utils import get_data_file
 
 # term -> (normalized ID, normalized label)
 Map = dict[str, tuple[str, str, str]]

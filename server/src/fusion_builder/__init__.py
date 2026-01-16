@@ -6,7 +6,7 @@ from os import environ
 from pathlib import Path
 
 try:
-    __version__ = version("curfu")
+    __version__ = version("fusion_builder")
 except PackageNotFoundError:
     __version__ = "unknown"
 finally:
@@ -18,9 +18,9 @@ APP_ROOT = Path(__file__).resolve().parents[0]
 # establish environment-dependent params
 if "FUSION_EB_PROD" in environ:
     environ["FUSION_EB_PROD"] = "true"
-    LOG_FN = "/tmp/curfu.log"  # noqa: S108
+    LOG_FN = "/tmp/fusion_builder.log"  # noqa: S108
 else:
-    LOG_FN = "curfu.log"
+    LOG_FN = "fusion_builder.log"
 
 # set up logging
 logging.basicConfig(

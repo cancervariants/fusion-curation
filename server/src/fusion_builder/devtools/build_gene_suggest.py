@@ -11,7 +11,7 @@ from cool_seq_tool.handlers.seqrepo_access import SEQREPO_ROOT_DIR
 from gene.database import create_db
 from gene.schemas import RecordType
 
-from curfu import APP_ROOT, logger
+from fusion_builder import APP_ROOT, logger
 
 
 class GeneSuggestionBuilder:

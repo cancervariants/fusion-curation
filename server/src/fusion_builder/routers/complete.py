@@ -4,8 +4,8 @@ from typing import Any
 
 from fastapi import APIRouter, Query, Request
 
-from curfu import MAX_SUGGESTIONS, LookupServiceError
-from curfu.schemas import (
+from fusion_builder import MAX_SUGGESTIONS, LookupServiceError
+from fusion_builder.schemas import (
     AssociatedDomainResponse,
     ResponseDict,
     RouteTag,

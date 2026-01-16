@@ -168,7 +168,7 @@ export default function AppMenu({
           </Box>
           <Box className={classes.versionContainer}>
             <Typography className={classes.versionText}>
-              v{serviceInfo.curfu_version}
+              v{serviceInfo.fusion_builder_version}
             </Typography>
           </Box>
         </Box>

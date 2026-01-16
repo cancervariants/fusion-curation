@@ -181,4 +181,4 @@ frontend/node_modules
 **/.yarn
 
 # Data
-server/src/curfu/data
+server/src/fusion_builder/data

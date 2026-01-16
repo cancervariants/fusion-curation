@@ -1,29 +1,13 @@
 """Provide command-line interface to application and associated utilities."""
 
-import os
 from pathlib import Path
 
 import click
 
-from curfu import APP_ROOT
-from curfu.devtools import DEFAULT_INTERPRO_TYPES
-from curfu.devtools.build_client_types import build_client_types
-from curfu.devtools.build_gene_suggest import GeneSuggestionBuilder
-from curfu.devtools.build_interpro import build_gene_domain_maps
-
-
-@click.command()
-@click.option("--port", "-p", default=5000, help="Bind socket to this port.")
-def serve(port: int) -> None:
-    """Start application service on localhost.
-    \f
-    :param int port: port to serve at (default: 5000)
-    """
-    # calling uvicorn.run() doesn't get logs printed to console --
-    # performing a syscall for now until a more elegant solution appears
-    os.system(  # noqa: S605
-        f"uvicorn curfu.main:app --reload --port={port} --reload-dir={APP_ROOT.absolute()!s}"
-    )
+from fusion_builder.devtools import DEFAULT_INTERPRO_TYPES
+from fusion_builder.devtools.build_client_types import build_client_types
+from fusion_builder.devtools.build_gene_suggest import GeneSuggestionBuilder
+from fusion_builder.devtools.build_interpro import build_gene_domain_maps
 
 
 @click.group()

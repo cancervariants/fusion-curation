@@ -16,9 +16,9 @@ from fusor.nomenclature import (
 )
 from pydantic import ValidationError
 
-from curfu import logger
-from curfu.schemas import NomenclatureResponse, ResponseDict, RouteTag
-from curfu.sequence_services import get_strand
+from fusion_builder import logger
+from fusion_builder.schemas import NomenclatureResponse, ResponseDict, RouteTag
+from fusion_builder.sequence_services import get_strand
 
 router = APIRouter()
 

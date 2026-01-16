@@ -4,7 +4,7 @@ import logging
 
 from cool_seq_tool.schemas import Strand
 
-logger = logging.getLogger("curfu")
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 

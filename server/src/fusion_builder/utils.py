@@ -8,7 +8,7 @@ from boto3.exceptions import ResourceLoadException
 from botocore.config import Config
 from botocore.exceptions import ClientError
 
-from curfu import APP_ROOT, logger
+from fusion_builder import APP_ROOT, logger
 
 ObjectSummary = TypeVar("ObjectSummary")
 
@@ -27,7 +27,9 @@ def get_latest_s3_file(file_prefix: str) -> ObjectSummary:
         msg = "Unable to initialize boto S3 resource"
         raise ResourceLoadException(msg)
     bucket = sorted(
-        s3.Bucket("vicc-services").objects.filter(Prefix=f"curfu/{file_prefix}").all(),
+        s3.Bucket("vicc-services")
+        .objects.filter(Prefix=f"fusion-builder/{file_prefix}")
+        .all(),
         key=lambda f: f.key,
         reverse=True,
     )

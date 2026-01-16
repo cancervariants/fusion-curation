@@ -12,8 +12,8 @@ import click
 from gene.database.dynamodb import DynamoDbDatabase
 from gene.query import QueryHandler
 
-from curfu import APP_ROOT, logger
-from curfu.devtools import ftp_download
+from fusion_builder import APP_ROOT, logger
+from fusion_builder.devtools import ftp_download
 
 # uniprot accession id -> (normalized ID, normalized label)
 UniprotRefs = dict[str, tuple[str, str]]

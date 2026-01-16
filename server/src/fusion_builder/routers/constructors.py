@@ -5,9 +5,9 @@ from fastapi import APIRouter, Query, Request
 from fusor.models import DomainStatus, RegulatoryClass
 from pydantic import ValidationError
 
-from curfu import logger
-from curfu.routers import parse_identifier
-from curfu.schemas import (
+from fusion_builder import logger
+from fusion_builder.routers import parse_identifier
+from fusion_builder.schemas import (
     GeneElementResponse,
     GetDomainResponse,
     RegulatoryElementResponse,
@@ -16,7 +16,7 @@ from curfu.schemas import (
     TemplatedSequenceElementResponse,
     TxSegmentElementResponse,
 )
-from curfu.sequence_services import get_strand
+from fusion_builder.sequence_services import get_strand
 
 router = APIRouter()
 

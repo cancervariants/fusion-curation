@@ -9,7 +9,7 @@ def build_client_types() -> None:
     """Construct type definitions for front-end client."""
     client_dir = Path(__file__).resolve().parents[4] / "client"
     generate_typescript_defs(
-        "curfu.schemas",
+        "fusion_builder.schemas",
         str((client_dir / "src" / "services" / "ResponseModels.ts").absolute()),
         json2ts_cmd=str((client_dir / "node_modules" / ".bin" / "json2ts").absolute()),
     )

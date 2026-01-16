@@ -1,5 +1,5 @@
 [project]
-name = "curfu"
+name = "fusion-builder"
 authors = [
     {name = "Alex Wagner", email = "alex.wagner@nationwidechildrens.org"},
     {name = "Kori Kuzma", email = "kori.kuzma@nationwidechildrens.org"},
@@ -52,8 +52,7 @@ dev = [
 ]
 
 [project.scripts]
-curfu_devtools = "curfu.cli:devtools"
-curfu = "curfu.cli:serve"
+fusion-builder-dev = "fusion_builder.cli:devtools"
 
 [build-system]
 requires = ["setuptools>=64", "setuptools_scm>=8"]
@@ -73,7 +72,7 @@ addopts = "--cov=src --cov-report term-missing"
 testpaths = ["tests"]
 
 [tool.ruff]
-src = ["curfu"]
+src = ["fusion_builder"]
 
 [tool.ruff.lint]
 select = [
@@ -170,9 +169,9 @@ ignore = [
 # N815 - mixed-case-variable-in-class-scope
 "**/tests/*" = ["ANN001", "ANN2", "ANN102", "S101", "B011", "INP001", "ARG001"]
 "*__init__.py" = ["F401"]
-"**/src/curfu/schemas.py" = ["ANN201", "N805", "ANN001", "N803", "N805", "N815"]
-"**/src/curfu/routers/*" = ["D301", "B008"]
-"**/src/curfu/cli.py" = ["D301"]
+"**/src/fusion_builder/schemas.py" = ["ANN201", "N805", "ANN001", "N803", "N805", "N815"]
+"**/src/fusion_builder/routers/*" = ["D301", "B008"]
+"**/src/fusion_builder/cli.py" = ["D301"]
 
 [tool.ruff.format]
 docstring-code-format = true

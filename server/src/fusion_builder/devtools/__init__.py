@@ -3,7 +3,7 @@
 import ftplib
 from collections.abc import Callable
 
-from curfu import logger
+from fusion_builder import logger
 
 
 def ftp_download(domain: str, path: str, fname: str, callback: Callable) -> None:

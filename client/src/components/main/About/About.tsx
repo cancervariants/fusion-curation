@@ -37,8 +37,8 @@ const About: React.FC<AboutProps> = ({ show, setShow }) => {
       fullWidth={true}
     >
       <DialogTitle id="simple-dialog-title">
-        {"curfu_version" in serviceInfo
-          ? `Fusion Curation v${serviceInfo.curfu_version}`
+        {"fusion_builder_version" in serviceInfo
+          ? `Fusion Curation v${serviceInfo.fusion_builder_version}`
           : "version lookup failed"}
       </DialogTitle>
       <Divider />
