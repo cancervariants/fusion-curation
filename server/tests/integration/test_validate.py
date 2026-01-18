@@ -235,7 +235,7 @@ async def test_validate_fusion(
     async_client: AsyncClient,
     alk_fusion,
     ewsr1_fusion,
-    ewsr1_fusion_fill_types,
+    # ewsr1_fusion_fill_types,
     wrong_type_fusion,
 ):
     """Perform some basic tests on the fusion validation endpoint."""
