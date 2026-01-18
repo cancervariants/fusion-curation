@@ -52,7 +52,7 @@ server/src/fusion_builder/data
 Finally, start backend service.
 
 ```commandline
-uvicorn fusion_builder.main:app
+uvicorn fusion_builder.main:app --host 127.0.0.1 --port 5000 
 ```
 
 In another shell, navigate to the repo `client/` directory and install frontend dependencies:
