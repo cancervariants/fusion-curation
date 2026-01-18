@@ -74,6 +74,7 @@ testpaths = ["tests"]
 
 [tool.ruff]
 src = ["curfu"]
+exclude = ["**/codebuild"]
 
 [tool.ruff.lint]
 select = ["ALL"]

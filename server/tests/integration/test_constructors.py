@@ -3,7 +3,7 @@
 import pytest
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_build_gene_element(check_response, alk_gene_element):
     """Test correct functioning of gene element construction route."""
 
@@ -126,7 +126,7 @@ def check_templated_sequence_response(check_sequence_location):
     return check_temp_seq_response
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_build_tx_segment_ec(
     check_response, check_tx_element_response, ntrk1_tx_element_start
 ):
@@ -154,7 +154,7 @@ async def test_build_tx_segment_ec(
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_build_segment_gc(
     check_response, check_tx_element_response, tpm3_tx_g_element, tpm3_tx_t_element
 ):
@@ -177,7 +177,7 @@ async def test_build_segment_gc(
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_build_reg_element(check_response, check_reg_element_response):
     """Test correctness of regulatory element constructor endpoint."""
     await check_response(
@@ -233,7 +233,7 @@ async def test_build_reg_element(check_response, check_reg_element_response):
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_build_templated_sequence(
     check_response, check_templated_sequence_response
 ):

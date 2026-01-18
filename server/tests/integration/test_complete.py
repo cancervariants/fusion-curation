@@ -4,7 +4,7 @@ import pytest
 from httpx import AsyncClient
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_complete_gene(async_client: AsyncClient):
     """Test /complete/gene endpoint"""
     # test simple completion
@@ -30,17 +30,17 @@ async def test_complete_gene(async_client: AsyncClient):
     response_json = response.json()
     assert len(response_json["warnings"]) == 1
     assert "Exceeds max matches" in response_json["warnings"][0]
-    assert (
-        response_json["matches_count"] >= 2000
-    ), "should be a whole lot of matches (2081 as of last prod data dump)"
+    assert response_json["matches_count"] >= 2000, (
+        "should be a whole lot of matches (2081 as of last prod data dump)"
+    )
 
     # test concept ID match
     response = await async_client.get("/api/complete/gene?term=hgnc:1097")
     assert response.status_code == 200
     response_json = response.json()
-    assert (
-        response_json["matches_count"] >= 11
-    ), "at least 11 matches are expected as of last prod data dump"
+    assert response_json["matches_count"] >= 11, (
+        "at least 11 matches are expected as of last prod data dump"
+    )
     assert response_json["concept_id"][0] == [
         "hgnc:1097",
         "BRAF",
@@ -53,7 +53,7 @@ async def test_complete_gene(async_client: AsyncClient):
     assert response_json["aliases"] == []
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_complete_domain(async_client: AsyncClient):
     """Test /complete/domain endpoint"""
     response = await async_client.get("/api/complete/domain?gene_id=hgnc%3A1097")
