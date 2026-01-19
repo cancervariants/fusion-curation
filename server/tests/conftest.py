@@ -5,7 +5,7 @@ from collections.abc import Callable
 
 import pytest
 import pytest_asyncio
-from curfu.main import app, get_domain_services, get_gene_services, start_fusor
+from fusion_builder.main import app, get_domain_services, get_gene_services, start_fusor
 from httpx import ASGITransport, AsyncClient
 
 

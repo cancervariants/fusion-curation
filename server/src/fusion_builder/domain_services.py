@@ -10,8 +10,8 @@ Todo:
 import csv
 from typing import ClassVar
 
-from curfu import LookupServiceError, logger
-from curfu.utils import get_data_file
+from fusion_builder import LookupServiceError, logger
+from fusion_builder.utils import get_data_file
 
 
 class DomainService:

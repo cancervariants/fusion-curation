@@ -4,7 +4,7 @@ import csv
 import datetime
 import gzip
 import shutil
-import xml.etree.ElementTree as ET  # noqa: N817
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from timeit import default_timer as timer
 
@@ -12,8 +12,8 @@ import click
 from gene.database.dynamodb import DynamoDbDatabase
 from gene.query import QueryHandler
 
-from curfu import APP_ROOT, logger
-from curfu.devtools import ftp_download
+from fusion_builder import APP_ROOT, logger
+from fusion_builder.devtools import ftp_download
 
 # uniprot accession id -> (normalized ID, normalized label)
 UniprotRefs = dict[str, tuple[str, str]]
@@ -46,7 +46,7 @@ def download_protein2ipr(output_dir: Path) -> None:
         shutil.copyfileobj(f_in, f_out)
     gz_file_path.unlink()
     if not outfile_path.exists():
-        raise Exception
+        raise FileNotFoundError
 
     logger.info("Successfully retrieved UniProt mapping data for Interpro")
 
@@ -123,7 +123,7 @@ def download_uniprot_sprot(output_dir: Path) -> Path:
         shutil.copyfileobj(f_in, f_out)
     gz_file_path.unlink()
     if not outfile_path.exists():
-        raise Exception
+        raise FileNotFoundError
 
     logger.info("Successfully retrieved UniProtKB data.")
     return outfile_path

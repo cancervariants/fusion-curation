@@ -1102,7 +1102,7 @@ export interface SequenceIDResponse {
  */
 export interface ServiceInfoResponse {
   warnings?: string[] | null;
-  curfu_version: string;
+  fusion_builder_version: string;
   fusor_version: string;
   cool_seq_tool_version: string;
 }

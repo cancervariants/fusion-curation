@@ -6,11 +6,8 @@ from pathlib import Path
 from gene.query import QueryHandler
 from gene.schemas import MatchType
 
-from curfu import LookupServiceError, logger
-from curfu.utils import get_data_file
-
-# term -> (normalized ID, normalized label)
-Map = dict[str, tuple[str, str, str]]
+from fusion_builder import LookupServiceError, logger
+from fusion_builder.utils import get_data_file
 
 # term -> (normalized ID, normalized label)
 Map = dict[str, tuple[str, str, str]]
@@ -72,12 +69,12 @@ class GeneService:
                 raise LookupServiceError(msg)
             term_lower = term.lower()
             term_cased = None
-            if response.match_type == 100:
+            if response.match_type == MatchType.CONCEPT_ID:
                 if term_lower == symbol.lower():
                     term_cased = symbol
                 elif term_lower == concept_id.lower():
                     term_cased = concept_id
-            elif response.match_type == 80:
+            elif response.match_type == MatchType.PREV_SYMBOL:
                 for ext in gene.extensions:
                     if ext.name == "previous_symbols":
                         for prev_symbol in ext.value:
@@ -85,7 +82,7 @@ class GeneService:
                                 term_cased = prev_symbol
                                 break
                         break
-            elif response.match_type == 60:
+            elif response.match_type == MatchType.ALIAS:
                 if gene.alternate_labels:
                     for alias in gene.alternate_labels:
                         if term_lower == alias.lower():

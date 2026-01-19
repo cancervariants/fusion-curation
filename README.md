@@ -1,8 +1,8 @@
 <h1 align="center">
-CurFu: Curating fusions with the VICC Gene Fusion Guidelines
+Fusion-Builder: Curating fusions with the VICC Gene Fusion Guidelines
 </h1>
 
-CurFu is an interactive curation tool for describing and representing gene fusions in a computable manner. It's developed to support the [VICC Fusion Guidelines](https://fusions.cancervariants.org/) project.
+Fusion-Builder is an interactive curation tool for describing and representing gene fusions in a computable manner. It's developed to support the [VICC Gene Fusion Specification](https://fusions.cancervariants.org/).
 
 ## Development
 
@@ -30,16 +30,16 @@ source venv/bin/activate
 python3 -m pip install -e ".[dev,tests]"  # make sure to include the extra dependencies!
 ```
 
-Acquire two sets of static assets and place all of them within the `server/src/curfu/data` directory:
+Acquire two sets of static assets and place all of them within the `server/src/fusion_curation/data` directory:
 
-1. Gene autocomplete files, providing legal gene search terms to the client autocomplete component. One file each is used for entity types `aliases`, `assoc_with`, `xrefs`, `prev_symbols`, `labels`, and `symbols`. Each should be named according to the pattern `gene_<type>_<YYYYMMDD>.tsv`. These can be regenerated with the shell command `curfu_devtools genes`.
+1. Gene autocomplete files, providing legal gene search terms to the client autocomplete component. One file each is used for entity types `aliases`, `assoc_with`, `xrefs`, `prev_symbols`, `labels`, and `symbols`. Each should be named according to the pattern `gene_<type>_<YYYYMMDD>.tsv`. These can be regenerated with the shell command `fusion-builder-dev genes`.
 
-2. Domain lookup file, for use in providing possible functional domains for user-selected genes in the client. This should be named according to the pattern `domain_lookup_YYYYMMDD.tsv`. These can be regenerated with the shell command `curfu_devtools domains`, although this is an extremely time- and storage-intensive process.
+2. Domain lookup file, for use in providing possible functional domains for user-selected genes in the client. This should be named according to the pattern `domain_lookup_YYYYMMDD.tsv`. These can be regenerated with the shell command `fusion-builder-dev domains`, although this is an extremely time- and storage-intensive process.
 
 Your data/directory should look something like this:
 
 ```
-server/src/curfu/data
+server/src/fusion_builder/data
 ├── domain_lookup_2022-01-20.tsv
 ├── gene_aliases_suggest_20211025.tsv
 ├── gene_assoc_with_suggest_20211025.tsv
@@ -49,10 +49,10 @@ server/src/curfu/data
 └── gene_xrefs_suggest_20211025.tsv
 ```
 
-Finally, start backend service with `curfu`, by default on port 5000. To use a different port, pass the number to the `-p` option:
+Finally, start backend service.
 
 ```commandline
-curfu -p 5000
+uvicorn fusion_builder.main:app --host 127.0.0.1 --port 5000
 ```
 
 In another shell, navigate to the repo `client/` directory and install frontend dependencies:
@@ -84,14 +84,14 @@ yarn start
 
 ### Shared type definitions
 
-The frontend utilizes Typescript definitions generated from the backend pydantic schema. These can be refreshed, from the server environment, with the command `curfu_devtools client-types`. This will only work if `json2ts` has been installed in the client's `node_modules` binary directory.
+The frontend utilizes Typescript definitions generated from the backend pydantic schema. These can be refreshed, from the server environment, with the command `fusion-builder-dev client-types`. This will only work if `json2ts` has been installed in the client's `node_modules` binary directory.
 
 ### Style
 
-Python code style is enforced by [flake8](https://github.com/PyCQA/flake8) and [Black](https://github.com/psf/black), and frontend style is enforced by [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/). Conformance is ensured by [pre-commit](https://pre-commit.com/#usage). Before your first commit, run
+Python code style is enforced by [flake8](https://github.com/PyCQA/flake8) and [Black](https://github.com/psf/black), and frontend style is enforced by [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/). Conformance is ensured by [prek](https://prek.j178.dev/). Before your first commit, run
 
 ```commandline
-pre-commit install
+prek install -f
 ```
 
 This will require installation of `dev` dependencies on the server side.
