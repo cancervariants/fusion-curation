@@ -1,14 +1,14 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0  # pre-commit-hooks version
+    rev: v6.0.0 # pre-commit-hooks version
     hooks:
       - id: detect-aws-credentials
-        args: [ --allow-missing-credentials ]
+        args: [--allow-missing-credentials]
   - repo: builtin
     hooks:
       - id: trailing-whitespace
       - id: check-added-large-files
-        args: ['--maxkb=1500']
+        args: ["--maxkb=1500"]
       - id: check-case-conflict
       - id: end-of-file-fixer
       - id: fix-byte-order-marker
@@ -16,13 +16,30 @@ repos:
       - id: check-toml
       - id: check-yaml
       - id: mixed-line-ending
-        args: [ --fix=lf ]
+        args: [--fix=lf]
       - id: check-merge-conflict
       - id: detect-private-key
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.10  # ruff version
+    rev: v0.14.10 # ruff version
     hooks:
       - id: ruff-format
       - id: ruff-check
-        args: [ --fix, --exit-non-zero-on-fix ]
+        args: [--fix, --exit-non-zero-on-fix]
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: "v8.20.0"
+    hooks:
+      - id: eslint
+        files: \.[jt]sx?$ # *.js, *.jsx, *.ts and *.tsx
+        types: [file]
+        additional_dependencies:
+          - eslint@7.29.0
+          - eslint-config-airbnb@18.2.1
+          - eslint-plugin-import@2.23.4
+          - eslint-plugin-jsx-a11y@6.4.1
+          - eslint-plugin-react@7.24.0
+          - eslint-plugin-react-hooks@4.2.0
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: "v2.7.1"
+    hooks:
+      - id: prettier
 minimum_prek_version: 0.2.23
