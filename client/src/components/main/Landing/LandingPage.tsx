@@ -56,8 +56,9 @@ export default function LandingPage(): React.ReactElement {
         >
           <Box className={classes.carouselItem}>
             <h2>
-              Welcome to the <b>VICC Fusion Curation Interface</b>, an
-              educational tool for exploring gene fusions.
+              Welcome to <b>Fusion-Builder</b>, an interactive platform
+              utilizing the VICC Gene Fusion Specification to support the
+              standardization of gene fusion descriptions.
             </h2>
           </Box>
           <Box className={classes.carouselItem}>
@@ -90,7 +91,7 @@ export default function LandingPage(): React.ReactElement {
       </Paper>
       <Paper className={classes.fullSection}>
         <Box className={classes.landingSection} pt="1px" pb="15px">
-          <h3>About the VICC Fusion Curation Interface</h3>
+          <h3>About Fusion-Builder</h3>
           <Typography>
             Maximizing the research and clinical value of genomic information
             requires that clinicians, researchers, and testing laboratories
@@ -126,7 +127,11 @@ export default function LandingPage(): React.ReactElement {
             </Typography>
             <Box mt="15px">
               <Typography>
-                <b style={{ color: theme.palette.primary.main }}>
+                <b
+                  style={{
+                    color: theme.palette.primary.main,
+                  }}
+                >
                   Assayed gene fusions
                 </b>{" "}
                 from biological specimens are directly detected using RNA-based
@@ -139,7 +144,11 @@ export default function LandingPage(): React.ReactElement {
             <Box mt="15px">
               <Typography>
                 In contrast,{" "}
-                <b style={{ color: theme.palette.primary.main }}>
+                <b
+                  style={{
+                    color: theme.palette.primary.main,
+                  }}
+                >
                   categorical gene fusions
                 </b>{" "}
                 are generalized concepts representing a class of fusions by
@@ -160,7 +169,11 @@ export default function LandingPage(): React.ReactElement {
             </Typography>
             <Box mt="15px">
               <Typography>
-                <b style={{ color: theme.palette.primary.main }}>
+                <b
+                  style={{
+                    color: theme.palette.primary.main,
+                  }}
+                >
                   MANE transcripts retrieval
                 </b>
                 , providing matched transcripts given a gene name
@@ -168,7 +181,11 @@ export default function LandingPage(): React.ReactElement {
             </Box>
             <Box mt="15px">
               <Typography>
-                <b style={{ color: theme.palette.primary.main }}>
+                <b
+                  style={{
+                    color: theme.palette.primary.main,
+                  }}
+                >
                   Coordinate conversion
                 </b>
                 , returning corresponding genomic and exon coordinates given a
@@ -177,7 +194,11 @@ export default function LandingPage(): React.ReactElement {
             </Box>
             <Box mt="15px">
               <Typography>
-                <b style={{ color: theme.palette.primary.main }}>
+                <b
+                  style={{
+                    color: theme.palette.primary.main,
+                  }}
+                >
                   Sequence ID lookup
                 </b>
                 , supplying synonymous identifiers given an accession

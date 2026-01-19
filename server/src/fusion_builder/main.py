@@ -11,11 +11,11 @@ from fastapi.templating import Jinja2Templates
 from fusor import FUSOR
 from starlette.templating import _TemplateResponse as TemplateResponse
 
-from curfu import APP_ROOT
-from curfu import __version__ as curfu_version
-from curfu.domain_services import DomainService
-from curfu.gene_services import GeneService
-from curfu.routers import (
+from fusion_builder import APP_ROOT
+from fusion_builder import __version__ as fusion_builder_version
+from fusion_builder.domain_services import DomainService
+from fusion_builder.gene_services import GeneService
+from fusion_builder.routers import (
     complete,
     constructors,
     demo,
@@ -55,7 +55,7 @@ fastapi_app = FastAPI(
         "name": "MIT",
         "url": "https://github.com/cancervariants/fusion-curation/blob/main/LICENSE",
     },
-    version=curfu_version,
+    version=fusion_builder_version,
     swagger_ui_parameters={"tryItOutEnabled": True},
     docs_url="/docs",
     openapi_url="/openapi.json",

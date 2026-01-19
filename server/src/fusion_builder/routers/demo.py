@@ -18,7 +18,7 @@ from fusor.nomenclature import (
     tx_segment_nomenclature,
 )
 
-from curfu.schemas import (
+from fusion_builder.schemas import (
     ClientAssayedFusion,
     ClientCategoricalFusion,
     ClientGeneElement,

@@ -261,7 +261,7 @@ class GetGeneTranscriptsResponse(Response):
 class ServiceInfoResponse(Response):
     """Response model for service_info endpoint."""
 
-    curfu_version: StrictStr
+    fusion_builder_version: StrictStr
     fusor_version: StrictStr
     cool_seq_tool_version: StrictStr
 

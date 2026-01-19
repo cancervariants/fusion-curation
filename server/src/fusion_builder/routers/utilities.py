@@ -10,8 +10,8 @@ from fastapi.responses import FileResponse
 from gene import schemas as gene_schemas
 from starlette.background import BackgroundTasks
 
-from curfu import logger
-from curfu.schemas import (
+from fusion_builder import logger
+from fusion_builder.schemas import (
     CoordsUtilsResponse,
     GetTranscriptsResponse,
     RouteTag,

@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Body, Request
 from fusor.exceptions import FUSORParametersException
 
-from curfu.schemas import ResponseDict, RouteTag, ValidateFusionResponse
+from fusion_builder.schemas import ResponseDict, RouteTag, ValidateFusionResponse
 
 router = APIRouter()
 

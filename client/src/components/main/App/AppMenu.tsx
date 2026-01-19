@@ -85,7 +85,7 @@ export default function AppMenu({
       <Box className={classes.drawerContainer}>
         <Box className={classes.upperSection}>
           <Link href="/" color="inherit">
-            <h3>VICC Fusion Curation</h3>
+            <h3>Fusion-Builder</h3>
           </Link>
           <Box className={`${classes.menuHeader} ${classes.menuLink}`}>
             <Typography color="inherit">
@@ -168,7 +168,7 @@ export default function AppMenu({
           </Box>
           <Box className={classes.versionContainer}>
             <Typography className={classes.versionText}>
-              v{serviceInfo.curfu_version}
+              v{serviceInfo.fusion_builder_version}
             </Typography>
           </Box>
         </Box>

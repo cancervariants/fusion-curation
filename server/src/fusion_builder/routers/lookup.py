@@ -2,8 +2,8 @@
 
 from fastapi import APIRouter, Query, Request
 
-from curfu import LookupServiceError
-from curfu.schemas import (
+from fusion_builder import LookupServiceError
+from fusion_builder.schemas import (
     GetGeneTranscriptsResponse,
     NormalizeGeneResponse,
     ResponseDict,
