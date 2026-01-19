@@ -88,10 +88,10 @@ The frontend utilizes Typescript definitions generated from the backend pydantic
 
 ### Style
 
-Python code style is enforced by [flake8](https://github.com/PyCQA/flake8) and [Black](https://github.com/psf/black), and frontend style is enforced by [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/). Conformance is ensured by [pre-commit](https://pre-commit.com/#usage). Before your first commit, run
+Python code style is enforced by [flake8](https://github.com/PyCQA/flake8) and [Black](https://github.com/psf/black), and frontend style is enforced by [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/). Conformance is ensured by [prek](https://prek.j178.dev/). Before your first commit, run
 
 ```commandline
-pre-commit install
+prek install -f
 ```
 
 This will require installation of `dev` dependencies on the server side.

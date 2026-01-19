@@ -222,20 +222,20 @@ async def check_validated_fusion_response(client, fixture: dict, case_name: str)
 
     assert response.status_code == 200, f"{case_name}: status code failed"
     response_json = response.json()
-    assert (
-        response_json.get("fusion") == fixture["output"]
-    ), f"{case_name}: fusion incorrect"
-    assert (
-        response_json.get("warnings") == fixture["warnings"]
-    ), f"{case_name}: warnings incorrect"
+    assert response_json.get("fusion") == fixture["output"], (
+        f"{case_name}: fusion incorrect"
+    )
+    assert response_json.get("warnings") == fixture["warnings"], (
+        f"{case_name}: warnings incorrect"
+    )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_validate_fusion(
     async_client: AsyncClient,
     alk_fusion,
     ewsr1_fusion,
-    ewsr1_fusion_fill_types,
+    # ewsr1_fusion_fill_types,
     wrong_type_fusion,
 ):
     """Perform some basic tests on the fusion validation endpoint."""

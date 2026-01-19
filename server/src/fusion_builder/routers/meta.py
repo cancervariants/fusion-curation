@@ -13,7 +13,6 @@ router = APIRouter()
 @router.get(
     "/api/service_info",
     operation_id="serviceInfo",
-    response_model=ServiceInfoResponse,
     tags=[RouteTag.META],
 )
 def get_service_info() -> ServiceInfoResponse:

@@ -3,7 +3,7 @@
 import pytest
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_service_info(async_client):
     """Simple test of /service_info endpoint"""
     response = await async_client.get("/api/service_info")

@@ -1,6 +1,6 @@
 """Provide routes for autocomplete/term suggestion methods"""
 
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Query, Request
 
@@ -22,15 +22,8 @@ router = APIRouter()
     response_model_exclude_none=True,
     tags=[RouteTag.COMPLETION],
 )
-def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
-    """Provide completion suggestions for term provided by user.
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
-        and UTA-associated tools.
-    :param term: entered gene term
-    :return: JSON response with suggestions listed, or warnings if unable to provide
-        suggestions.
-    """
+def suggest_gene(request: Request, term: Annotated[str, Query()] = "") -> ResponseDict:
+    """Provide completion suggestions for term provided by user."""
     response: ResponseDict = {"term": term}
     possible_matches = request.app.state.genes.suggest_genes(term)
     n = (
@@ -61,15 +54,10 @@ def suggest_gene(request: Request, term: str = Query("")) -> ResponseDict:
     response_model_exclude_none=True,
     tags=[RouteTag.COMPLETION],
 )
-def suggest_domain(request: Request, gene_id: str = Query("")) -> ResponseDict:
-    """Provide possible domains associated with a given gene to be selected by a user.
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
-        and UTA-associated tools.
-    :param gene_id: normalized gene concept ID
-    :return: JSON response with a list of possible domain name and ID options, or
-        warning(s) if relevant
-    """
+def suggest_domain(
+    request: Request, gene_id: Annotated[str, Query()] = ""
+) -> ResponseDict:
+    """Provide possible domains associated with a given gene to be selected by a user."""
     response: dict[str, Any] = {"gene_id": gene_id}
     try:
         possible_matches = request.app.state.domains.get_possible_domains(gene_id)

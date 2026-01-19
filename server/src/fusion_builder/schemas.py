@@ -198,14 +198,16 @@ class ExonCoordsRequest(BaseModel):
     exonEndOffset: StrictInt | None = 0
 
     @field_validator("gene")
-    def validate_gene(cls, v) -> str:
+    @classmethod
+    def validate_gene(cls, v: str | None) -> str:
         """Replace None with empty string."""
         if v is None:
             return ""
         return v
 
     @field_validator("exonStart", "exonStartOffset", "exonEnd", "exonEndOffset")
-    def validate_number(cls, v) -> int:
+    @classmethod
+    def validate_number(cls, v: int | None) -> int:
         """Replace None with 0 for numeric fields."""
         if v is None:
             return 0

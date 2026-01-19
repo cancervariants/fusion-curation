@@ -1,5 +1,7 @@
 """Provide routes for nomenclature generation."""
 
+from typing import Annotated
+
 from fastapi import APIRouter, Body, Request
 from fusor.exceptions import FUSORParametersException
 from fusor.models import (
@@ -31,16 +33,9 @@ router = APIRouter()
     tags=[RouteTag.NOMENCLATURE],
 )
 def generate_regulatory_element_nomenclature(
-    request: Request, regulatory_element: dict = Body()
+    request: Request, regulatory_element: Annotated[dict, Body()]
 ) -> ResponseDict:
-    """Build regulatory element nomenclature.
-
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param regulatory_element: element to build nomenclature for
-    :return: response with nomenclature if successful and warnings otherwise
-    """
+    """Build regulatory element nomenclature."""
     try:
         structured_reg_element = RegulatoryElement(**regulatory_element)
     except ValidationError as e:
@@ -73,15 +68,10 @@ def generate_regulatory_element_nomenclature(
     response_model_exclude_none=True,
     tags=[RouteTag.NOMENCLATURE],
 )
-def generate_tx_segment_nomenclature(tx_segment: dict = Body()) -> ResponseDict:
-    """Build transcript segment element nomenclature.
-
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param tx_segment: element to build nomenclature for
-    :return: response with nomenclature if successful and warnings otherwise
-    """
+def generate_tx_segment_nomenclature(
+    tx_segment: Annotated[dict, Body()],
+) -> ResponseDict:
+    """Build transcript segment element nomenclature."""
     try:
         structured_tx_segment = TranscriptSegmentElement(**tx_segment)
     except ValidationError as e:
@@ -102,15 +92,9 @@ def generate_tx_segment_nomenclature(tx_segment: dict = Body()) -> ResponseDict:
     tags=[RouteTag.NOMENCLATURE],
 )
 def generate_templated_seq_nomenclature(
-    request: Request, templated_sequence: dict = Body()
+    request: Request, templated_sequence: Annotated[dict, Body()]
 ) -> ResponseDict:
-    """Build templated sequence element nomenclature.
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param templated_sequence: element to build nomenclature for
-    :return: response with nomenclature if successful and warnings otherwise
-    """
+    """Build templated sequence element nomenclature."""
     try:
         # convert client input of +/- for strand
         strand = (
@@ -150,14 +134,8 @@ def generate_templated_seq_nomenclature(
     response_model_exclude_none=True,
     tags=[RouteTag.NOMENCLATURE],
 )
-def generate_gene_nomenclature(gene_element: dict = Body()) -> ResponseDict:
-    """Build gene element nomenclature.
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param gene_element: element to build nomenclature for
-    :return: response with nomenclature if successful and warnings otherwise
-    """
+def generate_gene_nomenclature(gene_element: Annotated[dict, Body()]) -> ResponseDict:
+    """Build gene element nomenclature."""
     try:
         valid_gene_element = GeneElement(**gene_element)
     except ValidationError as e:
@@ -187,15 +165,9 @@ def generate_gene_nomenclature(gene_element: dict = Body()) -> ResponseDict:
     tags=[RouteTag.NOMENCLATURE],
 )
 def generate_fusion_nomenclature(
-    request: Request, fusion: dict = Body()
+    request: Request, fusion: Annotated[dict, Body()]
 ) -> ResponseDict:
-    """Generate nomenclature for complete fusion.
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param fusion: provided fusion object (should be validly constructed)
-    :return: response with fusion nomenclature
-    """
+    """Generate nomenclature for complete fusion."""
     try:
         valid_fusion = request.app.state.fusor.fusion(**fusion)
     except FUSORParametersException as e:

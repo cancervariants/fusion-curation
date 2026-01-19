@@ -1,5 +1,7 @@
 """Provide routes for basic data lookup endpoints"""
 
+from typing import Annotated
+
 from fastapi import APIRouter, Query, Request
 
 from fusion_builder import LookupServiceError
@@ -16,18 +18,13 @@ router = APIRouter()
 @router.get(
     "/api/lookup/gene",
     operation_id="normalizeGene",
-    response_model=NormalizeGeneResponse,
     response_model_exclude_none=True,
     tags=[RouteTag.LOOKUP],
 )
-def normalize_gene(request: Request, term: str = Query("")) -> NormalizeGeneResponse:
-    """Normalize gene term provided by user.
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
-        and UTA-associated tools.
-    :param term: gene symbol/alias/name/etc
-    :return: JSON response with normalized ID if successful and warnings otherwise
-    """
+def normalize_gene(
+    request: Request, term: Annotated[str, Query()] = ""
+) -> NormalizeGeneResponse:
+    """Normalize gene term provided by user."""
     response: ResponseDict = {"term": term}
     try:
         concept_id, symbol, cased = request.app.state.genes.get_normalized_gene(
@@ -51,13 +48,7 @@ def normalize_gene(request: Request, term: str = Query("")) -> NormalizeGeneResp
     response_model_exclude_none=True,
 )
 async def get_transcripts_for_gene(request: Request, gene: str) -> dict:
-    """Get all transcripts for gene term.
-    \f
-    :param Request request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    :param str gene: gene term provided by user
-    :return: Dict containing transcripts if lookup succeeds, or warnings upon failure
-    """
+    """Get all transcripts for gene term."""
     normalized = request.app.state.fusor.gene_normalizer.normalize(gene)
     symbol = normalized.gene.name
     transcripts = await request.app.state.fusor.cool_seq_tool.uta_db.get_transcripts(

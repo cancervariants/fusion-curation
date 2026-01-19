@@ -101,7 +101,9 @@ def serve_react_app(app: FastAPI) -> FastAPI:
     try:
         static_files = StaticFiles(directory=BUILD_DIR / "static")
     except RuntimeError:
-        _logger.error("Unable to access static build files -- does the folder exist?")
+        _logger.exception(
+            "Unable to access static build files -- does the folder exist?"
+        )
     else:
         app.mount(
             "/static/",

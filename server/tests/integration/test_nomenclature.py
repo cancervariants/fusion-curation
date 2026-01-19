@@ -125,7 +125,7 @@ def templated_sequence_element():
     }
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_regulatory_element_nomenclature(
     async_client: AsyncClient, regulatory_element: dict
 ):
@@ -137,7 +137,7 @@ async def test_regulatory_element_nomenclature(
     assert response.json().get("nomenclature", "") == "reg_p@G1(hgnc:9339)"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_tx_segment_nomenclature(
     async_client: AsyncClient,
     ntrk1_tx_element_start: dict,
@@ -177,7 +177,7 @@ async def test_tx_segment_nomenclature(
         assert expected in response.json().get("warnings", [])[0]
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_gene_element_nomenclature(
     async_client: AsyncClient, alk_gene_element: dict
 ):
@@ -196,7 +196,7 @@ async def test_gene_element_nomenclature(
         assert expected in response.json().get("warnings", [])[0]
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_templated_sequence_nomenclature(
     async_client: AsyncClient, templated_sequence_element: dict
 ):
@@ -231,7 +231,7 @@ async def test_templated_sequence_nomenclature(
         assert expected in response.json().get("warnings", [])[0]
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_fusion_nomenclature(async_client: AsyncClient):
     """Test correctness of fusion nomneclature endpoint."""
     bcr_abl1_formatted = bcr_abl1.model_dump()

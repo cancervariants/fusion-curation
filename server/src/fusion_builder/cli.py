@@ -43,10 +43,7 @@ Possible values: {`active_site`, `binding_site`, `conserved_site`, `domain`, `fa
 def domains(
     types: str, protein2ipr: str | None, refs: str | None, uniprot: str | None
 ) -> None:
-    """Build domain mappings for use in Fusion Curation app.
-    \f
-    :param str types: comma-separated list
-    """
+    """Build domain mappings for use in Fusion Curation app."""
     types_split = set(types.lower().replace(" ", "").split(","))
     protein2ipr_path = Path(protein2ipr) if protein2ipr else None
     uniprot_path = Path(uniprot) if uniprot else None
