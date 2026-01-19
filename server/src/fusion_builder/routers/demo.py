@@ -2,7 +2,7 @@
 
 from uuid import uuid4
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException, Request
 from fusor import FUSOR, examples
 from fusor.models import (
     AssayedFusion,
@@ -18,7 +18,7 @@ from fusor.nomenclature import (
     tx_segment_nomenclature,
 )
 
-from curfu.schemas import (
+from fusion_builder.schemas import (
     ClientAssayedFusion,
     ClientCategoricalFusion,
     ClientGeneElement,
@@ -137,7 +137,7 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
             reg_element_args["displayClass"] = "Enhancer"
         else:
             msg = "Undefined reg element class used in demo"
-            raise Exception(msg)
+            raise HTTPException(status_code=422, detail=msg)
         reg_element_args["elementId"] = str(uuid4())
         fusion_args["regulatoryElement"] = reg_element_args
 
@@ -153,23 +153,17 @@ def clientify_fusion(fusion: Fusion, fusor_instance: FUSOR) -> ClientFusion:
     if fusion.type == FUSORTypes.ASSAYED_FUSION:
         return ClientAssayedFusion(**fusion_args)
     msg = "Unknown fusion type provided"
-    raise ValueError(msg)
+    raise HTTPException(status_code=422, detail=msg)
 
 
 @router.get(
     "/api/demo/alk",
     operation_id="alkDemo",
-    response_model=DemoResponse,
     response_model_exclude_none=True,
     tags=[RouteTag.DEMOS],
 )
 def get_alk(request: Request) -> DemoResponse:
-    """Retrieve ALK assayed fusion.
-
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access
-        FUSOR and UTA-associated tools.
-    """
+    """Retrieve ALK assayed fusion."""
     return DemoResponse(
         fusion=clientify_fusion(examples.alk, request.app.state.fusor), warnings=[]
     )
@@ -178,17 +172,11 @@ def get_alk(request: Request) -> DemoResponse:
 @router.get(
     "/api/demo/ewsr1",
     operation_id="ewsr1Demo",
-    response_model=DemoResponse,
     response_model_exclude_none=True,
     tags=[RouteTag.DEMOS],
 )
 def get_ewsr1(request: Request) -> DemoResponse:
-    """Retrieve EWSR1 assayed fusion.
-
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
-        and UTA-associated tools.
-    """
+    """Retrieve EWSR1 assayed fusion."""
     return DemoResponse(
         fusion=clientify_fusion(examples.ewsr1, request.app.state.fusor), warnings=[]
     )
@@ -197,16 +185,11 @@ def get_ewsr1(request: Request) -> DemoResponse:
 @router.get(
     "/api/demo/bcr_abl1",
     operation_id="bcrAbl1Demo",
-    response_model=DemoResponse,
     response_model_exclude_none=True,
     tags=[RouteTag.DEMOS],
 )
 def get_bcr_abl1(request: Request) -> DemoResponse:
-    """Retrieve BCR-ABL1 categorical fusion.
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
-        and UTA-associated tools.
-    """
+    """Retrieve BCR-ABL1 categorical fusion."""
     return DemoResponse(
         fusion=clientify_fusion(examples.bcr_abl1, request.app.state.fusor), warnings=[]
     )
@@ -215,17 +198,11 @@ def get_bcr_abl1(request: Request) -> DemoResponse:
 @router.get(
     "/api/demo/tpm3_ntrk1",
     operation_id="tpm3Ntrk1Demo",
-    response_model=DemoResponse,
     response_model_exclude_none=True,
     tags=[RouteTag.DEMOS],
 )
 def get_tpm3_ntrk1(request: Request) -> DemoResponse:
-    """Retrieve TPM3-NTRK1 assayed fusion.
-
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
-        and UTA-associated tools.
-    """
+    """Retrieve TPM3-NTRK1 assayed fusion."""
     return DemoResponse(
         fusion=clientify_fusion(examples.tpm3_ntrk1, request.app.state.fusor),
         warnings=[],
@@ -235,17 +212,11 @@ def get_tpm3_ntrk1(request: Request) -> DemoResponse:
 @router.get(
     "/api/demo/tpm3_pdgfrb",
     operation_id="tpm3PdgfrbDemo",
-    response_model=DemoResponse,
     response_model_exclude_none=True,
     tags=[RouteTag.DEMOS],
 )
 def get_tpm3_pdgfrb(request: Request) -> DemoResponse:
-    """Retrieve TPM3-PDGFRB assayed fusion.
-
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
-        and UTA-associated tools.
-    """
+    """Retrieve TPM3-PDGFRB assayed fusion."""
     return DemoResponse(
         fusion=clientify_fusion(examples.tpm3_pdgfrb, request.app.state.fusor),
         warnings=[],
@@ -255,17 +226,11 @@ def get_tpm3_pdgfrb(request: Request) -> DemoResponse:
 @router.get(
     "/api/demo/igh_myc",
     operation_id="ighMycDemo",
-    response_model=DemoResponse,
     response_model_exclude_none=True,
     tags=[RouteTag.DEMOS],
 )
 def get_igh_myc(request: Request) -> DemoResponse:
-    """Retrieve IGH-MYC assayed fusion.
-
-    \f
-    :param request: the HTTP request context, supplied by FastAPI. Use to access FUSOR
-        and UTA-associated tools.
-    """
+    """Retrieve IGH-MYC assayed fusion."""
     return DemoResponse(
         fusion=clientify_fusion(examples.igh_myc, request.app.state.fusor), warnings=[]
     )

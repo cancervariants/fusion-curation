@@ -2,7 +2,7 @@
 
 import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Annotated, Any
 
 from cool_seq_tool.schemas import CoordinateType
 from fastapi import APIRouter, HTTPException, Query, Request
@@ -10,8 +10,8 @@ from fastapi.responses import FileResponse
 from gene import schemas as gene_schemas
 from starlette.background import BackgroundTasks
 
-from curfu import logger
-from curfu.schemas import (
+from fusion_builder import logger
+from fusion_builder.schemas import (
     CoordsUtilsResponse,
     GetTranscriptsResponse,
     RouteTag,
@@ -201,9 +201,9 @@ async def get_sequence_id(request: Request, sequence: str) -> SequenceIDResponse
 async def get_sequence(
     request: Request,
     background_tasks: BackgroundTasks,
-    sequence_id: str = Query(
-        ..., description="ID of sequence to retrieve, sans namespace"
-    ),
+    sequence_id: Annotated[
+        str, Query(..., description="ID of sequence to retrieve, sans namespace")
+    ],
 ) -> FileResponse:
     """Get sequence for requested sequence ID."""
     _, path = tempfile.mkstemp(suffix=".fasta")
