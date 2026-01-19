@@ -22,7 +22,7 @@ router = APIRouter()
     tags=[RouteTag.LOOKUP],
 )
 def normalize_gene(
-    request: Request, term: Annotated[str, Query("")]
+    request: Request, term: Annotated[str, Query()] = ""
 ) -> NormalizeGeneResponse:
     """Normalize gene term provided by user."""
     response: ResponseDict = {"term": term}

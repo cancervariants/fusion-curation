@@ -22,7 +22,7 @@ router = APIRouter()
     response_model_exclude_none=True,
     tags=[RouteTag.COMPLETION],
 )
-def suggest_gene(request: Request, term: Annotated[str, Query("")]) -> ResponseDict:
+def suggest_gene(request: Request, term: Annotated[str, Query()] = "") -> ResponseDict:
     """Provide completion suggestions for term provided by user."""
     response: ResponseDict = {"term": term}
     possible_matches = request.app.state.genes.suggest_genes(term)
@@ -55,7 +55,7 @@ def suggest_gene(request: Request, term: Annotated[str, Query("")]) -> ResponseD
     tags=[RouteTag.COMPLETION],
 )
 def suggest_domain(
-    request: Request, gene_id: Annotated[str, Query("")]
+    request: Request, gene_id: Annotated[str, Query()] = ""
 ) -> ResponseDict:
     """Provide possible domains associated with a given gene to be selected by a user."""
     response: dict[str, Any] = {"gene_id": gene_id}

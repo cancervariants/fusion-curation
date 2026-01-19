@@ -30,7 +30,7 @@ router = APIRouter()
     tags=[RouteTag.CONSTRUCTORS],
 )
 def build_gene_element(
-    request: Request, term: Annotated[str, Query("")]
+    request: Request, term: Annotated[str, Query()] = ""
 ) -> GeneElementResponse:
     """Construct valid gene element given user-provided term."""
     gene_element, warnings = request.app.state.fusor.gene_element(term)
@@ -48,10 +48,10 @@ def build_gene_element(
 async def build_tx_segment_ec(
     request: Request,
     transcript: str,
-    exon_start: Annotated[int | None, Query(None)],
-    exon_start_offset: Annotated[int, Query(0)],
-    exon_end: Annotated[int | None, Query(None)],
-    exon_end_offset: Annotated[int, Query(0)],
+    exon_start: Annotated[int | None, Query()] = None,
+    exon_start_offset: Annotated[int, Query()] = 0,
+    exon_end: Annotated[int | None, Query()] = None,
+    exon_end_offset: Annotated[int, Query()] = 0,
 ) -> TxSegmentElementResponse:
     """Construct Transcript Segment element by providing transcript and exon coordinates.
 
@@ -78,8 +78,8 @@ async def build_tx_segment_gc(
     gene: str,
     chromosome: str,
     transcript: str,
-    start: Annotated[int | None, Query(None)],
-    end: Annotated[int | None, Query(None)],
+    start: Annotated[int | None, Query()] = None,
+    end: Annotated[int | None, Query()] = None,
 ) -> TxSegmentElementResponse:
     """Construct Transcript Segment element by providing gene and/or transcript and genomic
     coordinates (chromosome, start, end positions).
