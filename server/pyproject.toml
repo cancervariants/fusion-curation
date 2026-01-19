@@ -138,6 +138,9 @@ ignore = [
     "SLF001",
     "PLR2004",
 ]
+"**/schemas.py" = [
+    "N815",
+]
 
 [tool.ruff.lint.flake8-annotations]
 mypy-init-return = true
