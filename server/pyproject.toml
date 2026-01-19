@@ -72,7 +72,7 @@ addopts = "--cov=src --cov-report term-missing"
 testpaths = ["tests"]
 
 [tool.ruff]
-exclude = ["**/codebuild"]
+exclude = ["**/codebuild/*"]
 src = ["fusion_builder"]
 
 [tool.ruff.lint]
