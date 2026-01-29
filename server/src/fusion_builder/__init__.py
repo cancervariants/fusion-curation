@@ -1,4 +1,4 @@
-"""Fusion curation interface."""
+"""Fusion Builder."""
 
 import logging
 from importlib.metadata import PackageNotFoundError, version

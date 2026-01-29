@@ -136,7 +136,7 @@ export default function AppMenu({
             </Box>
             <Box className={classes.menuLink}>
               <Link
-                href="https://github.com/cancervariants/fusion-curation"
+                href="https://github.com/cancervariants/fusion-builder"
                 target="_blank"
                 color="inherit"
               >

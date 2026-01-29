@@ -12,7 +12,7 @@ from fusion_builder.devtools.build_interpro import build_gene_domain_maps
 
 @click.group()
 def devtools() -> None:
-    """Provide setup utilities for constructing data for Fusion Curation app."""
+    """Provide setup utilities for constructing data for Fusion Builder app."""
 
 
 types_help = """
@@ -43,7 +43,7 @@ Possible values: {`active_site`, `binding_site`, `conserved_site`, `domain`, `fa
 def domains(
     types: str, protein2ipr: str | None, refs: str | None, uniprot: str | None
 ) -> None:
-    """Build domain mappings for use in Fusion Curation app."""
+    """Build domain mappings for use in Fusion Builder app."""
     types_split = set(types.lower().replace(" ", "").split(","))
     protein2ipr_path = Path(protein2ipr) if protein2ipr else None
     uniprot_path = Path(uniprot) if uniprot else None
@@ -58,7 +58,7 @@ def domains(
 
 @devtools.command()
 def genes() -> None:
-    """Build gene mappings for use in Fusion Curation gene autocomplete."""
+    """Build gene mappings for use in Fusion Builder gene autocomplete."""
     builder = GeneSuggestionBuilder()
     builder.build_gene_suggestion_file()
 

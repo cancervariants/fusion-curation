@@ -44,8 +44,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
 
 
 fastapi_app = FastAPI(
-    title="Fusion Curation API",
-    description="Provide data functions to support [VICC Fusion Curation interface](fusion-builder.cancervariants.org/).",
+    title="Fusion Builder API",
+    description="Provide data functions to support [VICC Fusion Builder](fusion-builder.cancervariants.org/).",
     contact={
         "name": "Alex H. Wagner",
         "email": "Alex.Wagner@nationwidechildrens.org",
@@ -53,7 +53,7 @@ fastapi_app = FastAPI(
     },
     license={
         "name": "MIT",
-        "url": "https://github.com/cancervariants/fusion-curation/blob/main/LICENSE",
+        "url": "https://github.com/cancervariants/fusion-builder/blob/main/LICENSE",
     },
     version=fusion_builder_version,
     swagger_ui_parameters={"tryItOutEnabled": True},
