@@ -38,7 +38,7 @@ const About: React.FC<AboutProps> = ({ show, setShow }) => {
     >
       <DialogTitle id="simple-dialog-title">
         {"fusion_builder_version" in serviceInfo
-          ? `Fusion Curation v${serviceInfo.fusion_builder_version}`
+          ? `Fusion Builder v${serviceInfo.fusion_builder_version}`
           : "version lookup failed"}
       </DialogTitle>
       <Divider />
@@ -56,7 +56,7 @@ const About: React.FC<AboutProps> = ({ show, setShow }) => {
         <ListItem
           button
           component="a"
-          href="https://github.com/cancervariants/fusion-curation/"
+          href="https://github.com/cancervariants/fusion-builder/"
           target="_blank"
           rel="noopener"
         >

@@ -65,7 +65,7 @@ export default function LandingPage(): React.ReactElement {
             <h2>
               Contribute on our{" "}
               <Link
-                href="https://github.com/cancervariants/fusion-curation"
+                href="https://github.com/cancervariants/fusion-builder"
                 target="_blank"
                 color="secondary"
                 underline="always"

@@ -11,8 +11,8 @@ Fusion-Builder is an interactive curation tool for describing and representing g
 Clone the repo:
 
 ```commandline
-git clone https://github.com/cancervariants/fusion-curation
-cd fusion-curation
+git clone https://github.com/cancervariants/fusion-builder
+cd fusion-builder
 ```
 
 Ensure that the following data sources are available:
@@ -30,7 +30,7 @@ source venv/bin/activate
 python3 -m pip install -e ".[dev,tests]"  # make sure to include the extra dependencies!
 ```
 
-Acquire two sets of static assets and place all of them within the `server/src/fusion_curation/data` directory:
+Acquire two sets of static assets and place all of them within the `server/src/fusion_builder/data` directory:
 
 1. Gene autocomplete files, providing legal gene search terms to the client autocomplete component. One file each is used for entity types `aliases`, `assoc_with`, `xrefs`, `prev_symbols`, `labels`, and `symbols`. Each should be named according to the pattern `gene_<type>_<YYYYMMDD>.tsv`. These can be regenerated with the shell command `fusion-builder-dev genes`.
 

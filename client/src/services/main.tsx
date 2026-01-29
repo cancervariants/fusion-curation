@@ -300,7 +300,7 @@ export const getSequenceIds = async (
 };
 
 /**
- * Fetch curation interface version info.
+ * Fetch fusion builder version info.
  * Currently only the backend service version gets printed to the user, but we provide
  * a bit more information in case we want to provide more in the future.
  * @returns object with version info for a couple of the server components, including
