@@ -476,8 +476,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                   title={
                     <Typography>
                       A value representing the offset from the segment boundary,
-                      with positive values offset towards the 5’ end of the
-                      transcript and negative values offset towards the 3’ end
+                      with negative values offset towards the 5’ end of the
+                      transcript and positive values offset towards the 3’ end
                       of the transcript. Optional.
                     </Typography>
                   }
@@ -509,8 +509,8 @@ const TxSegmentCompInput: React.FC<TxSegmentElementInputProps> = ({
                   title={
                     <Typography>
                       A value representing the offset from the segment boundary,
-                      with positive values offset towards the 5’ end of the
-                      transcript and negative values offset towards the 3’ end
+                      with negative values offset towards the 5’ end of the
+                      transcript and positive values offset towards the 3’ end
                       of the transcript. Optional.
                     </Typography>
                   }
